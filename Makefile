@@ -138,7 +138,8 @@ FILES = \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
-  $(HoareLogic_FILES:%.v=HoareLogic/%.v)
+  $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
+  FSCQ/SeparationLogic.v
 
 $(FILES:%.v=%.vo): %.vo: %.v
 	@echo COQC $*.v
