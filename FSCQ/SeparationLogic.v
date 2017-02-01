@@ -12,6 +12,7 @@ Require Import Logic.GeneralLogic.KripkeModel.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.Model.OrderedSA.
 Require Import Logic.SeparationLogic.Model.OSAGenerators.
+Require Import Logic.SeparationLogic.Model.DownwardsClosure.
 Require Logic.SeparationLogic.Semantics.WeakSemanticsMono.
 Require Import Logic.GeneralLogic.ShallowEmbedded.MonoPredicateAsLang.
 Require Import Logic.PropositionalLogic.ShallowEmbedded.MonoPredicatePropositionalLogic.
@@ -45,7 +46,32 @@ Qed.
 
 Instance buff_J: Join buff := equiv_Join.
 
-Instance disk_R: Relation disk := @fun_R adr (option buff) (option_R buff).
+Instance buff_SA: SeparationAlgebra buff := equiv_SA.
+
+Instance disk_R: Relation disk := @fun_R adr (option buff) (option_disj_R buff).
+
+Instance disk_kiM: KripkeIntuitionisticModel disk :=
+  @fun_kiM adr (option buff) (option_disj_R buff) (option_disj_kiM buff).
+
+Definition disk_raw_J: Join disk := @fun_Join adr (option buff) (option_Join buff).
+
+Definition disk_raw_SA: @SeparationAlgebra disk disk_raw_J :=
+  @fun_SA adr (option buff) (option_Join buff) (option_SA buff).
+
+Definition disk_raw_uSA: @UpwardsClosedSeparationAlgebra disk disk_R disk_raw_J :=
+  @fun_uSA adr (option buff) (option_disj_R buff) (option_disj_kiM buff)
+    (option_Join buff) (option_disj_uSA buff (identity_uSA)).
+
+Instance disk_cl_J: Join disk := @DownwardsClosure_J disk disk_R disk_raw_J.
+
+Instance disk_cl_SA: SeparationAlgebra disk :=
+  @DownwardsClosure_SA disk disk_R disk_kiM disk_raw_J disk_raw_SA disk_raw_uSA.
+
+Instance disk_cl_uSA: UpwardsClosedSeparationAlgebra disk :=
+  @DownwardsClosure_UpwardsClosed disk disk_R disk_raw_J disk_raw_uSA.
+
+Instance disk_cl_dSA: DownwardsClosedSeparationAlgebra disk :=
+  @DownwardsClosure_DownwardsClosed disk disk_R disk_kiM disk_raw_J.
 
 End SL.
 
