@@ -62,11 +62,9 @@ Definition disk_raw_uSA: @UpwardsClosedSeparationAlgebra disk disk_R disk_raw_J 
   @fun_uSA adr (option buff) (option_disj_R buff) (option_disj_kiM buff)
     (option_Join buff) (option_disj_uSA buff (identity_uSA)).
 
-(*
-Definition disk_raw_USA: @UnitalSeparationAlgebra disk disk_R disk_raw_J :=
-  @fun_unitSA adr (option buff) (option_disj_R buff) (option_disj_kiM buff)
-    (option_Join buff) (option_uitSA buff (identity_unitSA)).
-*)
+Definition disk_raw_USA': @UnitalSeparationAlgebra' disk disk_R disk_raw_J :=
+  @fun_unitSA' adr (option buff) (option_disj_R buff) (option_disj_kiM buff)
+    (option_Join buff) (option_disj_USA' buff).
 
 Instance disk_cl_J: Join disk := @DownwardsClosure_J disk disk_R disk_raw_J.
 
@@ -79,6 +77,9 @@ Instance disk_cl_uSA: UpwardsClosedSeparationAlgebra disk :=
 Instance disk_cl_dSA: DownwardsClosedSeparationAlgebra disk :=
   @DownwardsClosure_DownwardsClosed disk disk_R disk_kiM disk_raw_J.
 
+Instance disk_cl_USA: UnitalSeparationAlgebra disk :=
+  @DownwardsClosure_USA disk disk_R disk_kiM disk_raw_J disk_raw_USA'.
+
 Instance L : Language := MonoPred_L disk.
 Instance nL : NormalLanguage L := MonoPred_nL disk.
 Instance pL : PropositionalLanguage L := MonoPred_pL disk.
@@ -89,9 +90,7 @@ Instance nG : NormalProofTheory L G := MonoPred_nGamma disk.
 Instance mpG : MinimunPropositionalLogic L G := MonoPred_mpGamma disk.
 Instance ipG : IntuitionisticPropositionalLogic L G := MonoPred_ipGamma disk.
 Instance sG : SeparationLogic L G := MonoPred_sGamma disk.
-(*
 Instance EmpsG : EmpSeparationLogic L G := MonoPred_EmpsGamma disk.
-*)
 
 End SL.
 
