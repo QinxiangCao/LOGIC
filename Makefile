@@ -150,7 +150,7 @@ Extentions_ProofTheory_FILES = \
   Stable.v ModalSeparation.v Corable.v CoreTransit.v
 
 Extentions_Semantics_FILES = \
-  SemanticStable.v
+  SemanticStable.v ModalSeparation.v
 
 Extentions_Sound_FILES = \
   StableSound.v
@@ -179,6 +179,7 @@ FILES = \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extentions_FILES:%.v=Extensions/%.v) \
+  IRIS/Sound.v \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v)
 
 $(FILES:%.v=%.vo): %.vo: %.v
