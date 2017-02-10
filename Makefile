@@ -8,7 +8,8 @@ COQDEP=$(COQBIN)coqdep
 
 DIRS = \
   lib GeneralLogic MinimunLogic PropositionalLogic ModalLogic SeparationLogic \
-  QuantifierLogic Extensions HoareLogic
+  QuantifierLogic Extensions HoareLogic \
+  IRIS
 
 INCLUDE_DEMO = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
 COQ_FLAG = $(INCLUDE_DEMO)
@@ -179,7 +180,7 @@ FILES = \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extentions_FILES:%.v=Extensions/%.v) \
-  IRIS/Sound.v \
+  IRIS/Sound.v IRIS/SeparationLogic.v \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v)
 
 $(FILES:%.v=%.vo): %.vo: %.v
