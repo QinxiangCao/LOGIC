@@ -1,7 +1,10 @@
 Require Import Coq.Sets.Ensembles.
 Require Import Coq.Logic.Classical_Prop.
-Require Import Coq.Classes.RelationClasses.
-Require Import Coq.Relations.Relation_Definitions.
+Require Export Coq.Classes.RelationClasses.
+Require Import Coq.Relations.Relations.
+Require Export Coq.Classes.Morphisms.
+Require Export Logic.lib.Relation_ext.
+Require Export Logic.lib.RelationPairs_ext.
 
 Module KI.
 
@@ -11,9 +14,6 @@ Class Relation (worlds: Type): Type :=
 End KI.
 
 Export KI.
-
-Class KripkeIntuitionisticModel (worlds: Type) {R: Relation worlds}: Type :=
-  Krelation_Preorder :> PreOrder Krelation.
 
 Module KripkeModelNotation_Intuitionistic.
 
@@ -44,4 +44,10 @@ Class NoBranchKripkeIntuitionisticModel (worlds: Type) {R: Relation worlds} : Pr
 Class BranchJoinKripkeIntuitionisticModel (worlds: Type) {R: Relation worlds} : Prop := {
   Korder_branch_join: forall m1 m2 n: worlds, n <= m1 -> n <= m2 -> exists m, m1 <= m /\ m2 <= m
 }.
+
+Instance eq_ikiM {worlds: Type}: @IdentityKripkeIntuitionisticModel worlds eq.
+Proof.
+  constructor.
+  intros; auto.
+Qed.
 

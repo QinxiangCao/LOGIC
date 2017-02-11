@@ -26,24 +26,6 @@ Definition stable {worlds: Type} {R: Relation worlds} (X: Ensemble worlds): Prop
 
 End Semantics.
 
-Class KripkeIntuitionisticBisStable (worlds: Type) {R1: KI.Relation worlds} {R2: Relation worlds}: Type := {
-  KI_bis_stable:
-    forall m n, R2 m n ->
-      (forall m', m <= m' -> exists n', n <= n' /\ R2 m' n') /\
-       (forall n', n <= n' -> exists m', m <= m' /\ R2 m' n')
-}.
-
-Class KripkeModalBisStable (worlds: Type) {R1: KM.Relation worlds} {R2: Relation worlds}: Type := {
-  KM_bis_stable:
-    forall m n, R2 m n ->
-      (forall m', KM.Krelation m m' -> exists n', KM.Krelation n n' /\ R2 m' n') /\
-       (forall n', KM.Krelation n n' -> exists m', KM.Krelation m m' /\ R2 m' n')
-}.
-
-Class KripkeModalAbsorbStable (worlds: Type) {R1: KM.Relation worlds} {R2: Relation worlds}: Type := {
-  KM_absorb_stable: forall m n, R1 m n -> R2 m n
-}.
-
 Class SeparationAlgebraBisStable (worlds: Type) {J: Join worlds} {R: Relation worlds}: Type := {
   split_bis_stable:
     forall m n, R m n ->
@@ -66,7 +48,7 @@ Class StrongSeparationAlgebraAbsorbStable (worlds: Type) {J: Join worlds} {R: Re
     forall m m1 m2, join m1 m2 m -> R m1 m /\ R m2 m
 }.
 
-Lemma DownwardsClosure_SAAbsorbStable (worlds: Type) {R1: KI.Relation worlds} {J: Join worlds} {R2: Relation worlds} {kiM: KripkeIntuitionisticModel worlds} {SA_abs': StrongSeparationAlgebraAbsorbStable worlds}: @SeparationAlgebraAbsorbStable worlds R1 DownwardsClosure_J R2.
+Lemma DownwardsClosure_SAAbsorbStable (worlds: Type) {R1: KI.Relation worlds} {po_R: PreOrder KI.Krelation} {J: Join worlds} {R2: Relation worlds} {SA_abs': StrongSeparationAlgebraAbsorbStable worlds}: @SeparationAlgebraAbsorbStable worlds R1 DownwardsClosure_J R2.
 Proof.
   constructor.
   intros.
