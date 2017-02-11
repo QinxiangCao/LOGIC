@@ -9,6 +9,8 @@ Require Import Logic.GeneralLogic.KripkeModel.
 Require Import Logic.ModalLogic.Model.KripkeModel.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.Model.OrderedSA.
+Require Import Logic.SeparationLogic.Model.OSAGenerators.
+Require Import Logic.SeparationLogic.Model.OSAExamples.
 Require Import Logic.MinimunLogic.Syntax.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.ModalLogic.Syntax.
@@ -35,6 +37,53 @@ Class CoreJoin (worlds: Type) {R: KI.Relation worlds} {J: Join worlds} := {
   core_core: forall n, core (core n) = core n;
   core_join_self: forall n, join (core n) (core n) (core n)
 }.
+
+Definition eq_id_CJ (A: Type) {R: KI.Relation A} {po_R: PreOrder KI.Krelation}: @CoreJoin A eq equiv_Join.
+Proof.
+  apply (Build_CoreJoin _ _ _ id).
+  + intros.
+    split.
+    - exists n.
+      split; [constructor; auto | reflexivity].
+    - hnf; intros.
+      inversion H; subst.
+      reflexivity.
+  + intros; auto.
+  + intros; constructor; auto.
+Defined.
+
+Definition geR_min_CJ: @CoreJoin nat nat_geR min_Join.
+Proof.
+  pose proof po_nat_geR.
+  apply (Build_CoreJoin _ _ _ id).
+  + intros.
+    split.
+    - exists n.
+      split; [constructor; auto | reflexivity].
+    - hnf; intros.
+      inversion H0; subst.
+      auto.
+  + intros; auto.
+  + intros; constructor; auto.
+Defined.
+   
+Instance prod_CJ (A B: Type) {RA: KI.Relation A} {RB: KI.Relation B} {JA: Join A} {JB: Join B} {CJA: CoreJoin A} {CJB: CoreJoin B}: @CoreJoin _ (@RelProd _ _ (@Krelation _ RA) (@Krelation _ RB)) (@prod_Join _ _ JA JB).
+Proof.
+  apply (Build_CoreJoin _ _ _ (fun ab => (core (fst ab), core (snd ab)))).
+  + intros.
+    destruct (@core_incr_res _ _ _ CJA (fst n)).
+    destruct (@core_incr_res _ _ _ CJB (snd n)).
+    split.
+    - destruct H as [m1 [? ?]].
+      destruct H1 as [m2 [? ?]].
+      exists (m1, m2).
+      split; split; auto.
+    - apply prod_incr; auto.
+  + intros; simpl.
+    rewrite !core_core.
+    reflexivity.
+  + intros; split; auto; apply core_join_self.
+Defined.
 
 Section IrisModel.
 
