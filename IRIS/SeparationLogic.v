@@ -1,4 +1,5 @@
 Require Import Logic.lib.List_Func_ext.
+Require Import Logic.lib.Bisimulation.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.MinimunLogic.Syntax.
 Require Import Logic.PropositionalLogic.Syntax.
@@ -12,6 +13,8 @@ Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.Extensions.ProofTheory.Corable.
 Require Import Logic.Extensions.ProofTheory.CoreTransit.
 Require Import Logic.GeneralLogic.KripkeModel.
+Require Import Logic.ModalLogic.Model.KripkeModel.
+Require Import Logic.ModalLogic.Model.OrderedKripkeModel.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.Model.OrderedSA.
 Require Import Logic.SeparationLogic.Model.OSAGenerators.
@@ -20,7 +23,11 @@ Require Import Logic.SeparationLogic.Model.DownwardsClosure.
 Require Logic.SeparationLogic.Semantics.WeakSemanticsMono.
 Require Import Logic.GeneralLogic.ShallowEmbedded.MonoPredicateAsLang.
 Require Import Logic.PropositionalLogic.ShallowEmbedded.MonoPredicatePropositionalLogic.
+Require Import Logic.ModalLogic.ShallowEmbedded.MonoPredicateModalLogic.
 Require Import Logic.SeparationLogic.ShallowEmbedded.MonoPredicateSeparationLogic.
+Require Import Logic.Extensions.ShallowEmbedded.MonoPredicateStable.
+
+Require Import Logic.Extensions.Semantics.SemanticStable.
 Require Import Logic.IRIS.Sound.
 
 Module SL.
@@ -30,26 +37,33 @@ Section SL.
 Context (worlds: Type)
         {J: Join worlds}
         {SA: SeparationAlgebra worlds}
-        {CJ: @CoreJoin worlds identity_R J}.
+        {CJ: @CoreJoin worlds eq J}.
 
 Definition SIW: Type := nat * worlds. (* step indexed worlds *)
 
-Instance SIW_R: Relation SIW := @prod_R _ worlds nat_geR identity_R.
+Instance SIW_R: KI.Relation SIW := @RelProd _ worlds nat_geR eq.
 
-Instance SIW_kiM: KripkeIntuitionisticModel SIW := @prod_kiM _ _ _ _ nat_ge_kiM identity_kiM.
+Instance po_SIW_R: PreOrder (@KI.Krelation _ SIW_R) := @RelProd_Preorder _ _ _ _ po_nat_geR (eq_preorder _).
 
 Instance SIW_J: Join SIW := @prod_Join nat _ min_Join J.
 
 Instance SIW_SA: SeparationAlgebra SIW := @prod_SA _ _ _ _ minAlg SA.
 
 Instance SIW_uSA: UpwardsClosedSeparationAlgebra SIW :=
-  @prod_uSA _ _ _ _ nat_ge_kiM identity_kiM _ _ minAlg_uSA (@ikiM_uSA worlds identity_R identity_kiM (identity_ikiM _) J).
+  @prod_uSA _ _ _ _ po_nat_geR (eq_preorder _) _ _ minAlg_uSA (@ikiM_uSA worlds eq (eq_preorder _) eq_ikiM J).
 
 Instance SIW_dSA: DownwardsClosedSeparationAlgebra SIW :=
-  @prod_dSA _ _ _ _ nat_ge_kiM identity_kiM _ _ minAlg_dSA (@ikiM_dSA worlds identity_R identity_kiM (identity_ikiM _) J).
+  @prod_dSA _ _ _ _ po_nat_geR (eq_preorder _) _ _ minAlg_dSA (@ikiM_dSA worlds eq (eq_preorder _) eq_ikiM J).
 
 Instance SIW_USA: UnitalSeparationAlgebra SIW :=
-  @prod_unitalSA _ _ _ _ nat_ge_kiM identity_kiM _ _ minAlg_unital (USA worlds).
+  @prod_unitalSA _ _ _ _ po_nat_geR (eq_preorder _) _ _ minAlg_unital (USA worlds).
+
+Instance SIW_Cor: SS.Relation SIW := @RelProd _ worlds eq full_relation.
+
+Instance SIW_Ctr: KM.Relation SIW := @RelProd _ worlds eq (fun m => eq (@core _ _ _ CJ m)).
+
+Instance SIW_R_bis: Bisimulation (@SS.Krelation _ SIW_Cor) (@KI.Krelation _ SIW_R) :=
+  @RelProd_Bisimulation _ _ _ _ _ _ (eq_bis _) (@full_bis _ _ (@Functional_Serial _ _ (function_Functional ))).
 
 Instance L : Language := MonoPred_L SIW.
 Instance nL : NormalLanguage L := MonoPred_nL SIW.
@@ -69,9 +83,13 @@ Instance mpG : MinimunPropositionalLogic L G := MonoPred_mpGamma SIW.
 Instance ipG : IntuitionisticPropositionalLogic L G := MonoPred_ipGamma SIW.
 Instance sG : SeparationLogic L G := MonoPred_sGamma SIW.
 Instance EmpsG : EmpSeparationLogic L G := MonoPred_EmpsGamma SIW.
-(*
+
 Instance CorsG: Corable L G.
-*)
+  refine (Build_Corable _ _ _ _ _ _ _ _ _ (MonoPred_stable SIW) (MonoPred_pstable SIW) (MonoPred_sstable SIW) _).
+  + exact SIW_R_bis.
+  + 
+Abort.
+
 End SL.
 
 End SL.

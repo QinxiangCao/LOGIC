@@ -54,7 +54,7 @@ Qed.
 
 Instance Ctr_R: KM.Relation worlds := fun n m => m = core n.
 
-Instance Ctr_Pf_kmM: KripkeModalModel_PFunctional worlds.
+Instance pf_Ctr_R: PartialFunctional (@KM.Krelation _ Ctr_R).
 Proof.
   hnf.
   intros.
@@ -64,7 +64,7 @@ Qed.
 
 End IrisModel.
 
-Existing Instances USA Ctr_R Ctr_Pf_kmM ct_mL.
+Existing Instances USA Ctr_R pf_Ctr_R ct_mL.
 
 Section IrisSemantics.    
 
