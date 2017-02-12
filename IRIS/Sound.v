@@ -7,6 +7,7 @@ Require Import Logic.lib.Ensembles_ext.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.KripkeModel.
 Require Import Logic.ModalLogic.Model.KripkeModel.
+Require Import Logic.ModalLogic.Model.OrderedKripkeModel.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.Model.OrderedSA.
 Require Import Logic.SeparationLogic.Model.OSAGenerators.
@@ -32,6 +33,10 @@ Import KripkeModelFamilyNotation.
 Import KripkeModelNotation_Intuitionistic.
 
 Class Core (worlds: Type): Type := core: worlds -> worlds.
+
+Class UniqueCore (worlds: Type) {C: Core worlds} := {
+  unique_core: forall n m, core n = core m
+}.
 
 Class CoreJoin (worlds: Type) {R: KI.Relation worlds} {J: Join worlds} {C: Core worlds} := {
   core_incr_res: forall n, residue n (core n) /\ increasing (core n);
@@ -90,14 +95,18 @@ Proof.
   + intros; split; auto; apply core_join_self.
 Qed.
 
+Module IrisModel.
 Section IrisModel.
 
 Context (worlds: Type)
         {R: KI.Relation worlds}
         {J: Join worlds}
         {C: Core worlds}
+        {po_R: PreOrder (@KI.Krelation _ R)}
         {SA: SeparationAlgebra worlds}
-        {CJ: CoreJoin worlds}.
+        {dSA: DownwardsClosedSeparationAlgebra worlds}
+        {CJ: CoreJoin worlds}
+        {UC: UniqueCore worlds}.
 
 Instance USA: UnitalSeparationAlgebra worlds.
 Proof.
@@ -107,9 +116,9 @@ Proof.
   apply core_incr_res.
 Qed.
 
-Instance Ctr_R: KM.Relation worlds := fun n => eq (core n).
+Instance Ctr: KM.Relation worlds := fun n => eq (core n).
 
-Instance pf_Ctr_R: PartialFunctional (@KM.Krelation _ Ctr_R).
+Instance pf_Ctr: PartialFunctional (@KM.Krelation _ Ctr).
 Proof.
   hnf.
   intros.
@@ -117,9 +126,41 @@ Proof.
   congruence.
 Qed.
 
+Instance ukmM: UpwardsClosedOrderedKripkeModel worlds.
+Proof.
+  constructor.
+  intros.
+  exists n'.
+  split; [reflexivity |].
+  hnf in H0 |- *.
+  subst n'.
+  apply unique_core.
+Qed.
+
+Instance SAbis: @SeparationAlgebraBisStable worlds J full_relation.
+Proof.
+  apply (@full_SAbis _ R po_R _ SA dSA).
+  apply unital_is_residual, USA.
+Qed.
+
+Instance SAabs: @SeparationAlgebraAbsorbStable worlds R J full_relation.
+Proof.
+  apply full_SAabs, po_R.
+Qed.
+(*
+SearchAbout ModalBisJoin.
+Instance Ctr_bis_J: ModalBisJoin worlds.
+Proof.
+  constructor.
+  intros.
+  hnf in H; subst.
+  split; intros.
+  + 
+*)
+End IrisModel.
 End IrisModel.
 
-Existing Instances USA Ctr_R pf_Ctr_R ct_mL.
+Existing Instances IrisModel.USA IrisModel.Ctr IrisModel.pf_Ctr ct_mL.
 
 Section IrisSemantics.    
 

@@ -40,14 +40,19 @@ Module SL.
 Section SL.
 
 Context (worlds: Type)
+        {R: KI.Relation worlds}
         {J: Join worlds}
         {C: Core worlds}
+        {po_R: PreOrder (@KI.Krelation _ R)}
         {SA: SeparationAlgebra worlds}
-        {CJ: @CoreJoin worlds eq J C}.
+        {uSA: UpwardsClosedSeparationAlgebra worlds}
+        {dSA: DownwardsClosedSeparationAlgebra worlds}
+        {CJ: CoreJoin worlds}
+        {UC: UniqueCore worlds}.
 
 Definition SIW: Type := nat * worlds. (* step indexed worlds *)
 
-Instance SIW_R: KI.Relation SIW := @RelProd _ worlds nat_geR eq.
+Instance SIW_R: KI.Relation SIW := @RelProd _ worlds nat_geR R.
 
 Instance SIW_J: Join SIW := @prod_Join nat _ min_Join J.
 
@@ -55,34 +60,47 @@ Instance SIW_Cor: SS.Relation SIW := @RelProd _ worlds eq full_relation.
 
 Instance SIW_C: Core SIW := @prod_C nat _ id C.
 
-Instance po_SIW_R: PreOrder (@KI.Krelation _ SIW_R) := @RelProd_Preorder _ _ _ _ po_nat_geR (eq_preorder _).
+Instance po_SIW_R: PreOrder (@KI.Krelation _ SIW_R) := @RelProd_Preorder _ _ _ _ po_nat_geR po_R.
 
 Instance SIW_SA: SeparationAlgebra SIW := @prod_SA _ _ _ _ minAlg SA.
 
 Instance SIW_uSA: UpwardsClosedSeparationAlgebra SIW :=
-  @prod_uSA _ _ _ _ _ _ minAlg_uSA (@ikiM_uSA worlds eq (eq_preorder _) eq_ikiM J).
+  @prod_uSA _ _ _ _ _ _ minAlg_uSA uSA.
 
 Instance SIW_dSA: DownwardsClosedSeparationAlgebra SIW :=
-  @prod_dSA _ _ _ _ _ _ minAlg_dSA (@ikiM_dSA worlds eq (eq_preorder _) eq_ikiM J).
+  @prod_dSA _ _ _ _ _ _ minAlg_dSA dSA.
 
 Instance SIW_USA: UnitalSeparationAlgebra SIW :=
-  @prod_unitalSA _ _ _ _ _ _ minAlg_unital (USA worlds).
+  @prod_unitalSA _ _ _ _ _ _ minAlg_unital (IrisModel.USA worlds).
 
 Instance SIW_R_bis: Bisimulation (@SS.Krelation _ SIW_Cor) (@KI.Krelation _ SIW_R) :=
-  @RelProd_Bisimulation _ _ _ _ _ _ (eq_bis _) (@full_bis _ _ (@Functional_Serial _ _ (function_Functional ))).
+  @RelProd_Bisimulation _ _ _ _ _ _ (eq_bis _) (@full_bis _ _ (fun n => ex_intro _ n (@reflexivity _ _ PreOrder_Reflexive n))).
 
 Instance SIW_CJ: CoreJoin SIW :=
   @prod_CJ _ _ _ _ _ _ _ _ geR_id_CJ CJ.
 
 Instance SIW_Ctr: KM.Relation SIW :=
-  @RelProd _ _ (@Sound.Ctr_R _ id) (@Sound.Ctr_R _ C).
+  @RelProd _ _ (@IrisModel.Ctr _ id) (@IrisModel.Ctr _ C).
 
 Instance SIW_ukmM: UpwardsClosedOrderedKripkeModel SIW :=
-  @prod_ukmM _ _ _ _ _ _ (eq2_ukmM _) (eq1_ukmM _).
+  @prod_ukmM _ _ _ _ _ _ (eq2_ukmM _) (IrisModel.ukmM worlds).
 
 Instance pf_SIW_Ctr: @PartialFunctional SIW (@KM.Krelation SIW SIW_Ctr) :=
   @RelProd_PartialFunctional _ _ _ _ (@Functional_PartialFunctional _ _ (@function_Functional _ id)) (@Functional_PartialFunctional _ _ (function_Functional)).
 
+Instance SIW_SAbis: SeparationAlgebraBisStable SIW :=
+  @prod_SAbis _ _ _ _ _ _ (eq_SAbis nat) (IrisModel.SAbis worlds).
+
+Instance SIW_SAabs: SeparationAlgebraAbsorbStable SIW :=
+  @prod_SAabs _ _ _ _ _ _ _ _ geR_min_eq_SAabs (IrisModel.SAabs worlds).
+
+(*
+Instance SIW_Ctr_bis_J: ModalBisJoin SIW.
+  apply prod_KM_bis_J.
+  + apply eq_bis_J.
+  + constructor.
+SearchAbout ModalBisJoin.
+*)
 Instance L : Language := MonoPred_L SIW.
 Instance nL : NormalLanguage L := MonoPred_nL SIW.
 Instance pL : PropositionalLanguage L := MonoPred_pL SIW.
@@ -101,19 +119,14 @@ Instance EmpsG : EmpSeparationLogic L G := MonoPred_EmpsGamma SIW.
 
 Instance _KmG : SystemK L G := MonoPred_KmGamma SIW.
 
-Instance CorsG: Corable L G.
-  refine (Build_Corable _ _ _ _ _ _ _ _ _ (MonoPred_stable SIW) (MonoPred_pstable SIW) (MonoPred_sstable SIW) (MonoPred_SAS SIW)).
-  + exact SIW_R_bis.
-  + admit. (* SeparationAlgebraBisStable *)
-  + admit. (* SeparationAlgebraAbsorbStable *)
-Admitted.
-
+Instance CorsG: Corable L G :=
+  Build_Corable _ _ _ _ _ _ _ _ _ (MonoPred_stable SIW) (MonoPred_pstable SIW) (MonoPred_sstable SIW) (MonoPred_SAS SIW).
 Instance CtrsG: CoreTransitSeparationLogic L G.
   apply (Build_CoreTransitSeparationLogic L _ _ _ _ _ _ _ ipG sG CorsG _KmG (MonoPred_pmGamma SIW)).
   + constructor.
     intros x y.
 (*
-    exact (@sound_sepcon_boxp L nL pL _ _ (Build_Model SIW) (unit_kMD _) tt SIW_R SIW_J SIW_CJ _ (MonoPred_SM SIW) _ _ _ x y).
+    exact (@sound_sepcon_boxp L nL pL _ _ (Build_Model SIW) (unit_kMD _) tt SIW_R SIW_J SIW_C SIW_CJ _ (MonoPred_SM SIW) _ _ _ x y).
 *)
 Abort.
 
