@@ -94,13 +94,9 @@ Instance SIW_SAbis: SeparationAlgebraBisStable SIW :=
 Instance SIW_SAabs: SeparationAlgebraAbsorbStable SIW :=
   @prod_SAabs _ _ _ _ _ _ _ _ geR_min_eq_SAabs (IrisModel.SAabs worlds).
 
-(*
-Instance SIW_Ctr_bis_J: ModalBisJoin SIW.
-  apply prod_KM_bis_J.
-  + apply eq_bis_J.
-  + constructor.
-SearchAbout ModalBisJoin.
-*)
+Instance SIW_Ctr_bis_J: ModalBisJoin SIW :=
+  @prod_KM_bis_J _ _ _ _ _ _ (eq_bis_J _ _) (IrisModel.Ctr_bis_J worlds).
+
 Instance L : Language := MonoPred_L SIW.
 Instance nL : NormalLanguage L := MonoPred_nL SIW.
 Instance pL : PropositionalLanguage L := MonoPred_pL SIW.
@@ -126,7 +122,7 @@ Instance CtrsG: CoreTransitSeparationLogic L G.
   + constructor.
     intros x y.
 (*
-    exact (@sound_sepcon_boxp L nL pL _ _ (Build_Model SIW) (unit_kMD _) tt SIW_R SIW_J SIW_C SIW_CJ _ (MonoPred_SM SIW) _ _ _ x y).
+    exact (@Sound.sound_sepcon_boxp L nL pL _ _ (Build_Model SIW) (unit_kMD _) tt SIW_R SIW_J SIW_C SIW_Ctr_bis_J SIW_CJ _ (MonoPred_SM SIW) _ _ _ x y).
 *)
 Abort.
 

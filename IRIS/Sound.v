@@ -34,8 +34,9 @@ Import KripkeModelNotation_Intuitionistic.
 
 Class Core (worlds: Type): Type := core: worlds -> worlds.
 
-Class UniqueCore (worlds: Type) {C: Core worlds} := {
-  unique_core: forall n m, core n = core m
+Class UniqueCore (worlds: Type) {J: Join worlds} {C: Core worlds} := {
+  unique_core: forall n m, core n = core m;
+  core_no_split: forall n n1 n2, join n1 n2 (core n) -> n1 = core n /\ n2 = core n
 }.
 
 Class CoreJoin (worlds: Type) {R: KI.Relation worlds} {J: Join worlds} {C: Core worlds} := {
@@ -147,16 +148,22 @@ Instance SAabs: @SeparationAlgebraAbsorbStable worlds R J full_relation.
 Proof.
   apply full_SAabs, po_R.
 Qed.
-(*
-SearchAbout ModalBisJoin.
+
 Instance Ctr_bis_J: ModalBisJoin worlds.
 Proof.
   constructor.
   intros.
   hnf in H; subst.
   split; intros.
-  + 
-*)
+  + apply core_no_split in H.
+    destruct H; subst.
+    destruct (incr_exists m) as [e [[n [? _]] _]].
+    exists e, n.
+    split; [| split]; auto; apply unique_core.
+  + exists (core m), (core m).
+    split; [| split]; [apply core_join_self | apply unique_core | apply unique_core].
+Qed.
+
 End IrisModel.
 End IrisModel.
 
@@ -213,6 +220,28 @@ Proof.
   destruct H2 as [m1 [m2 [? [? ?]]]].
   rewrite sat_sepcon; exists m1, m2.
   hnf in H3, H4; subst.
+  auto.
+Qed.
+
+Lemma sound_boxp_sepcon:
+  forall x y: expr,
+    forall m: Kworlds M, KRIPKE: M, m |= core_tr (x * y) --> core_tr x * core_tr y.
+Proof.
+  intros.
+  rewrite !sat_impp.
+  intros.
+  clear m H.
+  rewrite sat_sepcon.
+  rewrite sat_core_tr in H0.
+  rewrite sat_sepcon in H0.
+  destruct H0 as [c1 [c2 [? [? ?]]]].
+  pose proof KM_join_bis n _ eq_refl.
+  destruct H2 as [? _].
+  specialize (H2 _ _ H).
+  destruct H2 as [n1 [n2 [? [? ?]]]].
+  exists n1, n2.
+  hnf in H3, H4; subst c1 c2.
+  rewrite !sat_core_tr.
   auto.
 Qed.
 
