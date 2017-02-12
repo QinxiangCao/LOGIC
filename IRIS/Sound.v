@@ -31,16 +31,17 @@ Import SeparationLogicNotation.
 Import KripkeModelFamilyNotation.
 Import KripkeModelNotation_Intuitionistic.
 
-Class CoreJoin (worlds: Type) {R: KI.Relation worlds} {J: Join worlds} := {
-  core: worlds -> worlds;
+Class Core (worlds: Type): Type := core: worlds -> worlds.
+
+Class CoreJoin (worlds: Type) {R: KI.Relation worlds} {J: Join worlds} {C: Core worlds} := {
   core_incr_res: forall n, residue n (core n) /\ increasing (core n);
   core_core: forall n, core (core n) = core n;
   core_join_self: forall n, join (core n) (core n) (core n)
 }.
 
-Definition eq_id_CJ (A: Type) {R: KI.Relation A} {po_R: PreOrder KI.Krelation}: @CoreJoin A eq equiv_Join.
+Lemma eq_id_CJ (A: Type) {R: KI.Relation A} {po_R: PreOrder KI.Krelation}: @CoreJoin A eq equiv_Join id.
 Proof.
-  apply (Build_CoreJoin _ _ _ id).
+  constructor.
   + intros.
     split.
     - exists n.
@@ -50,12 +51,12 @@ Proof.
       reflexivity.
   + intros; auto.
   + intros; constructor; auto.
-Defined.
+Qed.
 
-Definition geR_min_CJ: @CoreJoin nat nat_geR min_Join.
+Lemma geR_id_CJ: @CoreJoin nat nat_geR min_Join id.
 Proof.
   pose proof po_nat_geR.
-  apply (Build_CoreJoin _ _ _ id).
+  constructor.
   + intros.
     split.
     - exists n.
@@ -65,31 +66,36 @@ Proof.
       auto.
   + intros; auto.
   + intros; constructor; auto.
-Defined.
+Qed.
+
+Instance prod_C {A B: Type} (CA: Core A) (CB: Core B): Core (A * B) := fun ab => (core (fst ab), core (snd ab)).
    
-Instance prod_CJ (A B: Type) {RA: KI.Relation A} {RB: KI.Relation B} {JA: Join A} {JB: Join B} {CJA: CoreJoin A} {CJB: CoreJoin B}: @CoreJoin _ (@RelProd _ _ (@Krelation _ RA) (@Krelation _ RB)) (@prod_Join _ _ JA JB).
+Instance prod_CJ (A B: Type) {RA: KI.Relation A} {RB: KI.Relation B} {JA: Join A} {JB: Join B} {CA: Core A} {CB: Core B} {CJA: CoreJoin A} {CJB: CoreJoin B}: @CoreJoin _ (@RelProd _ _ (@Krelation _ RA) (@Krelation _ RB)) (@prod_Join _ _ JA JB) (prod_C CA CB).
 Proof.
-  apply (Build_CoreJoin _ _ _ (fun ab => (core (fst ab), core (snd ab)))).
+  constructor.
   + intros.
-    destruct (@core_incr_res _ _ _ CJA (fst n)).
-    destruct (@core_incr_res _ _ _ CJB (snd n)).
+    destruct (@core_incr_res _ _ _ _ CJA (fst n)).
+    destruct (@core_incr_res _ _ _ _ CJB (snd n)).
     split.
     - destruct H as [m1 [? ?]].
       destruct H1 as [m2 [? ?]].
       exists (m1, m2).
       split; split; auto.
     - apply prod_incr; auto.
-  + intros; simpl.
+  + intros.
+    change (@core _ (prod_C _ _)) with (fun ab: A* B => (core (fst ab), core (snd ab))).
+    simpl.
     rewrite !core_core.
     reflexivity.
   + intros; split; auto; apply core_join_self.
-Defined.
+Qed.
 
 Section IrisModel.
 
 Context (worlds: Type)
         {R: KI.Relation worlds}
         {J: Join worlds}
+        {C: Core worlds}
         {SA: SeparationAlgebra worlds}
         {CJ: CoreJoin worlds}.
 
@@ -101,7 +107,7 @@ Proof.
   apply core_incr_res.
 Qed.
 
-Instance Ctr_R: KM.Relation worlds := fun n m => m = core n.
+Instance Ctr_R: KM.Relation worlds := fun n => eq (core n).
 
 Instance pf_Ctr_R: PartialFunctional (@KM.Krelation _ Ctr_R).
 Proof.
@@ -128,6 +134,7 @@ Context {MD: Model}
         {M: Kmodel}
         {R: KI.Relation (Kworlds M)}
         {J: Join (Kworlds M)}
+        {C: Core (Kworlds M)}
         {CJ: CoreJoin (Kworlds M)}
         {Ctr_bis_J: ModalBisJoin (Kworlds M)}.
 

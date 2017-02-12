@@ -25,6 +25,7 @@ Require Import Logic.SeparationLogic.Model.OSAGenerators.
 Require Import Logic.SeparationLogic.Model.OSAExamples.
 Require Import Logic.SeparationLogic.Model.DownwardsClosure.
 Require Logic.SeparationLogic.Semantics.WeakSemanticsMono.
+Require Import Logic.Extensions.Semantics.ModalSeparation.
 Require Import Logic.GeneralLogic.ShallowEmbedded.MonoPredicateAsLang.
 Require Import Logic.PropositionalLogic.ShallowEmbedded.MonoPredicatePropositionalLogic.
 Require Import Logic.ModalLogic.ShallowEmbedded.MonoPredicateModalLogic.
@@ -40,16 +41,21 @@ Section SL.
 
 Context (worlds: Type)
         {J: Join worlds}
+        {C: Core worlds}
         {SA: SeparationAlgebra worlds}
-        {CJ: @CoreJoin worlds eq J}.
+        {CJ: @CoreJoin worlds eq J C}.
 
 Definition SIW: Type := nat * worlds. (* step indexed worlds *)
 
 Instance SIW_R: KI.Relation SIW := @RelProd _ worlds nat_geR eq.
 
-Instance po_SIW_R: PreOrder (@KI.Krelation _ SIW_R) := @RelProd_Preorder _ _ _ _ po_nat_geR (eq_preorder _).
-
 Instance SIW_J: Join SIW := @prod_Join nat _ min_Join J.
+
+Instance SIW_Cor: SS.Relation SIW := @RelProd _ worlds eq full_relation.
+
+Instance SIW_C: Core SIW := @prod_C nat _ id C.
+
+Instance po_SIW_R: PreOrder (@KI.Krelation _ SIW_R) := @RelProd_Preorder _ _ _ _ po_nat_geR (eq_preorder _).
 
 Instance SIW_SA: SeparationAlgebra SIW := @prod_SA _ _ _ _ minAlg SA.
 
@@ -62,21 +68,20 @@ Instance SIW_dSA: DownwardsClosedSeparationAlgebra SIW :=
 Instance SIW_USA: UnitalSeparationAlgebra SIW :=
   @prod_unitalSA _ _ _ _ _ _ minAlg_unital (USA worlds).
 
-Instance SIW_Cor: SS.Relation SIW := @RelProd _ worlds eq full_relation.
-
-Instance SIW_Ctr: KM.Relation SIW := @RelProd _ worlds eq (fun m => eq (@core _ _ _ CJ m)).
-
 Instance SIW_R_bis: Bisimulation (@SS.Krelation _ SIW_Cor) (@KI.Krelation _ SIW_R) :=
   @RelProd_Bisimulation _ _ _ _ _ _ (eq_bis _) (@full_bis _ _ (@Functional_Serial _ _ (function_Functional ))).
+
+Instance SIW_CJ: CoreJoin SIW :=
+  @prod_CJ _ _ _ _ _ _ _ _ geR_id_CJ CJ.
+
+Instance SIW_Ctr: KM.Relation SIW :=
+  @RelProd _ _ (@Sound.Ctr_R _ id) (@Sound.Ctr_R _ C).
 
 Instance SIW_ukmM: UpwardsClosedOrderedKripkeModel SIW :=
   @prod_ukmM _ _ _ _ _ _ (eq2_ukmM _) (eq1_ukmM _).
 
 Instance pf_SIW_Ctr: @PartialFunctional SIW (@KM.Krelation SIW SIW_Ctr) :=
   @RelProd_PartialFunctional _ _ _ _ (@Functional_PartialFunctional _ _ (@function_Functional _ id)) (@Functional_PartialFunctional _ _ (function_Functional)).
-
-Instance SIW_CJ: @CoreJoin SIW SIW_R SIW_J :=
-  @prod_CJ _ _ _ _ _ _ geR_min_CJ CJ.
 
 Instance L : Language := MonoPred_L SIW.
 Instance nL : NormalLanguage L := MonoPred_nL SIW.
