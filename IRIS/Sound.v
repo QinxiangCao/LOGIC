@@ -45,6 +45,10 @@ Class CoreJoin (worlds: Type) {R: KI.Relation worlds} {J: Join worlds} {C: Core 
   core_join_self: forall n, join (core n) (core n) (core n)
 }.
 
+Class CoreModal (worlds: Type) {R: KM.Relation worlds} {C: Core worlds} := {
+  core_as_modality: forall m n, KM.Krelation m n <-> eq (core m) n
+}.
+
 Lemma eq_id_CJ (A: Type) {R: KI.Relation A} {po_R: PreOrder KI.Krelation}: @CoreJoin A eq equiv_Join id.
 Proof.
   constructor.
@@ -96,6 +100,26 @@ Proof.
   + intros; split; auto; apply core_join_self.
 Qed.
 
+Instance func_CM (A: Type) {C: Core A}: @CoreModal A (fun m => eq (core m)) C :=
+  ltac: (constructor; intros; reflexivity).
+  
+Instance prod_CM (A B: Type) {RA: KM.Relation A} {RB: KM.Relation B} {CA: Core A} {CB: Core B} {CMA: CoreModal A} {CMB: CoreModal B}: @CoreModal _ (@RelProd _ _ (@KM.Krelation _ RA) (@KM.Krelation _ RB)) (prod_C CA CB).
+Proof.
+  constructor.
+  intros [m1 m2] [n1 n2].
+  pose proof @core_as_modality _ _ _ CMA m1 n1.
+  pose proof @core_as_modality _ _ _ CMB m2 n2.
+  split.
+  + intros [? ?].
+    hnf in H, H0.
+    unfold core, prod_C; simpl.
+    f_equal; tauto.
+  + unfold core, prod_C; simpl.
+    intros.
+    inversion H1; subst.
+    split; tauto.
+Qed.
+
 Module IrisModel.
 Section IrisModel.
 
@@ -107,7 +131,8 @@ Context (worlds: Type)
         {SA: SeparationAlgebra worlds}
         {dSA: DownwardsClosedSeparationAlgebra worlds}
         {CJ: CoreJoin worlds}
-        {UC: UniqueCore worlds}.
+        {Ctr: KM.Relation worlds}
+        {CM: CoreModal worlds}.
 
 Instance USA: UnitalSeparationAlgebra worlds.
 Proof.
@@ -117,25 +142,12 @@ Proof.
   apply core_incr_res.
 Qed.
 
-Instance Ctr: KM.Relation worlds := fun n => eq (core n).
-
 Instance pf_Ctr: PartialFunctional (@KM.Krelation _ Ctr).
 Proof.
   hnf.
   intros.
-  hnf in H, H0.
+  rewrite core_as_modality in H, H0.
   congruence.
-Qed.
-
-Instance ukmM: UpwardsClosedOrderedKripkeModel worlds.
-Proof.
-  constructor.
-  intros.
-  exists n'.
-  split; [reflexivity |].
-  hnf in H0 |- *.
-  subst n'.
-  apply unique_core.
 Qed.
 
 Instance SAbis: @SeparationAlgebraBisStable worlds J full_relation.
@@ -149,25 +161,37 @@ Proof.
   apply full_SAabs, po_R.
 Qed.
 
-Instance Ctr_bis_J: ModalBisJoin worlds.
+Instance ukmM {UC: UniqueCore worlds}: UpwardsClosedOrderedKripkeModel worlds.
 Proof.
   constructor.
   intros.
-  hnf in H; subst.
+  exists n'.
+  split; [reflexivity |].
+  rewrite core_as_modality in H0 |- *.
+  subst n'.
+  apply unique_core.
+Qed.
+
+Instance Ctr_bis_J {UC: UniqueCore worlds}: ModalBisJoin worlds.
+Proof.
+  constructor.
+  change Ctr with KM.Krelation.
+  intros.
+  rewrite core_as_modality in H; subst.
   split; intros.
   + apply core_no_split in H.
     destruct H; subst.
     destruct (incr_exists m) as [e [[n [? _]] _]].
     exists e, n.
-    split; [| split]; auto; apply unique_core.
+    split; [| split]; auto; rewrite core_as_modality; apply unique_core.
   + exists (core m), (core m).
-    split; [| split]; [apply core_join_self | apply unique_core | apply unique_core].
+    split; [| split]; [apply core_join_self | |]; rewrite core_as_modality; apply unique_core.
 Qed.
 
 End IrisModel.
 End IrisModel.
 
-Existing Instances IrisModel.USA IrisModel.Ctr IrisModel.pf_Ctr ct_mL.
+Existing Instances IrisModel.USA IrisModel.pf_Ctr ct_mL.
 
 Section IrisSemantics.    
 
@@ -184,6 +208,8 @@ Context {MD: Model}
         {J: Join (Kworlds M)}
         {C: Core (Kworlds M)}
         {CJ: CoreJoin (Kworlds M)}
+        {Ctr: KM.Relation (Kworlds M)}
+        {CM: CoreModal (Kworlds M)}
         {Ctr_bis_J: ModalBisJoin (Kworlds M)}.
 
 Context {SM: Semantics L MD}
@@ -198,8 +224,8 @@ Proof.
   rewrite sat_boxp.
   split; intros.
   + apply H.
-    hnf; auto.
-  + hnf in H0.
+    rewrite core_as_modality; auto.
+  + rewrite core_as_modality in H0.
     subst; auto.
 Qed.
 
@@ -214,12 +240,12 @@ Proof.
   rewrite sat_sepcon in H0.
   destruct H0 as [n1 [n2 [? [? ?]]]].
   rewrite sat_core_tr in H0, H1 |- *.
-  pose proof KM_join_bis n _ eq_refl.
+  pose proof KM_join_bis n _ ltac:(apply core_as_modality; reflexivity).
   destruct H2 as [_ ?].
   specialize (H2 _ _ H).
   destruct H2 as [m1 [m2 [? [? ?]]]].
   rewrite sat_sepcon; exists m1, m2.
-  hnf in H3, H4; subst.
+  rewrite core_as_modality in H3, H4; subst.
   auto.
 Qed.
 
@@ -235,12 +261,12 @@ Proof.
   rewrite sat_core_tr in H0.
   rewrite sat_sepcon in H0.
   destruct H0 as [c1 [c2 [? [? ?]]]].
-  pose proof KM_join_bis n _ eq_refl.
+  pose proof KM_join_bis n _ ltac:(apply core_as_modality; reflexivity).
   destruct H2 as [? _].
   specialize (H2 _ _ H).
   destruct H2 as [n1 [n2 [? [? ?]]]].
   exists n1, n2.
-  hnf in H3, H4; subst c1 c2.
+  rewrite core_as_modality in H3, H4; subst c1 c2.
   rewrite !sat_core_tr.
   auto.
 Qed.
