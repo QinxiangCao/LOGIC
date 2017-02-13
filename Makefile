@@ -6,7 +6,10 @@ COQBIN=
 COQC=$(COQBIN)coqc
 COQDEP=$(COQBIN)coqdep
 
-DIRS = lib GeneralLogic MinimunLogic PropositionalLogic QuantifierLogic SeparationLogic HoareLogic
+DIRS = \
+  lib GeneralLogic MinimunLogic PropositionalLogic ModalLogic SeparationLogic \
+  QuantifierLogic Extensions HoareLogic
+
 INCLUDE_DEMO = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
 COQ_FLAG = $(INCLUDE_DEMO)
 DEP_DEMO = -R $(CURRENT_DIR) Logic
@@ -15,6 +18,8 @@ DEP_FLAG = $(DEP_DEMO)
 lib_FILES = \
   Coqlib.v Ensembles_ext.v Relation_ext.v Equivalence_ext.v List_Func_ext.v \
   Bijection.v Countable.v NatChoice.v StrongInduction.v \
+  Bisimulation.v RelationPairs_ext.v \
+  SublistT.v \
   Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v 
 
 GeneralLogic_ShallowEmbedded_FILES = \
@@ -33,7 +38,7 @@ MinimunLogic_FILES = \
   Syntax.v $(MinimunLogic_ProofTheory_FILES:%.v=ProofTheory/%.v)
 
 PropositionalLogic_ProofTheory_FILES = \
-  Intuitionistic.v WeakClassical.v \
+  Intuitionistic.v DeMorgan.v \
   GodelDummett.v Classical.v \
   RewriteClass.v
 
@@ -45,7 +50,7 @@ PropositionalLogic_Sound_FILES = \
 
 PropositionalLogic_DeepEmbedded_FILES = \
   PropositionalLanguage.v \
-  IntuitionisticLogic.v WeakClassicalLogic.v \
+  IntuitionisticLogic.v DeMorganLogic.v \
   GodelDummettLogic.v ClassicalLogic.v \
   KripkeSemantics.v TrivialSemantics.v \
   Soundness.v
@@ -67,8 +72,33 @@ PropositionalLogic_FILES = \
   $(PropositionalLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v) \
   $(PropositionalLogic_Complete_FILES:%.v=Complete/%.v)
 
-QuantifierLogic_ProofTheory = \
-  HighOrderLogic.v
+ModalLogic_ProofTheory_FILES = \
+  ModalLogic.v RewriteClass.v \
+  ClassicalDerivedRules.v IntuitionisticDerivedRules.v
+
+ModalLogic_Model_FILES = \
+  KripkeModel.v OrderedKripkeModel.v
+
+ModalLogic_Semantics_FILES = \
+  Kripke.v Flat.v
+
+ModalLogic_Sound_FILES = \
+  Sound_Kripke.v Sound_Flat.v
+
+ModalLogic_ShallowEmbedded_FILES = \
+  PredicateModalLogic.v \
+  MonoPredicateModalLogic.v
+
+ModalLogic_FILES = \
+  Syntax.v \
+  $(ModalLogic_ProofTheory_FILES:%.v=ProofTheory/%.v) \
+  $(ModalLogic_Model_FILES:%.v=Model/%.v) \
+  $(ModalLogic_Semantics_FILES:%.v=Semantics/%.v) \
+  $(ModalLogic_Sound_FILES:%.v=Sound/%.v) \
+  $(ModalLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
+
+QuantifierLogic_ProofTheory_FILES = \
+  QuantifierLogic.v
 
 QuantifierLogic_DeepEmbedded_FILES = \
   FirstOrderLanguage.v FirstOrderLogic.v
@@ -122,6 +152,25 @@ SeparationLogic_FILES = \
   $(SeparationLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v) \
   Complete_Flat.v
 
+Extentions_ProofTheory_FILES = \
+  Stable.v ModalSeparation.v Corable.v CoreTransit.v
+
+Extentions_Semantics_FILES = \
+  SemanticStable.v
+
+Extentions_Sound_FILES = \
+  StableSound.v
+
+Extentions_ShallowEmbedded_FILES = \
+  MonoPredicateStable.v
+
+Extentions_FILES = \
+  Syntax_CoreTransit.v \
+  $(Extentions_ProofTheory_FILES:%.v=ProofTheory/%.v) \
+  $(Extentions_Semantics_FILES:%.v=Semantics/%.v) \
+  $(Extentions_Sound_FILES:%.v=Sound/%.v) \
+  $(Extentions_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
+
 HoareLogic_FILES = \
   ImperativeLanguage.v ProgramState.v Trace.v \
   SimpleSmallStepSemantics.v SmallStepSemantics.v \
@@ -136,8 +185,10 @@ FILES = \
   $(GeneralLogic_FILES:%.v=GeneralLogic/%.v) \
   $(MinimunLogic_FILES:%.v=MinimunLogic/%.v) \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
+  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
+  $(Extentions_FILES:%.v=Extensions/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   FSCQ/SeparationLogic.v
 
@@ -156,6 +207,9 @@ MinimunLogic: \
 
 PropositionalLogic: \
   .depend $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.vo)
+
+ModalLogic: \
+  .depend $(ModalLogic_FILES:%.v=ModalLogic/%.vo)
 
 QuantifierLogic: \
   .depend $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.vo)

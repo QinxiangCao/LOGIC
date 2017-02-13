@@ -12,7 +12,7 @@ Require Import Logic.MinimunLogic.ProofTheory.Normal.
 Require Import Logic.MinimunLogic.ProofTheory.Minimun.
 Require Import Logic.MinimunLogic.ProofTheory.ContextProperty.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
-Require Import Logic.PropositionalLogic.ProofTheory.WeakClassical.
+Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
@@ -57,7 +57,7 @@ Instance ipG: IntuitionisticPropositionalLogic L G := SeparationLogic.ipG Var SL
 Instance MD: Model := FlatSemantics.MD Var.
 Instance kMD: KripkeModel MD := FlatSemantics.kMD Var.
 Instance R (M: Kmodel): Relation (Kworlds M):= FlatSemantics.R Var M.
-Instance kiM (M: Kmodel): KripkeIntuitionisticModel (Kworlds M):= FlatSemantics.kiM Var M.
+Instance po_R (M: Kmodel): PreOrder (@KI.Krelation _ (R M)):= FlatSemantics.po_R Var M.
 Instance J (M: Kmodel): Join (Kworlds M):= FlatSemantics.J Var M.
 Instance SA (M: Kmodel): SeparationAlgebra (Kworlds M):= FlatSemantics.SA Var M.
 Instance uSA (M: Kmodel): UpwardsClosedSeparationAlgebra (Kworlds M):= FlatSemantics.uSA Var M.
@@ -402,7 +402,7 @@ Qed.
 
 Instance DCS_R {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma}: Relation (DCS Gamma) := fun a b => Included _ (proj1_sig a) (proj1_sig b).
 
-Instance DCS_kiM {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma}: KripkeIntuitionisticModel (DCS Gamma).
+Instance po_DCS_R {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma}: PreOrder (@KI.Krelation _ DCS_R).
 Proof.
   constructor.
   + hnf; intros.
@@ -481,7 +481,7 @@ Proof.
 Qed.
 
 Definition canonical_frame {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma}: FlatSemantics.frame :=
-  FlatSemantics.Build_frame (DCS Gamma) DCS_R DCS_kiM DCS_J DCS_SA DCS_dSA DCS_uSA.
+  FlatSemantics.Build_frame (DCS Gamma) DCS_R po_DCS_R DCS_J DCS_SA DCS_dSA DCS_uSA.
 
 Program Definition canonical_emp {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma}: FlatSemantics.sem canonical_frame :=
   fun a => a (SeparationEmpLanguage.emp).
@@ -632,7 +632,7 @@ Proof.
       rewrite provable_wand_sepcon_modus_ponens1 in H1.
       auto.
   + reflexivity.
-  + pose proof @sat_falsep _ _ _ MD kMD canonical_Kmodel _ _ _ _ Phi.
+  + pose proof @sat_falsep _ _ _ MD kMD canonical_Kmodel _ _ _ Phi.
     split; [intros; tauto | intros].
     rewrite H in H1.
     pose proof proj2_sig Phi.
@@ -697,7 +697,7 @@ Proof.
     tauto.
 Qed.
 
-Lemma weak_classical_canonical_branch_join {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {wcpGamma: WeakClassicalPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma}: forall Psi: DCS Gamma, KripkeModelClass _ (FlatSemantics.Kmodel_BranchJoin Var) (canonical_model Psi).
+Lemma weak_classical_canonical_branch_join {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {dmpGamma: DeMorganPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma}: forall Psi: DCS Gamma, KripkeModelClass _ (FlatSemantics.Kmodel_BranchJoin Var) (canonical_model Psi).
 Proof.
   intros.
   unfold canonical_model; constructor.
@@ -713,7 +713,7 @@ Proof.
     apply derivable_closed_union_derivable in H8; [| auto].
     destruct H8 as [x [? ?]].
     rewrite derivable_closed_element_derivable in H8 by auto.
-    pose proof WeakClassical.derivable_weak_excluded_middle (proj1_sig n) x.
+    pose proof DeMorgan.derivable_weak_excluded_middle (proj1_sig n) x.
     rewrite <- derivable_closed_element_derivable in H10 by auto.
     apply (H6 (~~ x)) in H10.
     destruct H10.

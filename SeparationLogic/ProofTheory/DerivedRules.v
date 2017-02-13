@@ -11,7 +11,7 @@ Require Import Logic.MinimunLogic.ProofTheory.Minimun.
 Require Import Logic.MinimunLogic.ProofTheory.RewriteClass.
 Require Import Logic.MinimunLogic.ProofTheory.ContextProperty.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
-Require Import Logic.PropositionalLogic.ProofTheory.WeakClassical.
+Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
@@ -182,6 +182,18 @@ Proof.
   intros.
   rewrite (sepcon_comm x (x -* y)).
   apply provable_wand_sepcon_modus_ponens1.
+Qed.
+
+Lemma provable_truep_sepcon_truep: forall {L: Language} {nL: NormalLanguage L} {pL: PropositionalLanguage L} {sL: SeparationLanguage L} {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma} {ExtsGamma: ExtSeparationLogic L Gamma},
+  |-- TT * TT <--> TT.
+Proof.
+  intros.
+  rewrite provable_derivable.
+  apply deduction_andp_intros.
+  + rewrite <- deduction_theorem.
+    apply derivable_impp_refl.
+  + rewrite <- provable_derivable.
+    apply sepcon_ext.
 Qed.
 
 Lemma derivable_emp: forall {L: Language} {nL: NormalLanguage L} {pL: PropositionalLanguage L} {sL: SeparationLanguage L} {s'L: SeparationEmpLanguage L} {Gamma: ProofTheory L} {nGamma: NormalProofTheory L Gamma} {mpGamma: MinimunPropositionalLogic L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {sGamma: SeparationLogic L Gamma} {EmpsGamma: EmpSeparationLogic L Gamma} {gcsGamma: GarbageCollectSeparationLogic L Gamma} (Phi: context) (x y: expr),

@@ -1,6 +1,5 @@
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Classes.RelationClasses.
-Require Import Coq.Logic.Classical_Prop.
 Require Import Logic.lib.Coqlib.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.MinimunLogic.Syntax.
@@ -11,7 +10,7 @@ Require Import Logic.MinimunLogic.ProofTheory.Minimun.
 Require Import Logic.MinimunLogic.ProofTheory.RewriteClass.
 Require Import Logic.MinimunLogic.ProofTheory.ContextProperty.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
-Require Import Logic.PropositionalLogic.ProofTheory.WeakClassical.
+Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
