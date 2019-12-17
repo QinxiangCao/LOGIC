@@ -511,10 +511,6 @@ Proof.
 
 
 
-
-
-
-
 Lemma andp_impp_orp: forall (p q: expr), |-- (p && q) --> (p || q).
 Proof.
   intros.
@@ -566,7 +562,7 @@ Proof.
   rewrite H2.
   apply H1. Qed.
 
-Lemma P_impp_boxp: |-- ~~P0 --> boxp (~~P0).
+Lemma P_impp_boxp1: |-- ~~P0 --> boxp (~~P0).
 Proof.
   pose proof PUB_ASSERT.
   pose proof orp_comm (boxp P0) (boxp (~~ P0)).
@@ -579,14 +575,14 @@ Proof.
   rewrite H3 in H.
   apply H. Qed.
 
-Lemma boxp_from_unknown: forall (B C: expr), |-- (~~ boxp (P0&&B&&C) && ~~ boxp (~~(P0&&B&&C))) --> P0.
+Lemma boxp_from_unknown1: forall (B C: expr), |-- (~~ boxp (P0&&B&&C) && ~~ boxp (~~(P0&&B&&C))) --> P0.
 Proof.
   intros.
   pose proof andp_intros_infer1 P0 B C.
   pose proof N_RULE _ H.
   pose proof K_AXIOM (~~ P0) (~~ (P0 && B && C)).
   pose proof modus_ponens _ _ H1 H0.
-  pose proof P_impp_boxp.
+  pose proof P_impp_boxp1.
   rewrite <- H3 in H2.
   pose proof contrapositiveNP (boxp (~~ (P0 && B && C))) P0.
   pose proof modus_ponens _ _ H4 H2.
@@ -618,11 +614,18 @@ Admitted.
 
 
 
+Lemma boxp_from_unknown2: forall (A C: expr), |-- boxp A --> (~~ boxp (A&&P0&&C) && ~~ boxp (~~(A&&P0&&C))) --> P0.
+Proof.
+Admitted.
 
 
 
 
 
+
+Lemma P_impp_boxp2: |-- P0 --> boxp P0.
+Proof.
+  Admitted.
 
 Lemma andp_intros_infer2: forall (A B C: expr), |-- A --> B --> C --> (A&&B&&C).
 Proof.
@@ -632,7 +635,7 @@ Proof.
   pose proof Intuitionistic.andp_intros A B.
   apply H0. Qed.
 
-Lemma boxp_three_know: forall (A B C: expr), |-- A --> B --> C --> boxp (A&&B&&C).
+Lemma boxp_three_know: forall (A B C: expr), |-- boxp A --> boxp B --> boxp C --> boxp (A&&B&&C).
 Proof.
 Admitted.
 
@@ -700,7 +703,7 @@ Lemma B_DONT_KNOW: |-- boxb (boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0)
 Proof.
 Admitted.
 
-Lemma C_KNOW: |-- boxc (boxc (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> boxc (~~boxb (A0&&B0&&C0) && ~~boxb (~~(A0&&B0&&C0))) --> C0 --> boxc (A0&&B0&&C0)).
+Lemma C_KNOW: |-- boxc (boxc (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> boxc (boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> ~~boxb (A0&&B0&&C0) && ~~boxb (~~(A0&&B0&&C0))) --> C0 --> boxc (A0&&B0&&C0)).
 Proof.
   intros.
 Admitted.
