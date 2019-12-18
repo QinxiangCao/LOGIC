@@ -504,10 +504,44 @@ Proof.
   apply H1. Qed.
 
 
+Lemma falsep_truthp_intros: forall (p q: expr), |-- (~~p) --> q --> ~~(p && q).
+Proof.
+  intros.
+  pose proof Intuitionistic.andp_elim1 p q.
+  pose proof contrapositivePP p (p && q).
+  rewrite H0 in H.
+  pose proof aux_minimun_rule00 _ q H.
+  pose proof provable_impp_arg_switch q (~~p) (~~ (p && q)).
+  rewrite H2 in H1.
+  apply H1. Qed.
 
+Lemma second: forall (p q: expr), |-- boxp(p && q) --> (boxp p && boxp q).
+Proof.
+  intros.
+  pose proof Intuitionistic.andp_elim1 p q.
+  pose proof Intuitionistic.andp_elim2 p q.
+  pose proof N_RULE _ H.
+  pose proof N_RULE _ H0.
+  pose proof K_AXIOM (p && q) p.
+  rewrite H3 in H1.
+  pose proof K_AXIOM (p && q) q.
+  rewrite H4 in H2.
+  pose proof solve_impp_andp _ _ _ H1 H2.
+  apply H5. Qed.
 
-
-
+Lemma try: forall (A B: expr), |-- ((diamondp B) && (diamondp (~~B))) --> boxp A --> (~~boxp (A&&B)).
+Proof.
+  intros.
+  pose proof first (boxp B) (boxp A).
+  pose proof second B A.
+  rewrite <- H0 in H.
+  pose proof aux_minimun_rule00 _ (~~ boxp (~~B)) H.
+  pose proof impp_curry (~~ boxp (~~ B)) (~~ boxp B) (boxp A --> ~~ boxp (B && A)).
+  rewrite H2 in H1.
+  pose proof andp_comm A B.
+  rewrite <- H3 in H1.
+  unfold diamondp.
+  apply H1. Qed.
 
 
 
@@ -614,7 +648,7 @@ Admitted.
 
 
 
-Lemma boxp_from_unknown2: forall (A C: expr), |-- boxp A --> (~~ boxp (A&&P0&&C) && ~~ boxp (~~(A&&P0&&C))) --> P0.
+Lemma boxp_from_unknown2: forall (A C: expr), |-- (boxp A --> (~~ boxp (A&&P0&&C) && ~~ boxp (~~(A&&P0&&C)))) --> P0.
 Proof.
 Admitted.
 
@@ -622,10 +656,18 @@ Admitted.
 
 
 
-
 Lemma P_impp_boxp2: |-- P0 --> boxp P0.
 Proof.
-  Admitted.
+  pose proof PUB_ASSERT.
+  pose proof impp2orp_infer1 (boxp P0) (boxp (~~P0)).
+  rewrite H0 in H.
+  pose proof T_AXIOM (~~P0).
+  rewrite H1 in H.
+  pose proof contrapositiveNP (~~P0) (boxp P0).
+  rewrite H2 in H.
+  pose proof double_negp_intros P0.
+  rewrite <- H3 in H.
+  apply H. Qed.
 
 Lemma andp_intros_infer2: forall (A B C: expr), |-- A --> B --> C --> (A&&B&&C).
 Proof.
@@ -637,7 +679,16 @@ Proof.
 
 Lemma boxp_three_know: forall (A B C: expr), |-- boxp A --> boxp B --> boxp C --> boxp (A&&B&&C).
 Proof.
-Admitted.
+  intros.
+  pose proof andp_intros_infer2 A B C.
+  pose proof N_RULE _ H.
+  pose proof K_AXIOM A (B --> C --> A && B && C).
+  rewrite H1 in H0.
+  pose proof K_AXIOM B (C --> A && B && C).
+  rewrite H2 in H0.
+  pose proof K_AXIOM C (A && B && C).
+  rewrite H3 in H0.
+  apply H0. Qed.
 
 End LemmaFromPubBaseAxiomatization.
 
