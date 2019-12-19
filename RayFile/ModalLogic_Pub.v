@@ -515,7 +515,6 @@ Proof.
   pose proof modus_ponens _ _ H0 H.
   apply H1. Qed.
 
-
 Lemma falsep_truthp_intros: forall (p q: expr), |-- (~~p) --> q --> ~~(p && q).
 Proof.
   intros.
@@ -584,8 +583,18 @@ Proof.
 Lemma diamondp_boxp_intros: forall (p q: expr), |-- diamondp q --> boxp p --> diamondp (p && q).
 Proof.
   intros.
+  pose proof Intuitionistic.andp_intros p q.
+  pose proof contrapositivePP (p&&q) q.
+  rewrite H0 in H.
+  pose proof RK _ _ H.
+  pose proof K_AXIOM (~~ (p && q)) (~~q).
+  rewrite H2 in H1.
+  pose proof contrapositivePP (boxp (~~ q)) (boxp (~~ (p && q))).
+  rewrite H3 in H1.
+  pose proof provable_impp_arg_switch (boxp p) (~~ boxp (~~ q)) (~~ boxp (~~ (p && q))).
+  rewrite H4 in H1.
   unfold diamondp.
-Admitted.
+  apply H1. Qed.
 
 Lemma basic_situation1: forall (A B: expr), |-- ((diamondp B) && (diamondp (~~B))) --> boxp A --> (~~boxp (A&&B)).
 Proof.
@@ -623,11 +632,125 @@ Lemma diamondp_negp_elim: forall (p q: expr), |-- diamondp (p && ~~q) && diamond
 Proof.
   intros.
   unfold diamondp.
-Admitted.
+  pose proof andp_impp_orp p q.
+  pose proof RK _ _ H.
+  pose proof demorgan_negp_andp (~~p) (~~q).
+  pose proof double_negp p.
+  rewrite -> H2 in H1.
+  pose proof double_negp q.
+  rewrite -> H3 in H1.
+  rewrite <- H1 in H0.
+  pose proof double_negp (p && q).
+  rewrite <- H4 in H0.
+  rewrite <- H0.
+  pose proof Minimun.provable_impp_refl (~~ boxp (~~ (~~ (p && q)))).
+  pose proof aux_minimun_rule00 _ (~~ boxp (~~ (p && ~~ q)) && ~~ boxp (~~ (~~ p && q))) H5.
+  pose proof impp_curry (~~ boxp (~~ (p && ~~ q)) && ~~ boxp (~~ (~~ p && q))) (~~ boxp (~~ (~~ (p && q)))) (~~ boxp (~~ (~~ (p && q)))).
+  rewrite -> H7 in H6.
+  apply H6. Qed.
 
 Lemma diamondp_negp_elim_infer1: forall (p q: expr), |-- diamondp (p && q) && diamondp (p && ~~q) && diamondp (~~p && q) && diamondp (~~p && ~~q) --> diamondp (p && q) && diamondp(~~(p && q)).
 Proof.
-Admitted.
+  intros.
+  pose proof andp_assoc (diamondp (p && q) && diamondp (p && ~~ q)) (diamondp (~~ p && q)) (diamondp (~~ p && ~~ q)).
+  rewrite -> H.
+  pose proof andp_assoc (diamondp (p && q)) (diamondp (p && ~~ q)) (diamondp (~~ p && q) && diamondp (~~ p && ~~ q)).
+  rewrite -> H0.
+  pose proof andp_assoc (diamondp (p && ~~ q)) (diamondp (~~ p && q)) (diamondp (~~ p && ~~ q)).
+  rewrite <- H1.
+  pose proof diamondp_negp_elim p q.
+  rewrite -> H2.
+  pose proof Minimun.provable_impp_refl (diamondp (p && q) && diamondp (~~ (p && q))).
+  apply H3. Qed.
+
+Lemma andp_intros_infer1: forall (A B C: expr), |-- ~~A --> ~~(A&&B&&C).
+Proof.
+  intros.
+  pose proof Intuitionistic.andp_elim1 A (B&&C).
+  pose proof contrapositivePP A (A && (B && C)).
+  pose proof modus_ponens _ _ H0 H.
+  pose proof andp_assoc A B C.
+  rewrite H2.
+  apply H1. Qed.
+
+Lemma P_impp_boxp2: |-- ~~P0 --> boxp (~~P0).
+Proof.
+  pose proof PUB_ASSERT.
+  pose proof orp_comm (boxp P0) (boxp (~~ P0)).
+  rewrite H0 in H.
+  pose proof impp2orp_infer1 (boxp (~~ P0)) (boxp P0).
+  rewrite H1 in H.
+  pose proof T_AXIOM P0.
+  rewrite H2 in H.
+  pose proof contrapositiveNP P0 (boxp (~~ P0)).
+  rewrite H3 in H.
+  apply H. Qed.
+
+Lemma boxp_orp_intros_infer1: forall (p q: expr), |-- boxp p --> boxp (p || ~~q).
+Proof.
+  intros.
+  pose proof boxp_orp_intros p (~~q).
+  pose proof Intuitionistic.orp_intros1 (boxp p) (boxp (~~q)).
+  rewrite <- H0 in H.
+  apply H. Qed.
+
+Lemma diamondp_andp_minus: forall (p q: expr), |-- (diamondp (p && q) && diamondp (p && ~~q) && diamondp (~~p && q) && diamondp (~~p && ~~q)) --> boxp p --> diamondp q && diamondp (~~ q).
+Proof.
+  intros.
+  unfold diamondp.
+  pose proof boxp_orp_intros_infer1 p q.
+  pose proof aux_minimun_rule00 _ (~~ (~~ boxp (~~ q) && ~~ boxp (~~ (~~ q)))) H.
+  pose proof provable_impp_arg_switch (~~ (~~ boxp (~~ q) && ~~ boxp (~~ (~~ q)))) (boxp p) (boxp (p || ~~ q)).
+  rewrite -> H1 in H0.
+  pose proof contrapositiveNP (boxp (p || ~~ q)) (~~ boxp (~~ q) && ~~ boxp (~~ (~~ q))).
+  rewrite -> H2 in H0.
+  pose proof provable_impp_arg_switch (boxp p) (~~ boxp (p || ~~ q)) (~~ boxp (~~ q) && ~~ boxp (~~ (~~ q))).
+  rewrite -> H3 in H0.
+  pose proof demorgan_negp_andp (~~p) q.
+  pose proof double_negp p.
+  rewrite -> H5 in H4.
+  rewrite <- H4 in H0.
+  pose proof Intuitionistic.andp_elim1 (~~ boxp (~~ (~~ p && q))) (~~ boxp (~~ (~~ p && ~~ q))).
+  rewrite <- H6 in H0.
+  pose proof aux_minimun_rule00 _ (~~ boxp (~~ (p && q)) && ~~ boxp (~~ (p && ~~ q))) H0.
+  pose proof impp_curry (~~ boxp (~~ (p && q)) && ~~ boxp (~~ (p && ~~ q))) (~~ boxp (~~ (~~ p && q)) && ~~ boxp (~~ (~~ p && ~~ q))) (boxp p --> ~~ boxp (~~ q) && ~~ boxp (~~ (~~ q))).
+  rewrite -> H8 in H7.
+  pose proof andp_assoc (~~ boxp (~~ (p && q)) && ~~ boxp (~~ (p && ~~ q))) (~~ boxp (~~ (~~ p && q))) (~~ boxp (~~ (~~ p && ~~ q))).
+  rewrite <- H9 in H7.
+  apply H7. Qed.
+
+Lemma andp_dup_infer1: forall (p q r: expr), |-- (p&&q&&r) --> (p&&q&&q&&r).
+Proof.
+  intros.
+  pose proof andp_dup q.
+  rewrite <- H at 1.
+  pose proof andp_assoc p q q.
+  rewrite <- H0.
+  pose proof Minimun.provable_impp_refl (p && q && q && r).
+  apply H1. Qed.
+
+Lemma andp_assoc_infer1: forall (p q r s: expr), |-- (p&&q) --> (q&&r) --> s -> |-- (p --> q --> r --> s).
+Proof.
+  intros.
+  pose proof impp_curry_uncurry p q (r-->s).
+  pose proof impp_curry_uncurry (p && q) r s.
+  rewrite -> H1 in H0.
+  rewrite H0.
+  pose proof andp_dup_infer1 p q r.
+  rewrite -> H2.
+  pose proof impp_curry_uncurry (p && q) (q && r) s.
+  pose proof andp_assoc (p&&q) q r.
+  rewrite -> H4.
+  rewrite <- H3.
+  apply H. Qed.
+
+Lemma andp_intros_infer2: forall (A B C: expr), |-- A --> B --> C --> (A&&B&&C).
+Proof.
+  intros.
+  pose proof Intuitionistic.andp_intros (A&&B) C.
+  rewrite <- H.
+  pose proof Intuitionistic.andp_intros A B.
+  apply H0. Qed.
 
 Lemma boxp_one_unknown1: forall (B C: expr), |--(diamondp (B && C) && diamondp (B && ~~C) && diamondp (~~B && C) && diamondp (~~B && ~~C)) --> P0 --> (~~boxp (P0&&B&&C)).
 Proof.
@@ -653,44 +776,6 @@ Proof.
   rewrite <- H2 in H.
   apply H. Qed.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Lemma andp_intros_infer1: forall (A B C: expr), |-- ~~A --> ~~(A&&B&&C).
-Proof.
-  intros.
-  pose proof Intuitionistic.andp_elim1 A (B&&C).
-  pose proof contrapositivePP A (A && (B && C)).
-  pose proof modus_ponens _ _ H0 H.
-  pose proof andp_assoc A B C.
-  rewrite H2.
-  apply H1. Qed.
-
-Lemma P_impp_boxp2: |-- ~~P0 --> boxp (~~P0).
-Proof.
-  pose proof PUB_ASSERT.
-  pose proof orp_comm (boxp P0) (boxp (~~ P0)).
-  rewrite H0 in H.
-  pose proof impp2orp_infer1 (boxp (~~ P0)) (boxp P0).
-  rewrite H1 in H.
-  pose proof T_AXIOM P0.
-  rewrite H2 in H.
-  pose proof contrapositiveNP P0 (boxp (~~ P0)).
-  rewrite H3 in H.
-  apply H. Qed.
-
 Lemma boxp_from_unknown: forall (B C: expr), |-- (~~ boxp (P0&&B&&C) && ~~ boxp (~~(P0&&B&&C))) --> P0.
 Proof.
   intros.
@@ -707,45 +792,35 @@ Proof.
   pose proof modus_ponens _ _ H7 H6.
   apply H8. Qed.
 
-
-
-
-
-
-
-
-Lemma diamondp_andp_minus: forall (p q: expr), |-- (diamondp (p && q) && diamondp (p && ~~q) && diamondp (~~p && q) && diamondp (~~p && ~~q)) --> boxp p --> diamondp q && diamondp (~~ q).
-Proof.
-Admitted.
-
-Lemma try: forall(p q r s: expr), |-- q --> p --> q --> r --> s --> (p --> q --> r --> s).
-Proof.
-Admitted.
-
 Lemma boxp_two_unknown1: forall (A C: expr), |-- (diamondp (A && C) && diamondp (A && ~~C) && diamondp (~~A && C) && diamondp (~~A && ~~C)) --> boxp A --> P0 --> (~~boxp (A&&P0&&C)).
 Proof.
   intros.
   pose proof basic_situation1 (A&&P0) C.
-  pose proof diamondp_andp_minus A C.
-  rewrite -> H0.
-  pose proof aux_minimun_theorem02 (boxp A) (diamondp C && diamondp (~~ C)).
   pose proof boxp_andp_intros A P0.
-  pose proof P_impp_boxp2.
-  pose proof try (boxp A --> diamondp C && diamondp (~~ C)) (boxp A) (boxp P0) (~~boxp (A&&P0&&C)).
-Admitted.
+  pose proof P_impp_boxp1.
+  rewrite <- H1 in H0.
+  rewrite <- H0 in H.
+  pose proof diamondp_andp_minus A C.
+  pose proof impp_curry (diamondp (A && C) && diamondp (A && ~~ C) && diamondp (~~ A && C) && diamondp (~~ A && ~~ C)) (boxp A) (diamondp C && diamondp (~~ C)).
+  rewrite -> H3 in H2.
+  rewrite <- H2 in H.
+  pose proof andp_assoc_infer1 _ _ _ _ H.
+  apply H4. Qed.
 
 Lemma boxp_two_unknown2: forall (A C: expr), |-- (diamondp (A && C) && diamondp (A && ~~C) && diamondp (~~A && C) && diamondp (~~A && ~~C)) --> boxp A --> P0 --> (~~boxp (~~(A&&P0&&C))).
 Proof.
   intros.
   pose proof basic_situation2 (A&&P0) C.
+  pose proof boxp_andp_intros A P0.
+  pose proof P_impp_boxp1.
+  rewrite <- H1 in H0.
+  rewrite <- H0 in H.
   pose proof diamondp_andp_minus A C.
-  rewrite -> H0.
-Admitted.
-
-
-
-
-
+  pose proof impp_curry (diamondp (A && C) && diamondp (A && ~~ C) && diamondp (~~ A && C) && diamondp (~~ A && ~~ C)) (boxp A) (diamondp C && diamondp (~~ C)).
+  rewrite -> H3 in H2.
+  rewrite <- H2 in H.
+  pose proof andp_assoc_infer1 _ _ _ _ H.
+  apply H4. Qed.
 
 Lemma boxp_from_hear: forall (p q: expr), |-- boxp p --> boxp (p --> q) --> boxp q.
 Proof.
@@ -754,20 +829,6 @@ Proof.
   pose proof RK _ _ H.
   pose proof K_AXIOM (p --> q) q.
   rewrite -> H1 in H0.
-  apply H0. Qed.
-
-
-
-
-
-
-
-Lemma andp_intros_infer2: forall (A B C: expr), |-- A --> B --> C --> (A&&B&&C).
-Proof.
-  intros.
-  pose proof Intuitionistic.andp_intros (A&&B) C.
-  rewrite <- H.
-  pose proof Intuitionistic.andp_intros A B.
   apply H0. Qed.
 
 Lemma boxp_three_know: forall (A B C: expr), |-- boxp A --> boxp B --> boxp C --> boxp (A&&B&&C).
