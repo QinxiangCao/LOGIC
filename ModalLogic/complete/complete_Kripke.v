@@ -147,7 +147,6 @@ Proof.
   apply H; apply H4. Admitted.
 (*box Phi的定义，是集合的一种性质，满足此性质的*)
 (*Focus 2. apply H1 in H3. Search derivable.*)
-Admitted.
 
 (*Lemma truth_lemma_falsep (AL_CONSI: at_least consistent cP):
   forall m Phi, rel m Phi -> (KRIPKE:canonical_Kmodel , m |= falsep <-> proj1_sig Phi falsep).
