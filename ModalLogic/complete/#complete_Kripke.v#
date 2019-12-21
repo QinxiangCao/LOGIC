@@ -1,3 +1,4 @@
+Require Import Coq.Sets.Ensembles.
 Require Import Coq.Logic.Classical_Prop.
 Require Import Logic.lib.Ensembles_ext.
 Require Import Logic.lib.EnsemblesProperties.
@@ -29,8 +30,8 @@ Require Import Logic.MinimunLogic.Complete.Truth_Kripke.
 Require Import Logic.MinimunLogic.Complete.Lindenbaum_Kripke.
 Require Logic.MinimunLogic.DeepEmbedded.MinimunLanguage.
 Require Import Logic.MinimunLogic.DeepEmbedded.MinimunLogic.
-Require Logic.ModalLogic.complete.ModalLanguage.
-Require Logic.ModalLogic.complete.semantics.
+Require Logic.ModalLogic.ModalLanguage.
+Require Logic.ModalLogic.semantics.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.ModalLogic.Syntax.
 Local Open Scope syntax.
@@ -51,8 +52,7 @@ Existing Instances semantics.MD semantics.kMD semantics.R semantics.SM .
 
 Section General_Completeness.
 
-Context {GammaP: Provable ModalLanguage.L}
-        {GammaD: Derivable ModalLanguage.L}.
+Context {Gamma: ProofTheory ModalLanguage.L}.
 
 Definition cP : context -> Prop := Intersection _ derivable_closed consistent.
 
@@ -64,13 +64,12 @@ Lemma AL_CONSI: at_least consistent cP.
 Proof. solve_at_least. Qed.
 
 
-Context {SC: NormalSequentCalculus _ GammaP GammaD}
-        {bSC: BasicSequentCalculus _ GammaD}
-        {fwSC: FiniteWitnessedSequentCalculus _ GammaD}
-        {minSC: MinimunSequentCalculus _ GammaD}
-        {AX: NormalAxiomatization _ GammaP GammaD}
-        {minAX: MinimunAxiomatization _ GammaP}.
-
+Context {SC: NormalSequentCalculus _ Gamma}
+        {bSC: BasicSequentCalculus _ Gamma}
+        {fwSC: FiniteWitnessedSequentCalculus _ Gamma}
+        {minSC: MinimunSequentCalculus _ Gamma}
+        {AX: NormalAxiomatization _ Gamma}
+        {minAX: MinimunAxiomatization _ Gamma}.
 Lemma LIN_CD: forall x: expr, Lindenbaum_constructable (cannot_derive x) cP.
 Proof.
   intros.
@@ -92,7 +91,7 @@ Definition canonical_Kmodel: @Kmodel semantics.MD semantics.kMD :=
   semantics.Build_Kmodel canonical_frame canonical_eval.
 
 Definition rel: bijection (Kworlds canonical_Kmodel) (sig cP) := bijection_refl.
-
+Locate deduction_andp_intros.
 Definition H_R:
   forall m n Phi Psi, rel m Phi -> rel n Psi ->
     (m = n <-> Included _ (proj1_sig Phi) (proj1_sig Psi)).
@@ -101,25 +100,13 @@ Proof.
   change (m = Phi) in H.
   change (n = Psi) in H0.
 Admitted.
-
-Definition Relation : sig cP -> sig cP -> Prop := 
-fun Phi Psi => forall x : expr , proj1_sig Phi (boxp x) -> proj1_sig Psi x.
-Print  context.
-Print sig.
-Definition boxp1 (Phi : context) : context :=
-  fun x => exists y, Phi y /\ y = boxp x.
-Lemma aboutboxp1 : forall Phi Psi : context, forall x : expr,
-  Included _ (boxp1 Phi) Psi -> Phi |-- x -> Psi |-- boxp x.
+Print Union.
+Check Singleton.
+Definition  Relation  :  sig cP -> sig cP -> Prop := 
+fun Phi Psi => forall x : expr ,  proj1_sig Phi (boxp x) -> proj1_sig Psi x.
+Lemma existence : forall x : expr ,forall Phi : sig cP, 
+ ~ proj1_sig Phi (boxp x) -> exists Psi, (Relation Phi ( Psi) /\ ~ proj1_sig Psi x).
 Proof.
-  intros.
-Admitted.
-(*Lemma aboutcP : forall Phi : sig cP ,forall x : expr,
-  proj1_sig Phi |-- x <-> proj1_sig Phi x.
-Admitted.*)
-Lemma existence : forall x : expr , forall Phi,
- ~ proj1_sig Phi (boxp x) -> exists Psi,(Relation Phi Psi /\ ~ proj1_sig Psi x).
-Proof.
-  intros.
   intros.
   set( fun a => proj1_sig Phi (boxp a)).
   pose proof ( LIN_CD).
@@ -135,21 +122,12 @@ Proof.
   unfold not.
   intros.
   unfold not in H. apply H. unfold cannot_derive in h2. 
-  Search derivable. pose proof derivable_assum.
+  Search derivable. Search derivable. pose proof derivable_assum.
   apply h2 in H3. exfalso. apply H3. apply H2. unfold cannot_derive.
-  pose proof derivable_assum. unfold not. intros.
-  pose proof aboutboxp1  P (proj1_sig Phi) x.
-  assert( Included _ (boxp1 P) (proj1_sig Phi)).
-  Focus 2. apply H3 in H4. pose proof aboutboxp1.
-  pose proof AL_DC. unfold at_least in H6. 
-  assert(cP (proj1_sig Phi)).
-  Focus 2. apply H6 in H7. unfold derivable_closed in H7. apply H7 in H4.
-  apply H; apply H4. Admitted.
-(*box Phi的定义，是集合的一种性质，满足此性质的*)
-(*Focus 2. apply H1 in H3. Search derivable.*)
+  pose proof derivable_assum. unfold not. intros. assert(P (~~ x)).
+  Focus 2. apply H1 in H3. Search derivable.
 Admitted.
-
-(*Lemma truth_lemma_falsep (AL_CONSI: at_least consistent cP):
+Lemma truth_lemma_falsep (AL_CONSI: at_least consistent cP):
   forall m Phi, rel m Phi -> (KRIPKE:canonical_Kmodel , m |= falsep <-> proj1_sig Phi falsep).
 Proof.
   intros.
@@ -171,7 +149,7 @@ Lemma truth_lemma_impp
   forall m Phi, rel m Phi -> (KRIPKE: canonical_Kmodel, m |= x --> y <-> proj1_sig Phi (x --> y)).
 Proof.
   intros.
-Admitted.*)
+Admitted.
 Lemma TRUTH:
   forall x: expr, forall m Phi, rel m Phi ->
     (KRIPKE: canonical_Kmodel, m |= x <-> proj1_sig Phi x).
