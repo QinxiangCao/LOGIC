@@ -39,6 +39,12 @@ Definition andp (l1 l2 : L_Pub) :=
 Definition iffp (l1 l2 : L_Pub) :=
   andp (impp l1 l2)(impp l2 l1).
 Definition truep := negp falsep.
+Definition diamonda (l : L_Pub) :=
+  negp (boxa (negp l)).
+Definition diamondb (l : L_Pub) :=
+  negp (boxb (negp l)).
+Definition diamondc (l : L_Pub) :=
+  negp (boxc (negp l)).
 
 Notation "~~ x" := (negp x) (at level 35).
 Notation "x --> y" := (impp x y)(at level 55, right associativity).
@@ -831,17 +837,19 @@ Proof.
   rewrite -> H1 in H0.
   apply H0. Qed.
 
-Lemma boxp_three_know: forall (A B C: expr), |-- boxp A --> boxp B --> boxp C --> boxp (A&&B&&C).
+Lemma boxp_three_know: forall (A B: expr), |-- boxp A --> boxp B --> P0 --> boxp (A&&B&&P0).
 Proof.
   intros.
-  pose proof andp_intros_infer2 A B C.
+  pose proof andp_intros_infer2 A B P0.
   pose proof N_RULE _ H.
-  pose proof K_AXIOM A (B --> C --> A && B && C).
+  pose proof K_AXIOM A (B --> P0 --> A && B && P0).
   rewrite H1 in H0.
-  pose proof K_AXIOM B (C --> A && B && C).
+  pose proof K_AXIOM B (P0 --> A && B && P0).
   rewrite H2 in H0.
-  pose proof K_AXIOM C (A && B && C).
+  pose proof K_AXIOM P0 (A && B && P0).
   rewrite H3 in H0.
+  pose proof P_impp_boxp1.
+  rewrite <- H4 in H0.
   apply H0. Qed.
 
 End LemmaFromPubBaseAxiomatization.
@@ -850,16 +858,6 @@ End LemmaFromPubBaseAxiomatization.
 Instance MLPubpbL_a: PubBaseLanguage MLPubL := {|
   boxp := ModalLogic_Pub.boxa;
   P0 := ModalLogic_Pub.A0
-|}.
-
-Instance MLPubpbL_b: PubBaseLanguage MLPubL := {|
-  boxp := ModalLogic_Pub.boxb;
-  P0 := ModalLogic_Pub.B0
-|}.
-
-Instance MLPubpbL_c: PubBaseLanguage MLPubL := {|
-  boxp := ModalLogic_Pub.boxc;
-  P0 := ModalLogic_Pub.C0
 |}.
 
 Instance MLPubpbAX_a: @PubBaseAxiomatization MLPubL _ _ MLPubpbL_a MLPubGamma _ _ _.
@@ -871,6 +869,29 @@ Proof.
   + apply ModalLogic_Pub.PUB_ASSERT_A.
 Qed.
 
+Instance boxa_proper_impp : Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) boxa.
+Proof.
+  pose proof boxp_proper_impp.
+  apply H.
+Qed.
+
+Instance boxa_proper_iffp : Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) boxa.
+Proof.
+  pose proof boxp_proper_iffp.
+  apply H.
+Qed.
+
+
+
+
+
+
+
+Instance MLPubpbL_b: PubBaseLanguage MLPubL := {|
+  boxp := ModalLogic_Pub.boxb;
+  P0 := ModalLogic_Pub.B0
+|}.
+
 Instance MLPubpbAX_b: @PubBaseAxiomatization MLPubL _ _ MLPubpbL_b MLPubGamma _ _ _.
 Proof.
   constructor.
@@ -879,6 +900,31 @@ Proof.
   + apply ModalLogic_Pub.N_RULE_B.
   + apply ModalLogic_Pub.PUB_ASSERT_B.
 Qed.
+
+Instance boxb_proper_impp : Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) boxb.
+Proof.
+  pose proof boxp_proper_impp.
+  apply H.
+Qed.
+
+Instance boxb_proper_iffp : Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) boxb.
+Proof.
+  pose proof boxp_proper_iffp.
+  apply H.
+Qed.
+
+
+
+
+
+
+
+
+
+Instance MLPubpbL_c: PubBaseLanguage MLPubL := {|
+  boxp := ModalLogic_Pub.boxc;
+  P0 := ModalLogic_Pub.C0
+|}.
 
 Instance MLPubpbAX_c: @PubBaseAxiomatization MLPubL _ _ MLPubpbL_c MLPubGamma _ _ _.
 Proof.
@@ -889,28 +935,83 @@ Proof.
   + apply ModalLogic_Pub.PUB_ASSERT_C.
 Qed.
 
-
-
-
-
-
-
-
-
-
-
-
-Lemma A_DONT_KNOW: |-- boxa (A0 --> (~~boxa (A0&&B0&&C0)) && (~~boxa (~~(A0&&B0&&C0)))).
+Instance boxc_proper_impp : Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) boxc.
 Proof.
+  pose proof boxp_proper_impp.
+  apply H.
+Qed.
+
+Instance boxc_proper_iffp : Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) boxc.
+Proof.
+  pose proof boxp_proper_iffp.
+  apply H.
+Qed.
+
+
+
+
+
+Lemma boxa_one_unknown1: |--(diamonda (B0 && C0) && diamonda (B0 && ~~C0) && diamonda (~~B0 && C0) && diamonda (~~B0 && ~~C0)) --> A0 --> (~~boxa (A0&&B0&&C0)).
+Proof.
+  Admitted.
+
+Lemma boxa_one_unknown2: |-- (diamonda (B0 && C0) && diamonda (B0 && ~~C0) && diamonda (~~B0 && C0) && diamonda (~~B0 && ~~C0)) --> A0 --> (~~boxa (~~(A0&&B0&&C0))).
+Proof.
+  Admitted.
+
+Lemma boxa_from_unknown: |-- (~~ boxa (A0&&B0&&C0) && ~~ boxa (~~(A0&&B0&&C0))) --> A0.
+Proof.
+  Admitted.
+
+Lemma boxb_two_unknown1: |-- (diamondb (A0 && C0) && diamondb (A0 && ~~C0) && diamondb (~~A0 && C0) && diamondb (~~A0 && ~~C0)) --> boxb A0 --> B0 --> (~~boxb (A0&&B0&&C0)).
+Proof.
+  Admitted.
+
+Lemma boxb_two_unknown2: |-- (diamondb (A0 && C0) && diamondb (A0 && ~~C0) && diamondb (~~A0 && C0) && diamondb (~~A0 && ~~C0)) --> boxb A0 --> B0 --> (~~boxb (~~(A0&&B0&&C0))).
+Proof.
+  Admitted.
+
+Lemma boxb_from_unknown: |-- (~~ boxb (A0&&B0&&C0) && ~~ boxb (~~(A0&&B0&&C0))) --> B0.
+Proof.
+  Admitted.
+
+Lemma boxc_from_hear: forall (p q: L_Pub), |-- boxc p --> boxc (p --> q) --> boxc q.
+Proof.
+  pose proof boxp_from_hear.
+  apply H. Qed.
+
+Lemma boxc_three_know: |-- boxc A0 --> boxc B0 --> C0 --> boxc (A0&&B0&&C0).
+Proof.
+  Admitted.
+
+
+
+
+
+
+
+
+
+Lemma A_DONT_KNOW: |-- boxa ((diamonda (B0 && C0) && diamonda (B0 && ~~C0) && diamonda (~~B0 && C0) && diamonda (~~B0 && ~~C0)) --> A0 --> (~~boxa (A0&&B0&&C0)) && (~~boxa (~~(A0&&B0&&C0)))).
+Proof.
+  pose proof boxa_one_unknown1.
+  pose proof boxa_one_unknown2.
 Admitted.
 
-Lemma B_DONT_KNOW: |-- boxb (boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> B0 --> (~~boxb (A0&&B0&&C0)) && (~~boxb (~~(A0&&B0&&C0)))).
+Lemma B_DONT_KNOW: |-- boxb ((diamondb (A0 && C0) && diamondb (A0 && ~~C0) && diamondb (~~A0 && C0) && diamondb (~~A0 && ~~C0)) --> boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> B0 --> (~~boxb (A0&&B0&&C0)) && (~~boxb (~~(A0&&B0&&C0)))).
 Proof.
+  pose proof boxa_from_unknown.
+  rewrite -> H.
+  pose proof boxb_two_unknown1.
+  pose proof boxb_two_unknown2.
 Admitted.
 
 Lemma C_KNOW: |-- boxc (boxc (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> boxc (boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0)))) --> boxc (boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> ~~boxb (A0&&B0&&C0) && ~~boxb (~~(A0&&B0&&C0))) --> C0 --> boxc (A0&&B0&&C0)).
 Proof.
-  intros.
+  pose proof boxc_from_hear (boxb (~~ boxa (A0 && B0 && C0) && ~~ boxa (~~ (A0 && B0 && C0)))) (~~ boxb (A0 && B0 && C0) && ~~ boxb (~~ (A0 && B0 && C0))).
+  pose proof boxa_from_unknown.
+  pose proof boxb_from_unknown.
+  pose proof boxc_three_know.
 Admitted.
 
 
