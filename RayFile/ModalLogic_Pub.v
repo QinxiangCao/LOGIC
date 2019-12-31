@@ -8,11 +8,11 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.TheoryOfSequentCalculus.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
-Require Import Logic.MinimunLogic.ProofTheory.ProofTheoryPatterns.
-Require Import Logic.MinimunLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.TheoryOfSequentCalculus.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.MinimumLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 
@@ -82,8 +82,8 @@ Instance MLPubL: Language := {|
   expr := ModalLogic_Pub.L_Pub
 |}.
 
-Instance MLPubminL: MinimunLanguage MLPubL := {|
-  Logic.MinimunLogic.Syntax.impp := ModalLogic_Pub.impp
+Instance MLPubminL: MinimumLanguage MLPubL := {|
+  Logic.MinimumLogic.Syntax.impp := ModalLogic_Pub.impp
 |}.
 
 Instance MLPubpL: PropositionalLanguage MLPubL := {|
@@ -96,7 +96,7 @@ Instance MLPubGamma: Provable MLPubL := {|
   provable := ModalLogic_Pub.T_Pub
 |}.
 
-Instance MLPubminAX: MinimunAxiomatization MLPubL MLPubGamma.
+Instance MLPubminAX: MinimumAxiomatization MLPubL MLPubGamma.
 Proof.
   constructor.
   + apply ModalLogic_Pub.MP.
@@ -108,7 +108,7 @@ Instance T_Pub_impp_rewrite: RewriteRelation (fun x y => |-- x --> y).
 Qed.
 Instance T_Pub_impp_refl : Reflexive (fun x y => |-- impp x y).
 Proof.
-  pose proof provable_impp_refl.
+  pose proof provable_impp_refl_instance.
   apply H.
 Qed.
 Instance T_Pub_proper_impp : Proper ((fun x y => |-- impp x y) ==> Basics.impl) T_Pub.
@@ -431,10 +431,10 @@ Class PubBaseLanguage (L: Language): Type := {
   P0 : expr
 }.
 
-Definition diamondp {L: Language} {minL: MinimunLanguage L} {pL: PropositionalLanguage L} {pbL: PubBaseLanguage L} (p : expr): expr :=
+Definition diamondp {L: Language} {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {pbL: PubBaseLanguage L} (p : expr): expr :=
   Syntax.negp (boxp (Syntax.negp p)).
 
-Class PubBaseAxiomatization (L: Language) {minL: MinimunLanguage L} {pL: PropositionalLanguage L} {pbL: PubBaseLanguage L} (Gamma: Provable L) {minAX: MinimunAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {cpGamma: ClassicalPropositionalLogic L Gamma} := {
+Class PubBaseAxiomatization (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {pbL: PubBaseLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {cpGamma: ClassicalPropositionalLogic L Gamma} := {
   K_AXIOM: forall p q, |-- boxp (p --> q) --> (boxp p --> boxp q);
   T_AXIOM: forall p, |-- (boxp p) --> p;
   N_RULE: forall a, |-- a -> |-- boxp a;
@@ -444,11 +444,11 @@ Class PubBaseAxiomatization (L: Language) {minL: MinimunLanguage L} {pL: Proposi
 Section RewriteClass_Pub.
 
 Context {L: Language}
-        {minL: MinimunLanguage L}
+        {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
         {pbL: PubBaseLanguage L}
         {Gamma: Provable L}
-        {minAX: MinimunAxiomatization L Gamma}
+        {minAX: MinimumAxiomatization L Gamma}
         {ipGamma: IntuitionisticPropositionalLogic L Gamma}
         {cpGamma: ClassicalPropositionalLogic L Gamma}
         {dmpAX: DeMorganPropositionalLogic L Gamma}
@@ -487,11 +487,11 @@ Existing Instances boxp_proper_impp boxp_proper_iffp.
 Section LemmaFromPubBaseAxiomatization.
 
 Context {L: Language}
-        {minL: MinimunLanguage L}
+        {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
         {pbL: PubBaseLanguage L}
         {Gamma: Provable L}
-        {minAX: MinimunAxiomatization L Gamma}
+        {minAX: MinimumAxiomatization L Gamma}
         {ipGamma: IntuitionisticPropositionalLogic L Gamma}
         {cpGamma: ClassicalPropositionalLogic L Gamma}
         {dmpAX: DeMorganPropositionalLogic L Gamma}
@@ -649,7 +649,7 @@ Proof.
   pose proof double_negp (p && q).
   rewrite <- H4 in H0.
   rewrite <- H0.
-  pose proof Minimun.provable_impp_refl (~~ boxp (~~ (~~ (p && q)))).
+  pose proof Minimum.provable_impp_refl (~~ boxp (~~ (~~ (p && q)))).
   pose proof aux_minimun_rule00 _ (~~ boxp (~~ (p && ~~ q)) && ~~ boxp (~~ (~~ p && q))) H5.
   pose proof impp_curry (~~ boxp (~~ (p && ~~ q)) && ~~ boxp (~~ (~~ p && q))) (~~ boxp (~~ (~~ (p && q)))) (~~ boxp (~~ (~~ (p && q)))).
   rewrite -> H7 in H6.
@@ -666,7 +666,7 @@ Proof.
   rewrite <- H1.
   pose proof diamondp_negp_elim p q.
   rewrite -> H2.
-  pose proof Minimun.provable_impp_refl (diamondp (p && q) && diamondp (~~ (p && q))).
+  pose proof Minimum.provable_impp_refl (diamondp (p && q) && diamondp (~~ (p && q))).
   apply H3. Qed.
 
 Lemma andp_intros_infer1: forall (A B C: expr), |-- ~~A --> ~~(A&&B&&C).
@@ -732,7 +732,7 @@ Proof.
   rewrite <- H at 1.
   pose proof andp_assoc p q q.
   rewrite <- H0.
-  pose proof Minimun.provable_impp_refl (p && q && q && r).
+  pose proof Minimum.provable_impp_refl (p && q && q && r).
   apply H1. Qed.
 
 Lemma andp_assoc_infer1: forall (p q r s: expr), |-- (p&&q) --> (q&&r) --> s -> |-- (p --> q --> r --> s).
