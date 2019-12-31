@@ -2,8 +2,8 @@ Require Import Logic.lib.Ensembles_ext.
 Require Import Logic.lib.RelationPairs_ext.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ShallowEmbedded.PredicateAsLang.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
@@ -21,7 +21,7 @@ Instance Pred_sL (A: Type) {J: Join A}: SeparationLanguage (Pred_L A) :=
   Build_SeparationLanguage (Pred_L A) WeakSemantics.sepcon WeakSemantics.wand.
 
 Instance Pred_s'L (A: Type) {J: Join A}: SeparationEmpLanguage (Pred_L A) := 
-  Build_SeparationEmpLanguage (Pred_L A) (Pred_sL A) (@WeakSemantics.emp _ eq J).
+  Build_SeparationEmpLanguage (Pred_L A) (@WeakSemantics.emp _ eq J).
 
 Instance Pred_fsSM (A: Type) {J: Join A}: @FlatSemantics.SeparatingSemantics (Pred_L A) (Pred_sL A) (Build_Model A) (unit_kMD _) tt eq J (Pred_SM A).
 Proof.
