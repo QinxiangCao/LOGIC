@@ -174,7 +174,7 @@ SeparationLogic_DeepEmbedded_FILES = \
   SeparationLanguage.v SeparationEmpLanguage.v \
   Parameter.v \
   ParametricSeparationLogic.v SeparationLogicsInLiteratures.v \
-  FlatSemantics.v ParametricCompleteness.v
+  FlatSemantics.v ParametricCompleteness.v MinimumSeparationLogic
 
 SeparationLogic_ShallowEmbedded_FILES = \
   PredicateSeparationLogic.v MonoPredicateSeparationLogic.v
