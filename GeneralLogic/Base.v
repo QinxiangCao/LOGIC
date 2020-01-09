@@ -89,7 +89,7 @@ Declare Scope logic_base.
 Declare Scope syntax.
 Declare Scope kripke_model.
 Declare Scope kripke_model_class.
-Declare Scope Double_Derivable1.
+Declare Scope Derivable1.
 
 Notation "m  |=  x" := (satisfies m x) (at level 70, no associativity) : logic_base.
 Notation "|--  x" := (provable x) (at level 71, no associativity) : logic_base.
@@ -97,9 +97,9 @@ Notation "Phi  |--  x" := (derivable Phi x) (at level 70, no associativity) : lo
 Notation "Phi ;; x" := (Union _ Phi (Singleton _ x)) (at level 69, left associativity) : logic_base.
 Notation "x --||-- y" := (logic_equiv x  y) (at level 71, no associativity).
 
-Module Double_Derivable1.
-Notation "x |-- y" := (derivable1 x y) (at level 70, no associativity) :Double_Derivable1.
-End Double_Derivable1.
+Module Derivable1.
+Notation "x |-- y" := (derivable1 x y) (at level 70, no associativity) :Derivable1.
+End Derivable1.
 
 Module KripkeModelFamilyNotation.
 Notation "'KRIPKE:'  M , m" := (build_model M m) (at level 59, no associativity) : kripke_model.
