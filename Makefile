@@ -7,8 +7,8 @@ COQC=$(COQBIN)coqc
 COQDEP=$(COQBIN)coqdep
 
 DIRS = \
-  lib GeneralLogic MinimunLogic PropositionalLogic ModalLogic SeparationLogic \
-  QuantifierLogic Extensions HoareLogic
+  lib GeneralLogic MinimumLogic PropositionalLogic ModalLogic SeparationLogic \
+  QuantifierLogic Extensions HoareLogic LogicGenerator
 
 COQ_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
 DEP_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
@@ -43,32 +43,32 @@ GeneralLogic_FILES = \
   $(GeneralLogic_Complete_FILES:%.v=Complete/%.v) \
   $(GeneralLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
-MinimunLogic_ProofTheory_FILES = \
-  Minimun.v ProofTheoryPatterns.v \
+MinimumLogic_ProofTheory_FILES = \
+  Minimum.v ProofTheoryPatterns.v \
   RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v
 
-MinimunLogic_Semantics_FILES = \
+MinimumLogic_Semantics_FILES = \
   Kripke.v Trivial.v SemanticEquiv.v
 
-MinimunLogic_Sound_FILES = \
+MinimumLogic_Sound_FILES = \
   Sound_Kripke.v Sound_Classical_Trivial.v
 
-MinimunLogic_Complete_FILES = \
+MinimumLogic_Complete_FILES = \
   ContextProperty_Kripke.v Lindenbaum_Kripke.v Truth_Kripke.v
 
-MinimunLogic_ShallowEmbedded_FILES = \
+MinimumLogic_ShallowEmbedded_FILES = \
 
-MinimunLogic_DeepEmbedded_FILES = \
-  MinimunLanguage.v KripkeSemantics.v MinimunLogic.v \
+MinimumLogic_DeepEmbedded_FILES = \
+  MinimumLanguage.v KripkeSemantics.v MinimumLogic.v \
   Complete_Kripke.v Soundness.v
 
-MinimunLogic_FILES = \
+MinimumLogic_FILES = \
   Syntax.v \
-  $(MinimunLogic_ProofTheory_FILES:%.v=ProofTheory/%.v) \
-  $(MinimunLogic_Semantics_FILES:%.v=Semantics/%.v) \
-  $(MinimunLogic_Sound_FILES:%.v=Sound/%.v) \
-  $(MinimunLogic_Complete_FILES:%.v=Complete/%.v) \
-  $(MinimunLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v)
+  $(MinimumLogic_ProofTheory_FILES:%.v=ProofTheory/%.v) \
+  $(MinimumLogic_Semantics_FILES:%.v=Semantics/%.v) \
+  $(MinimumLogic_Sound_FILES:%.v=Sound/%.v) \
+  $(MinimumLogic_Complete_FILES:%.v=Complete/%.v) \
+  $(MinimumLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v)
 
 PropositionalLogic_ProofTheory_FILES = \
   Intuitionistic.v DeMorgan.v \
@@ -90,7 +90,8 @@ PropositionalLogic_Complete_FILES = \
 PropositionalLogic_DeepEmbedded_FILES = \
   PropositionalLanguage.v ProofTheories.v \
   KripkeSemantics.v TrivialSemantics.v \
-  Soundness.v Complete_Kripke.v Complete_Classical_Trivial.v
+  Soundness.v Complete_Kripke.v Complete_Classical_Trivial.v \
+  Deep.v Solver.v
 
 PropositionalLogic_ShallowEmbedded_FILES = \
   PredicatePropositionalLogic.v \
@@ -146,7 +147,7 @@ QuantifierLogic_FILES = \
   $(QuantifierLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
 SeparationLogic_ProofTheory_FILES = \
-  SeparationLogic.v SeparationLogicExtension.v \
+  SeparationLogic.v SeparationLogicExtension.v TheoryOfSeparationAxioms.v \
   RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v
 
 SeparationLogic_Model_FILES = \
@@ -192,7 +193,7 @@ Extensions_ProofTheory_FILES = \
   Stable.v ModalSeparation.v Corable.v CoreTransit.v
 
 Extensions_Semantics_FILES = \
-  SemanticStable.v
+  SemanticStable.v ModalSeparation.v
 
 Extensions_Sound_FILES = \
   StableSound.v
@@ -218,16 +219,20 @@ HoareLogic_FILES = \
   Sound_Basic.v Sound_Imp.v Sound_Frame.v \
   Sound_Resource_Angelic.v Sound_Resource_TraceSemantics.v
 
+LogicGenerator_FILES = \
+  ConfigLang.v ConfigDenot.v ConfigCompute.v Utils.v #Generate.v 
+
 FILES = \
   $(lib_FILES:%.v=lib/%.v) \
   $(GeneralLogic_FILES:%.v=GeneralLogic/%.v) \
-  $(MinimunLogic_FILES:%.v=MinimunLogic/%.v) \
+  $(MinimumLogic_FILES:%.v=MinimumLogic/%.v) \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
   $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extensions_FILES:%.v=Extensions/%.v) \
-  $(HoareLogic_FILES:%.v=HoareLogic/%.v)
+  $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
+  $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
 
 $(FILES:%.v=%.vo): %.vo: %.v
 	@echo COQC $*.v
@@ -239,8 +244,8 @@ lib: \
 GeneralLogic: \
   .depend $(GeneralLogic_FILES:%.v=GeneralLogic/%.vo)
 
-MinimunLogic: \
-  .depend $(MinimunLogic_FILES:%.v=MinimunLogic/%.vo)
+MinimumLogic: \
+  .depend $(MinimumLogic_FILES:%.v=MinimumLogic/%.vo)
 
 PropositionalLogic: \
   .depend $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.vo)
@@ -255,7 +260,30 @@ SeparationLogic: \
   .depend $(SeparationLogic_FILES:%.v=SeparationLogic/%.vo)
 
 all: \
-  $(FILES:%.v=%.vo) \
+  $(FILES:%.v=%.vo)
+
+lgen_demo_1:
+	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v
+	@echo COQC LogicGenerator/demo/interface_1.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_1.v
+	@echo COQC LogicGenerator/demo/implementation_1.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_1.v
+
+lgen_demo_2:
+	./logic_gen.sh LogicGenerator/demo/configuration_2.v LogicGenerator/demo/interface_2.v
+	@echo COQC LogicGenerator/demo/interface_2.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_2.v
+	@echo COQC LogicGenerator/demo/implementation_2a.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_2a.v
+	@echo COQC LogicGenerator/demo/implementation_2b.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_2b.v
+
+lgen_demo_3:
+	./logic_gen.sh LogicGenerator/demo/configuration_3.v LogicGenerator/demo/interface_3.v
+	@echo COQC LogicGenerator/demo/interface_3.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_3.v
+	@echo COQC LogicGenerator/demo/implementation_3.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_3.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend

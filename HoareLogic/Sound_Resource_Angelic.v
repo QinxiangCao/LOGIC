@@ -1,8 +1,8 @@
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.Semantics.Kripke.
 Require Import Logic.GeneralLogic.KripkeModel.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.Semantics.Kripke.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.Semantics.Kripke.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.Semantics.Kripke.
 Require Import Logic.SeparationLogic.Syntax.
@@ -118,16 +118,16 @@ Definition sem_precise
 
 Lemma sem_precise_spec
         {L: Language}
-        {minL: MinimunLanguage L}
+        {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {SL: SeparationLanguage L}
+        {sepconL: SepconLanguage L}
         {MD: Model}
         {J: Join model}
         {R: Relation model}
         {po_R: PreOrder Krelation}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM}
-        {fsSM: FlatSemantics.SeparatingSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM}:
+        {fsepconSM: FlatSemantics.SepconSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM}:
   forall m n P Q,
     sem_precise P ->
     greatest_cut m (fun m => KRIPKE: m |= P) n ->
@@ -153,7 +153,13 @@ Context {P: ProgrammingLanguage}
       {CPR: ConcurrentProgrammingLanguage_Sresource P Res}
  {MD: Model} {TLBSS: ThreadLocalBigStepSemantics P model (list (resource * (model -> Prop)))} {J: Join model} {R: Relation model} {po_R: PreOrder Krelation} {R_BSS: Resource_BigStepSemantics P model TLBSS}.
 
-Context {L: Language} {minL: MinimunLanguage L} {pL: PropositionalLanguage L} {SL: SeparationLanguage L} {SM: Semantics L MD} {kiSM: KripkeIntuitionisticSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM} {fsSM: FlatSemantics.SeparatingSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM}.
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {pL: PropositionalLanguage L}
+        {sepconL: SepconLanguage L}
+        {SM: Semantics L MD}
+        {kiSM: KripkeIntuitionisticSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM}
+        {fsepconSM: FlatSemantics.SepconSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM}.
 
 Lemma hoare_resource_partial_sound: forall
   (r: resource)

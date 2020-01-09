@@ -3,9 +3,9 @@ Require Import Coq.Classes.RelationClasses.
 Require Import Logic.lib.Coqlib.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
-Require Import Logic.MinimunLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
@@ -23,13 +23,13 @@ Import SeparationLogicNotation.
 Section RewriteClass.
 
 Context {L: Language}
-        {minL: MinimunLanguage L}
-        {pL: PropositionalLanguage L}
-        {sL: SeparationLanguage L}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {wandL: WandLanguage L}
         {Gamma: Provable L}
-        {minAX: MinimunAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
-        {sAX: SeparationLogic L Gamma}.
+        {minAX: MinimumAxiomatization L Gamma}
+        {sepconAX: SepconAxiomatization L Gamma}
+        {wandAX: WandAxiomatization L Gamma}.
 
 Instance sepcon_proper_impp: Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) sepcon.
 Proof.
@@ -45,6 +45,9 @@ Proof.
   unfold Basics.flip in H.
   apply wand_mono; auto.
 Qed.
+
+Context {pL: PropositionalLanguage L}
+        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
 
 Instance sepcon_proper_iffp: Proper ((fun x y => |-- iffp x y) ==> (fun x y => |-- iffp x y) ==> (fun x y => |-- iffp x y)) sepcon.
 Proof.

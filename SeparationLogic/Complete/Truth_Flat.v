@@ -9,10 +9,10 @@ Require Import Logic.GeneralLogic.Semantics.Kripke.
 Require Import Logic.GeneralLogic.Complete.ContextProperty.
 Require Import Logic.GeneralLogic.Complete.ContextProperty_Kripke.
 Require Import Logic.GeneralLogic.Complete.Lindenbaum.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
-Require Import Logic.MinimunLogic.Semantics.Kripke.
-Require Import Logic.MinimunLogic.Complete.ContextProperty_Kripke.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.MinimumLogic.Semantics.Kripke.
+Require Import Logic.MinimumLogic.Complete.ContextProperty_Kripke.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.Semantics.Kripke.
@@ -37,26 +37,29 @@ Import KripkeModelNotation_Intuitionistic.
 Section TruthLemma.
 
 Context {L: Language}
-        {minL: MinimunLanguage L}
+        {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {sL: SeparationLanguage L}
+        {sepconL: SepconLanguage L}
+        {wandL: WandLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
-        {minSC: MinimunSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
         {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
         {AX: NormalAxiomatization L GammaP GammaD}
-        {minAX: MinimunAxiomatization L GammaP}
+        {minAX: MinimumAxiomatization L GammaP}
         {ipAX: IntuitionisticPropositionalLogic L GammaP}
-        {sAX: SeparationLogic L GammaP}
+        {sepconAX: SepconAxiomatization L GammaP}
+        {wandAX: WandAxiomatization L GammaP}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}
         {R: Relation (Kworlds M)}
         {J: Join (Kworlds M)}
         {SM: Semantics L MD}
-        {fsSM: SeparatingSemantics L MD M SM}.
+        {fsepconSM: SepconSemantics L MD M SM}
+        {fwandSM: WandSemantics L MD M SM}.
 
 Context (cP: context -> Prop)
         (rel: bijection (Kworlds M) (sig cP)).
@@ -152,9 +155,9 @@ Proof.
     exists (x -* y), x; split; [| split]; auto.
 Qed.
 
-Context {s'L: SeparationEmpLanguage L}
-        {EmpsAX: EmpSeparationLogic L GammaP}
-        {feSM: EmpSemantics L MD M SM}.
+Context {empL: EmpLanguage L}
+        {empAX: EmpAxiomatization L GammaP}
+        {fempSM: EmpSemantics L MD M SM}.
 
 Lemma truth_lemma_emp
       (AL_DC: at_least derivable_closed cP)

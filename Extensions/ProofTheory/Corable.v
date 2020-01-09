@@ -1,11 +1,11 @@
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Classes.RelationClasses.
 Require Import Logic.GeneralLogic.Base.
-Require Import Logic.MinimunLogic.Syntax.
+Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.SeparationLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
-Require Import Logic.MinimunLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
@@ -21,7 +21,13 @@ Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 Import SeparationLogicNotation.
 
-Class Corable (L: Language) {minL: MinimunLanguage L} {pL: PropositionalLanguage L} {sL: SeparationLanguage L} (Gamma: Provable L) {minAX: MinimunAxiomatization L Gamma} {ipAX: IntuitionisticPropositionalLogic L Gamma} {sAX: SeparationLogic L Gamma} := {
+Class Corable
+      (L: Language)
+      {minL: MinimumLanguage L}
+      {pL: PropositionalLanguage L}
+      {sepconL: SepconLanguage L}
+      {wandL: WandLanguage L}
+      (Gamma: Provable L) := {
   corable: expr -> Prop;
   corable_pstable: PropositionalStable L Gamma corable;
   corable_sstable: SeparationStable L Gamma corable;
@@ -31,13 +37,15 @@ Class Corable (L: Language) {minL: MinimunLanguage L} {pL: PropositionalLanguage
 Section Corable.
 
 Context {L: Language}
-        {minL: MinimunLanguage L}
+        {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {sL: SeparationLanguage L}
+        {sepconL: SepconLanguage L}
+        {wandL: WandLanguage L}
         {Gamma: Provable L}
-        {minAX: MinimunAxiomatization L Gamma}
+        {minAX: MinimumAxiomatization L Gamma}
         {ipAX: IntuitionisticPropositionalLogic L Gamma}
-        {sAX: SeparationLogic L Gamma}
+        {sepconAX: SepconAxiomatization L Gamma}
+        {wandAX: WandAxiomatization L Gamma}
         {CosAX: Corable L Gamma}.
 
 Lemma corable_andp: forall x y, corable x -> corable y -> corable (x && y).
@@ -59,16 +67,16 @@ Lemma corable_truep: corable TT.
 Proof. apply (@truep_stable L _ _ Gamma corable corable_pstable); auto. Qed.
 
 Lemma corable_sepcon: forall x y, corable x -> corable y -> corable (x * y).
-Proof. intros. apply (@sepcon_stable L _ _ Gamma corable corable_sstable); auto. Qed.
+Proof. intros. apply (@sepcon_stable L _ _ _ Gamma corable corable_sstable); auto. Qed.
 
 Lemma corable_wand: forall x y, corable x -> corable y -> corable (x -* y).
-Proof. intros. apply (@wand_stable L _ _ Gamma corable corable_sstable); auto. Qed.
+Proof. intros. apply (@wand_stable L _ _ _ Gamma corable corable_sstable); auto. Qed.
 
 Instance corable_proper_iff: Proper ((fun x y => |-- x <--> y) ==> iff) corable.
 Proof. apply (@stable_proper_iffp L _ _ Gamma corable corable_pstable); auto. Qed.
 
 Lemma corable_andp_sepcon1: forall x y z, corable x -> |-- (x && y) * z <--> x && (y * z).
-Proof. intros. apply (@stable_andp_sepcon1 L _ _ _ Gamma corable corable_sabs); auto. Qed.
+Proof. intros. apply (@stable_andp_sepcon1 L _ _ _ _ Gamma corable corable_sabs); auto. Qed.
 
 Lemma corable_andp_sepcon2: forall x y z, corable y -> |-- (x && y) * z <--> y && (x * z).
 Proof.

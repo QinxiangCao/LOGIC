@@ -12,12 +12,12 @@ Require Import Logic.GeneralLogic.Complete.Lindenbaum.
 Require Import Logic.GeneralLogic.Complete.Lindenbaum_Kripke.
 Require Import Logic.GeneralLogic.Complete.Canonical_Kripke.
 Require Import Logic.GeneralLogic.Complete.Complete_Kripke.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
-Require Import Logic.MinimunLogic.Semantics.Kripke.
-Require Import Logic.MinimunLogic.Complete.ContextProperty_Kripke.
-Require Import Logic.MinimunLogic.Complete.Lindenbaum_Kripke.
-Require Import Logic.MinimunLogic.Complete.Truth_Kripke.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.MinimumLogic.Semantics.Kripke.
+Require Import Logic.MinimumLogic.Complete.ContextProperty_Kripke.
+Require Import Logic.MinimumLogic.Complete.Lindenbaum_Kripke.
+Require Import Logic.MinimumLogic.Complete.Truth_Kripke.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
@@ -60,13 +60,13 @@ Context {Sigma: SeparationEmpLanguage.PropositionalVariables}
         {CV: Countable SeparationEmpLanguage.Var}
         (SLP: SL_Parameter).
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sL SeparationEmpLanguage.s'L.
+Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
 
-Existing Instances ParametricSeparationLogic.GP ParametricSeparationLogic.GD ParametricSeparationLogic.AX ParametricSeparationLogic.minAX  ParametricSeparationLogic.ipAX ParametricSeparationLogic.sAX ParametricSeparationLogic.EmpsAX ParametricSeparationLogic.ParAX.
+Existing Instances ParametricSeparationLogic.GP ParametricSeparationLogic.GD ParametricSeparationLogic.AX ParametricSeparationLogic.minAX  ParametricSeparationLogic.ipAX ParametricSeparationLogic.sepconAX ParametricSeparationLogic.wandAX ParametricSeparationLogic.empAX ParametricSeparationLogic.sepcon_orp_AX ParametricSeparationLogic.sepcon_falsep_AX ParametricSeparationLogic.ParAX.
 
 Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_ipSC Axiomatization2SequentCalculus_cpSC.
 
-Existing Instances FlatSemantics.MD FlatSemantics.kMD FlatSemantics.R FlatSemantics.J FlatSemantics.SM FlatSemantics.kminSM FlatSemantics.kpSM FlatSemantics.fsSM FlatSemantics.feSM.
+Existing Instances FlatSemantics.MD FlatSemantics.kMD FlatSemantics.R FlatSemantics.J FlatSemantics.SM FlatSemantics.kminSM FlatSemantics.kpSM FlatSemantics.fsepconSM FlatSemantics.fwandSM FlatSemantics.fempSM.
 
 Definition cP : context -> Prop := Intersection _ (Intersection _ derivable_closed orp_witnessed) consistent.
 

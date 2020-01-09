@@ -1,9 +1,9 @@
 Require Import Logic.GeneralLogic.Base.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
-Require Import Logic.MinimunLogic.ProofTheory.RewriteClass.
-Require Import Logic.MinimunLogic.Syntax.
-Require Import Logic.MinimunLogic.ProofTheory.Minimun.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
@@ -11,6 +11,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.DeepEmbedded.Parameter.
 Require Logic.SeparationLogic.DeepEmbedded.SeparationLanguage.
 Require Logic.SeparationLogic.DeepEmbedded.SeparationEmpLanguage.
@@ -25,7 +26,7 @@ Section ReynoldsLogic.
 
 Context {Sigma: SeparationLanguage.PropositionalVariables}.
 
-Existing Instances SeparationLanguage.L SeparationLanguage.minL SeparationLanguage.pL SeparationLanguage.sL.
+Existing Instances SeparationLanguage.L SeparationLanguage.minL SeparationLanguage.pL SeparationLanguage.sepconL  SeparationLanguage.wandL.
 
 Inductive provable: SeparationLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -38,7 +39,7 @@ Inductive provable: SeparationLanguage.expr Sigma -> Prop :=
 | orp_intros2: forall x y, provable (y --> x || y)
 | orp_elim: forall x y z, provable ((x --> z) --> (y --> z) --> (x || y --> z))
 | falsep_elim: forall x, provable (FF --> x)
-| sepcon_comm: forall x y, provable (x * y --> y * x)
+| sepcon_comm: forall x y, provable (x * y <--> y * x)
 | sepcon_assoc: forall x y z, provable (x * (y * z) <--> (x * y) * z)
 | wand_sepcon_adjoint1: forall x y z, provable (x * y --> z) -> provable (x --> (y -* z))
 | wand_sepcon_adjoint2: forall x y z, provable (x --> (y -* z)) -> provable (x * y --> z)
@@ -51,7 +52,7 @@ Instance GD: Derivable SeparationLanguage.L := Provable2Derivable.
 Instance AX: NormalAxiomatization SeparationLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
-Instance minAX: MinimunAxiomatization SeparationLanguage.L GP.
+Instance minAX: MinimumAxiomatization SeparationLanguage.L GP.
 Proof.
   constructor.
   + apply modus_ponens.
@@ -71,14 +72,28 @@ Proof.
   + apply falsep_elim.
 Qed.
 
-Instance sAX: SeparationLogic SeparationLanguage.L GP.
+Instance wandAX: WandAxiomatization SeparationLanguage.L GP.
 Proof.
   constructor.
-  + apply sepcon_comm.
-  + apply sepcon_assoc.
-  + intros; split.
-    - apply wand_sepcon_adjoint1.
-    - apply wand_sepcon_adjoint2.
+  intros; split.
+  + apply wand_sepcon_adjoint1.
+  + apply wand_sepcon_adjoint2.
+Qed.
+
+Instance sepconAX: SepconAxiomatization SeparationLanguage.L GP.
+Proof.
+  assert (SepconAxiomatization_weak_iffp SeparationLanguage.L GP).
+  {
+    constructor.
+    + apply sepcon_comm.
+    + apply sepcon_assoc.
+  }
+  eapply @SepconAxiomatizationWeakIff2SepconAxiomatizationWeak in H;
+  try typeclasses eauto.
+  eapply @SepconAxiomatizationWeak2SepconAxiomatization;
+  try typeclasses eauto.
+  eapply @Adj2SepconMono;
+  try typeclasses eauto.
 Qed.
 
 Instance gcsAX: GarbageCollectSeparationLogic SeparationLanguage.L GP.
@@ -95,7 +110,7 @@ Section OHearnLogic.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sL SeparationEmpLanguage.s'L.
+Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
 
 Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -109,7 +124,7 @@ Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | orp_elim: forall x y z, provable ((x --> z) --> (y --> z) --> (x || y --> z))
 | falsep_elim: forall x, provable (FF --> x)
 | excluded_middle: forall x, provable (x || ~~ x)
-| sepcon_comm: forall x y, provable (x * y --> y * x)
+| sepcon_comm: forall x y, provable (x * y <--> y * x)
 | sepcon_assoc: forall x y z, provable (x * (y * z) <--> (x * y) * z)
 | wand_sepcon_adjoint1: forall x y z, provable (x * y --> z) -> provable (x --> (y -* z))
 | wand_sepcon_adjoint2: forall x y z, provable (x --> (y -* z)) -> provable (x * y --> z)
@@ -122,7 +137,7 @@ Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
-Instance minAX: MinimunAxiomatization SeparationEmpLanguage.L GP.
+Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply modus_ponens.
@@ -148,18 +163,34 @@ Proof.
   apply excluded_middle.
 Qed.
 
-Instance sAX: SeparationLogic SeparationEmpLanguage.L GP.
+Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
-  + apply sepcon_comm.
-  + apply sepcon_assoc.
-  + intros; split.
-    - apply wand_sepcon_adjoint1.
-    - apply wand_sepcon_adjoint2.
+  intros; split.
+  + apply wand_sepcon_adjoint1.
+  + apply wand_sepcon_adjoint2.
 Qed.
 
-Instance EmpsAX: EmpSeparationLogic SeparationEmpLanguage.L GP.
+Instance sepconAX: SepconAxiomatization SeparationEmpLanguage.L GP.
 Proof.
+  assert (SepconAxiomatization_weak_iffp SeparationEmpLanguage.L GP).
+  {
+    constructor.
+    + apply sepcon_comm.
+    + apply sepcon_assoc.
+  }
+  eapply @SepconAxiomatizationWeakIff2SepconAxiomatizationWeak in H;
+  try typeclasses eauto.
+  eapply @SepconAxiomatizationWeak2SepconAxiomatization;
+  try typeclasses eauto.
+  eapply @Adj2SepconMono;
+  try typeclasses eauto.
+Qed.
+
+Instance empAX: EmpAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  eapply @EmpAxiomatizationIff2EmpAxiomatization;
+  try typeclasses eauto.
   constructor.
   apply sepcon_emp.
 Qed.
@@ -172,7 +203,7 @@ Section LogicOnModuResModel.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sL SeparationEmpLanguage.s'L.
+Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
 
 Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -185,7 +216,7 @@ Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | orp_intros2: forall x y, provable (y --> x || y)
 | orp_elim: forall x y z, provable ((x --> z) --> (y --> z) --> (x || y --> z))
 | falsep_elim: forall x, provable (FF --> x)
-| sepcon_comm: forall x y, provable (x * y --> y * x)
+| sepcon_comm: forall x y, provable (x * y <--> y * x)
 | sepcon_assoc: forall x y z, provable (x * (y * z) <--> (x * y) * z)
 | wand_sepcon_adjoint1: forall x y z, provable (x * y --> z) -> provable (x --> (y -* z))
 | wand_sepcon_adjoint2: forall x y z, provable (x --> (y -* z)) -> provable (x * y --> z)
@@ -199,7 +230,7 @@ Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
-Instance minAX: MinimunAxiomatization SeparationEmpLanguage.L GP.
+Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply modus_ponens.
@@ -219,18 +250,34 @@ Proof.
   + apply falsep_elim.
 Qed.
 
-Instance sAX: SeparationLogic SeparationEmpLanguage.L GP.
+Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
-  + apply sepcon_comm.
-  + apply sepcon_assoc.
-  + intros; split.
-    - apply wand_sepcon_adjoint1.
-    - apply wand_sepcon_adjoint2.
+  intros; split.
+  + apply wand_sepcon_adjoint1.
+  + apply wand_sepcon_adjoint2.
 Qed.
 
-Instance EmpsAX: EmpSeparationLogic SeparationEmpLanguage.L GP.
+Instance sepconAX: SepconAxiomatization SeparationEmpLanguage.L GP.
 Proof.
+  assert (SepconAxiomatization_weak_iffp SeparationEmpLanguage.L GP).
+  {
+    constructor.
+    + apply sepcon_comm.
+    + apply sepcon_assoc.
+  }
+  eapply @SepconAxiomatizationWeakIff2SepconAxiomatizationWeak in H;
+  try typeclasses eauto.
+  eapply @SepconAxiomatizationWeak2SepconAxiomatization;
+  try typeclasses eauto.
+  eapply @Adj2SepconMono;
+  try typeclasses eauto.
+Qed.
+
+Instance empAX: EmpAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  eapply @EmpAxiomatizationIff2EmpAxiomatization;
+  try typeclasses eauto.
   constructor.
   apply sepcon_emp.
 Qed.
@@ -249,7 +296,7 @@ Section LogicOnMSL.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sL SeparationEmpLanguage.s'L.
+Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
 
 Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -263,7 +310,7 @@ Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | orp_elim: forall x y z, provable ((x --> z) --> (y --> z) --> (x || y --> z))
 | falsep_elim: forall x, provable (FF --> x)
 | impp_choice: forall x y, provable ((x --> y) || (y --> x))
-| sepcon_comm: forall x y, provable (x * y --> y * x)
+| sepcon_comm: forall x y, provable (x * y <--> y * x)
 | sepcon_assoc: forall x y z, provable (x * (y * z) <--> (x * y) * z)
 | wand_sepcon_adjoint1: forall x y z, provable (x * y --> z) -> provable (x --> (y -* z))
 | wand_sepcon_adjoint2: forall x y z, provable (x --> (y -* z)) -> provable (x * y --> z)
@@ -276,7 +323,7 @@ Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
-Instance minAX: MinimunAxiomatization SeparationEmpLanguage.L GP.
+Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply modus_ponens.
@@ -296,22 +343,37 @@ Proof.
   + apply falsep_elim.
 Qed.
 
-Instance sAX: SeparationLogic SeparationEmpLanguage.L GP.
+Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
-  + apply sepcon_comm.
-  + apply sepcon_assoc.
-  + intros; split.
-    - apply wand_sepcon_adjoint1.
-    - apply wand_sepcon_adjoint2.
+  intros; split.
+  + apply wand_sepcon_adjoint1.
+  + apply wand_sepcon_adjoint2.
 Qed.
 
-Instance EmpsAX: EmpSeparationLogic SeparationEmpLanguage.L GP.
+Instance sepconAX: SepconAxiomatization SeparationEmpLanguage.L GP.
 Proof.
+  assert (SepconAxiomatization_weak_iffp SeparationEmpLanguage.L GP).
+  {
+    constructor.
+    + apply sepcon_comm.
+    + apply sepcon_assoc.
+  }
+  eapply @SepconAxiomatizationWeakIff2SepconAxiomatizationWeak in H;
+  try typeclasses eauto.
+  eapply @SepconAxiomatizationWeak2SepconAxiomatization;
+  try typeclasses eauto.
+  eapply @Adj2SepconMono;
+  try typeclasses eauto.
+Qed.
+
+Instance empAX: EmpAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  eapply @EmpAxiomatizationIff2EmpAxiomatization;
+  try typeclasses eauto.
   constructor.
   apply sepcon_emp.
 Qed.
-
 
 End LogicOnMSL.
 End LogicOnMSL.
