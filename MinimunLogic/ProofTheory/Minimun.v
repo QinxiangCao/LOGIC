@@ -28,6 +28,18 @@ Class MinimunSequentCalculus (L: Language) {minL: MinimunLanguage L} (Gamma: Der
   deduction_impp_intros: forall Phi x y, Phi;; x |-- y -> Phi |-- x --> y
 }.
 
+Class NormalDeduction (L:Language) {minL: MinimunLanguage L} (GammaP:Provable L) (GammaD:Derivable1 L): Type := {
+  derivable1_provable:forall x y,derivable1 x y <->
+                        provable (impp x y)
+}.
+
+Class MinimunDeduction (L:Language) {minL:MinimunLanguage L} (Gamma:Derivable1 L) := {
+  deduction1_intros:forall x1 x2 y1 y2, derivable1 x2 x1 -> derivable1 y1 y2 
+  -> derivable1 (x1 --> y1) (x2 --> y2);
+  deduction1_axiom1:forall x y, derivable1 x (y --> x);
+  deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z)
+}.
+
 Section DerivableRulesFromAxiomatization.
 
 Context {L: Language}

@@ -51,6 +51,42 @@ Proof.
   apply aux_minimun_rule01, H0.
 Qed.
 
+Section Derivable1.
+
+Context {GammaD: Derivable1 L}
+        {MDL:MinimunDeduction L GammaD}.
+
+Instance impp_proper_derivable1:
+  Proper (derivable1 --> derivable1 ==> derivable1) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  unfold Basics.flip in H.
+  pose proof deduction1_intros _ _ _ _ H H0.
+  tauto.
+  Qed.
+
+End Derivable1.
+
+Section Derivable1_provable.
+
+Context {GammaD: Derivable1 L}
+        {MDL:MinimunDeduction L GammaD}
+        {NDL:NormalDeduction L GammaP GammaD}.
+
+Instance provable_proper_derivable1:
+  Proper (derivable1 ==> Basics.impl) provable.
+Proof.
+  hnf;intros.
+  intro.
+  pose proof derivable1_provable x y.
+  rewrite H1 in H.
+  pose proof modus_ponens _ _ H H0.
+  tauto.
+Qed.
+
+End Derivable1_provable.
+
 End Provable.
 
 Section Derivable.
@@ -69,6 +105,25 @@ Proof.
   apply (deduction_weaken0 Phi) in H.
   exact (deduction_modus_ponens _ _ _ H0 H).
 Qed.
+
+Section Derivable1.
+
+Context {GammaD1:Derivable1 L}
+        {NDL:NormalDeduction L GammaP GammaD1}.
+
+Instance derivable_proper_derivable1:
+  Proper (eq ==> derivable1 ==> Basics.impl) derivable.
+Proof.
+  hnf;intros;subst y.
+  hnf;intros.
+  intro.
+  pose proof derivable1_provable x0 y.
+  rewrite H1 in H.
+  rewrite H in H0.
+  tauto.
+Qed.
+
+End Derivable1.
 
 End Derivable.
 
@@ -169,3 +224,4 @@ Qed.
 End TestInSequentCalculus.
 
 End TestInSequentCalculus.
+
