@@ -122,10 +122,60 @@ Proof.
   rewrite H in H0.
   tauto.
 Qed.
-
+Print derivable_proper_derivable1.
 End Derivable1.
 
 End Derivable.
+
+Section Logic_equiv.
+
+Existing Instance derivable_proper_impp.
+
+Context {GammaL:Logic_equiv L}
+        {MEL:MinimunEquiv L GammaL}.
+
+Instance impp_proper_equiv:
+  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  unfold Basics.flip in H.
+  pose proof equiv_impp _ _ _ _ H H0.
+  auto.
+  Qed.
+
+Context {NEL:NormalEquiv L GammaP GammaL}
+        {minAX: MinimunAxiomatization L GammaP}.
+
+Instance provable_proper_iffp : Proper (logic_equiv ==> iff) provable.
+Proof.
+  hnf;intros.
+  pose proof equiv_provable x y.
+  rewrite H0 in H.
+  destruct H.
+  split.
+  -intros. pose proof modus_ponens _ _ H H2;auto.
+  -intros. pose proof modus_ponens _ _ H1 H2;auto.
+  Qed.
+
+Context {GammaD:Derivable L}
+        {SC: NormalSequentCalculus L GammaP GammaD}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimunSequentCalculus L GammaD}.
+
+Instance derivable_proper_equiv:
+  Proper (eq ==> logic_equiv ==> iff) derivable.
+Proof.
+  hnf;intros;subst y.
+  hnf;intros.
+  pose proof equiv_provable x0 y. rewrite H0 in H.
+  destruct H.
+  split.
+  -intros. rewrite H in H2. auto.
+  -intros. rewrite H1 in H2. auto.
+Qed.
+
+End Logic_equiv.
 
 End RewriteClass.
 

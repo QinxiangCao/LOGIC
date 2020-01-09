@@ -23,7 +23,7 @@ Qed.
 
 Section Derivable1.
 
-Instance provable_impp_refl: Reflexive derivable1.
+Instance derivable1_refl: Reflexive derivable1.
 Proof.
   hnf; intros.
   apply deduction1_refl.

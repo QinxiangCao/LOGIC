@@ -40,6 +40,17 @@ Class MinimunDeduction (L:Language) {minL:MinimunLanguage L} (Gamma:Derivable1 L
   deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z)
 }.
 
+Class NormalEquiv (L:Language) {minL: MinimunLanguage L} (GammaP:Provable L) (GammaL:Logic_equiv L): Type := {
+  equiv_provable:forall x y, x --||-- y <->
+                        provable (impp x y) /\ provable (impp y x)
+}.
+
+Class MinimunEquiv (L:Language) {minL:MinimunLanguage L} (Gamma:Logic_equiv L) := {
+  equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
+  (x1 --> y1) --||-- (x2 --> y2)
+}.
+
+
 Section DerivableRulesFromAxiomatization.
 
 Context {L: Language}
