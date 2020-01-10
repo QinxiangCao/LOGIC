@@ -73,49 +73,43 @@ Context {SC: NormalSequentCalculus _ GammaP GammaD}
 
 Lemma LIN_CD: forall x: expr, Lindenbaum_constructable (cannot_derive x) cP.
 Proof.
-  intros.
-  apply Lindenbaum_constructable_suffice; auto.
-  + (*apply ModalLanguage.formula_countable; auto.
-  + apply Lindenbaum_preserves_cannot_derive.
-  + unfold cP.
-    repeat apply Lindenbaum_ensures_by_conjunct.
-    - apply Lindenbaum_cannot_derive_ensures_derivable_closed.
-    -*) Admitted.
+Admitted.
+
+Definition Relation : sig cP -> sig cP -> Prop := 
+fun Phi Psi => forall x : expr , proj1_sig Phi (boxp x) -> proj1_sig Psi x.
+
 
 Definition canonical_frame: semantics.frame :=
-  semantics.Build_frame (sig cP) (fun a b => Included _ (proj1_sig a) (proj1_sig b)).
+  semantics.Build_frame (sig cP) (fun a b => Relation a b).
 
 Definition canonical_eval: ModalLanguage.Var -> semantics.sem canonical_frame :=
   fun p a => proj1_sig a (ModalLanguage.varp p).
-Print semantics.MD.
+
 Definition canonical_Kmodel: @Kmodel semantics.MD semantics.kMD :=
   semantics.Build_Kmodel canonical_frame canonical_eval.
 
 Definition rel: bijection (Kworlds canonical_Kmodel) (sig cP) := bijection_refl.
 
 Definition H_R:
-  forall m n Phi Psi, rel m Phi -> rel n Psi ->
-    (m = n <-> Included _ (proj1_sig Phi) (proj1_sig Psi)).
+  forall m n Phi Psi , rel m Phi -> rel n Psi -> (Relation m n <-> Relation Phi Psi).
 Proof.
   intros.
   change (m = Phi) in H.
   change (n = Psi) in H0.
-Admitted.
+  subst. reflexivity.
+Qed.
 
-Definition Relation : sig cP -> sig cP -> Prop := 
-fun Phi Psi => forall x : expr , proj1_sig Phi (boxp x) -> proj1_sig Psi x.
-Print  context.
-Print sig.
 Definition boxp1 (Phi : context) : context :=
-  fun x => exists y, Phi y /\ y = boxp x.
+  fun x => exists y, Phi y /\ x = boxp y.
+
 Lemma aboutboxp1 : forall Phi Psi : context, forall x : expr,
   Included _ (boxp1 Phi) Psi -> Phi |-- x -> Psi |-- boxp x.
 Proof.
   intros.
+  pose proof deduction_weaken (boxp1 Phi) Psi (boxp x).
+  apply H1 in H. apply H.
 Admitted.
-(*Lemma aboutcP : forall Phi : sig cP ,forall x : expr,
-  proj1_sig Phi |-- x <-> proj1_sig Phi x.
-Admitted.*)
+
 Lemma existence : forall x : expr , forall Phi,
  ~ proj1_sig Phi (boxp x) -> exists Psi,(Relation Phi Psi /\ ~ proj1_sig Psi x).
 Proof.
@@ -144,41 +138,56 @@ Proof.
   pose proof AL_DC. unfold at_least in H6. 
   assert(cP (proj1_sig Phi)).
   Focus 2. apply H6 in H7. unfold derivable_closed in H7. apply H7 in H4.
-  apply H; apply H4. Admitted.
-(*box Phi的定义，是集合的一种性质，满足此性质的*)
-(*Focus 2. apply H1 in H3. Search derivable.*)
-
-(*Lemma truth_lemma_falsep (AL_CONSI: at_least consistent cP):
-  forall m Phi, rel m Phi -> (KRIPKE:canonical_Kmodel , m |= falsep <-> proj1_sig Phi falsep).
-Proof.
-  intros.
-  (*rewrite sat_falsep.
-  pose proof proj2_sig Phi.
-  pose proof AL_CONSI _ H0.
-  rewrite consistent_spec in H1.
-  split; [intros [] |].
-  intro; apply H1.
-  apply derivable_assum; auto.
-Qed.*)
+  apply H; apply H4. apply (proj2_sig Phi). apply H2. unfold P. unfold Included. intros.
 Admitted.
-Lemma truth_lemma_impp
+
+Hypothesis sat_falsep: forall m,(KRIPKE: canonical_Kmodel , m |= ModalLanguage.falsep <-> False).
+
+Hypothesis truth_lemma_falsep:
+  forall m Phi, rel m Phi -> (KRIPKE: canonical_Kmodel , m |= ModalLanguage.falsep <-> proj1_sig Phi ModalLanguage.falsep).
+
+
+Lemma truth_lemma_impp 
       (AL_DC: at_least derivable_closed cP)
       (LIN_CD: forall x, Lindenbaum_constructable (cannot_derive x) cP)
       (x y: expr)
-      (IHx: forall m Phi, rel m Phi -> (KRIPKE: canonical_Kmodel, m |= x <-> proj1_sig Phi x))
-      (IHy: forall m Phi, rel m Phi -> (KRIPKE: canonical_Kmodel, m |= y <-> proj1_sig Phi y)):
-  forall m Phi, rel m Phi -> (KRIPKE: canonical_Kmodel, m |= x --> y <-> proj1_sig Phi (x --> y)).
+      (IHx: forall m Phi, rel m Phi -> (KRIPKE:canonical_Kmodel, m |= x <-> proj1_sig Phi x))
+      (IHy: forall m Phi, rel m Phi -> (KRIPKE:canonical_Kmodel, m |= y <-> proj1_sig Phi y)):
+  forall m Phi, rel m Phi -> (KRIPKE:canonical_Kmodel, m |= x --> y <-> proj1_sig Phi (x --> y)).
 Proof.
-  intros.
-Admitted.*)
+Admitted.
+
+Hypothesis sat_boxp : forall m x Phi, (KRIPKE: canonical_Kmodel, m |= boxp x /\ rel m Phi )
+ <-> forall n Psi ,rel n Psi /\ Relation Phi Psi -> KRIPKE: canonical_Kmodel , n |= x.
+
+Lemma rel_def: forall Phi : sig cP, exists n , rel n Phi.
+Proof.
+  intros. exists Phi. reflexivity.
+Qed.
+
 Lemma TRUTH:
   forall x: expr, forall m Phi, rel m Phi ->
     (KRIPKE: canonical_Kmodel, m |= x <-> proj1_sig Phi x).
 Proof.
-  induction x.
-  + apply truth_lemma_falsep. apply AL_CONSI.
+  induction x. Focus 2.
   + apply truth_lemma_impp. apply AL_DC.
   apply LIN_CD. apply IHx1. apply IHx2.
-  + intros; change (m = Phi) in H; subst; reflexivity.
-  + intros. split . Focus 2. pose proof existence. intros.
-  apply IHx in H. destruct H as [h1 h2]. 
+  Focus 2. intros; change (m = Phi) in H; subst; reflexivity.
+  Focus 2. intros. split. Focus 2. pose proof existence. intros.
+  pose proof sat_boxp m x Phi. destruct H2.
+  apply H3. intros. destruct H4 as [h1 h2]. unfold Relation in h2. apply h2 in H1.
+  apply IHx in h1. apply h1 in H1. apply H1.
+  intros. pose proof existence x Phi. assert (~ (~ proj1_sig Phi (boxp x))).
+  Focus 2. pose proof NNPP (proj1_sig Phi (□ x)). apply H3 in H2. apply H2.
+  unfold not. intros. apply H1 in H2. destruct H2 ; destruct H2 as [h1 h2]. pose proof sat_boxp m x Phi. destruct H2.
+  assert (exists n , rel n x0). apply rel_def. destruct H4. apply IHx in H4 as H5. destruct H5.
+  assert(rel x1 x0 /\ Relation Phi x0 -> KRIPKE: canonical_Kmodel, x1 |= x). apply H2. auto. assert(rel x1 x0 /\ Relation Phi x0). auto. apply H7 in H8.
+  apply IHx in H4. destruct H4. apply H4 in H8. apply h2. apply H8.
+  apply truth_lemma_falsep.
+Qed.
+
+Theorem complete_ModalLogic_Kripke_all: 
+  strongly_complete GD semantics.SM
+ (KripkeModelClass _ _).
+
+
