@@ -368,6 +368,19 @@ Proof.
   + apply ModalLogic_Pub.excluded_middle.
 Qed.
 
+Lemma weak_excluded_middle: forall p, |-- ~~ p || ~~ ~~p.
+Proof.
+  intros.
+  pose proof excluded_middle (~~p).
+  apply H.
+Qed.
+
+Instance MLPubdmpGamma: DeMorganPropositionalLogic MLPubL MLPubGamma.
+Proof.
+  constructor.
+  + apply ModalLogic_Pub.weak_excluded_middle.
+Qed.
+
 Instance T_Pub_iffp_rewrite: RewriteRelation (fun x y => |-- x <--> y).
 Qed.
 Instance T_Pub_iffp_equiv: Equivalence (fun x y => |-- x <--> y).
@@ -572,7 +585,7 @@ Proof.
   pose proof RK _ _ H.
   pose proof K_AXIOM q (p && q).
   rewrite -> H1 in H0.
-  pose proof impp_curry_uncurry (boxp p) (boxp q) (boxp (p && q)).
+  pose proof Intuitionistic.impp_curry_uncurry (boxp p) (boxp q) (boxp (p && q)).
   rewrite H2 in H0.
   apply H0. Qed.
 
@@ -738,13 +751,13 @@ Proof.
 Lemma andp_assoc_infer1: forall (p q r s: expr), |-- (p&&q) --> (q&&r) --> s -> |-- (p --> q --> r --> s).
 Proof.
   intros.
-  pose proof impp_curry_uncurry p q (r-->s).
-  pose proof impp_curry_uncurry (p && q) r s.
+  pose proof Intuitionistic.impp_curry_uncurry p q (r-->s).
+  pose proof Intuitionistic.impp_curry_uncurry (p && q) r s.
   rewrite -> H1 in H0.
   rewrite H0.
   pose proof andp_dup_infer1 p q r.
   rewrite -> H2.
-  pose proof impp_curry_uncurry (p && q) (q && r) s.
+  pose proof Intuitionistic.impp_curry_uncurry (p && q) (q && r) s.
   pose proof andp_assoc (p&&q) q r.
   rewrite -> H4.
   rewrite <- H3.
@@ -782,7 +795,7 @@ Proof.
   rewrite <- H2 in H.
   apply H. Qed.
 
-Lemma boxp_from_unknown: forall (B C: expr), |-- (~~ boxp (P0&&B&&C) && ~~ boxp (~~(P0&&B&&C))) --> P0.
+Lemma boxp_from_unknown1: forall (B C: expr), |-- (~~ boxp (P0&&B&&C) && ~~ boxp (~~(P0&&B&&C))) --> P0.
 Proof.
   intros.
   pose proof andp_intros_infer1 P0 B C.
@@ -797,6 +810,14 @@ Proof.
   pose proof impp_curry (~~ boxp (P0 && B && C)) (~~ boxp (~~(P0 && B && C))) P0.
   pose proof modus_ponens _ _ H7 H6.
   apply H8. Qed.
+
+Lemma boxp_from_unknown2: forall (A C: expr), |-- (~~ boxp (A&&P0&&C) && ~~ boxp (~~(A&&P0&&C))) --> P0.
+Proof.
+  intros.
+  pose proof boxp_from_unknown1 A C.
+  pose proof andp_comm A P0.
+  rewrite H0.
+  apply H. Qed.
 
 Lemma boxp_two_unknown1: forall (A C: expr), |-- (diamondp (A && C) && diamondp (A && ~~C) && diamondp (~~A && C) && diamondp (~~A && ~~C)) --> boxp A --> P0 --> (~~boxp (A&&P0&&C)).
 Proof.
@@ -953,42 +974,99 @@ Qed.
 
 Lemma boxa_one_unknown1: |--(diamonda (B0 && C0) && diamonda (B0 && ~~C0) && diamonda (~~B0 && C0) && diamonda (~~B0 && ~~C0)) --> A0 --> (~~boxa (A0&&B0&&C0)).
 Proof.
-  Admitted.
+  pose proof @boxp_one_unknown1 MLPubL _ _ MLPubpbL_a MLPubGamma _ _ _ _ _ B0 C0.
+  apply H.
+Qed.
 
 Lemma boxa_one_unknown2: |-- (diamonda (B0 && C0) && diamonda (B0 && ~~C0) && diamonda (~~B0 && C0) && diamonda (~~B0 && ~~C0)) --> A0 --> (~~boxa (~~(A0&&B0&&C0))).
 Proof.
-  Admitted.
+  pose proof @boxp_one_unknown2 MLPubL _ _ MLPubpbL_a MLPubGamma _ _ _ _ _ B0 C0.
+  apply H.
+Qed.
 
 Lemma boxa_from_unknown: |-- (~~ boxa (A0&&B0&&C0) && ~~ boxa (~~(A0&&B0&&C0))) --> A0.
 Proof.
-  Admitted.
+  pose proof @boxp_from_unknown1 MLPubL _ _ MLPubpbL_a MLPubGamma _ _ _ _ B0 C0.
+  apply H.
+Qed.
 
 Lemma boxb_two_unknown1: |-- (diamondb (A0 && C0) && diamondb (A0 && ~~C0) && diamondb (~~A0 && C0) && diamondb (~~A0 && ~~C0)) --> boxb A0 --> B0 --> (~~boxb (A0&&B0&&C0)).
 Proof.
-  Admitted.
+  pose proof @boxp_two_unknown1 MLPubL _ _ MLPubpbL_b MLPubGamma _ _ _ _ _ A0 C0.
+  apply H.
+Qed.
 
 Lemma boxb_two_unknown2: |-- (diamondb (A0 && C0) && diamondb (A0 && ~~C0) && diamondb (~~A0 && C0) && diamondb (~~A0 && ~~C0)) --> boxb A0 --> B0 --> (~~boxb (~~(A0&&B0&&C0))).
 Proof.
-  Admitted.
+  pose proof @boxp_two_unknown2 MLPubL _ _ MLPubpbL_b MLPubGamma _ _ _ _ _ A0 C0.
+  apply H.
+Qed.
 
 Lemma boxb_from_unknown: |-- (~~ boxb (A0&&B0&&C0) && ~~ boxb (~~(A0&&B0&&C0))) --> B0.
 Proof.
-  Admitted.
+  pose proof @boxp_from_unknown2 MLPubL _ _ MLPubpbL_b MLPubGamma _ _ _ _ A0 C0.
+  apply H.
+Qed.
 
 Lemma boxc_from_hear: forall (p q: L_Pub), |-- boxc p --> boxc (p --> q) --> boxc q.
 Proof.
-  pose proof boxp_from_hear.
-  apply H. Qed.
+  intros.
+  pose proof @boxp_from_hear MLPubL _ _ MLPubpbL_c MLPubGamma _ _ _ _ p q.
+  apply H.
+Qed.
 
 Lemma boxc_three_know: |-- boxc A0 --> boxc B0 --> C0 --> boxc (A0&&B0&&C0).
 Proof.
-  Admitted.
+  pose proof boxp_three_know A0 B0.
+  apply H.
+Qed.
 
+Lemma impp_curry_uncurry: forall p q r, |-- (p --> q --> r) <--> (p && q --> r).
+Proof.
+  intros.
+  pose proof Intuitionistic.impp_curry_uncurry p q r.
+  apply H.
+Qed.
 
+Lemma solve_impp_andp_infer1: forall p q r s, |-- p --> q --> r -> |-- p --> q --> s -> |-- p --> q --> r&&s.
+Proof.
+  intros.
+  pose proof impp_curry_uncurry p q r.
+  rewrite H1 in H.
+  pose proof impp_curry_uncurry p q s.
+  rewrite H2 in H0.
+  pose proof solve_impp_andp (p && q) r s H H0.
+  pose proof impp_curry_uncurry p q (r && s).
+  rewrite <- H4 in H3.
+  apply H3.
+Qed.
 
+Lemma solve_impp_andp_infer2: forall p q r s t, |-- p --> q --> r --> s -> |-- p --> q --> r --> t -> |-- p --> q --> r --> s&&t.
+Proof.
+  intros.
+  pose proof impp_curry_uncurry p q (r --> s).
+  pose proof impp_curry_uncurry (p && q) r s.
+  rewrite H2 in H1.
+  rewrite H1 in H.
+  pose proof impp_curry_uncurry p q (r --> t).
+  pose proof impp_curry_uncurry (p && q) r t.
+  rewrite H4 in H3.
+  rewrite H3 in H0.
+  pose proof solve_impp_andp (p && q && r) s t H H0.
+  pose proof impp_curry_uncurry p q (r --> s && t).
+  pose proof impp_curry_uncurry (p && q) r (s && t).
+  rewrite H7 in H6.
+  rewrite <- H6 in H5.
+  apply H5.
+Qed.
 
-
-
+Lemma impp_curry_uncurry_infer1: forall a b c p q, |-- (a --> p && q --> b --> c) -> |-- (a --> p --> q --> b --> c).
+Proof.
+  intros.
+  pose proof impp_curry_uncurry p q (b --> c).
+  rewrite <- H0 in H.
+  apply H.
+Qed.
 
 
 
@@ -996,7 +1074,10 @@ Lemma A_DONT_KNOW: |-- boxa ((diamonda (B0 && C0) && diamonda (B0 && ~~C0) && di
 Proof.
   pose proof boxa_one_unknown1.
   pose proof boxa_one_unknown2.
-Admitted.
+  pose proof solve_impp_andp_infer1 _ _ _ _ H H0.
+  pose proof N_RULE_A _ H1.
+  apply H2. Qed.
+
 
 Lemma B_DONT_KNOW: |-- boxb ((diamondb (A0 && C0) && diamondb (A0 && ~~C0) && diamondb (~~A0 && C0) && diamondb (~~A0 && ~~C0)) --> boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> B0 --> (~~boxb (A0&&B0&&C0)) && (~~boxb (~~(A0&&B0&&C0)))).
 Proof.
@@ -1004,15 +1085,24 @@ Proof.
   rewrite -> H.
   pose proof boxb_two_unknown1.
   pose proof boxb_two_unknown2.
-Admitted.
+  pose proof solve_impp_andp_infer2 _ _ _ _ _ H0 H1.
+  pose proof N_RULE_B _ H2.
+  apply H3. Qed.
 
 Lemma C_KNOW: |-- boxc (boxc (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> boxc (boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0)))) --> boxc (boxb (~~boxa (A0&&B0&&C0) && ~~boxa (~~(A0&&B0&&C0))) --> ~~boxb (A0&&B0&&C0) && ~~boxb (~~(A0&&B0&&C0))) --> C0 --> boxc (A0&&B0&&C0)).
 Proof.
   pose proof boxc_from_hear (boxb (~~ boxa (A0 && B0 && C0) && ~~ boxa (~~ (A0 && B0 && C0)))) (~~ boxb (A0 && B0 && C0) && ~~ boxb (~~ (A0 && B0 && C0))).
+  pose proof impp_curry_uncurry (boxc (boxb (~~ boxa (A0 && B0 && C0) && ~~ boxa (~~ (A0 && B0 && C0))))) (boxc (boxb (~~ boxa (A0 && B0 && C0) && ~~ boxa (~~ (A0 && B0 && C0))) --> ~~ boxb (A0 && B0 && C0) && ~~ boxb (~~ (A0 && B0 && C0)))) (boxc (~~ boxb (A0 && B0 && C0) && ~~ boxb (~~ (A0 && B0 && C0)))).
+  rewrite -> H0 in H.
   pose proof boxa_from_unknown.
   pose proof boxb_from_unknown.
   pose proof boxc_three_know.
-Admitted.
+  rewrite <- H2 in H3 at 1.
+  rewrite <- H1 in H3 at 1.
+  rewrite <- H in H3.
+  pose proof impp_curry_uncurry_infer1 _ _ _ _ _ H3.
+  pose proof N_RULE_C _ H4.
+  apply H5. Qed.
 
 
 
