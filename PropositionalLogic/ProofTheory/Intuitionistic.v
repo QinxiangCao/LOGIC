@@ -32,6 +32,34 @@ Class IntuitionisticPropositionalSequentCalculus (L: Language) {pL: Propositiona
   deduction_falsep_elim: forall Phi x, Phi |-- FF -> Phi |-- x
 }.
 
+Class IntuitionisticPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma: Derivable1 L) {minMD:MinimumDeduction L Gamma}:= {
+  derivable1_andp_intros:forall x y z,derivable1 x y -> derivable1 x z -> derivable1 x (y && z);
+  derivable1_andp_elim1:forall x y,derivable1 (x && y) x;
+  derivable1_andp_elim2:forall x y,derivable1 (x && y) y;
+  derivable1_orp_intros1:forall x y,derivable1 x (x || y);
+  derivable1_orp_intros2:forall x y,derivable1 y (x || y);
+  derivable1_orp_elim:forall x y z,derivable1 x z -> derivable1 y z -> derivable1 (x || y) z;
+  derivable1_falsep_elim: forall x, derivable1 FF x
+}.
+
+Class IntuitionisticPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:Logic_equiv L) {minME:MinimumEquiv L Gamma}:= {
+  equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
+  (x1 && y1) --||-- (x2 && y2);
+  equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
+  equiv_andp_comm:forall x y,x && y --||-- y && x;
+  equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z);
+  equiv_andp_falsep:forall x, x && TT --||-- x;
+  equiv_andp_truep:forall x,x && FF --||-- FF;
+  equiv_DeMorgen:forall x y,~~ (x || y) --||-- (~~ x) && (~~y);
+  equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
+  (x1 || y1) --||-- (x2 || y2);
+  equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z);
+  equiv_orp_comm:forall x y,x || y --||-- y || x;
+  equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z);
+  equiv_orp_falsep:forall x,x || FF --||-- x;
+  equiv_orp_truep:forall x, x || TT --||-- TT
+}.
+
 Section DerivableRulesFromSequentCalculus1.
 
 Context {L: Language}

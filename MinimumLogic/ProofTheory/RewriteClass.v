@@ -54,7 +54,7 @@ Qed.
 Section Derivable1.
 
 Context {GammaD: Derivable1 L}
-        {MDL:MinimunDeduction L GammaD}.
+        {MDL:MinimumDeduction L GammaD}.
 
 Instance impp_proper_derivable1:
   Proper (derivable1 --> derivable1 ==> derivable1) impp.
@@ -71,7 +71,7 @@ End Derivable1.
 Section Derivable1_provable.
 
 Context {GammaD: Derivable1 L}
-        {MDL:MinimunDeduction L GammaD}
+        {MDL:MinimumDeduction L GammaD}
         {NDL:NormalDeduction L GammaP GammaD}.
 
 Instance provable_proper_derivable1:
@@ -132,7 +132,7 @@ Section Logic_equiv.
 Existing Instance derivable_proper_impp.
 
 Context {GammaL:Logic_equiv L}
-        {MEL:MinimunEquiv L GammaL}.
+        {MEL:MinimumEquiv L GammaL}.
 
 Instance impp_proper_equiv:
   Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
@@ -145,7 +145,7 @@ Proof.
   Qed.
 
 Context {NEL:NormalEquiv L GammaP GammaL}
-        {minAX: MinimunAxiomatization L GammaP}.
+        {minAX: MinimumAxiomatization L GammaP}.
 
 Instance provable_proper_iffp : Proper (logic_equiv ==> iff) provable.
 Proof.
@@ -161,7 +161,7 @@ Proof.
 Context {GammaD:Derivable L}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
-        {minSC: MinimunSequentCalculus L GammaD}.
+        {minSC: MinimumSequentCalculus L GammaD}.
 
 Instance derivable_proper_equiv:
   Proper (eq ==> logic_equiv ==> iff) derivable.

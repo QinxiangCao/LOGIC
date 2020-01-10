@@ -48,7 +48,7 @@ Module TestRewriteClass.
 Section TestRewriteClass.
 
 Existing Instances Derivable_impp_rewrite
-                   provable_impp_refl
+                   derivable1_refl
                    derivable1_proper_impp.
 
 Goal forall {L: Language} {Gamma:Derivable1 L} {BD:BasicDeduction L Gamma} x1 x2 y1 y2,

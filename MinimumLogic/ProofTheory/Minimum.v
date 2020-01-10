@@ -28,24 +28,24 @@ Class MinimumSequentCalculus (L: Language) {minL: MinimumLanguage L} (Gamma: Der
   deduction_impp_intros: forall Phi x y, Phi;; x |-- y -> Phi |-- x --> y
 }.
 
-Class NormalDeduction (L:Language) {minL: MinimunLanguage L} (GammaP:Provable L) (GammaD:Derivable1 L): Type := {
+Class NormalDeduction (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaD:Derivable1 L): Type := {
   derivable1_provable:forall x y,derivable1 x y <->
                         provable (impp x y)
 }.
 
-Class MinimunDeduction (L:Language) {minL:MinimunLanguage L} (Gamma:Derivable1 L) := {
+Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L) := {
   deduction1_intros:forall x1 x2 y1 y2, derivable1 x2 x1 -> derivable1 y1 y2 
   -> derivable1 (x1 --> y1) (x2 --> y2);
   deduction1_axiom1:forall x y, derivable1 x (y --> x);
   deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z)
 }.
 
-Class NormalEquiv (L:Language) {minL: MinimunLanguage L} (GammaP:Provable L) (GammaL:Logic_equiv L): Type := {
+Class NormalEquiv (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaL:Logic_equiv L): Type := {
   equiv_provable:forall x y, x --||-- y <->
                         provable (impp x y) /\ provable (impp y x)
 }.
 
-Class MinimunEquiv (L:Language) {minL:MinimunLanguage L} (Gamma:Logic_equiv L) := {
+Class MinimumEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:Logic_equiv L) := {
   equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 --> y1) --||-- (x2 --> y2)
 }.

@@ -21,6 +21,15 @@ Class ClassicalPropositionalSequentCalculus (L: Language) {minL: MinimumLanguage
   derivable_excluded_middle: forall Phi x, Phi |-- x || ~~ x
 }.
 
+Class ClassicalPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:Derivable1 L) {minMD:MinimumDeduction L Gamma} {ipDGamma:IntuitionisticPropositionalDeduction L Gamma} := {
+  deduction_excluded_middle: forall x y,derivable1 x (y || ~~y)
+}.
+
+Class ClassicalPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:Logic_equiv L) {minME:MinimumEquiv L Gamma} {ipLEGamma:IntuitionisticPropositionalLogicEquiv L Gamma} := {
+  equiv_excluded_middle:forall x, x --||-- ~~(~~x);
+  equiv_DeMorgen:forall x y, ~~(x && y) --||-- (~~x) && (~~y)
+}.
+
 Section Axiomatization2SequentCalculus.
 
 Context {L: Language}
