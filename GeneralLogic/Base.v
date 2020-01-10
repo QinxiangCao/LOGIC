@@ -22,7 +22,7 @@ Class Derivable1 (L:Language): Type := {
   derivable1: expr -> expr -> Prop
 }.
 
-Class Logic_equiv (L:Language): Type := {
+Class LogicEquiv (L:Language): Type := {
   logic_equiv: expr -> expr -> Prop
 }.
 

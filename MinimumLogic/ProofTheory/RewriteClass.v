@@ -131,7 +131,7 @@ Section Logic_equiv.
 
 Existing Instance derivable_proper_impp.
 
-Context {GammaL:Logic_equiv L}
+Context {GammaL:LogicEquiv L}
         {MEL:MinimumEquiv L GammaL}.
 
 Instance impp_proper_equiv:

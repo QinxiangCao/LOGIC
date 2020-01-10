@@ -42,7 +42,7 @@ Class IntuitionisticPropositionalDeduction (L:Language) {minL: MinimumLanguage L
   derivable1_falsep_elim: forall x, derivable1 FF x
 }.
 
-Class IntuitionisticPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:Logic_equiv L) {minME:MinimumEquiv L Gamma}:= {
+Class IntuitionisticPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:LogicEquiv L) {minME:MinimumEquiv L Gamma}:= {
   equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 && y1) --||-- (x2 && y2);
   equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);

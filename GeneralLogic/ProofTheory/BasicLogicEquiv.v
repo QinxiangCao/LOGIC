@@ -6,7 +6,7 @@ Require Import Logic.GeneralLogic.Base.
 
 Local Open Scope logic_base.
 
-Class BasicLogicequiv (L:Language) (Gamma:Logic_equiv L) := {
+Class BasicLogicEquiv (L:Language) (Gamma:LogicEquiv L) := {
   equiv_refl: forall x, x--||--x;
   equiv_symm:forall x y,x --||-- y -> y --||-- x;
   equiv_trans: forall x y z, x --||-- y -> y --||-- z -> x --||-- z}.
@@ -14,8 +14,8 @@ Class BasicLogicequiv (L:Language) (Gamma:Logic_equiv L) := {
 Section LERewriteClass.
 
 Context {L:Language}
-        {Gamma:Logic_equiv L}
-        {BD:BasicLogicequiv L Gamma}.
+        {Gamma:LogicEquiv L}
+        {BD:BasicLogicEquiv L Gamma}.
 
 Instance equiv_impp_rewrite: RewriteRelation logic_equiv.
 Qed.

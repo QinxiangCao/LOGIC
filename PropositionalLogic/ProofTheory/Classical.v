@@ -25,7 +25,7 @@ Class ClassicalPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {pL
   deduction_excluded_middle: forall x y,derivable1 x (y || ~~y)
 }.
 
-Class ClassicalPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:Logic_equiv L) {minME:MinimumEquiv L Gamma} {ipLEGamma:IntuitionisticPropositionalLogicEquiv L Gamma} := {
+Class ClassicalPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:LogicEquiv L) {minME:MinimumEquiv L Gamma} {ipLEGamma:IntuitionisticPropositionalLogicEquiv L Gamma} := {
   equiv_excluded_middle:forall x, x --||-- ~~(~~x);
   equiv_DeMorgen:forall x y, ~~(x && y) --||-- (~~x) && (~~y)
 }.
