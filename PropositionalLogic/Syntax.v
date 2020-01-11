@@ -1,15 +1,35 @@
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.MinimumLogic.Syntax.
 
-Class PropositionalLanguage (L: Language): Type := {
-  andp : expr -> expr -> expr;
-  orp : expr -> expr -> expr;
-  falsep: expr
+Class AndpLanguage (L: Language):
+Type := {
+  andp : expr -> expr -> expr
 }.
 
-Definition negp {L: Language} {MinL: MinimumLanguage L} {pL: PropositionalLanguage L} (x: expr): expr := impp x falsep.
-Definition iffp {L: Language} {MinL: MinimumLanguage L} {pL: PropositionalLanguage L} (x y: expr): expr := andp (impp x y) (impp y x).
-Definition truep {L: Language} {MinL: MinimumLanguage L} {pL: PropositionalLanguage L}: expr := impp falsep falsep.
+Class OrpLanguage (L: Language):
+Type := {
+  orp : expr -> expr -> expr
+}.
+
+Class FalsepLanguage (L: Language):
+Type := {
+  falsep : expr
+}.
+
+Class NegpLanguage (L: Language):
+Type := {
+  negp : expr -> expr
+}.
+
+Class IffpLanguage (L: Language):
+Type := {
+  iffp : expr -> expr -> expr
+}.
+
+Class TruepLanguage (L: Language):
+Type := {
+  truep : expr
+}.
 
 Module PropositionalLanguageNotation.
 

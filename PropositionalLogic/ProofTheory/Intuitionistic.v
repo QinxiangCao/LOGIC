@@ -11,25 +11,66 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-(* TODO: rename it to IntuitionisticPropositionalAxiomatization. *)
-Class IntuitionisticPropositionalLogic (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class IntuitionisticAndpAxiomatization (L: Language) {minL: MinimumLanguage L} {andpL: AndpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
   andp_intros: forall x y, |-- x --> y --> x && y;
   andp_elim1: forall x y, |-- x && y --> x;
-  andp_elim2: forall x y, |-- x && y --> y;
+  andp_elim2: forall x y, |-- x && y --> y
+}.
+
+Class IntuitionisticOrpAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
   orp_intros1: forall x y, |-- x --> x || y;
   orp_intros2: forall x y, |-- y --> x || y;
-  orp_elim: forall x y z, |-- (x --> z) --> (y --> z) --> (x || y --> z);
+  orp_elim: forall x y z, |-- (x --> z) --> (y --> z) --> (x || y --> z)
+}.
+
+Class IntuitionisticFalsepAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: FalsepLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
   falsep_elim: forall x, |-- FF --> x
 }.
 
-Class IntuitionisticPropositionalSequentCalculus (L: Language) {pL: PropositionalLanguage L} (Gamma: Derivable L) := {
+Class IntuitionisticNegpAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+  negp_unfold: forall x, |-- (~~x) --> (x --> FF);
+  negp_fold: forall x, |-- (x --> FF) --> (~~x)
+}.
+
+Class IntuitionisticIffpAxiomatization (L: Language) {minL: MinimumLanguage L} {iffpL: IffpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+  iffp_intros: forall x y, |-- (x --> y) --> (y --> x) --> (x <--> y);
+  iffp_elim1: forall x y, |-- (x <--> y) --> (x --> y);
+  iffp_elim2: forall x y, |-- (x <--> y) --> (y --> x)
+}.
+
+Class IntuitionisticTruepAxiomatization (L: Language) {minL: MinimumLanguage L} {truepL: TruepLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+  Truep_intros: forall x, |-- x --> TT
+}.
+
+Class IntuitionisticAndpSequentCalculus (L: Language) {andpL: AndpLanguage L} (Gamma: Derivable L) := {
   deduction_andp_intros: forall Phi x y, Phi |-- x -> Phi |-- y -> Phi |-- x && y;
   deduction_andp_elim1: forall Phi x y, Phi |-- x && y -> Phi |-- x;
-  deduction_andp_elim2: forall Phi x y, Phi |-- x && y -> Phi |-- y;
+  deduction_andp_elim2: forall Phi x y, Phi |-- x && y -> Phi |-- y
+}.
+
+Class IntuitionisticOrpSequentCalculus (L: Language) {orpL: OrpLanguage L} (Gamma: Derivable L) := {
   deduction_orp_intros1: forall Phi x y, Phi |-- x -> Phi |-- x || y;
   deduction_orp_intros2: forall Phi x y, Phi |-- y -> Phi |-- x || y;
-  deduction_orp_elim: forall Phi x y z, Phi;; x |-- z -> Phi ;; y |-- z -> Phi;; x || y |-- z;
+  deduction_orp_elim: forall Phi x y z, Phi;; x |-- z -> Phi ;; y |-- z -> Phi;; x || y |-- z
+}.
+
+Class IntuitionisticFalsepSequentCalculus (L: Language) {falsepL: FalsepLanguage L} (Gamma: Derivable L) := {
   deduction_falsep_elim: forall Phi x, Phi |-- FF -> Phi |-- x
+}.
+
+Class IntuitionisticNegpSequentCalculus (L: Language) {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Derivable L) := {
+  deduction_negp_unfold: forall Phi x, Phi |-- (~~x) -> Phi ;; x |-- FF;
+  deduction_negp_fold: forall Phi x, Phi ;; x |-- FF -> Phi |-- (~~x)
+}.
+
+Class IntuitionisticIffpSequentCalculus (L: Language) {iffpL: IffpLanguage L} (Gamma: Derivable L) := {
+  deduction_iffp_intros: forall Phi x y, Phi ;; x |-- y -> Phi ;; y |-- x -> Phi |-- (x <--> y);
+  deduction_iffp_elim1: forall Phi x y, Phi |-- (x <--> y) -> Phi ;; x |-- y;
+  deduction_iffp_elim2: forall Phi x y, Phi |-- (x <--> y) -> Phi ;; y |-- x
+}.
+
+Class IntuitionisticTruepSequentCalculus (L: Language) {truepL: TruepLanguage L} (Gamma: Derivable L) := {
+  deduction_truep_intros: forall Phi x, Phi |-- x -> Phi |-- TT
 }.
 
 Section DerivableRulesFromSequentCalculus1.
