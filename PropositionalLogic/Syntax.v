@@ -31,7 +31,7 @@ Notation "'TT'" := truep : syntax.
 End PropositionalLanguageNotation.
 
 (* TODO: do not need minL in the future *)
-Class NormalIterAndp
+Class NormalIterAnd
       (L: Language)
       {minL: MinimumLanguage L}
       {pL: PropositionalLanguage L}
@@ -40,7 +40,7 @@ Class NormalIterAndp
     iter_andp xs = fold_left andp xs truep
 }.
 
-Class NormalIterOrp
+Class NormalIterOr
       (L: Language)
       {pL: PropositionalLanguage L}
       {iter_orp_L: IterOrLanguage L}: Prop := {
