@@ -711,3 +711,34 @@ Qed.
 
 End DerivableRulesFromAxiomatization2.
 
+Section DerivableRulesFromLogicEquiv.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {pL: PropositionalLanguage L}
+        {GammaL: LogicEquiv L}
+        {GammaP: Provable L}
+        {NE:NormalEquiv L GammaP GammaL}
+        {minAX: MinimumAxiomatization L GammaP}
+        {ipL:IntuitionisticPropositionalLogic L GammaP}.
+
+Lemma equiv_iffp : forall x y,
+  x --||-- y <-> |-- x <--> y.
+Proof.
+  intros.
+  split.
+  -intros. apply equiv_provable in H. destruct H.
+   unfold iffp.
+   pose proof andp_intros (x --> y) (y-->x).
+   pose proof modus_ponens _ _ H1 H.
+   pose proof modus_ponens _ _ H2 H0. auto.
+  -unfold iffp. intros.
+   apply equiv_provable.
+   pose proof andp_elim1 (x-->y) (y-->x).
+   pose proof modus_ponens _ _ H0 H.
+   pose proof  andp_elim2 (x -->y) (y-->x).
+   pose proof modus_ponens _ _ H2 H.
+   split;[auto|auto].
+  Qed.
+
+End DerivableRulesFromLogicEquiv.
