@@ -1,4 +1,5 @@
 Require Import ZArith.
+Require Import interface_1.
 
 Module NaiveLang.
   Definition expr := (nat -> Z) -> Prop.
@@ -11,10 +12,7 @@ Module NaiveLang.
   Definition provable (e : expr) : Prop := forall st, e st.
 End NaiveLang.
 
-Require Import interface_1.
-
 Module NaiveRule.
-  Import NaiveLang.
   Include DerivedNames (NaiveLang).
   Lemma modus_ponens :
     forall x y : expr, provable (impp x y) -> provable x -> provable y.
@@ -59,8 +57,13 @@ Module T := LogicTheorem NaiveLang NaiveRule.
 Module Solver := IPSolver NaiveLang.
 Import T.
 Import Solver.
-Print T.
+
 Notation "x --> y" := (impp x y)(at level 55, right associativity).
 Notation "x && y" := (andp x y)(at level 40, left associativity).
-Notation "|-- P " (at level 71, no associativity).
-Goal forall P Q R: (nat -> Z) -> Prop, provable .
+Notation "|-- P " := (provable P) (at level 71, no associativity).
+
+Goal forall P Q R: (nat -> Z) -> Prop, |-- Q && P --> R --> P && Q && R.
+  intros.
+  ip_solve.
+Abort.
+

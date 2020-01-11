@@ -22,10 +22,9 @@ Module NaiveLang.
   Definition provable (e : expr) : Prop := forall st, e st.
 End NaiveLang.
 
-Require Import interface_1.
+Require Import interface_4.
 
 Module NaiveRule.
-  Import NaiveLang.
   Include DerivedNames (NaiveLang).
   Lemma modus_ponens :
     forall x y : expr, provable (impp x y) -> provable x -> provable y.
