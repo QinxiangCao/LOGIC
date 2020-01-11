@@ -1,12 +1,23 @@
 Require Import ZArith.
 
 Module NaiveLang.
-  Definition expr := (nat -> Z) -> Prop.
+  Definition expr := (nat -> option Z) -> Prop.
   Definition context := expr -> Prop.
   Definition impp (e1 e2 : expr) : expr := fun st => e1 st -> e2 st.
   Definition andp (e1 e2 : expr) : expr := fun st => e1 st /\ e2 st.
   Definition orp  (e1 e2 : expr) : expr := fun st => e1 st \/ e2 st.
   Definition falsep : expr := fun st => False.
+
+  Definition join : (nat -> option Z) -> (nat -> option Z) -> (nat -> option Z) -> Prop :=
+    fun x y z =>
+      forall p: nat,
+       (exists v, x p = Some v /\ y p = None /\ z p = Some v) \/
+       (exists v, x p = None /\ y p = Some v /\ z p = Some v) \/
+       (x p = None /\ y p = None /\ z p = None).
+  Definition sepcon (e1 e2 : expr) : expr := fun st =>
+    exists st1 st2, join st1 st2 st /\ e1 st1 /\ e2 st2.
+  Definition emp : expr := fun st =>
+    forall p, st p = None.
 
   Definition provable (e : expr) : Prop := forall st, e st.
 End NaiveLang.
@@ -53,14 +64,18 @@ Module NaiveRule.
   Lemma excluded_middle : forall x : expr, provable (orp x (negp x)).
   Proof. unfold provable, orp, negp, impp, falsep. intros; tauto. Qed.
 
+  Axiom sepcon_comm: forall x y, provable (iffp (sepcon x y) (sepcon y x)).
+  Axiom sepcon_assoc: forall x y z,
+      provable (iffp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z)).
+  Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) .
+  Axiom sepcon_emp : (forall x : expr, provable (iffp (sepcon x emp) x)) .
+  Axiom falsep_sepcon_left : (forall x : expr, provable (impp (sepcon falsep x) falsep)) .
+  Axiom orp_sepcon_left : (forall x y z : expr, provable (impp (sepcon (orp x y) z) (orp (sepcon x z) (sepcon y z)))) .
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.
 Module Solver := IPSolver NaiveLang.
 Import T.
 Import Solver.
-Print T.
-Notation "x --> y" := (impp x y)(at level 55, right associativity).
-Notation "x && y" := (andp x y)(at level 40, left associativity).
-Notation "|-- P " (at level 71, no associativity).
-Goal forall P Q R: (nat -> Z) -> Prop, provable .
+
+
