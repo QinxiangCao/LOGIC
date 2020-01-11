@@ -222,6 +222,9 @@ HoareLogic_FILES = \
 LogicGenerator_FILES = \
   ConfigLang.v ConfigDenot.v ConfigCompute.v Utils.v #Generate.v 
 
+Example_Files = \
+  Pub_Problem.v
+
 FILES = \
   $(lib_FILES:%.v=lib/%.v) \
   $(GeneralLogic_FILES:%.v=GeneralLogic/%.v) \
@@ -231,6 +234,7 @@ FILES = \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extensions_FILES:%.v=Extensions/%.v) \
+  $(Example_Files:%.v=Examples/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
 
