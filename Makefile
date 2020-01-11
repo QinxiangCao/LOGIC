@@ -45,7 +45,7 @@ GeneralLogic_FILES = \
 
 MinimumLogic_ProofTheory_FILES = \
   Minimum.v ProofTheoryPatterns.v \
-  RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v
+  RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v ThoeryOfJudgement.v
 
 MinimumLogic_Semantics_FILES = \
   Kripke.v Trivial.v SemanticEquiv.v

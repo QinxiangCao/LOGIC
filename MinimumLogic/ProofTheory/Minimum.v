@@ -45,6 +45,11 @@ Class NormalEquiv (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (Ga
                         provable (impp x y) /\ provable (impp y x)
 }.
 
+Class NormalEquiv2 (L:Language) {minL: MinimumLanguage L} (GammaD:Derivable1 L) (GammaL:LogicEquiv L): Type :={
+  equiv_derivable1:forall x y,x --||-- y <->
+                        derivable1 x y /\ derivable1 y x
+}.
+
 Class MinimumEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:LogicEquiv L) := {
   equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 --> y1) --||-- (x2 --> y2)
@@ -547,6 +552,58 @@ Proof.
 Qed.
 
 End SequentCalculus2Axiomatization.
+
+Section NormalEquivToNormalEquiv2.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD: Derivable1 L}
+        {GammaL: LogicEquiv L}
+        {NDL: NormalDeduction L GammaP GammaD}
+        {NE: NormalEquiv L GammaP GammaL}.
+
+Lemma NormalDeduction_EquivToNormalEquiv2 : NormalEquiv2 L GammaD GammaL.
+Proof.
+  constructor.
+  intros. split.
+  -intros.
+   apply equiv_provable in H;destruct H.
+   split. apply derivable1_provable;auto. apply derivable1_provable;auto.
+  -intros. destruct H. apply derivable1_provable in H.
+   apply derivable1_provable in H0.
+   apply equiv_provable.
+   auto.
+  Qed.
+
+End NormalEquivToNormalEquiv2.
+
+Section NormalEquiv2ToNormalEquiv.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD: Derivable1 L}
+        {GammaL: LogicEquiv L}
+        {NDL: NormalDeduction L GammaP GammaD}
+        {NE2: NormalEquiv2 L GammaD GammaL}.
+
+Lemma NormalDeduction_Equiv2ToNormalEquiv : NormalEquiv L GammaP GammaL.
+Proof.
+  constructor.
+  intros.
+  split.
+  -intros. apply equiv_derivable1 in H.
+   destruct H.
+   apply derivable1_provable in H. apply derivable1_provable in H0.
+   auto.
+  -intros.
+   apply equiv_derivable1. destruct H.
+   split.
+   apply derivable1_provable;auto. apply derivable1_provable;auto.
+  Qed.
+
+End NormalEquiv2ToNormalEquiv.
 
 Section Transformation.
 
