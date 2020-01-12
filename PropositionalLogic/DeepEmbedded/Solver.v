@@ -340,14 +340,14 @@ Module DSolver.
 End DSolver.
 
 Module SolverSound.
-  Ltac ipSolver' se :=
+  Ltac ipSolver' L se :=
     match shallowToDeep' se constr:(@nil Base.expr) with
     | (?de, ?tbl) =>
       let tbl' := reverse tbl in
       let b := eval hnf in (DSolver.all_in_context de) in
       assert (DSolver.all_in_context de = b) by reflexivity;
-      assert (reflect tbl' de = se) by reflexivity;
-      apply (reify_sound tbl' de);
+      assert (@eq (@Base.expr L) (reflect tbl' de) (se)) by reflexivity;
+      apply (@reify_sound L _ _ _ _ _ tbl' de);
       apply DSolver.all_in_provable;
       match goal with
       | [H : DSolver.all_in_context _ = true |- _] => apply H
@@ -356,7 +356,7 @@ Module SolverSound.
 
   Ltac ipSolver :=
     match goal with
-    | [|- Base.provable ?e] => ipSolver' e
+    | [|- @Base.provable ?L ?GammaP ?e] => ipSolver' L e
     end.
 
   Section Temp.
