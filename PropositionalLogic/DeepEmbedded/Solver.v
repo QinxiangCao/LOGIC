@@ -132,7 +132,7 @@ Section Temp.
 End Temp.
 
 Module DSolver.
-  Local Existing Instances Deep.L Deep.minL Deep.pL Deep.GP Deep.minAX Deep.ipG.
+  Local Existing Instances Deep.L Deep.minL Deep.pL Deep.iter_andp_L Deep.iter_andp_Def Deep.GP Deep.minAX Deep.ipG.
 
   Instance Adj : Adjointness _ _ andp impp.
   Proof.
@@ -193,19 +193,20 @@ Module DSolver.
     | Deep.andp p q => (flatten_and p ++ flatten_and q)
     | s => s :: nil
     end.
-  
-  Definition flatten_and_inv (es : list expr) := List.fold_left andp es truep.
 
   Lemma flatten_and_sound :
-    forall e, provable (iffp e (flatten_and_inv (flatten_and e))).
+    forall e, provable (iffp e (iter_andp (flatten_and e))).
   Proof.
-    induction e;
+    intros.
+    rewrite iter_andp_def.
+    induction e; simpl flatten_and
+        (*;
       [ change (flatten_and_inv _) with (fold_left andp (flatten_and e1 ++ flatten_and e2) truep)
       | change (flatten_and_inv _) with (andp truep (orp e1 e2))
       | change (flatten_and_inv _) with (andp truep (impp e1 e2))
       | change (flatten_and_inv _) with (andp truep falsep)
       | change (flatten_and_inv _) with (andp truep (Deep.varp n))
-      ].
+      ]*).
     {
       unfold iffp in IHe1, IHe2.
       apply solve_andp_intros. 
@@ -223,6 +224,7 @@ Module DSolver.
       }
     }
     all: apply solve_andp_intros;
+      cbv [fold_left];
       [rewrite <- left_unit2 | rewrite left_unit1];
       apply provable_impp_refl.
   Qed.
@@ -279,7 +281,7 @@ Module DSolver.
     + clear IHes.
       apply flatten_imp_inv_In in H.
       change (flatten_imp_inv _) with (multi_imp (flatten_and a) r) in H.
-      rewrite <- multi_and_multi_imp in H.
+      rewrite <- iter_andp_multi_imp in H.
       pose proof flatten_and_sound a.
       change (flatten_imp_inv _) with (impp a (multi_imp es r)).
       apply multi_imp_weaken.

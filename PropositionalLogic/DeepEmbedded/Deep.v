@@ -45,6 +45,9 @@ Local Instance minL : MinimumLanguage L := Build_MinimumLanguage L impp.
 Local Instance pL : PropositionalLanguage L :=
   Build_PropositionalLanguage L andp orp falsep.
 
+Local Instance iter_andp_L: IterAndLanguage L :=
+  Build_IterAndLanguage L (fun es => fold_left andp es truep).
+
 Inductive provable: expr -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
 | axiom1: forall x y, provable (x --> (y --> x))
@@ -79,3 +82,7 @@ Proof.
   + apply orp_elim.
   + apply falsep_elim.
 Qed.
+
+Local Instance iter_andp_Def: NormalIterAnd L :=
+  Build_NormalIterAnd L _ _ _ (fun es => eq_refl).
+

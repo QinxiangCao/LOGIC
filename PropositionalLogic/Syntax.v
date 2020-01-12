@@ -48,3 +48,10 @@ Class NormalIterOr
     iter_orp xs = fold_left orp xs falsep
 }.
 
+Ltac AddConnective_iter_andp :=
+  let iter_andp_L := fresh "iter_andp_L" in
+  let iter_andp_Def := fresh "iter_andp_Def" in
+  set (iter_andp_L := Build_IterAndLanguage _ (fun xs => fold_left andp xs truep));
+  set (iter_andp_Def := Build_NormalIterAnd _ _ _ iter_andp_L (fun xs => eq_refl));
+  clearbody iter_andp_Def;
+  clearbody iter_andp_L.

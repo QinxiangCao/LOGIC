@@ -169,11 +169,7 @@ Proof.
   destruct H0 as [xs [? ?]].
   pose proof provable_multi_imp_split _ _ _ _ H0 H1 as [xs1 [xs2 [? [? ?]]]].
   pose proof H4.
-  (* TODO: automate the following 4 lines. *)
-  set (iter_andp_L := Build_IterAndLanguage L (fun xs => fold_left andp xs truep)).
-  set (iter_andp_Def := Build_NormalIterAnd _ _ _ iter_andp_L (fun xs => eq_refl)).
-  clearbody iter_andp_Def.
-  clearbody iter_andp_L.
+  AddConnective_iter_andp.
   rewrite <- iter_andp_multi_imp in H4.
   eapply modus_ponens in H4; [| apply provable_multi_imp_arg_switch1].
   exists (iter_andp xs2).
