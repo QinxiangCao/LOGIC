@@ -211,7 +211,7 @@ Ltac two_stage_print :=
   newline;
 
   idtac "Module DerivedNames (Names: LanguageSig).";
-  idtac "  Import Names.";
+  idtac "Include Names.";
   dolist (print Der) derived_connectives;
   dolist (print Der) derived_judgements;
   idtac "End DerivedNames.";
@@ -219,7 +219,6 @@ Ltac two_stage_print :=
   newline;
 
   idtac "Module Type PrimitiveRuleSig (Names: LanguageSig).";
-  idtac "Import Names.";
   idtac "Include DerivedNames (Names).";
   dolist (print Axm) primary_rules;
   idtac "End PrimitiveRuleSig.";
@@ -227,8 +226,7 @@ Ltac two_stage_print :=
   newline;
 
   idtac "Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).";
-  idtac "  Include Rules.";
-  idtac "  Import Names Rules.";
+  idtac "Include Rules.";
   dolist (print Axm) derived_rules;
   dolist (print DIns) derived_rules_as_instance;
   idtac "End LogicTheoremSig.";
@@ -254,9 +252,9 @@ Ltac two_stage_print :=
 
   newline;
 
-  idtac "Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names): LogicTheoremSig Names Rules.";
-  idtac "  Import Names Rules.";
-  idtac "  Include Rules.";
+  (* TODO: this "<:" should be ":". Currently, this is just a work-around for generated tactics. *)
+  idtac "Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.";
+  idtac "Include Rules.";
   dolist (print AIns) aux_primitive_instances;
   dolist (print AIns) aux_refl_instances_for_derivation;
   dolist (print AIns) aux_derived_instances;

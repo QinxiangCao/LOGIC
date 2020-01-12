@@ -222,6 +222,9 @@ HoareLogic_FILES = \
 LogicGenerator_FILES = \
   ConfigLang.v ConfigDenot.v ConfigCompute.v Utils.v #Generate.v 
 
+Example_Files = \
+  Pub_Problem.v
+
 FILES = \
   $(lib_FILES:%.v=lib/%.v) \
   $(GeneralLogic_FILES:%.v=GeneralLogic/%.v) \
@@ -231,6 +234,7 @@ FILES = \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extensions_FILES:%.v=Extensions/%.v) \
+  $(Example_Files:%.v=Examples/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
 
@@ -284,6 +288,13 @@ lgen_demo_3:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_3.v
 	@echo COQC LogicGenerator/demo/implementation_3.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_3.v
+
+lgen_demo_4:
+	./logic_gen.sh LogicGenerator/demo/configuration_4.v LogicGenerator/demo/interface_4.v
+	@echo COQC LogicGenerator/demo/interface_4.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_4.v
+	@echo COQC LogicGenerator/demo/implementation_4.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_4.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
