@@ -608,7 +608,7 @@ End NormalEquiv2ToNormalEquiv.
 Section Transformation.
 
 Context {L: Language} {minL: MinimumLanguage L}.
-  
+
 Definition Provable2Derivable {GammaP: Provable L}: Derivable L :=
   Build_Derivable L (fun Phi y => exists xs,
     Forall (fun x => Phi x) xs /\ |-- multi_imp xs y).
@@ -624,6 +624,22 @@ Definition Derivable2Provable {GammaD: Derivable L}: Provable L :=
 Definition Derivable2Provable_Normal {GammaD: Derivable L}:
   NormalSequentCalculus L Derivable2Provable GammaD :=
   Build_NormalSequentCalculus L Derivable2Provable GammaD (fun _ => iff_refl _).
+
+Definition Provable2Derivable1 {GammaP: Provable L}: Derivable1 L :=
+  Build_Derivable1 L (fun x y => |-- (impp x y)).
+
+Definition Provable2Derivable1_Normal {GammaP: Provable L}:
+  NormalDeduction L GammaP Provable2Derivable1 :=
+  Build_NormalDeduction
+    L minL GammaP Provable2Derivable1 (fun _ _ => iff_refl _).
+
+Definition Provable2Equiv {GammaP: Provable L}: LogicEquiv L :=
+  Build_LogicEquiv L (fun x y => |-- (impp x y) /\ provable (impp y x)).
+
+Definition Provable2Equiv_Normal {GammaP: Provable L}:
+  NormalEquiv L GammaP Provable2Equiv :=
+  Build_NormalEquiv
+    L minL GammaP Provable2Equiv (fun _ _ => iff_refl _).
 
 End Transformation.
 
