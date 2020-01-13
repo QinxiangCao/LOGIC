@@ -144,7 +144,7 @@ match hc with
 | FROM_falsep_impp_TO_truep => None
 | FROM_impp_TO_multi_imp => None
 | FROM_andp_TO_iter_andp => Some (GEN_iter_andp_FROM_fold_left_andp)
-| FROM_sepcon_TO_iter_sepcon => Some (GEN_iter_sepcon_FROM_sepcon)
+| FROM_sepcon_TO_iter_sepcon => Some (GEN_iter_sepcon_FROM_fold_left_sepcon)
 | FROM_empty_set_TO_empty_context => None
 end.
 

@@ -84,6 +84,7 @@ Inductive rule_class :=
 | provability_OF_sepcon_rule
 | provability_OF_wand_rule
 | provability_OF_emp_rule
+| provability_OF_iter_sepcon
 | provability_OF_sepcon_orp_rule
 | provability_OF_sepcon_falsep_rule
 | provability_OF_sepcon_rule_AS_weak
@@ -100,7 +101,8 @@ Inductive rule_class :=
 | derivitive_OF_classical_logic
 | GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp
-| GEN_iter_sepcon_FROM_sepcon
+| GEN_iter_sepcon_FROM_fold_left_sepcon
+| GEN_iter_sepcon_FROM_fold_right_sepcon
 | GEN_derivable_FROM_provable
 | GEN_provable_FROM_derivable
 .
@@ -480,6 +482,7 @@ match rc1, rc2 with
 | provability_OF_de_morgan, provability_OF_de_morgan => true
 | provability_OF_godel_dummett, provability_OF_godel_dummett => true
 | provability_OF_classical_logic, provability_OF_classical_logic => true
+| provability_OF_iter_sepcon, provability_OF_iter_sepcon => true
 | provability_OF_sepcon_rule, provability_OF_sepcon_rule => true
 | provability_OF_wand_rule, provability_OF_wand_rule => true
 | provability_OF_emp_rule, provability_OF_emp_rule => true
@@ -499,7 +502,8 @@ match rc1, rc2 with
 | derivitive_OF_classical_logic, derivitive_OF_classical_logic => true
 | GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp => true
 | GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp => true
-| GEN_iter_sepcon_FROM_sepcon, GEN_iter_sepcon_FROM_sepcon => true
+| GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon => true
+| GEN_iter_sepcon_FROM_fold_right_sepcon, GEN_iter_sepcon_FROM_fold_right_sepcon => true
 | GEN_derivable_FROM_provable, GEN_derivable_FROM_provable => true
 | GEN_provable_FROM_derivable, GEN_provable_FROM_derivable => true
 | _, _ => false

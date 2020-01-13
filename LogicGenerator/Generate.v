@@ -38,7 +38,8 @@ Context {L: Language}
         {GammaD: Derivable L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
-        {iter_sepcon_Def: NormalIterSepcon L}
+        {iter_sepcon_DL: IterSepconDefinition_left L}
+        {iter_sepcon_DR: IterSepconDefinition_right L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
@@ -50,6 +51,7 @@ Context {L: Language}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
+        {iter_sepcon_AXL: IterSepconAxiomatization_left L GammaP}
         {sepcon_orp_AX: SepconOrAxiomatization L GammaP}
         {sepcon_falsep_AX: SepconFalseAxiomatization L GammaP}
         {sepconAX_weak: SepconAxiomatization_weak L GammaP}
