@@ -3,6 +3,7 @@ Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -45,6 +46,9 @@ Local Instance minL : MinimumLanguage L := Build_MinimumLanguage L impp.
 Local Instance pL : PropositionalLanguage L :=
   Build_PropositionalLanguage L andp orp falsep.
 
+Local Instance iter_andp_L: IterAndLanguage L :=
+  Build_IterAndLanguage L (fun es => fold_left andp es truep).
+
 Inductive provable: expr -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
 | axiom1: forall x y, provable (x --> (y --> x))
@@ -79,3 +83,9 @@ Proof.
   + apply orp_elim.
   + apply falsep_elim.
 Qed.
+
+Local Instance iter_andp_DL: IterAndDefinition_left L :=
+  Build_IterAndDefinition_left L _ _ _ (fun es => eq_refl).
+
+Local Instance iter_andp_AXL: IterAndAxiomatization_left L GP :=
+  IterAndFromDefToAX_L2L.

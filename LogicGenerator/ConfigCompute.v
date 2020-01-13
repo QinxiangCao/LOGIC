@@ -16,6 +16,7 @@ match hc with
 | FROM_falsep_impp_TO_negp => []
 | FROM_falsep_impp_TO_truep => []
 | FROM_impp_TO_multi_imp => []
+| FROM_andp_TO_iter_andp => []
 | FROM_sepcon_TO_iter_sepcon => []
 | FROM_empty_set_TO_empty_context => [FROM_ensemble_expr_TO_context]
 end.
@@ -49,6 +50,7 @@ match hc with
 | FROM_falsep_impp_TO_negp => negp
 | FROM_falsep_impp_TO_truep => truep
 | FROM_impp_TO_multi_imp => multi_imp
+| FROM_andp_TO_iter_andp => iter_andp
 | FROM_sepcon_TO_iter_sepcon => iter_sepcon
 | FROM_empty_set_TO_empty_context => empty_context
 end.
@@ -86,6 +88,7 @@ match c with
 | wand
 | emp
 | multi_imp
+| iter_andp
 | iter_sepcon => [expr]
 | empty_context => [context]
 end.
@@ -107,6 +110,7 @@ match hc with
 | FROM_falsep_impp_TO_negp => [falsep; impp]
 | FROM_falsep_impp_TO_truep => [falsep; impp]
 | FROM_impp_TO_multi_imp => [impp]
+| FROM_andp_TO_iter_andp => [andp; truep]
 | FROM_sepcon_TO_iter_sepcon => [sepcon; emp]
 | FROM_empty_set_TO_empty_context => []
 end.
@@ -139,7 +143,8 @@ match hc with
 | FROM_falsep_impp_TO_negp => None
 | FROM_falsep_impp_TO_truep => None
 | FROM_impp_TO_multi_imp => None
-| FROM_sepcon_TO_iter_sepcon => Some (GEN_iter_sepcon_FROM_sepcon)
+| FROM_andp_TO_iter_andp => Some (GEN_iter_andp_FROM_fold_left_andp)
+| FROM_sepcon_TO_iter_sepcon => Some (GEN_iter_sepcon_FROM_fold_left_sepcon)
 | FROM_empty_set_TO_empty_context => None
 end.
 

@@ -13,6 +13,7 @@ Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -119,14 +120,16 @@ Proof.
     apply derivable_assum; auto.
 Qed.
 
-Lemma DCS_multi_and_iff: forall (Phi: context),
+Lemma DCS_multi_and_iff
+      {iter_andp_L: IterAndLanguage L}
+      {iter_andp_AXL: IterAndAxiomatization_left L GammaP}: forall (Phi: context),
   derivable_closed Phi ->
-  (forall xs: list expr, Phi (multi_and xs) <-> Forall Phi xs).
+  (forall xs: list expr, Phi (iter_andp xs) <-> Forall Phi xs).
 Proof.
   intros.
-  rewrite (DCS_iffp Phi (multi_and xs) (fold_right andp TT xs)).
+  rewrite (DCS_iffp Phi (iter_andp xs) (fold_right andp TT xs)).
   2: auto.
-  2: apply multi_and_spec.
+  2: apply iter_andp_spec_right.
 
   induction xs.
   + split; intros.
@@ -167,9 +170,10 @@ Proof.
   destruct H0 as [xs [? ?]].
   pose proof provable_multi_imp_split _ _ _ _ H0 H1 as [xs1 [xs2 [? [? ?]]]].
   pose proof H4.
-  rewrite <- multi_and_multi_imp in H4.
+  AddConnective_iter_andp.
+  rewrite <- iter_andp_multi_imp in H4.
   eapply modus_ponens in H4; [| apply provable_multi_imp_arg_switch1].
-  exists (multi_and xs2).
+  exists (iter_andp xs2).
   split.
   + apply DCS_multi_and_iff; auto.
   + rewrite derivable_provable.
@@ -177,7 +181,7 @@ Proof.
     split; auto.
     eapply modus_ponens.
     - apply provable_multi_imp_weaken.
-      rewrite (multi_and_multi_imp xs2 x).
+      rewrite (iter_andp_multi_imp xs2 x).
       apply provable_impp_refl.
     - exact H5.
 Qed.

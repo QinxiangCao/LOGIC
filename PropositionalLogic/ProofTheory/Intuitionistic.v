@@ -12,7 +12,7 @@ Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
 (* TODO: rename it to IntuitionisticPropositionalAxiomatization. *)
-Class IntuitionisticPropositionalLogic (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class IntuitionisticPropositionalLogic (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma: Provable L) := {
   andp_intros: forall x y, |-- x --> y --> x && y;
   andp_elim1: forall x y, |-- x && y --> x;
   andp_elim2: forall x y, |-- x && y --> y;
@@ -30,6 +30,11 @@ Class IntuitionisticPropositionalSequentCalculus (L: Language) {pL: Propositiona
   deduction_orp_intros2: forall Phi x y, Phi |-- y -> Phi |-- x || y;
   deduction_orp_elim: forall Phi x y z, Phi;; x |-- z -> Phi ;; y |-- z -> Phi;; x || y |-- z;
   deduction_falsep_elim: forall Phi x, Phi |-- FF -> Phi |-- x
+}.
+
+Class IterAndAxiomatization_left (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {iter_andp_L: IterAndLanguage L} (Gamma: Provable L) := {
+  iter_andp_spec_left: forall (xs: list expr),
+    |-- iter_andp xs <--> fold_left andp xs TT
 }.
 
 Section DerivableRulesFromSequentCalculus1.
