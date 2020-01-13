@@ -389,7 +389,7 @@ Context {L: Language}
         {andpGamma: AndpAxiomatization L GammaP}
         {orpGamma: OrpAxiomatization L GammaP}
         {falsepGamma: FalsepAxiomatization L GammaP}
-        {negpGamma: IntuitionisticNegpAxiomatization L GammaP}
+        {inegpGamma: IntuitionisticNegpAxiomatization L GammaP}
         {iffpGamma: IffpAxiomatization L GammaP}
         {truepGamma: TruepAxiomatization L GammaP}.
 
@@ -497,27 +497,27 @@ Qed.
 End Axiomatization2SequentCalculus.
 
 Instance reg_Axiomatization2SequentCalculus_andpSC:
-  RegisterClass P2D_reg (fun andpSC: unit => @Axiomatization2SequentCalculus_andpSC) 8.
+  RegisterClass P2D_reg (fun andpSC: unit => @Axiomatization2SequentCalculus_andpSC) 4.
 Qed.
 
 Instance reg_Axiomatization2SequentCalculus_orpSC:
-  RegisterClass P2D_reg (fun orpSC: unit => @Axiomatization2SequentCalculus_orpSC) 9.
+  RegisterClass P2D_reg (fun orpSC: unit => @Axiomatization2SequentCalculus_orpSC) 5.
 Qed.
 
 Instance reg_Axiomatization2SequentCalculus_falsepSC:
-  RegisterClass P2D_reg (fun falsepSC: unit => @Axiomatization2SequentCalculus_falsepSC) 10.
+  RegisterClass P2D_reg (fun falsepSC: unit => @Axiomatization2SequentCalculus_falsepSC) 6.
 Qed.
 
 Instance reg_Axiomatization2SequentCalculus_inegpSC:
-  RegisterClass P2D_reg (fun inegpSC: unit => @Axiomatization2SequentCalculus_inegpSC) 11.
+  RegisterClass P2D_reg (fun inegpSC: unit => @Axiomatization2SequentCalculus_inegpSC) 7.
 Qed.
 
 Instance reg_Axiomatization2SequentCalculus_iffpSC:
-  RegisterClass P2D_reg (fun iffpSC: unit => @Axiomatization2SequentCalculus_iffpSC) 12.
+  RegisterClass P2D_reg (fun iffpSC: unit => @Axiomatization2SequentCalculus_iffpSC) 8.
 Qed.
 
 Instance reg_Axiomatization2SequentCalculus_truepSC:
-  RegisterClass P2D_reg (fun truepSC: unit => @Axiomatization2SequentCalculus_truepSC) 13.
+  RegisterClass P2D_reg (fun truepSC: unit => @Axiomatization2SequentCalculus_truepSC) 9.
 Qed.
 (**)
 
@@ -525,10 +525,20 @@ Section DerivableRulesFromAxiomatization1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndpLanguage L}
+        {orpL: OrpLanguage L}
+        {falsepL: FalsepLanguage L}
+        {negpL: NegpLanguage L}
+        {iffpL: IffpLanguage L}
+        {truepL: TruepLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipGamma: IntuitionisticPropositionalLogic L Gamma}.
+        {andpGamma: AndpAxiomatization L Gamma}
+        {orpGamma: OrpAxiomatization L Gamma}
+        {falsepGamma: FalsepAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
+        {iffpGamma: IffpAxiomatization L Gamma}
+        {truepGamma: TruepAxiomatization L Gamma}.
 
 Lemma solve_andp_intros: forall x y: expr,
   |-- x -> |-- y -> |-- x && y.
@@ -536,6 +546,7 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable in H, H0 |- *.
+  pose proof deduction_andp_intros.
   apply deduction_andp_intros; auto.
 Qed.
 
@@ -615,8 +626,8 @@ Lemma provable_iffp_refl: forall (x: expr),
 Proof.
   AddSequentCalculus.
   intros.
-  apply solve_andp_intros;
-  apply provable_impp_refl.
+  rewrite provable_derivable.
+  apply derivable_iffp_refl.
 Qed.
 
 Lemma contrapositivePP: forall (x y: expr),
@@ -624,6 +635,8 @@ Lemma contrapositivePP: forall (x y: expr),
 Proof.
   intros.
   eapply modus_ponens; [apply provable_impp_arg_switch |].
+  pose proof negp_unfold x. rewrite H.
+  pose proof negp_fold y. rewrite <- H0.
   apply aux_minimun_theorem00.
 Qed.
 
@@ -631,6 +644,8 @@ Lemma contrapositivePN: forall (x y: expr),
   |-- (y --> ~~ x) --> (x --> ~~ y).
 Proof.
   intros.
+  pose proof negp_unfold x. rewrite H.
+  pose proof negp_fold y. rewrite <- H0.
   apply provable_impp_arg_switch.
 Qed.
 
@@ -640,11 +655,21 @@ Section DerivableRulesFromSequentCalculus2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndpLanguage L}
+        {orpL: OrpLanguage L}
+        {falsepL: FalsepLanguage L}
+        {negpL: NegpLanguage L}
+        {iffpL: IffpLanguage L}
+        {truepL: TruepLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}.
+        {andpSC: AndpSequentCalculus L Gamma}
+        {orpSC: OrpSequentCalculus L Gamma}
+        {falsepSC: FalsepSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegpSequentCalculus L Gamma}
+        {iffpSC: IffpSequentCalculus L Gamma}
+        {truepSC: TruepSequentCalculus L Gamma}.
 
 Lemma deduction_contrapositivePP: forall Phi (x y: expr),
   Phi |-- y --> x ->
@@ -674,10 +699,20 @@ Section DerivableRulesFromAxiomatization2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndpLanguage L}
+        {orpL: OrpLanguage L}
+        {falsepL: FalsepLanguage L}
+        {negpL: NegpLanguage L}
+        {iffpL: IffpLanguage L}
+        {truepL: TruepLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipGamma: IntuitionisticPropositionalLogic L Gamma}.
+        {andpGamma: AndpAxiomatization L Gamma}
+        {orpGamma: OrpAxiomatization L Gamma}
+        {falsepGamma: FalsepAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
+        {iffpGamma: IffpAxiomatization L Gamma}
+        {truepGamma: TruepAxiomatization L Gamma}.
 
 Lemma demorgan_orp_negp: forall (x y: expr),
   |-- ~~ x || ~~ y --> ~~ (x && y).
@@ -685,22 +720,29 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  unfold negp at 3.
+  pose proof negp_fold (x && y).
+  rewrite <- H.
   rewrite <- !deduction_theorem.
   apply (deduction_modus_ponens _ (~~ x || ~~ y)).
   + apply deduction_weaken1.
     apply derivable_assum1.
   + apply deduction_orp_elim'.
     - rewrite <- deduction_theorem.
-      apply (deduction_modus_ponens _ x); [| apply derivable_assum1].
-      apply deduction_weaken1.
-      eapply deduction_andp_elim1.
-      apply derivable_assum1.
+      apply (deduction_modus_ponens _ x).
+      *apply deduction_weaken1.
+       eapply deduction_andp_elim1.
+       apply derivable_assum1.
+      *pose proof negp_unfold x.
+       rewrite <- H0.
+       apply derivable_assum1.
     - rewrite <- deduction_theorem.
-      apply (deduction_modus_ponens _ y); [| apply derivable_assum1].
-      apply deduction_weaken1.
-      eapply deduction_andp_elim2.
-      apply derivable_assum1.
+      apply (deduction_modus_ponens _ y).
+      *apply deduction_weaken1.
+       eapply deduction_andp_elim2.
+       apply derivable_assum1.
+      *pose proof negp_unfold y.
+       rewrite <- H0.
+       apply derivable_assum1.
 Qed.
 
 Lemma demorgan_negp_orp: forall (x y: expr),
@@ -709,9 +751,8 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros. 
+  apply deduction_iffp_intros.
+  + apply deduction_andp_intros. 
     - rewrite deduction_theorem.
       apply deduction_contrapositivePP.
       rewrite <- provable_derivable.
@@ -720,17 +761,19 @@ Proof.
       apply deduction_contrapositivePP.
       rewrite <- provable_derivable.
       apply orp_intros2.
-  + rewrite <- deduction_theorem.
-    apply deduction_orp_elim'.
-    - eapply deduction_andp_elim1.
+  +pose proof negp_fold (x || y). rewrite <- H.
+   apply deduction_orp_elim'.
+    - pose proof negp_unfold x. rewrite <- H0.
+      eapply deduction_andp_elim1.
       apply derivable_assum1.
-    - eapply deduction_andp_elim2.
+    - pose proof negp_unfold y. rewrite <- H0.
+      eapply deduction_andp_elim2.
       apply derivable_assum1.
 Qed.
 
 Lemma provable_truep: |-- TT.
 Proof.
-  apply provable_impp_refl.
+  apply truep_intros.
 Qed.
 
 Lemma andp_comm: forall (x y: expr),
@@ -739,15 +782,13 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros.
+  apply deduction_iffp_intros.
+  + apply deduction_andp_intros.
     - eapply deduction_andp_elim2.
       apply derivable_assum1.
     - eapply deduction_andp_elim1.
       apply derivable_assum1.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros.
+  + apply deduction_andp_intros.
     - eapply deduction_andp_elim2.
       apply derivable_assum1.
     - eapply deduction_andp_elim1.
@@ -760,9 +801,8 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros; [| apply deduction_andp_intros].
+  apply deduction_iffp_intros.
+  + apply deduction_andp_intros; [| apply deduction_andp_intros].
     - eapply deduction_andp_elim1.
       eapply deduction_andp_elim1.
       apply derivable_assum1.
@@ -771,8 +811,7 @@ Proof.
       apply derivable_assum1.
     - eapply deduction_andp_elim2.
       apply derivable_assum1.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros; [apply deduction_andp_intros |].
+  + apply deduction_andp_intros; [apply deduction_andp_intros |].
     - eapply deduction_andp_elim1.
       apply derivable_assum1.
     - eapply deduction_andp_elim1.
@@ -789,13 +828,17 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + apply deduction_orp_elim'; rewrite <- provable_derivable.
-    - apply orp_intros2.
-    - apply orp_intros1.
-  + apply deduction_orp_elim'; rewrite <- provable_derivable.
-    - apply orp_intros2.
-    - apply orp_intros1.
+  apply deduction_iffp_intros.
+  + apply deduction_orp_elim.
+    - apply deduction_orp_intros2.
+      apply derivable_assum1.
+    - apply deduction_orp_intros1.
+      apply derivable_assum1.
+  + apply deduction_orp_elim.
+    - apply deduction_orp_intros2.
+      apply derivable_assum1.
+    - apply deduction_orp_intros1.
+      apply derivable_assum1.
 Qed.
 
 Lemma orp_assoc: forall (x y z: expr),
@@ -804,8 +847,8 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + apply deduction_orp_elim'; [apply deduction_orp_elim' |]; rewrite <- deduction_theorem.
+  apply deduction_iffp_intros.
+  + apply deduction_orp_elim; [apply deduction_orp_elim |].
     - apply deduction_orp_intros1.
       apply derivable_assum1.
     - apply deduction_orp_intros2.
@@ -814,7 +857,7 @@ Proof.
     - apply deduction_orp_intros2.
       apply deduction_orp_intros2.
       apply derivable_assum1.
-  + apply deduction_orp_elim'; [| apply deduction_orp_elim']; rewrite <- deduction_theorem.
+  + apply deduction_orp_elim; [| apply deduction_orp_elim].
     - apply deduction_orp_intros1.
       apply deduction_orp_intros1.
       apply derivable_assum1.
@@ -831,12 +874,12 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
+  apply deduction_iffp_intros; rewrite deduction_theorem.
   + apply derivable_andp_elim1.
   + rewrite <- deduction_theorem.
     apply deduction_andp_intros.
     - apply derivable_assum1.
-    - apply derivable_impp_refl.
+    - apply derivable_truep_intros.
 Qed.
 
 Lemma truep_andp: forall (x: expr),
@@ -845,11 +888,11 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
+  apply deduction_iffp_intros; rewrite deduction_theorem.
   + apply derivable_andp_elim2.
   + rewrite <- deduction_theorem.
     apply deduction_andp_intros.
-    - apply derivable_impp_refl.
+    - apply derivable_truep_intros.
     - apply derivable_assum1.
 Qed.
 
@@ -859,11 +902,11 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + apply deduction_orp_elim'.
+  apply deduction_iffp_intros.
+  + apply deduction_orp_elim; rewrite deduction_theorem.
     - apply derivable_falsep_elim.
     - apply derivable_impp_refl.
-  + apply derivable_orp_intros2.
+  + rewrite deduction_theorem. apply derivable_orp_intros2.
 Qed.
 
 Lemma orp_falsep: forall (x: expr),
@@ -872,11 +915,11 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + apply deduction_orp_elim'.
+  apply deduction_iffp_intros.
+  + apply deduction_orp_elim; rewrite deduction_theorem.
     - apply derivable_impp_refl.
     - apply derivable_falsep_elim.
-  + apply derivable_orp_intros1.
+  + rewrite deduction_theorem. apply derivable_orp_intros1.
 Qed.
 
 Lemma truep_impp: forall (x: expr),
@@ -885,13 +928,13 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + rewrite <- deduction_theorem.
-    apply deduction_modus_ponens with TT.
+  apply deduction_iffp_intros.
+  + apply deduction_modus_ponens with TT.
     - apply deduction_weaken0.
       apply provable_truep.
     - solve_assum.
-  + apply derivable_axiom1.
+  + rewrite deduction_theorem.
+    apply derivable_axiom1.
 Qed.
 
 Lemma andp_dup: forall (x: expr),
@@ -900,7 +943,7 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
+  apply deduction_iffp_intros; rewrite deduction_theorem.
   + apply derivable_andp_elim1.
   + rewrite <- deduction_theorem.
     apply deduction_andp_intros; apply derivable_assum1.
@@ -912,9 +955,9 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_andp_intros.
-  + apply deduction_orp_elim'; apply derivable_impp_refl.
-  + apply derivable_orp_intros1.
+  apply deduction_iffp_intros.
+  + apply deduction_orp_elim; apply derivable_assum1.
+  + rewrite deduction_theorem. apply derivable_orp_intros1.
 Qed.
 
 Lemma impp_curry: forall (x y z: expr),
@@ -951,10 +994,12 @@ Lemma impp_curry_uncurry: forall (x y z: expr),
 Proof.
   AddSequentCalculus.
   intros.
-  apply solve_andp_intros.
+  rewrite provable_derivable.
+  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
   + apply impp_curry.
   + apply impp_uncurry.
 Qed.
 
 End DerivableRulesFromAxiomatization2.
+
 
