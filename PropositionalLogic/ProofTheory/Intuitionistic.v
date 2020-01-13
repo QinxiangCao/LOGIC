@@ -39,7 +39,7 @@ Class IffpAxiomatization (L: Language) {minL: MinimumLanguage L} {iffpL: IffpLan
 }.
 
 Class TruepAxiomatization (L: Language) {minL: MinimumLanguage L} {truepL: TruepLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
-  Truep_intros: |-- TT
+  truep_intros: |-- TT
 }.
 
 Class AndpSequentCalculus (L: Language) {andpL: AndpLanguage L} (Gamma: Derivable L) := {
@@ -320,10 +320,10 @@ Qed.
 Lemma SequentCalculus2Axiomatization_falsepAX: FalsepAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
-  + apply derivable_falsep_elim.
+  apply derivable_falsep_elim.
 Qed.
 
-Lemma SequentCalculus2Axiomatization_negpAX: IntuitionisticNegpAxiomatization L GammaP.
+Lemma SequentCalculus2Axiomatization_inegpAX: IntuitionisticNegpAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
   + apply derivable_negp_unfold.
@@ -341,31 +341,60 @@ Qed.
 Lemma SequentCalculus2Axiomatization_truepAX: TruepAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
-  + apply derivable_truep_intros.
+  apply derivable_truep_intros.
 Qed.
 
 End SequentCalculus2Axiomatization.
-(**)
 
-Instance reg_SequentCalculus2Axiomatization_ipAX:
-  RegisterClass D2P_reg (fun ipAX: unit => @SequentCalculus2Axiomatization_ipAX) 2.
+Instance reg_SequentCalculus2Axiomatization_andpAX:
+  RegisterClass D2P_reg (fun andpAX: unit => @SequentCalculus2Axiomatization_andpAX) 2.
+Qed.
+
+Instance reg_SequentCalculus2Axiomatization_orpAX:
+  RegisterClass D2P_reg (fun orpAX: unit => @SequentCalculus2Axiomatization_orpAX) 3.
+Qed.
+
+Instance reg_SequentCalculus2Axiomatization_falsepAX:
+  RegisterClass D2P_reg (fun falsepAX: unit => @SequentCalculus2Axiomatization_falsepAX) 4.
+Qed.
+
+Instance reg_SequentCalculus2Axiomatization_inegpAX:
+  RegisterClass D2P_reg (fun inegpAX: unit => @SequentCalculus2Axiomatization_inegpAX) 5.
+Qed.
+
+Instance reg_SequentCalculus2Axiomatization_iffpAX:
+  RegisterClass D2P_reg (fun iffpAX: unit => @SequentCalculus2Axiomatization_iffpAX) 6.
+Qed.
+
+Instance reg_SequentCalculus2Axiomatization_truepAX:
+  RegisterClass D2P_reg (fun truepAX: unit => @SequentCalculus2Axiomatization_truepAX) 7.
 Qed.
 
 Section Axiomatization2SequentCalculus.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndpLanguage L}
+        {orpL: OrpLanguage L}
+        {falsepL: FalsepLanguage L}
+        {negpL: NegpLanguage L}
+        {iffpL: IffpLanguage L}
+        {truepL: TruepLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipGamma: IntuitionisticPropositionalLogic L GammaP}.
+        {andpGamma: AndpAxiomatization L GammaP}
+        {orpGamma: OrpAxiomatization L GammaP}
+        {falsepGamma: FalsepAxiomatization L GammaP}
+        {negpGamma: IntuitionisticNegpAxiomatization L GammaP}
+        {iffpGamma: IffpAxiomatization L GammaP}
+        {truepGamma: TruepAxiomatization L GammaP}.
 
-Lemma Axiomatization2SequentCalculus_ipSC:
-  IntuitionisticPropositionalSequentCalculus L GammaD.
+Lemma Axiomatization2SequentCalculus_andpSC:
+  AndpSequentCalculus L GammaD.
 Proof.
   pose proof Axiomatization2SequentCalculus_SC.
   pose proof Axiomatization2SequentCalculus_bSC.
@@ -381,6 +410,15 @@ Proof.
   + apply deduction_modus_ponens with (x && y); auto.
     apply deduction_weaken0.
     apply andp_elim2.
+Qed.
+
+Lemma Axiomatization2SequentCalculus_orpSC:
+  OrpSequentCalculus L GammaD.
+Proof.
+  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_bSC.
+  pose proof Axiomatization2SequentCalculus_minSC.
+  constructor; intros.
   + apply deduction_modus_ponens with x; auto.
     apply deduction_weaken0.
     apply orp_intros1.
@@ -392,16 +430,96 @@ Proof.
     apply deduction_modus_ponens with (x --> z); auto.
     apply deduction_weaken0.
     apply orp_elim.
-  + apply deduction_modus_ponens with FF; auto.
+Qed.
+
+Lemma Axiomatization2SequentCalculus_falsepSC:
+  FalsepSequentCalculus L GammaD.
+Proof.
+  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_bSC.
+  pose proof Axiomatization2SequentCalculus_minSC.
+  constructor; intros.
+  apply deduction_modus_ponens with FF; auto.
+  apply deduction_weaken0.
+  apply falsep_elim.
+Qed.
+
+Lemma Axiomatization2SequentCalculus_inegpSC:
+  IntuitionisticNegpSequentCalculus L GammaD.
+Proof.
+  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_bSC.
+  pose proof Axiomatization2SequentCalculus_minSC.
+  constructor; intros.
+  + rewrite deduction_theorem.
+    apply deduction_modus_ponens with (~~ x); auto.
     apply deduction_weaken0.
-    apply falsep_elim.
+    apply negp_unfold.
+  + rewrite deduction_theorem in H2.
+    apply deduction_modus_ponens with (x --> FF); auto.
+    apply deduction_weaken0.
+    apply negp_fold.
+Qed.
+
+Lemma Axiomatization2SequentCalculus_iffpSC:
+  IffpSequentCalculus L GammaD.
+Proof.
+  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_bSC.
+  pose proof Axiomatization2SequentCalculus_minSC.
+  constructor; intros.
+  + rewrite deduction_theorem in H2, H3.
+    apply deduction_modus_ponens with (y --> x); auto.
+    apply deduction_modus_ponens with (x --> y); auto.
+    apply deduction_weaken0.
+    apply iffp_intros.
+  + rewrite deduction_theorem.
+    apply deduction_modus_ponens with (x <--> y); auto.
+    apply deduction_weaken0.
+    apply iffp_elim1.
+  + rewrite deduction_theorem.
+    apply deduction_modus_ponens with (x <--> y); auto.
+    apply deduction_weaken0.
+    apply iffp_elim2.
+Qed.
+
+Lemma Axiomatization2SequentCalculus_truepSC:
+  TruepSequentCalculus L GammaD.
+Proof.
+  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_bSC.
+  pose proof Axiomatization2SequentCalculus_minSC.
+  constructor; intros.
+  apply deduction_weaken0.
+  apply truep_intros.
 Qed.
 
 End Axiomatization2SequentCalculus.
 
-Instance reg_Axiomatization2SequentCalculus_ipSC:
-  RegisterClass P2D_reg (fun ipSC: unit => @Axiomatization2SequentCalculus_ipSC) 4.
+Instance reg_Axiomatization2SequentCalculus_andpSC:
+  RegisterClass P2D_reg (fun andpSC: unit => @Axiomatization2SequentCalculus_andpSC) 8.
 Qed.
+
+Instance reg_Axiomatization2SequentCalculus_orpSC:
+  RegisterClass P2D_reg (fun orpSC: unit => @Axiomatization2SequentCalculus_orpSC) 9.
+Qed.
+
+Instance reg_Axiomatization2SequentCalculus_falsepSC:
+  RegisterClass P2D_reg (fun falsepSC: unit => @Axiomatization2SequentCalculus_falsepSC) 10.
+Qed.
+
+Instance reg_Axiomatization2SequentCalculus_inegpSC:
+  RegisterClass P2D_reg (fun inegpSC: unit => @Axiomatization2SequentCalculus_inegpSC) 11.
+Qed.
+
+Instance reg_Axiomatization2SequentCalculus_iffpSC:
+  RegisterClass P2D_reg (fun iffpSC: unit => @Axiomatization2SequentCalculus_iffpSC) 12.
+Qed.
+
+Instance reg_Axiomatization2SequentCalculus_truepSC:
+  RegisterClass P2D_reg (fun truepSC: unit => @Axiomatization2SequentCalculus_truepSC) 13.
+Qed.
+(**)
 
 Section DerivableRulesFromAxiomatization1.
 
