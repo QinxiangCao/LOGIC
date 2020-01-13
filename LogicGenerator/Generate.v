@@ -10,6 +10,8 @@ Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
+Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 Require Import SeparationLogic.Syntax.
 Require Import SeparationLogic.ProofTheory.SeparationLogic.
 Require Import SeparationLogic.ProofTheory.RewriteClass.
@@ -27,17 +29,21 @@ Section Generate.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
+        {iter_andp_L: IterAndLanguage L}
         {sepconL : SepconLanguage L}
         {wandL : WandLanguage L}
         {empL: EmpLanguage L}
         {iter_sepcon_L: IterSepconLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
+        {iter_andp_DL: IterAndDefinition_left L}
+        {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_Def: NormalIterSepcon L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
         {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {iter_andp_AXL: IterAndAxiomatization_left L GammaP}
         {cpAX: ClassicalPropositionalLogic L GammaP}
         {dmpAX: DeMorganPropositionalLogic L GammaP}
         {gdpAX: GodelDummettPropositionalLogic L GammaP}
@@ -244,6 +250,8 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.Classical.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.";
+  idtac "Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.";
+  idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.";
   idtac "Require Import Logic.SeparationLogic.Syntax.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.";

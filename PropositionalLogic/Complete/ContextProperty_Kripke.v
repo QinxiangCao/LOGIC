@@ -13,6 +13,7 @@ Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -121,14 +122,14 @@ Qed.
 
 Lemma DCS_multi_and_iff
       {iter_andp_L: IterAndLanguage L}
-      {iter_andp_Def: NormalIterAnd L}: forall (Phi: context),
+      {iter_andp_AXL: IterAndAxiomatization_left L GammaP}: forall (Phi: context),
   derivable_closed Phi ->
   (forall xs: list expr, Phi (iter_andp xs) <-> Forall Phi xs).
 Proof.
   intros.
   rewrite (DCS_iffp Phi (iter_andp xs) (fold_right andp TT xs)).
   2: auto.
-  2: apply iter_andp_spec.
+  2: apply iter_andp_spec_right.
 
   induction xs.
   + split; intros.

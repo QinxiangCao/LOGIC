@@ -7,6 +7,7 @@ Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 
 Require Logic.PropositionalLogic.DeepEmbedded.Deep.
 
@@ -132,7 +133,7 @@ Section Temp.
 End Temp.
 
 Module DSolver.
-  Local Existing Instances Deep.L Deep.minL Deep.pL Deep.iter_andp_L Deep.iter_andp_Def Deep.GP Deep.minAX Deep.ipG.
+  Local Existing Instances Deep.L Deep.minL Deep.pL Deep.iter_andp_L Deep.iter_andp_DL Deep.GP Deep.minAX Deep.ipG Deep.iter_andp_AXL.
 
   Instance Adj : Adjointness _ _ andp impp.
   Proof.
@@ -198,7 +199,7 @@ Module DSolver.
     forall e, provable (iffp e (iter_andp (flatten_and e))).
   Proof.
     intros.
-    rewrite iter_andp_def.
+    rewrite iter_andp_def_l.
     induction e; simpl flatten_and
         (*;
       [ change (flatten_and_inv _) with (fold_left andp (flatten_and e1 ++ flatten_and e2) truep)

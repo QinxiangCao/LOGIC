@@ -519,13 +519,13 @@ Proof.
 Qed.
 
 Context {iter_andp_L: IterAndLanguage L}
-        {iter_andp_Def: NormalIterAnd L}.
+        {iter_andp_AXL: IterAndAxiomatization_left L Gamma}.
 
-Lemma iter_andp_spec: forall (xs: list expr),
+Lemma iter_andp_spec_right: forall (xs: list expr),
   |-- iter_andp xs <--> fold_right andp TT xs.
 Proof.
   intros.
-  rewrite iter_andp_def.
+  rewrite iter_andp_spec_left.
   pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ _ _ andp TT andp_Mono andp_Assoc andp_LU andp_RU.
   auto.
 Qed.
@@ -540,7 +540,7 @@ Lemma iter_andp_unfold_right_assoc:  forall (xs: list expr),
          end) xs.
 Proof.
   intros.
-  rewrite iter_andp_spec.
+  rewrite iter_andp_spec_right.
   pose proof @fold_right_prodp_unfold _ _ _ _ _ _ andp andp_Mono TT andp_RU.
   auto.
 Qed.
@@ -558,7 +558,7 @@ Lemma iter_andp_unfold_left_assoc:  forall (xs: list expr),
       end.
 Proof.
   intros.
-  rewrite iter_andp_def.
+  rewrite iter_andp_spec_left.
   pose proof @fold_left_prodp_unfold _ _ _ _ _ _ andp andp_Mono TT andp_LU.
   apply H.
 Qed.
@@ -568,7 +568,7 @@ Lemma iter_andp_multi_imp: forall (xs: list expr) (y: expr),
 Proof.
   intros.
   unfold multi_imp.
-  rewrite iter_andp_spec.
+  rewrite iter_andp_spec_right.
   induction xs as [| x xs].
   + simpl.
     apply truep_impp.

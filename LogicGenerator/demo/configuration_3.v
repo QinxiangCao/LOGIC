@@ -13,6 +13,7 @@ Definition how_connectives :=
   ;FROM_falsep_impp_TO_negp
   ;FROM_falsep_impp_TO_truep
   ;FROM_impp_TO_multi_imp
+  ;FROM_andp_TO_iter_andp
   ;FROM_empty_set_TO_empty_context
   ].
 

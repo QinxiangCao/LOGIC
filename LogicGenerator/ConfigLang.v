@@ -16,6 +16,7 @@ Inductive connective :=
 | wand
 | emp
 | multi_imp
+| iter_andp
 | iter_sepcon
 | empty_context.
 
@@ -45,6 +46,7 @@ Inductive how_connective :=
 | FROM_falsep_impp_TO_negp
 | FROM_falsep_impp_TO_truep
 | FROM_impp_TO_multi_imp
+| FROM_andp_TO_iter_andp
 | FROM_sepcon_TO_iter_sepcon
 | FROM_empty_set_TO_empty_context.
 
@@ -75,6 +77,7 @@ Definition USE_mono_fin_conseq_FOR_derivable :=
 Inductive rule_class :=
 | provability_OF_impp
 | provability_OF_propositional_connectives
+| provability_OF_iter_andp
 | provability_OF_de_morgan
 | provability_OF_godel_dummett
 | provability_OF_classical_logic
@@ -95,6 +98,8 @@ Inductive rule_class :=
 | derivitive_OF_de_morgan
 | derivitive_OF_godel_dummett
 | derivitive_OF_classical_logic
+| GEN_iter_andp_FROM_fold_left_andp
+| GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_sepcon
 | GEN_derivable_FROM_provable
 | GEN_provable_FROM_derivable
@@ -122,6 +127,7 @@ Inductive connective_class :=
 | SepconLanguage
 | WandLanguage
 | EmpLanguage
+| IterAndLanguage
 | IterSepconLanguage
 .
 
@@ -353,6 +359,7 @@ match c1, c2 with
 | wand, wand
 | emp, emp
 | multi_imp, multi_imp
+| iter_andp, iter_andp
 | iter_sepcon, iter_sepcon
 | empty_context, empty_context => true
 | _, _ => false
@@ -423,6 +430,7 @@ match cc1, cc2 with
 | SepconLanguage, SepconLanguage => true
 | WandLanguage, WandLanguage => true
 | EmpLanguage, EmpLanguage => true
+| IterAndLanguage, IterAndLanguage
 | IterSepconLanguage, IterSepconLanguage => true
 | _, _ => false
 end.
@@ -468,6 +476,7 @@ Definition eqb (rc1 rc2: rule_class) :=
 match rc1, rc2 with
 | provability_OF_impp, provability_OF_impp => true
 | provability_OF_propositional_connectives, provability_OF_propositional_connectives => true
+| provability_OF_iter_andp, provability_OF_iter_andp => true
 | provability_OF_de_morgan, provability_OF_de_morgan => true
 | provability_OF_godel_dummett, provability_OF_godel_dummett => true
 | provability_OF_classical_logic, provability_OF_classical_logic => true
@@ -488,6 +497,8 @@ match rc1, rc2 with
 | derivitive_OF_de_morgan, derivitive_OF_de_morgan => true
 | derivitive_OF_godel_dummett, derivitive_OF_godel_dummett => true
 | derivitive_OF_classical_logic, derivitive_OF_classical_logic => true
+| GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp => true
+| GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp => true
 | GEN_iter_sepcon_FROM_sepcon, GEN_iter_sepcon_FROM_sepcon => true
 | GEN_derivable_FROM_provable, GEN_derivable_FROM_provable => true
 | GEN_provable_FROM_derivable, GEN_provable_FROM_derivable => true

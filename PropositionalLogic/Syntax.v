@@ -29,29 +29,3 @@ Notation "'FF'" := falsep : syntax.
 Notation "'TT'" := truep : syntax.
 
 End PropositionalLanguageNotation.
-
-(* TODO: do not need minL in the future *)
-Class NormalIterAnd
-      (L: Language)
-      {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}
-      {iter_andp_L: IterAndLanguage L}: Prop := {
-  iter_andp_def: forall xs, 
-    iter_andp xs = fold_left andp xs truep
-}.
-
-Class NormalIterOr
-      (L: Language)
-      {pL: PropositionalLanguage L}
-      {iter_orp_L: IterOrLanguage L}: Prop := {
-  iter_orp_def: forall xs, 
-    iter_orp xs = fold_left orp xs falsep
-}.
-
-Ltac AddConnective_iter_andp :=
-  let iter_andp_L := fresh "iter_andp_L" in
-  let iter_andp_Def := fresh "iter_andp_Def" in
-  set (iter_andp_L := Build_IterAndLanguage _ (fun xs => fold_left andp xs truep));
-  set (iter_andp_Def := Build_NormalIterAnd _ _ _ iter_andp_L (fun xs => eq_refl));
-  clearbody iter_andp_Def;
-  clearbody iter_andp_L.
