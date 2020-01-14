@@ -4,15 +4,18 @@ Require Export Logic.lib.register_typeclass.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.TheoryOfSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.TheoryOfSequentCalculus.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.
 
+
 Inductive P2D_reg: Type :=.
 Inductive D2P_reg: Type :=.
 Inductive P2D1_reg: Type :=.
 Inductive P2E_reg: Type :=.
+Inductive D1ToP_reg: Type :=.
 
 Ltac pose_proof_SC_instance n :=
   let a := get_nth P2D_reg n in
@@ -42,6 +45,13 @@ Ltac pose_proof_NE_instance n :=
     try pose_proof_instance_as T x
   end.
 
+Ltac pose_proof_Ax1_instance n :=
+  let a := get_nth D1ToP_reg n in
+  match a with
+  | fun x: unit => ?T => 
+    try pose_proof_instance_as T x
+  end.
+
 Ltac AddSequentCalculus :=
   let AX := fresh "AX" in
   let GammaD := fresh "GammaD" in
@@ -50,13 +60,26 @@ Ltac AddSequentCalculus :=
   clearbody GammaD;
   rec_from_n (0%nat) pose_proof_SC_instance.
 
-Ltac AddAxiomatization :=
+Ltac AddAxiomatizationFromSequentCalculus :=
   let SC := fresh "SC" in
   let GammaP := fresh "GammaP" in
   pose proof Derivable2Provable_Normal as SC;
   set (GammaP := Derivable2Provable) in SC;
   clearbody GammaP;
   rec_from_n (0%nat) pose_proof_AX_instance.
+
+Ltac AddAxiomatizationFromDeduction :=
+  let D1P :=fresh "D1P" in
+  let GammaP := fresh "GammaP" in
+  pose proof Derivable1ToProvable_trick as D1P;
+  set (GammaP := Derivable1ToProvable) in D1P;
+  rec_from_n (0%nat) pose_proof_Ax1_instance.
+
+Ltac AddAxiomatization :=
+  match goal with
+  |AddAxSC:Derivable _ |- _ => AddAxiomatizationFromSequentCalculus
+  |ADDAxD:Derivable1 _ |- _ => AddAxiomatizationFromDeduction
+  end.
 
 Ltac AddDeduction :=
   let ND := fresh "ND" in
@@ -72,22 +95,6 @@ Ltac AddEquiv :=
   pose proof Provable2Equiv_Normal as NEL;
   set (GammaL := Provable2Equiv) in NEL;
   rec_from_n (0%nat) pose_proof_NE_instance.
-
-(*GammaP : Provable L
-SC : NormalSequentCalculus L GammaP Gamma
-AX : FiniteWitnessedSequentCalculus L Gamma ->
-     NormalAxiomatization L GammaP Gamma
-minAX : MinimumAxiomatization L GammaP
-ipAX : IntuitionisticPropositionalLogic L GammaP
-
-AddSequentCalculus:
-GammaD : Derivable L
-AX : NormalAxiomatization L Gamma GammaD
-SC : NormalSequentCalculus L Gamma GammaD
-bSC : BasicSequentCalculus L GammaD
-fwSC : FiniteWitnessedSequentCalculus L GammaD
-minSC : MinimumSequentCalculus L GammaD
-ipSC : IntuitionisticPropositionalSequentCalculus L GammaD*)
 
 Instance reg_Axiomatization2SequentCalculus_SC:
   RegisterClass P2D_reg (fun SC: unit => @Axiomatization2SequentCalculus_SC) 0.
@@ -127,6 +134,10 @@ Qed.
 
 Instance reg_Axiomatization2BasicLogicEquiv:
   RegisterClass P2E_reg (fun BE: unit => @Axiomatization2BasicLogicEquiv) 1.
+Qed.
+
+Instance reg_Derivable1ToAxiomatization:
+  RegisterClass D1ToP_reg (fun minAx1: unit => @Derivable1ToAxiomatization) 0.
 Qed.
 
 Section Test_AddD.
@@ -182,7 +193,7 @@ Abort.
 
 End Test_AddSC.
 
-Section Test_AddAX.
+Section Test_AddAXSC.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
@@ -196,7 +207,65 @@ Local Open Scope syntax.
 
 Lemma derivable_axiom2': forall Phi (x y z: expr), Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
 Proof.
-  AddAxiomatization.
+  AddAxiomatizationFromSequentCalculus.
 Abort.
 
-End Test_AddAX.
+End Test_AddAXSC.
+
+Section test_AddAXD.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaD1: Derivable1 L}
+        {minD: MinimumDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
+
+Local Open Scope logic_base.
+Local Open Scope syntax.
+
+Lemma test_AddE: forall (x:expr), derivable1 x x.
+Proof.
+  AddAxiomatizationFromDeduction.
+  Abort.
+
+End test_AddAXD.
+
+Section text_AX.
+
+Local Open Scope logic_base.
+Local Open Scope syntax.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}.
+
+Section test_SequentCalculus.
+
+Context {GammaD: Derivable L}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
+        {fwSC: FiniteWitnessedSequentCalculus L GammaD}.
+
+Lemma test_1: forall Phi (x y z: expr), Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
+Proof.
+  AddAxiomatization.
+  Abort.
+
+End test_SequentCalculus.
+
+Section test_Deduction.
+
+Import Derivable1.
+Local Open Scope Derivable1.
+
+Context {GammaD1 :Derivable1 L}
+        {minD: MinimumDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
+
+Lemma test_2:forall x y, (x --> x) |-- (y --> y).
+Proof.
+  AddAxiomatization.
+  Abort.
+
+End test_Deduction.
+
+End text_AX.

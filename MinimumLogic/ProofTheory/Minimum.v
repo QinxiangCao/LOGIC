@@ -37,7 +37,9 @@ Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L
   deduction1_intros:forall x1 x2 y1 y2, derivable1 x2 x1 -> derivable1 y1 y2 
   -> derivable1 (x1 --> y1) (x2 --> y2);
   deduction1_axiom1:forall x y, derivable1 x (y --> x);
-  deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z)
+  deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z);
+  deduction_md:forall x y z,derivable1 (x --> y --> z) ((x --> y) --> (x --> z));
+  deduction_mid:forall x y, derivable1 ((x --> x) --> y) y
 }.
 
 Class NormalEquiv (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaL:LogicEquiv L): Type := {
@@ -53,6 +55,11 @@ Class NormalEquiv2 (L:Language) {minL: MinimumLanguage L} (GammaD:Derivable1 L) 
 Class MinimumEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:LogicEquiv L) := {
   equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 --> y1) --||-- (x2 --> y2)
+}.
+
+Class Provable_Derivable1 (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable1 L): Type := {
+  provable_derivable1: forall x, derivable1 (impp x x) x <->
+                        provable x
 }.
 
 
@@ -640,6 +647,14 @@ Definition Provable2Equiv_Normal {GammaP: Provable L}:
   NormalEquiv L GammaP Provable2Equiv :=
   Build_NormalEquiv
     L minL GammaP Provable2Equiv (fun _ _ => iff_refl _).
+
+Definition Derivable1ToProvable {GammaD1: Derivable1 L}: Provable L :=
+  Build_Provable L (fun x => derivable1 (impp x x) x).
+
+Definition Derivable1ToProvable_trick {GammaD1: Derivable1 L}:
+  Provable_Derivable1 L Derivable1ToProvable GammaD1 :=
+  Build_Provable_Derivable1
+    L minL Derivable1ToProvable GammaD1 (fun _ => iff_refl _).
 
 End Transformation.
 

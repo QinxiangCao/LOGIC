@@ -29,7 +29,7 @@ Proof.
   apply deduction1_refl.
 Qed.
 
-Instance derivable1_proper_impp:
+Instance derivable1_proper_derivable1:
   Proper ( derivable1 --> derivable1 ==> Basics.impl) derivable1.
 Proof.
   hnf;intros.
@@ -49,7 +49,7 @@ Section TestRewriteClass.
 
 Existing Instances Derivable_impp_rewrite
                    derivable1_refl
-                   derivable1_proper_impp.
+                   derivable1_proper_derivable1.
 
 Goal forall {L: Language} {Gamma:Derivable1 L} {BD:BasicDeduction L Gamma} x1 x2 y1 y2,
   x1 |-- x2 ->
