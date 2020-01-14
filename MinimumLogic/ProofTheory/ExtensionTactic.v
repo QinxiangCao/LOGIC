@@ -128,6 +128,10 @@ Instance reg_Axiomatization2BasicDeduction:
   RegisterClass P2D1_reg (fun BD: unit => @Axiomatization2BasicDeduction) 1.
 Qed.
 
+Instance reg_Axiomatization2PD:
+  RegisterClass P2D1_reg (fun PD: unit => @ND2PD) 2.
+Qed.
+
 Instance reg_Axiomatization2LogicEquiv_minME:
   RegisterClass P2E_reg (fun minME: unit => @Axiomatization2LogicEquiv_minME) 0.
 Qed.
@@ -138,6 +142,10 @@ Qed.
 
 Instance reg_Derivable1ToAxiomatization:
   RegisterClass D1ToP_reg (fun minAx1: unit => @Derivable1ToAxiomatization) 0.
+Qed.
+
+Instance reg_PD2ND:
+  RegisterClass D1ToP_reg (fun ND: unit => @PD2ND) 1.
 Qed.
 
 Section Test_AddD.
