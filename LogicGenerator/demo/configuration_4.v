@@ -9,6 +9,7 @@ Definition how_connectives :=
   ;primitive_connective andp
   ;primitive_connective orp
   ;primitive_connective falsep
+  ;primitive_connective coq_prop
   ;primitive_connective sepcon
   ;primitive_connective emp
   ;FROM_andp_impp_TO_iffp
@@ -22,6 +23,7 @@ Definition how_connectives :=
 
 Definition how_judgements :=
   [primitive_judgement provable
+  ;primitive_judgement corable
   ;FROM_provable_TO_derivable
   ].
 
@@ -37,4 +39,6 @@ Definition primitive_rule_classes :=
   ; provability_OF_sepcon_orp_rule
   ; provability_OF_sepcon_falsep_rule
   ; provability_OF_emp_rule_AS_iffp
+  ; corability_OF_basic_setting
+  ; corability_OF_coq_prop
   ].
