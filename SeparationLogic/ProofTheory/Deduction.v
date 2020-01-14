@@ -253,3 +253,5 @@ Proof.
   intros. rewrite derivable1_provable in H, H0 |- *.
   apply wand_mono;auto.
   Qed.
+
+End test_Ax.
