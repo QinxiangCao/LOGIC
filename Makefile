@@ -180,7 +180,7 @@ SeparationLogic_Semantics_FILES = \
 
 SeparationLogic_Sound_FILES = \
   Sound_Downwards.v Sound_Upwards.v Sound_Flat.v \
-  Sound_DownUp_Fail.v
+  Sound_DownUp_Fail.v Sound_Flat_Corable.v
 
 SeparationLogic_Complete_FILES = \
   ContextProperty_Flat.v \
