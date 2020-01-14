@@ -122,7 +122,7 @@ Proof.
   rewrite H in H0.
   tauto.
 Qed.
-Print derivable_proper_derivable1.
+
 End Derivable1.
 
 End Derivable.
@@ -147,7 +147,7 @@ Proof.
 Context {NEL:NormalEquiv L GammaP GammaL}
         {minAX: MinimumAxiomatization L GammaP}.
 
-Instance provable_proper_iffp : Proper (logic_equiv ==> iff) provable.
+Instance provable_proper_equiv : Proper (logic_equiv ==> iff) provable.
 Proof.
   hnf;intros.
   pose proof equiv_provable x y.

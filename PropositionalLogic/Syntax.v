@@ -1,10 +1,18 @@
-Require Import Logic.GeneralLogic.Base.
 Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.GeneralLogic.Base.
 
 Class PropositionalLanguage (L: Language): Type := {
   andp : expr -> expr -> expr;
   orp : expr -> expr -> expr;
   falsep: expr
+}.
+
+Class IterAndLanguage (L: Language): Type := {
+  iter_andp : list expr -> expr;
+}.
+
+Class IterOrLanguage (L: Language): Type := {
+  iter_orp : list expr -> expr;
 }.
 
 Definition negp {L: Language} {MinL: MinimumLanguage L} {pL: PropositionalLanguage L} (x: expr): expr := impp x falsep.
@@ -21,4 +29,3 @@ Notation "'FF'" := falsep : syntax.
 Notation "'TT'" := truep : syntax.
 
 End PropositionalLanguageNotation.
-

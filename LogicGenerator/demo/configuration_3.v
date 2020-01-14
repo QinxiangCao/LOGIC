@@ -9,10 +9,12 @@ Definition how_connectives :=
   ;primitive_connective andp
   ;primitive_connective orp
   ;primitive_connective falsep
+  ;primitive_connective coq_prop
   ;FROM_andp_impp_TO_iffp
   ;FROM_falsep_impp_TO_negp
   ;FROM_falsep_impp_TO_truep
   ;FROM_impp_TO_multi_imp
+  ;FROM_andp_TO_iter_andp
   ;FROM_empty_set_TO_empty_context
   ].
 
@@ -28,5 +30,6 @@ Definition primitive_rule_classes :=
   [ derivitive_OF_basic_setting
   ; derivitive_OF_impp
   ; derivitive_OF_propositional_connectives
+  ; provability_OF_coq_prop
   ; GEN_provable_FROM_derivable
   ].

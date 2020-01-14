@@ -61,7 +61,7 @@ Proof.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   unfold negp.
-  apply impp_proper_impp; auto. Locate impp_proper_impp.
+  apply impp_proper_impp; auto.
   apply provable_impp_refl.
 Qed.
 

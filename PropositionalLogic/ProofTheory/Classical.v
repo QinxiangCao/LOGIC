@@ -250,5 +250,15 @@ Proof.
     - apply derivable_axiom1.
 Qed.
 
+Lemma solve_classic: forall x y: expr,
+  |-- x --> y ->
+  |-- ~~ x --> y ->
+  |-- y.
+Proof.
+  intros.
+  eapply modus_ponens; [| apply (excluded_middle x)].
+  apply solve_orp_impp; auto.
+Qed.
+
 End DerivableRulesFromAxiomatization2.
 
