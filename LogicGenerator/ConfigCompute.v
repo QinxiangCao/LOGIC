@@ -84,6 +84,7 @@ match c with
 | truep
 | negp
 | iffp
+| coq_prop
 | sepcon
 | wand
 | emp

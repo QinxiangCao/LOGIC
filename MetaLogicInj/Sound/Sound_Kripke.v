@@ -50,3 +50,6 @@ Proof.
   specialize (H H1 n).
   auto.
 Qed.
+
+End Sound_Kripke.
+
