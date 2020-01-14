@@ -14,7 +14,7 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class ExcludedMiddle (L: Language) {minL: MinimumLanguage L} {orpL: OrpLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrpAxiomatization L Gamma} {falsepGamma: FalsepAxiomatization L Gamma} {inegpGamma: IntuitionisticNegpAxiomatization L Gamma} := {
+Class ExcludedMiddle (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} := {
   excluded_middle: forall x, |-- x || ~~ x
 }.
 
@@ -22,20 +22,20 @@ Section ExcludedMiddle2ImplyToOr.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndpAxiomatization L Gamma}
-        {orpGamma: OrpAxiomatization L Gamma}
-        {falsepGamma: FalsepAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
-        {iffpGamma: IffpAxiomatization L Gamma}
-        {truepGamma: TruepAxiomatization L Gamma}
+        {andpGamma: AndAxiomatization L Gamma}
+        {orpGamma: OrAxiomatization L Gamma}
+        {falsepGamma: FalseAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
+        {iffpGamma: IffAxiomatization L Gamma}
+        {truepGamma: TrueAxiomatization L Gamma}
         {emAX: ExcludedMiddle L Gamma}.
 
 Lemma impp2orp': forall (x y: expr),
@@ -70,7 +70,7 @@ Qed.
 
 End ExcludedMiddle2ImplyToOr.
 
-Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrpLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} {iffpL: IffpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrpAxiomatization L Gamma} {falsepGamma: FalsepAxiomatization L Gamma} {inegpGamma: IntuitionisticNegpAxiomatization L Gamma} {iffpGamma: IffpAxiomatization L Gamma} := {
+Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} {iffpGamma: IffAxiomatization L Gamma} := {
   impp2orp: forall x y, |-- (x --> y) <--> (~~ x || y)
 }.
 
@@ -78,20 +78,20 @@ Section ImplyToOr2DoubleNegativeElimination.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndpAxiomatization L Gamma}
-        {orpGamma: OrpAxiomatization L Gamma}
-        {falsepGamma: FalsepAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
-        {iffpGamma: IffpAxiomatization L Gamma}
-        {truepGamma: TruepAxiomatization L Gamma}
+        {andpGamma: AndAxiomatization L Gamma}
+        {orpGamma: OrAxiomatization L Gamma}
+        {falsepGamma: FalseAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
+        {iffpGamma: IffAxiomatization L Gamma}
+        {truepGamma: TrueAxiomatization L Gamma}
         {impp2orpAX: ImplyToOr L Gamma}.
 
 Lemma double_negp_elim': forall (x: expr),
@@ -106,7 +106,7 @@ Admitted.
 
 End ImplyToOr2DoubleNegativeElimination.
 
-Class DoubleNegativeElimination (L: Language) {minL: MinimumLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {falsepGamma: FalsepAxiomatization L Gamma} {inegpGamma: IntuitionisticNegpAxiomatization L Gamma} := {
+Class DoubleNegativeElimination (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} := {
   double_negp_elim: forall x, |-- ~~ (~~ x) --> x
 }.
 
@@ -114,13 +114,13 @@ Class PeirceLaw (L: Language) {minL: MinimumLanguage L} (Gamma: Provable L) {min
   peirce_law: forall x y, |-- ((x --> y) --> x) --> x
 }.
 
-Class ByContradiction (L: Language) {minL: MinimumLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {falsepGamma: FalsepAxiomatization L Gamma} {inegpGamma: IntuitionisticNegpAxiomatization L Gamma} := {
+Class ByContradiction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} := {
   by_contradiction: forall x y, |-- (~~ x --> y) --> (~~ x --> ~~ y) --> x
 }.
 
 
 
-Class ClassicalPropositionalSequentCalculus (L: Language) {minL: MinimumLanguage L} {orpL: OrpLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Derivable L) {bSC: BasicSequentCalculus L Gamma} {minSC: MinimumSequentCalculus L Gamma} {orpSC: OrpSequentCalculus L Gamma} {falsepSC: FalsepSequentCalculus L Gamma} {inegpSC: IntuitionisticNegpSequentCalculus L Gamma} := {
+Class ClassicalPropositionalSequentCalculus (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) {bSC: BasicSequentCalculus L Gamma} {minSC: MinimumSequentCalculus L Gamma} {orpSC: OrSequentCalculus L Gamma} {falsepSC: FalseSequentCalculus L Gamma} {inegpSC: IntuitionisticNegSequentCalculus L Gamma} := {
   derivable_excluded_middle: forall Phi x, Phi |-- x || ~~ x
 }.
 
