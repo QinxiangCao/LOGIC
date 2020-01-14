@@ -97,12 +97,13 @@ Proof.
   intros; apply Same_set_refl.
 Defined.
 
-Instance kpSM (M: Kmodel): KripkePropositionalSemantics L MD M SM.
-Proof.
-  apply Build_KripkePropositionalSemantics.
-  + intros; apply Same_set_refl.
-  + intros; apply Same_set_refl.
-  + intros; apply Same_set_refl.
-Defined.
+Instance andpSM (M: Kmodel): KripkeAndSemantics L MD M SM.
+Proof. constructor. intros; apply Same_set_refl. Qed.
+
+Instance orpSM (M: Kmodel): KripkeOrSemantics L MD M SM.
+Proof. constructor. intros; apply Same_set_refl. Qed.
+
+Instance falsepSM (M: Kmodel): KripkeFalseSemantics L MD M SM.
+Proof. constructor. intros; apply Same_set_refl. Qed.
 
 End KripkeSemantics.

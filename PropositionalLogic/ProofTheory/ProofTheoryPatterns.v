@@ -470,20 +470,26 @@ Proof.
   + apply andp_Comm.
 Qed.
 
-Lemma andp_LU: LeftUnit L Gamma TT andp.
+Lemma andp_LU
+      {truepL: TrueLanguage L}
+      {trueAX: TrueAxiomatization L Gamma}:
+  LeftUnit L Gamma TT andp.
 Proof.
   intros.
-  apply Build_LeftUnit'.
-  intros.
-  apply truep_andp.
+  constructor.
+  + apply truep_andp1.
+  + apply truep_andp2.
 Qed.
 
-Lemma andp_RU: RightUnit L Gamma TT andp.
+Lemma andp_RU
+      {truepL: TrueLanguage L}
+      {trueAX: TrueAxiomatization L Gamma}:
+  RightUnit L Gamma TT andp.
 Proof.
   intros.
-  apply Build_RightUnit'.
-  intros.
-  apply andp_truep.
+  constructor.
+  + apply andp_truep1.
+  + apply andp_truep2.
 Qed.
 
 Lemma andp_Assoc: Associativity L Gamma andp.

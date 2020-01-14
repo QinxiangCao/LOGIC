@@ -917,37 +917,68 @@ Proof.
       apply derivable_assum1.
 Qed.
 
-Lemma andp_truep: forall (x: expr),
-  |-- x && TT <--> x.
+Lemma andp_truep1: forall (x: expr),
+  |-- x && TT --> x.
 Proof.
+  intros.
+  apply andp_elim1.
+Qed.
+
+Lemma andp_truep2: forall (x: expr),
+  |-- x --> x && TT.
+Proof.
+  clear - minAX andpAX truepAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_iffp_intros; rewrite deduction_theorem.
-  + apply derivable_andp_elim1.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros.
-    - apply derivable_assum1.
-    - apply derivable_truep_intros.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + apply derivable_assum1.
+  + apply derivable_truep_intros.
+Qed.
+
+Lemma andp_truep: forall (x: expr),
+  |-- x && TT <--> x.
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply andp_truep1.
+  + apply andp_truep2.
+Qed.
+
+Lemma truep_andp1: forall (x: expr),
+  |-- TT && x --> x.
+Proof.
+  intros.
+  apply andp_elim2.
+Qed.
+
+Lemma truep_andp2: forall (x: expr),
+  |-- x --> TT && x.
+Proof.
+  clear - minAX andpAX truepAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + apply derivable_truep_intros.
+  + apply derivable_assum1.
 Qed.
 
 Lemma truep_andp: forall (x: expr),
   |-- TT && x <--> x.
 Proof.
-  AddSequentCalculus.
   intros.
-  rewrite provable_derivable.
-  apply deduction_iffp_intros; rewrite deduction_theorem.
-  + apply derivable_andp_elim2.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros.
-    - apply derivable_truep_intros.
-    - apply derivable_assum1.
+  apply solve_iffp_intros.
+  + apply truep_andp1.
+  + apply truep_andp2.
 Qed.
 
 Lemma falsep_orp: forall (x: expr),
   |-- FF || x <--> x.
 Proof.
+  clear - minAX falsepAX orpAX iffpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -961,6 +992,7 @@ Qed.
 Lemma orp_falsep: forall (x: expr),
   |-- x || FF <--> x.
 Proof.
+  clear - minAX falsepAX orpAX iffpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.

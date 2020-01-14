@@ -35,7 +35,7 @@ Instance andpL {Sigma: PropositionalVariables}: AndLanguage L :=
 Instance orpL {Sigma: PropositionalVariables}: OrLanguage L :=
   Build_OrLanguage L orp.
 
-Instance falseL {Sigma: PropositionalVariables}: FalseLanguage L :=
+Instance falsepL {Sigma: PropositionalVariables}: FalseLanguage L :=
   Build_FalseLanguage L falsep.
 
 Definition rank {Sigma: PropositionalVariables}: expr Sigma -> nat :=
