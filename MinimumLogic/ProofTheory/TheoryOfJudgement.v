@@ -164,3 +164,59 @@ Proof.
    Qed.
 
 End Derivable1ToProvable.
+
+Section Derivable1_Provable.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD: Derivable1 L}.
+
+Section provable2derivable1.
+
+Context {ND: NormalDeduction L GammaP GammaD}
+        {minAX: MinimumAxiomatization L GammaP}.
+
+Lemma ND2PD : Provable_Derivable1 L GammaP GammaD.
+Proof.
+  constructor.
+  intros. split.
+  -intros.
+   apply derivable1_provable in H.
+   pose proof provable_impp_refl x.
+   pose proof modus_ponens _ _ H H0. auto.
+  -intros.
+   apply derivable1_provable.
+   apply aux_minimun_rule00. auto.
+  Qed.
+
+End provable2derivable1.
+
+Section derivable12provable.
+
+Context {PD:Provable_Derivable1 L GammaP GammaD}
+        {MD: MinimumDeduction L GammaD}
+        {BD: BasicDeduction L GammaD}.
+
+Import Derivable1.
+Local Open Scope Derivable1.
+
+Lemma PD2ND: NormalDeduction L GammaP GammaD.
+Proof.
+  constructor.
+  intros. split.
+  -intros.
+   apply provable_derivable1.
+   apply deduction_exchange.
+   pose proof deduction1_axiom1 y ((x --> y) --> x --> y).
+   pose proof deduction1_trans _ _ _ H H0. auto.
+  -intros.
+   apply provable_derivable1 in H.
+   apply deduction_exchange in H.
+   pose proof deduction_mid (x --> y) y.
+   pose proof deduction1_trans _ _ _ H H0. auto.
+  Qed.
+
+End derivable12provable.
+
+End Derivable1_Provable.
