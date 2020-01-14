@@ -313,6 +313,13 @@ lgen_demo_4:
 	@echo COQC LogicGenerator/demo/implementation_4.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_4.v
 
+lgen_demo_5:
+	./logic_gen.sh LogicGenerator/demo/configuration_5.v LogicGenerator/demo/interface_5.v
+	@echo COQC LogicGenerator/demo/interface_5.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_5.v
+	@echo COQC LogicGenerator/demo/implementation_5.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_5.v
+
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
 

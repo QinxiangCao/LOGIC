@@ -389,6 +389,7 @@ Definition instance_transitions :=
   ; (sepcon_falsep_AX, Adj2SepconFalse)
   ; (empAX, EmpAxiomatizationIff2EmpAxiomatization)
   ; (sepcon_coq_prop_AX, CoqPropCorable2SepconCoqPropAX)
+  ; (sepcon_coq_prop_AX, Adj2SepconCoqProp)
   ].
 
 Definition type_instances: list Name :=

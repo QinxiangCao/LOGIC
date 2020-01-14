@@ -11,12 +11,15 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.MetaLogicInj.Syntax.
+Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
+Import CoqPropInLogicNotation.
 Import SeparationLogicNotation.
 
 Class SepconMonoAxiomatization
@@ -140,11 +143,13 @@ Section FromAdjToPropositionalCombination.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
+        {coq_prop_L: CoqPropLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
         {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {coq_prop_AX: CoqPropAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization L Gamma}
         {wandX: WandAxiomatization L Gamma}.
 
@@ -178,6 +183,30 @@ Proof.
   intros.
   rewrite (@falsep_prodp _ _ _ _ _ _ _ _ wand_sepcon_Adj).
   apply provable_impp_refl.
+Qed.
+
+Lemma Adj2SepconCoqProp: SepconCoqPropAxiomatization L Gamma.
+Proof.
+  constructor.
+  intros.
+  apply solve_andp_intros.
+  + apply solve_impp_andp.
+    - apply wand_sepcon_adjoint.
+      apply coq_prop_andp_impp.
+      intros.
+      apply wand_sepcon_adjoint.
+      apply aux_minimun_rule00.
+      apply coq_prop_intros.
+      auto.
+    - apply sepcon_mono.
+      * apply andp_elim2.
+      * apply provable_impp_refl.
+  + apply coq_prop_andp_impp.
+    intros.
+    apply sepcon_mono.
+    - rewrite coq_prop_andp by auto.
+      apply provable_impp_refl.
+    - apply provable_impp_refl.
 Qed.
 
 End FromAdjToPropositionalCombination.
