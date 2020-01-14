@@ -106,35 +106,11 @@ Context {coq_prop_L: CoqPropLanguage L}
         {coq_prop_AX: CoqPropAxiomatization L Gamma}
         {coq_prop_Cor: CoqPropCorable L Cor}.
 
-Lemma prop_andp_sepcon1: forall P Q R,
-  |-- (!! P && Q) * R <--> !! P && (Q * R).
+Lemma CoqPropCorable2SepconCoqPropAX: SepconCoqPropAxiomatization L Gamma.
 Proof.
+  constructor.
   intros.
   apply corable_andp_sepcon1.
-  apply corable_coq_prop.
-Qed.
-
-Lemma prop_sepcon_andp2: forall P Q R,
- |-- Q * (R && !! P) <--> !! P && (Q * R).
-Proof.
-  intros.
-  apply corable_sepcon_andp2.
-  apply corable_coq_prop.
-Qed.
-
-Lemma prop_sepcon_andp1: forall P Q R,
-  |-- Q * (!! P && R) <--> !! P && (Q * R).
-Proof.
-  intros.
-  apply corable_sepcon_andp1.
-  apply corable_coq_prop.
-Qed.
-
-Lemma prop_andp_sepcon2: forall P Q R,
-  |-- Q && !! P * R <--> !! P && (Q * R).
-Proof.
-  intros.
-  apply corable_andp_sepcon2.
   apply corable_coq_prop.
 Qed.
 

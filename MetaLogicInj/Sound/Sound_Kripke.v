@@ -27,6 +27,7 @@ Context {L: Language}
         {M: Kmodel}
         {SM: Semantics L MD}
         {R: Relation (Kworlds M)}
+        {po_R: PreOrder Krelation}
         {kminSM: KripkeMinimumSemantics L MD M SM}
         {kiSM: KripkeIntuitionisticSemantics L MD M SM}
         {coq_prop_SM: CoqPropSemantics L MD M SM}.
@@ -48,6 +49,20 @@ Proof.
   intros.
   rewrite sat_coq_prop in H1.
   specialize (H H1 n).
+  auto.
+Qed.
+
+Lemma sound_coq_prop_impp: forall (P Q: Prop),
+  forall m, KRIPKE: M, m |= (!! P --> !! Q) --> !! (P -> Q).
+Proof.
+  intros.
+  rewrite sat_impp.
+  intros.
+  clear m H.
+  rewrite sat_impp in H0.
+  specialize (H0 n ltac:(reflexivity)).
+  rewrite !sat_coq_prop in H0.
+  rewrite sat_coq_prop.
   auto.
 Qed.
 
