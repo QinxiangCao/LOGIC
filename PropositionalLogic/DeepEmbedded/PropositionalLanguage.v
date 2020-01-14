@@ -29,8 +29,14 @@ Instance L {Sigma: PropositionalVariables}: Language :=
 Instance minL {Sigma: PropositionalVariables}: MinimumLanguage L :=
   Build_MinimumLanguage L impp.
 
-Instance pL {Sigma: PropositionalVariables}: PropositionalLanguage L :=
-  Build_PropositionalLanguage L andp orp falsep.
+Instance andpL {Sigma: PropositionalVariables}: AndpLanguage L :=
+  Build_AndpLanguage L andp.
+
+Instance orpL {Sigma: PropositionalVariables}: OrpLanguage L :=
+  Build_OrpLanguage L orp.
+
+Instance falseL {Sigma: PropositionalVariables}: FalsepLanguage L :=
+  Build_FalsepLanguage L falsep.
 
 Definition rank {Sigma: PropositionalVariables}: expr Sigma -> nat :=
   fix rank (x: expr Sigma): nat :=
