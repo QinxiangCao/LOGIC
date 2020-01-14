@@ -26,4 +26,7 @@ Ltac pose_proof_instance_as F name:=
   idtac;
   first [ let G := eval cbv beta in (F ltac:(typeclasses eauto)) in
           pose_proof_instance_as G name
+        | match type of F with
+          | forall _: _, _ => fail 2
+          end
         | pose proof F as name].

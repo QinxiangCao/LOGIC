@@ -16,7 +16,7 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class GodelDummettPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrpAxiomatization L Gamma} := {
+Class GodelDummettPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrAxiomatization L Gamma} := {
   impp_choice: forall x y, |-- (x --> y) || (y --> x)
 }.
 
@@ -24,20 +24,20 @@ Section GodelDummett.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndpAxiomatization L Gamma}
-        {orpGamma: OrpAxiomatization L Gamma}
-        {falsepGamma: FalsepAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
-        {iffpGamma: IffpAxiomatization L Gamma}
-        {truepGamma: TruepAxiomatization L Gamma}
+        {andpGamma: AndAxiomatization L Gamma}
+        {orpGamma: OrAxiomatization L Gamma}
+        {falsepGamma: FalseAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
+        {iffpGamma: IffAxiomatization L Gamma}
+        {truepGamma: TrueAxiomatization L Gamma}
         {gdpAX: GodelDummettPropositionalAxiomatization L Gamma}.
 (*
 Lemma derivable_impp_choice: forall (Phi: context) (x y: expr),

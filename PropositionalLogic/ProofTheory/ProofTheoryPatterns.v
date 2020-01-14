@@ -19,17 +19,16 @@ Section PatternInstances0.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {orL: OrpLanguage L}
+        {orL: OrLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {orpAX: OrpAxiomatization L Gamma}.
+        {orpAX: OrAxiomatization L Gamma}.
 
 Lemma or_Comm: Commutativity L Gamma orp.
 Proof.
   constructor.
   intros.
-  rewrite <- orp_comm_impp.
-  apply provable_impp_refl.
+  apply orp_comm_impp.
 Qed.
 
 Lemma orp_Mono: Monotonicity L Gamma orp.
@@ -40,21 +39,21 @@ Qed.
 
 End PatternInstances0.
 
-Section DerivableRulesFromPatterns.
+Section DerivableRulesFromPatterns1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
         {prodp: expr -> expr -> expr}.
 
 Lemma prodp_comm {Comm: Commutativity L Gamma prodp}: forall x y,
   |-- prodp x y <--> prodp y x.
 Proof.
   intros.
-  apply solve_andp_intros; apply prodp_comm_impp.
+  apply solve_iffp_intros; apply prodp_comm_impp.
 Qed.
 
 Section UnitTheorems.
@@ -64,7 +63,7 @@ Context {e: expr}.
 Lemma left_unit {LU: LeftUnit L Gamma e prodp} : forall x, |-- prodp e x <--> x.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply left_unit1.
   + apply left_unit2.
 Qed.
@@ -72,7 +71,7 @@ Qed.
 Lemma right_unit {RU: RightUnit L Gamma e prodp} : forall x, |-- prodp x e <--> x.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply right_unit1.
   + apply right_unit2.
 Qed.
@@ -87,7 +86,7 @@ Lemma prodp_sump_distr_l {LDistr: LeftDistr L Gamma prodp sump}: forall x y z,
   |-- prodp x (sump y z) <--> sump (prodp x y) (prodp x z).
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply left_distr1.
   + apply left_distr2.
 Qed.
@@ -96,12 +95,24 @@ Lemma prodp_sump_distr_r {RDistr: RightDistr L Gamma prodp sump}: forall x y z,
   |-- prodp (sump y z) x <--> sump (prodp y x) (prodp z x).
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply right_distr1.
   + apply right_distr2.
 Qed.
 
 End DistrTheorems.
+
+End DerivableRulesFromPatterns1.
+
+Section DerivableRulesFromPatterns2.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {orpL: OrLanguage L}
+        {Gamma: Provable L}
+        {minAX: MinimumAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {prodp: expr -> expr -> expr}.
 
 Section AdjointTheorems.
 
@@ -131,27 +142,35 @@ Proof.
 Qed.
 
 (* TODO: l/r wrong *)
-Lemma prodp_orp_distr_l: forall x y z: expr,
-  |-- prodp (x || y) z <--> (prodp x z || prodp y z).
+Lemma prodp_orp_distr_l {iffpL: IffLanguage L} {iffpAX: IffAxiomatization L Gamma}:
+  forall x y z: expr, |-- prodp (x || y) z <--> (prodp x z || prodp y z).
 Proof.
   intros.
-  apply (@prodp_sump_distr_r _ Adjoint2RDistr).
+  apply (@prodp_sump_distr_r _ _ _ _ _ _ _ _ Adjoint2RDistr).
 Qed.
 
 (* TODO: l/r wrong *)
-Lemma prodp_orp_distr_r {Comm: Commutativity L Gamma prodp}: forall x y z: expr,
-  |-- prodp x (y || z) <--> (prodp x y || prodp x z).
+Lemma prodp_orp_distr_r
+      {iffpL: IffLanguage L}
+      {iffpAX: IffAxiomatization L Gamma}
+      {Comm: Commutativity L Gamma prodp}:
+  forall x y z: expr, |-- prodp x (y || z) <--> (prodp x y || prodp x z).
 Proof.
   intros.
-  apply (@prodp_sump_distr_l _ Adjoint2LDistr).
+  apply (@prodp_sump_distr_l _ _ _ _ _ _ _ _ Adjoint2LDistr).
 Qed.
 
-Lemma orp_funcp {Comm: Commutativity L Gamma prodp}: forall x y z: expr,
-  |-- funcp (x || y) z <--> (funcp x z && funcp y z).
+Lemma orp_funcp
+      {andpL: AndLanguage L}
+      {iffpL: IffLanguage L}
+      {andpAX: AndAxiomatization L Gamma}
+      {iffpAX: IffAxiomatization L Gamma}
+      {Comm: Commutativity L Gamma prodp}:
+  forall x y z: expr, |-- funcp (x || y) z <--> (funcp x z && funcp y z).
 Proof.
   pose proof Adjoint2Mono as Mono.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply solve_impp_andp.
     - apply funcp_mono.
       * apply orp_intros1.
@@ -167,11 +186,15 @@ Proof.
 Qed.
 
 (* TODO: l/r wrong *)
-Lemma funcp_andp_distr_r: forall x y z: expr,
-  |-- funcp x (y && z)  <--> (funcp x y && funcp x z).
+Lemma funcp_andp_distr_r
+      {andpL: AndLanguage L}
+      {iffpL: IffLanguage L}
+      {andpAX: AndAxiomatization L Gamma}
+      {iffpAX: IffAxiomatization L Gamma}:
+  forall x y z: expr, |-- funcp x (y && z)  <--> (funcp x y && funcp x z).
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply solve_impp_andp.
     - apply funcp_mono2.
       apply andp_elim1.
@@ -183,18 +206,27 @@ Proof.
     - apply andp_elim2.
 Qed.
 
-Lemma falsep_prodp: forall x: expr,
-  |-- prodp falsep x <--> falsep.
+Lemma falsep_prodp
+      {falsepL: FalseLanguage L}
+      {iffpL: IffLanguage L}
+      {falseAX: FalseAxiomatization L Gamma}
+      {iffpAX: IffAxiomatization L Gamma}:
+  forall x: expr, |-- prodp falsep x <--> falsep.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply adjoint.
     apply falsep_elim.
   + apply falsep_elim.
 Qed.
 
-Lemma prodp_falsep {Comm: Commutativity L Gamma prodp}: forall x: expr,
-  |-- prodp x falsep <--> falsep.
+Lemma prodp_falsep
+      {falsepL: FalseLanguage L}
+      {iffpL: IffLanguage L}
+      {falseAX: FalseAxiomatization L Gamma}
+      {iffpAX: IffAxiomatization L Gamma}
+      {Comm: Commutativity L Gamma prodp}:
+  forall x: expr, |-- prodp x falsep <--> falsep.
 Proof.
   intros.
   rewrite prodp_comm.
@@ -362,7 +394,7 @@ Qed.
 
 End CommAssocTheorems.
 
-End DerivableRulesFromPatterns.
+End DerivableRulesFromPatterns2.
 
 Section ProofTheoryPatterns.
 
@@ -518,19 +550,20 @@ Proof.
   apply (@prodp_orp_distr_r _ _ _ _ _ _ _ _ impp_andp_Adjoint andp_Comm).
 Qed.
 
-Definition multi_and (xs: list expr): expr := fold_left andp xs truep.
+Context {iter_andp_L: IterAndLanguage L}
+        {iter_andp_AXL: IterAndAxiomatization_left L Gamma}.
 
-Lemma multi_and_spec: forall (xs: list expr),
-  |-- multi_and xs <--> fold_right andp TT xs.
+Lemma iter_andp_spec_right: forall (xs: list expr),
+  |-- iter_andp xs <--> fold_right andp TT xs.
 Proof.
   intros.
-  unfold multi_and.
+  rewrite iter_andp_spec_left.
   pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ _ _ andp TT andp_Mono andp_Assoc andp_LU andp_RU.
   auto.
 Qed.
 
-Lemma multi_and_unfold_right_assoc:  forall (xs: list expr),
-  |-- multi_and xs <-->
+Lemma iter_andp_unfold_right_assoc:  forall (xs: list expr),
+  |-- iter_andp xs <-->
       (fix f xs :=
          match xs with
          | nil => TT
@@ -539,13 +572,13 @@ Lemma multi_and_unfold_right_assoc:  forall (xs: list expr),
          end) xs.
 Proof.
   intros.
-  rewrite multi_and_spec.
+  rewrite iter_andp_spec_right.
   pose proof @fold_right_prodp_unfold _ _ _ _ _ _ andp andp_Mono TT andp_RU.
   auto.
 Qed.
 
-Lemma multi_and_unfold_left_assoc:  forall (xs: list expr),
-  |-- multi_and xs <-->
+Lemma iter_andp_unfold_left_assoc:  forall (xs: list expr),
+  |-- iter_andp xs <-->
       match xs with
       | nil => TT
       | x :: xs0 =>
@@ -557,16 +590,17 @@ Lemma multi_and_unfold_left_assoc:  forall (xs: list expr),
       end.
 Proof.
   intros.
+  rewrite iter_andp_spec_left.
   pose proof @fold_left_prodp_unfold _ _ _ _ _ _ andp andp_Mono TT andp_LU.
   apply H.
 Qed.
 
-Lemma multi_and_multi_imp: forall (xs: list expr) (y: expr),
-  |-- (multi_and xs --> y) <--> (multi_imp xs y).
+Lemma iter_andp_multi_imp: forall (xs: list expr) (y: expr),
+  |-- (iter_andp xs --> y) <--> (multi_imp xs y).
 Proof.
   intros.
   unfold multi_imp.
-  rewrite multi_and_spec.
+  rewrite iter_andp_spec_right.
   induction xs as [| x xs].
   + simpl.
     apply truep_impp.

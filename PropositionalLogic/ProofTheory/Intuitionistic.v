@@ -11,87 +11,98 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class AndpAxiomatization (L: Language) {minL: MinimumLanguage L} {andpL: AndpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class AndAxiomatization (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (Gamma: Provable L) := {
   andp_intros: forall x y, |-- x --> y --> x && y;
   andp_elim1: forall x y, |-- x && y --> x;
   andp_elim2: forall x y, |-- x && y --> y
 }.
 
-Class OrpAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class OrAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (Gamma: Provable L) := {
   orp_intros1: forall x y, |-- x --> x || y;
   orp_intros2: forall x y, |-- y --> x || y;
   orp_elim: forall x y z, |-- (x --> z) --> (y --> z) --> (x || y --> z)
 }.
 
-Class FalsepAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: FalsepLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class FalseAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} (Gamma: Provable L) := {
   falsep_elim: forall x, |-- FF --> x
 }.
 
-Class IntuitionisticNegpAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class IntuitionisticNegAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
   negp_unfold: forall x, |-- (~~x) --> (x --> FF);
   negp_fold: forall x, |-- (x --> FF) --> (~~x)
 }.
 
-Class IffpAxiomatization (L: Language) {minL: MinimumLanguage L} {iffpL: IffpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class IffAxiomatization (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) := {
   iffp_intros: forall x y, |-- (x --> y) --> (y --> x) --> (x <--> y);
   iffp_elim1: forall x y, |-- (x <--> y) --> (x --> y);
   iffp_elim2: forall x y, |-- (x <--> y) --> (y --> x)
 }.
 
-Class TruepAxiomatization (L: Language) {minL: MinimumLanguage L} {truepL: TruepLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class TrueAxiomatization (L: Language) {minL: MinimumLanguage L} {truepL: TrueLanguage L} (Gamma: Provable L) := {
   truep_intros: |-- TT
 }.
 
-Class AndpSequentCalculus (L: Language) {andpL: AndpLanguage L} (Gamma: Derivable L) := {
+Class AndSequentCalculus (L: Language) {andpL: AndLanguage L} (Gamma: Derivable L) := {
   deduction_andp_intros: forall Phi x y, Phi |-- x -> Phi |-- y -> Phi |-- x && y;
   deduction_andp_elim1: forall Phi x y, Phi |-- x && y -> Phi |-- x;
   deduction_andp_elim2: forall Phi x y, Phi |-- x && y -> Phi |-- y
 }.
 
-Class OrpSequentCalculus (L: Language) {orpL: OrpLanguage L} (Gamma: Derivable L) := {
+Class OrSequentCalculus (L: Language) {orpL: OrLanguage L} (Gamma: Derivable L) := {
   deduction_orp_intros1: forall Phi x y, Phi |-- x -> Phi |-- x || y;
   deduction_orp_intros2: forall Phi x y, Phi |-- y -> Phi |-- x || y;
   deduction_orp_elim: forall Phi x y z, Phi;; x |-- z -> Phi ;; y |-- z -> Phi;; x || y |-- z
 }.
 
-Class FalsepSequentCalculus (L: Language) {falsepL: FalsepLanguage L} (Gamma: Derivable L) := {
+Class FalseSequentCalculus (L: Language) {falsepL: FalseLanguage L} (Gamma: Derivable L) := {
   deduction_falsep_elim: forall Phi x, Phi |-- FF -> Phi |-- x
 }.
 
-Class IntuitionisticNegpSequentCalculus (L: Language) {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Derivable L) := {
+Class IntuitionisticNegSequentCalculus (L: Language) {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) := {
   deduction_negp_unfold: forall Phi x, Phi |-- (~~x) -> Phi ;; x |-- FF;
   deduction_negp_fold: forall Phi x, Phi ;; x |-- FF -> Phi |-- (~~x)
 }.
 
-Class IffpSequentCalculus (L: Language) {iffpL: IffpLanguage L} (Gamma: Derivable L) := {
+Class IffSequentCalculus (L: Language) {iffpL: IffLanguage L} (Gamma: Derivable L) := {
   deduction_iffp_intros: forall Phi x y, Phi ;; x |-- y -> Phi ;; y |-- x -> Phi |-- (x <--> y);
   deduction_iffp_elim1: forall Phi x y, Phi |-- (x <--> y) -> Phi ;; x |-- y;
   deduction_iffp_elim2: forall Phi x y, Phi |-- (x <--> y) -> Phi ;; y |-- x
 }.
 
-Class TruepSequentCalculus (L: Language) {truepL: TruepLanguage L} (Gamma: Derivable L) := {
+Class TrueSequentCalculus (L: Language) {truepL: TrueLanguage L} (Gamma: Derivable L) := {
   deduction_truep_intros: forall Phi, Phi |-- TT
+}.
+
+Class IterAndAxiomatization_left
+      (L: Language)
+      {truepL: TrueLanguage L}
+      {andpL: AndLanguage L}
+      {iffpL: IffLanguage L}
+      {iter_andp_L: IterAndLanguage L}
+      (Gamma: Provable L) := {
+  iter_andp_spec_left: forall (xs: list expr),
+    |-- iter_andp xs <--> fold_left andp xs TT
 }.
 
 Section DerivableRulesFromSequentCalculus1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {andpSC: AndpSequentCalculus L Gamma}
-        {orpSC: OrpSequentCalculus L Gamma}
-        {falsepSC: FalsepSequentCalculus L Gamma}
-        {inegpSC: IntuitionisticNegpSequentCalculus L Gamma}
-        {iffpSC: IffpSequentCalculus L Gamma}
-        {truepSC: TruepSequentCalculus L Gamma}.
+        {andpSC: AndSequentCalculus L Gamma}
+        {orpSC: OrSequentCalculus L Gamma}
+        {falsepSC: FalseSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
+        {iffpSC: IffSequentCalculus L Gamma}
+        {truepSC: TrueSequentCalculus L Gamma}.
 
 Lemma derivable_andp_intros: forall (Phi: context) (x y: expr),
   Phi |-- x --> y --> x && y.
@@ -282,26 +293,26 @@ Section SequentCalculus2Axiomatization.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {andpSC: AndpSequentCalculus L GammaD}
-        {orpSC: OrpSequentCalculus L GammaD}
-        {falsepSC: FalsepSequentCalculus L GammaD}
-        {inegpSC: IntuitionisticNegpSequentCalculus L GammaD}
-        {iffpSC: IffpSequentCalculus L GammaD}
-        {truepSC: TruepSequentCalculus L GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}.
 
-Lemma SequentCalculus2Axiomatization_andpAX: AndpAxiomatization L GammaP.
+Lemma SequentCalculus2Axiomatization_andpAX: AndAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
   + apply derivable_andp_intros.
@@ -309,7 +320,7 @@ Proof.
   + apply derivable_andp_elim2.
 Qed.
 
-Lemma SequentCalculus2Axiomatization_orpAX: OrpAxiomatization L GammaP.
+Lemma SequentCalculus2Axiomatization_orpAX: OrAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
   + apply derivable_orp_intros1.
@@ -317,20 +328,20 @@ Proof.
   + apply derivable_orp_elim.
 Qed.
 
-Lemma SequentCalculus2Axiomatization_falsepAX: FalsepAxiomatization L GammaP.
+Lemma SequentCalculus2Axiomatization_falsepAX: FalseAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
   apply derivable_falsep_elim.
 Qed.
 
-Lemma SequentCalculus2Axiomatization_inegpAX: IntuitionisticNegpAxiomatization L GammaP.
+Lemma SequentCalculus2Axiomatization_inegpAX: IntuitionisticNegAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
   + apply derivable_negp_unfold.
   + apply derivable_negp_fold.
 Qed.
 
-Lemma SequentCalculus2Axiomatization_iffpAX: IffpAxiomatization L GammaP.
+Lemma SequentCalculus2Axiomatization_iffpAX: IffAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
   + apply derivable_iffp_intros.
@@ -338,7 +349,7 @@ Proof.
   + apply derivable_iffp_elim2.
 Qed.
 
-Lemma SequentCalculus2Axiomatization_truepAX: TruepAxiomatization L GammaP.
+Lemma SequentCalculus2Axiomatization_truepAX: TrueAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
   apply derivable_truep_intros.
@@ -374,27 +385,27 @@ Section Axiomatization2SequentCalculus.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {andpGamma: AndpAxiomatization L GammaP}
-        {orpGamma: OrpAxiomatization L GammaP}
-        {falsepGamma: FalsepAxiomatization L GammaP}
-        {inegpGamma: IntuitionisticNegpAxiomatization L GammaP}
-        {iffpGamma: IffpAxiomatization L GammaP}
-        {truepGamma: TruepAxiomatization L GammaP}.
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}.
 
 Lemma Axiomatization2SequentCalculus_andpSC:
-  AndpSequentCalculus L GammaD.
+  AndSequentCalculus L GammaD.
 Proof.
   pose proof Axiomatization2SequentCalculus_SC.
   pose proof Axiomatization2SequentCalculus_bSC.
@@ -413,7 +424,7 @@ Proof.
 Qed.
 
 Lemma Axiomatization2SequentCalculus_orpSC:
-  OrpSequentCalculus L GammaD.
+  OrSequentCalculus L GammaD.
 Proof.
   pose proof Axiomatization2SequentCalculus_SC.
   pose proof Axiomatization2SequentCalculus_bSC.
@@ -433,7 +444,7 @@ Proof.
 Qed.
 
 Lemma Axiomatization2SequentCalculus_falsepSC:
-  FalsepSequentCalculus L GammaD.
+  FalseSequentCalculus L GammaD.
 Proof.
   pose proof Axiomatization2SequentCalculus_SC.
   pose proof Axiomatization2SequentCalculus_bSC.
@@ -445,7 +456,7 @@ Proof.
 Qed.
 
 Lemma Axiomatization2SequentCalculus_inegpSC:
-  IntuitionisticNegpSequentCalculus L GammaD.
+  IntuitionisticNegSequentCalculus L GammaD.
 Proof.
   pose proof Axiomatization2SequentCalculus_SC.
   pose proof Axiomatization2SequentCalculus_bSC.
@@ -462,7 +473,7 @@ Proof.
 Qed.
 
 Lemma Axiomatization2SequentCalculus_iffpSC:
-  IffpSequentCalculus L GammaD.
+  IffSequentCalculus L GammaD.
 Proof.
   pose proof Axiomatization2SequentCalculus_SC.
   pose proof Axiomatization2SequentCalculus_bSC.
@@ -484,7 +495,7 @@ Proof.
 Qed.
 
 Lemma Axiomatization2SequentCalculus_truepSC:
-  TruepSequentCalculus L GammaD.
+  TrueSequentCalculus L GammaD.
 Proof.
   pose proof Axiomatization2SequentCalculus_SC.
   pose proof Axiomatization2SequentCalculus_bSC.
@@ -525,20 +536,20 @@ Section DerivableRulesFromAxiomatization1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndpAxiomatization L Gamma}
-        {orpGamma: OrpAxiomatization L Gamma}
-        {falsepGamma: FalsepAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
-        {iffpGamma: IffpAxiomatization L Gamma}
-        {truepGamma: TruepAxiomatization L Gamma}.
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.
 
 Lemma solve_andp_intros: forall x y: expr,
   |-- x -> |-- y -> |-- x && y.
@@ -617,6 +628,7 @@ Qed.
 Lemma solve_impp_andp: forall x y z: expr,
   |-- x --> y -> |-- x --> z -> |-- x --> y && z.
 Proof.
+  clear - minAX andpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable in H, H0 |- *.
@@ -667,21 +679,21 @@ Section DerivableRulesFromSequentCalculus2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {andpSC: AndpSequentCalculus L Gamma}
-        {orpSC: OrpSequentCalculus L Gamma}
-        {falsepSC: FalsepSequentCalculus L Gamma}
-        {inegpSC: IntuitionisticNegpSequentCalculus L Gamma}
-        {iffpSC: IffpSequentCalculus L Gamma}
-        {truepSC: TruepSequentCalculus L Gamma}.
+        {andpSC: AndSequentCalculus L Gamma}
+        {orpSC: OrSequentCalculus L Gamma}
+        {falsepSC: FalseSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
+        {iffpSC: IffSequentCalculus L Gamma}
+        {truepSC: TrueSequentCalculus L Gamma}.
 
 Lemma deduction_contrapositivePP: forall Phi (x y: expr),
   Phi |-- y --> x ->
@@ -711,20 +723,20 @@ Section DerivableRulesFromAxiomatization2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndpAxiomatization L Gamma}
-        {orpGamma: OrpAxiomatization L Gamma}
-        {falsepGamma: FalsepAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
-        {iffpGamma: IffpAxiomatization L Gamma}
-        {truepGamma: TruepAxiomatization L Gamma}.
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.
 
 Lemma demorgan_orp_negp: forall (x y: expr),
   |-- ~~ x || ~~ y --> ~~ (x && y).
@@ -837,6 +849,7 @@ Qed.
 Lemma orp_comm_impp: forall (x y: expr),
   |-- x || y --> y || x.
 Proof.
+  clear - minAX orpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.

@@ -9,11 +9,15 @@ Require Import PropositionalLogic.ProofTheory.Classical.
 Require Import PropositionalLogic.ProofTheory.DeMorgan.
 Require Import PropositionalLogic.ProofTheory.GodelDummett.
 Require Import PropositionalLogic.ProofTheory.RewriteClass.
+Require Import PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
+Require Import PropositionalLogic.ProofTheory.ProofTheoryPatterns.
 Require Import SeparationLogic.Syntax.
 Require Import SeparationLogic.ProofTheory.SeparationLogic.
 Require Import SeparationLogic.ProofTheory.RewriteClass.
 Require Import SeparationLogic.ProofTheory.IterSepcon.
 Require Import SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
+Require Import MetaLogicInj.Syntax.
+Require Import MetaLogicInj.ProofTheory.ProofRules.
 
 Require Logic.LogicGenerator.ConfigLang.
 Require Import Logic.LogicGenerator.Utils. 
@@ -34,10 +38,12 @@ Definition connectives: list connective :=
   ; negp
   ; falsep
   ; truep
+  ; coq_prop
   ; sepcon
   ; wand
   ; emp
   ; multi_imp
+  ; iter_andp
   ; iter_sepcon
   ; empty_context
   ].
@@ -56,6 +62,7 @@ Definition how_connectives: list how_connective :=
   ; FROM_falsep_impp_TO_negp
   ; FROM_falsep_impp_TO_truep
   ; FROM_impp_TO_multi_imp
+  ; FROM_andp_TO_iter_andp
   ; FROM_sepcon_TO_iter_sepcon
   ; FROM_empty_set_TO_empty_context
   ].
@@ -72,9 +79,11 @@ Definition type_classes :=
 Definition connective_classes :=
   [ MinimumLanguage
   ; PropositionalLanguage
+  ; CoqPropLanguage
   ; SepconLanguage
   ; WandLanguage
   ; EmpLanguage
+  ; IterAndLanguage
   ; IterSepconLanguage
   ].
 
@@ -86,12 +95,15 @@ Definition judgement_classes :=
 Definition rule_classes :=
   [ provability_OF_impp
   ; provability_OF_propositional_connectives
+  ; provability_OF_iter_andp
   ; provability_OF_de_morgan
   ; provability_OF_godel_dummett
   ; provability_OF_classical_logic
+  ; provability_OF_coq_prop
   ; provability_OF_sepcon_rule
   ; provability_OF_wand_rule
   ; provability_OF_emp_rule
+  ; provability_OF_iter_sepcon
   ; provability_OF_sepcon_orp_rule
   ; provability_OF_sepcon_falsep_rule
   ; provability_OF_sepcon_rule_AS_weak
@@ -106,7 +118,10 @@ Definition rule_classes :=
 (*  ; derivitive_OF_de_morgan *)
 (*  ; derivitive_OF_godel_dummett *)
   ; derivitive_OF_classical_logic
-  ; GEN_iter_sepcon_FROM_sepcon
+  ; GEN_iter_andp_FROM_fold_left_andp
+  ; GEN_iter_andp_FROM_fold_right_andp
+  ; GEN_iter_sepcon_FROM_fold_left_sepcon
+  ; GEN_iter_sepcon_FROM_fold_right_sepcon
   ; GEN_derivable_FROM_provable
   ; GEN_provable_FROM_derivable
   ].
@@ -120,7 +135,8 @@ Definition classes :=
         exact l).
 
 Definition refl_classes :=
-  [ RC GEN_iter_sepcon_FROM_sepcon
+  [ RC GEN_iter_andp_FROM_fold_left_andp
+  ; RC GEN_iter_sepcon_FROM_fold_left_sepcon
   ; RC GEN_derivable_FROM_provable
   ; RC GEN_provable_FROM_derivable
   ].
@@ -130,22 +146,30 @@ End D.
 Definition Build_Language := Build_Language.
 Definition Build_MinimumLanguage := Build_MinimumLanguage.
 Definition Build_PropositionalLanguage := Build_PropositionalLanguage.
+Definition Build_IterAndLanguage := Build_IterAndLanguage.
+Definition Build_CoqPropLanguage := Build_CoqPropLanguage.
 Definition Build_SepconLanguage := Build_SepconLanguage.
 Definition Build_WandLanguage := Build_WandLanguage.
 Definition Build_EmpLanguage := Build_EmpLanguage.
 Definition Build_IterSepconLanguage := Build_IterSepconLanguage.
 Definition Build_Provable := Build_Provable.
 Definition Build_Derivable := Build_Derivable.
-Definition Build_NormalIterSepcon := Build_NormalIterSepcon.
+Definition Build_IterAndDefinition_left := Build_IterAndDefinition_left.
+Definition Build_IterAndDefinition_right := Build_IterAndDefinition_right.
+Definition Build_IterSepconDefinition_left := Build_IterSepconDefinition_left.
+Definition Build_IterSepconDefinition_right := Build_IterSepconDefinition_right.
 Definition Build_NormalAxiomatization := Build_NormalAxiomatization.
 Definition Build_NormalSequentCalculus := Build_NormalSequentCalculus.
 Definition Build_MinimumAxiomatization := Build_MinimumAxiomatization.
 Definition Build_IntuitionisticPropositionalLogic := Build_IntuitionisticPropositionalLogic.
+Definition Build_IterAndAxiomatization_left := Build_IterAndAxiomatization_left.
 Definition Build_DeMorganPropositionalLogic := Build_DeMorganPropositionalLogic.
 Definition Build_ClassicalPropositionalLogic := Build_ClassicalPropositionalLogic.
+Definition Build_CoqPropAxiomatization := Build_CoqPropAxiomatization.
 Definition Build_SepconAxiomatization := Build_SepconAxiomatization.
 Definition Build_WandAxiomatization := Build_WandAxiomatization.
 Definition Build_EmpAxiomatization := Build_EmpAxiomatization.
+Definition Build_IterSepconAxiomatization_left := Build_IterSepconAxiomatization_left.
 Definition Build_SepconOrAxiomatization := Build_SepconOrAxiomatization.
 Definition Build_SepconFalseAxiomatization := Build_SepconFalseAxiomatization.
 Definition Build_SepconAxiomatization_weak := Build_SepconAxiomatization_weak.
@@ -165,23 +189,31 @@ Section S.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
+        {iter_andp_L : IterAndLanguage L}
+        {coq_prop_L : CoqPropLanguage L}
         {sepconL : SepconLanguage L}
         {wandL : WandLanguage L}
         {empL: EmpLanguage L}
         {iter_sepcon_L : IterSepconLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {iter_sepcon_Def: NormalIterSepcon L}
+        {iter_andp_DL: IterAndDefinition_left L}
+        {iter_andp_DR: IterAndDefinition_right L}
+        {iter_sepcon_DL: IterSepconDefinition_left L}
+        {iter_sepcon_DR: IterSepconDefinition_right L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
         {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {iter_andp_AXL: IterAndAxiomatization_left L GammaP}
         {cpAX: ClassicalPropositionalLogic L GammaP}
         {dmpAX: DeMorganPropositionalLogic L GammaP}
         {gdpAX: GodelDummettPropositionalLogic L GammaP}
+        {coq_prop_AX: CoqPropAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
+        {iter_sepcon_AXL: IterSepconAxiomatization_left L GammaP}
         {sepcon_orp_AX: SepconOrAxiomatization L GammaP}
         {sepcon_falsep_AX: SepconFalseAxiomatization L GammaP}
         {sepconAX_weak: SepconAxiomatization_weak L GammaP}
@@ -212,10 +244,12 @@ Definition connectives: list Name :=
   ; negp
   ; falsep
   ; truep
+  ; coq_prop
   ; sepcon
   ; wand
   ; emp
   ; multi_imp
+  ; iter_andp
   ; iter_sepcon
   ; empty_context
   ].
@@ -234,6 +268,7 @@ Definition how_connectives: list Name :=
   ; (negp, fun x => impp x falsep)
   ; (truep, impp falsep falsep)
   ; (multi_imp, fun xs y => fold_right impp y xs)
+  ; (iter_andp, fun xs => fold_left andp xs truep)
   ; (iter_sepcon, fun xs => fold_left sepcon xs emp)
   ; (empty_context, Empty_set expr)
   ].
@@ -250,6 +285,8 @@ Definition type_instances_build :=
 Definition connective_instances_build :=
   [ (minL, Build_MinimumLanguage L impp)
   ; (pL, Build_PropositionalLanguage L andp orp falsep)
+  ; (iter_andp_L, Build_IterAndLanguage L iter_andp)
+  ; (coq_prop_L, Build_CoqPropLanguage L coq_prop)
   ; (sepconL, Build_SepconLanguage L sepcon)
   ; (wandL, Build_WandLanguage L wand)
   ; (empL, Build_EmpLanguage L emp)
@@ -263,13 +300,16 @@ Definition judgement_instances_build :=
 
 Definition rule_instances_build :=
   [ (minAX, Build_MinimumAxiomatization L minL GammaP modus_ponens axiom1 axiom2)
-  ; (ipAX, Build_IntuitionisticPropositionalLogic L minL pL GammaP minAX andp_intros andp_elim1 andp_elim2 orp_intros1 orp_intros2 orp_elim falsep_elim)
+  ; (ipAX, Build_IntuitionisticPropositionalLogic L minL pL GammaP andp_intros andp_elim1 andp_elim2 orp_intros1 orp_intros2 orp_elim falsep_elim)
+  ; (iter_andp_AXL, Build_IterAndAxiomatization_left L minL pL iter_andp_L GammaP iter_andp_spec_left)
   ; (dmpAX, Build_DeMorganPropositionalLogic L minL pL GammaP minAX ipAX weak_excluded_middle)
   ; (gdpAX, Build_GodelDummettPropositionalLogic L minL pL GammaP minAX ipAX impp_choice)
   ; (cpAX, Build_ClassicalPropositionalLogic L minL pL GammaP minAX ipAX excluded_middle)
+  ; (coq_prop_AX, Build_CoqPropAxiomatization L minL coq_prop_L GammaP coq_prop_intros coq_prop_elim)
   ; (sepconAX, Build_SepconAxiomatization L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1 sepcon_mono)
   ; (wandAX, Build_WandAxiomatization L minL sepconL wandL GammaP wand_sepcon_adjoint)
   ; (empAX, Build_EmpAxiomatization L minL sepconL empL GammaP sepcon_emp1 sepcon_emp2)
+  ; (iter_sepcon_AXL, Build_IterSepconAxiomatization_left L minL sepconL empL iter_sepcon_L GammaP iter_sepcon_spec_left1 iter_sepcon_spec_left2)
   ; (sepcon_orp_AX, Build_SepconOrAxiomatization L minL pL sepconL GammaP orp_sepcon_left)
   ; (sepcon_falsep_AX, Build_SepconFalseAxiomatization L minL pL sepconL GammaP falsep_sepcon_left)
   ; (sepconAX_weak, Build_SepconAxiomatization_weak L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1)
@@ -282,7 +322,10 @@ Definition rule_instances_build :=
   ; (minSC, Build_MinimumSequentCalculus L minL GammaD deduction_modus_ponens deduction_impp_intros) 
   ; (ipSC, Build_IntuitionisticPropositionalSequentCalculus L pL GammaD deduction_andp_intros deduction_andp_elim1 deduction_andp_elim2 deduction_orp_intros1 deduction_orp_intros2 deduction_orp_elim deduction_falsep_elim)
   ; (cpSC, Build_ClassicalPropositionalSequentCalculus L minL pL GammaD bSC minSC ipSC derivable_excluded_middle)
-  ; (iter_sepcon_Def, Build_NormalIterSepcon L sepconL empL iter_sepcon_L iter_sepcon_def)
+  ; (iter_andp_DL, Build_IterAndDefinition_left L minL pL iter_andp_L iter_andp_def_l)
+  ; (iter_andp_DR, Build_IterAndDefinition_right L minL pL iter_andp_L iter_andp_def_r)
+  ; (iter_sepcon_DL, Build_IterSepconDefinition_left L sepconL empL iter_sepcon_L iter_sepcon_def_l)
+  ; (iter_sepcon_DR, Build_IterSepconDefinition_right L sepconL empL iter_sepcon_L iter_sepcon_def_r)
   ; (AX, Build_NormalAxiomatization L minL GammaP GammaD derivable_provable)
   ; (SC, Build_NormalSequentCalculus L GammaP GammaD provable_derivable)
   ].
@@ -301,13 +344,16 @@ Definition instances_build :=
         exact instances_build).
 
 Definition refl_instances :=
-  [ (iter_sepcon_Def, Sepcon2IterSepcon_Normal)
+  [ (iter_andp_DL, FoldLeftAnd2IterAnd_Normal)
+  ; (iter_sepcon_DL, FoldLeftSepcon2IterSepcon_Normal)
   ; (AX, Provable2Derivable_Normal)
   ; (SC, Derivable2Provable_Normal)
   ].
 
 Definition instance_transitions :=
-  [ (SC, Axiomatization2SequentCalculus_SC)
+  [ (iter_andp_AXL, IterAndFromDefToAX_L2L)
+  ; (iter_sepcon_AXL, IterSepconFromDefToAX_L2L)
+  ; (SC, Axiomatization2SequentCalculus_SC)
   ; (bSC, Axiomatization2SequentCalculus_bSC)
   ; (fwSC, Axiomatization2SequentCalculus_fwSC)
   ; (minSC, Axiomatization2SequentCalculus_minSC)
@@ -441,6 +487,8 @@ Definition derived_rules :=
   ; contrapositiveNN
   ; contrapositiveNP
   ; impp2orp
+  ; solve_weak_classic
+  ; solve_classic
   ; andp_proper_impp
   ; orp_proper_impp
   ; negp_proper_impp
@@ -452,6 +500,19 @@ Definition derived_rules :=
   ; iffp_proper_iffp
   ; negp_proper_iffp
   ; derivable_proper_iffp
+  ; iter_andp_spec_right
+  ; iter_andp_unfold_left_assoc
+  ; iter_andp_unfold_right_assoc
+
+  ; coq_prop_truep
+  ; coq_prop_andp
+  ; andp_coq_prop
+  ; coq_prop_andp_impp
+  ; andp_coq_prop_impp
+  ; impp_coq_prop
+  ; coq_prop_and
+  ; coq_prop_or
+  ; coq_prop_impl
 
   ; sepcon_orp_distr_l
   ; falsep_sepcon
@@ -463,8 +524,8 @@ Definition derived_rules :=
   ; wand_mono
   ; orp_wand
   ; sepcon_iter_sepcon
-  ; sepcon_iter_unfold_right_assoc
-  ; sepcon_iter_unfold_left_assoc
+  ; iter_sepcon_unfold_right_assoc
+  ; iter_sepcon_unfold_left_assoc
   ].
 
 Ltac filter_instance_rec l res :=

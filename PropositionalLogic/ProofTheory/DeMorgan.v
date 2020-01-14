@@ -11,7 +11,7 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class DeMorganPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrpLanguage L} {falsepL: FalsepLanguage L} {negpL: NegpLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrpAxiomatization L Gamma} {falsepGamma: FalsepAxiomatization L Gamma} {inegpGamma: IntuitionisticNegpAxiomatization L Gamma} := {
+Class DeMorganPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} := {
   weak_excluded_middle: forall x, |-- ~~ x || ~~ ~~ x
 }.
 
@@ -19,20 +19,20 @@ Section DeMorgan.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndpAxiomatization L Gamma}
-        {orpGamma: OrpAxiomatization L Gamma}
-        {falsepGamma: FalsepAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
-        {iffpGamma: IffpAxiomatization L Gamma}
-        {truepGamma: TruepAxiomatization L Gamma}
+        {andpGamma: AndAxiomatization L Gamma}
+        {orpGamma: OrAxiomatization L Gamma}
+        {falsepGamma: FalseAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
+        {iffpGamma: IffAxiomatization L Gamma}
+        {truepGamma: TrueAxiomatization L Gamma}
         {dmpAX: DeMorganPropositionalAxiomatization L Gamma}.
 
 Lemma demorgan_negp_andp: forall (x y: expr),
@@ -61,6 +61,16 @@ Proof.
   + rewrite deduction_theorem.
     rewrite <- provable_derivable.
     apply demorgan_orp_negp.
+Qed.
+
+Lemma solve_weak_classic: forall x y: expr,
+  |-- ~~ x --> y ->
+  |-- ~~ (~~ x) --> y ->
+  |-- y.
+Proof.
+  intros.
+  eapply modus_ponens; [| apply (weak_excluded_middle x)].
+  apply solve_orp_impp; auto.
 Qed.
 
 End DeMorgan.
