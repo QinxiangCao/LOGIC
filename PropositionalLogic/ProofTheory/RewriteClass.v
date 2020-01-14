@@ -182,14 +182,16 @@ Qed.
 
 Instance iffp_proper_iffp: Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) iffp.
 Proof.
+  clear - minAX iffpAX.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
-  pose proof iffp_fold_unfold (x1 <--> y1) (x2 <--> y2). rewrite H1.
-  pose proof iffp_fold_unfold x1 y1. rewrite H2.
-  pose proof iffp_fold_unfold x2 y2. rewrite H3.
-  rewrite H, H0.
-  rewrite provable_derivable. apply deduction_andp_intros; rewrite <- provable_derivable; apply provable_impp_refl.
+  rewrite provable_derivable.
+  apply deduction_iffp_intros; apply deduction_iffp_intros; rewrite !deduction_theorem; rewrite <- provable_derivable.
+  +rewrite <- H. rewrite <- H0. apply iffp_elim1.
+  +rewrite <- H. rewrite <- H0. apply iffp_elim2.
+  +rewrite -> H. rewrite -> H0. apply iffp_elim1.
+  +rewrite -> H. rewrite -> H0. apply iffp_elim2.
 Qed.
 
 Instance negp_proper_iffp: Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) negp.
