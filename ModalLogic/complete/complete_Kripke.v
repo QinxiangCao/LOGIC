@@ -31,6 +31,7 @@ Require Logic.ModalLogic.complete.ModalLanguage.
 Require Logic.ModalLogic.complete.semantics.
 Require Import Logic.ModalLogic.complete.Syntax.
 Require Import Logic.ModalLogic.complete.prooftheoies.
+Require Import Logic.ModalLogic.complete.Canonical_Kripke.
 Local Open Scope syntax.
 
 Local Open Scope logic_base.
@@ -81,16 +82,15 @@ Definition Relation : sig cP -> sig cP -> Prop :=
 fun Phi Psi => forall x : expr , proj1_sig Phi (boxp x) -> proj1_sig Psi x.
 
 
-Definition canonical_frame: semantics.frame :=
-  semantics.Build_frame (sig cP) (fun a b => Relation a b).
+Definition canonical_frame: semantics.frame := Canonical_Kripke.canonical_frame.
 
 Definition canonical_eval: ModalLanguage.Var -> semantics.sem canonical_frame :=
-  fun p a => proj1_sig a (ModalLanguage.varp p).
+Canonical_Kripke.canonical_eval.
 
 Definition canonical_Kmodel: @Kmodel semantics.MD semantics.kMD :=
-  semantics.Build_Kmodel canonical_frame canonical_eval.
+  Canonical_Kripke.canonical_Kmodel.
 
-Definition rel: bijection (Kworlds canonical_Kmodel) (sig cP) := bijection_refl.
+Definition rel: bijection (Kworlds canonical_Kmodel) (sig cP) := Canonical_Kripke.rel.
 
 Definition H_R:
   forall m n Phi Psi , rel m Phi -> rel n Psi -> (Relation m n <-> Relation Phi Psi).
@@ -205,28 +205,9 @@ Qed.
 End NormalModalLogic.
 
 Section T_ModalLogic.
-Existing Instances prooftheoies.T_ModalLogic.GP prooftheoies.T_ModalLogic.GD prooftheoies.T_ModalLogic.AX prooftheoies.T_ModalLogic.minAX.
+Existing Instances prooftheoies.T_ModalLogic.GP prooftheoies.T_ModalLogic.GD prooftheoies.T_ModalLogic.AX prooftheoies.T_ModalLogic.minAX prooftheoies.T_ModalLogic.KmGamma prooftheoies.T_ModalLogic.TmGamma.
 
 Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC.
-
-Lemma denote_ref:
-  semantics.Krelation_ref_Kdenote (Kworlds canonical_Kmodel).
-Proof.
-  constructor.
-  intros.
-  destruct (im_bij _ _ rel w1) as [Phi ?].
-  pose proof H_R w1 w1 Phi Phi.
-  unfold KripkeModel.KM.Krelation.
-  apply H0. auto. auto.
-  hnf. intros. pose proof AL_DC.
-  hnf in H2.
-  assert(cP (proj1_sig Phi)).
-  Focus 2. apply H2 in H3 as h1. pose proof derivable_closed_element_derivable (proj1_sig Phi).
-  apply H4. apply h1. assert(proj1_sig Phi |-- boxp x). apply H4. apply h1. apply H1.
-  pose proof RewriteClass.TestInSequentCalculus.Unnamed_thm (proj1_sig Phi)(boxp x) x. apply H6 in H5. apply H5.
-  pose proof prooftheoies.T_ModalLogic.about_T_ModalLogic. apply H7.
-  apply (proj2_sig Phi).
-Qed.
 
 Theorem complete_T_ModalLogic_Kripke_all: 
   strongly_complete prooftheoies.T_ModalLogic.GD semantics.SM
@@ -234,51 +215,27 @@ Theorem complete_T_ModalLogic_Kripke_all:
 Proof.
   apply (@general_completeness _ _ _ _ _ _ _ _ cP rel LIN_CD TRUTH).
   hnf. split. hnf. apply I.
-  hnf. apply denote_ref. 
+  hnf. exact (Canonical_denote_ref H_R AL_DC AL_CONSI LIN_CD). 
 Qed.
 
 End T_ModalLogic.
 
-Section K4_ModalLogic.
+Section s4_ModalLogic.
 
-Existing Instances prooftheoies.K4_ModalLogic.GP prooftheoies.K4_ModalLogic.GD prooftheoies.K4_ModalLogic.AX prooftheoies.K4_ModalLogic.minAX.
-
+Existing Instances prooftheoies.s4_ModalLogic.GP prooftheoies.s4_ModalLogic.GD prooftheoies.s4_ModalLogic.AX prooftheoies.s4_ModalLogic.minAX prooftheoies.s4_ModalLogic.KmGamma
+prooftheoies.s4_ModalLogic.TmGamma prooftheoies.s4_ModalLogic.s4mGamma.
 Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC.
 
-Lemma denote_trans:
-  semantics.Krelation_trans_Kdenote (Kworlds canonical_Kmodel).
-Proof.
-  constructor.
-  intros.
-  destruct (im_bij _ _ rel w1) as [Phi1 ?].
-  destruct (im_bij _ _ rel w2) as [Phi2 ?].
-  destruct (im_bij _ _ rel w3) as [Phi3 ?].
-  pose proof H_R w1 w2 Phi1 Phi2.
-  pose proof H_R w2 w3 Phi2 Phi3.
-  pose proof H_R w1 w3 Phi1 Phi3.
-  unfold KripkeModel.KM.Krelation.
-  apply H6. auto. auto. hnf.
-  intros. pose proof AL_DC.
-  hnf in H. hnf in H0.
-  apply H4 in H1. Focus 2. auto. apply H1 in H. hnf in H.
-  apply H5 in H2. Focus 2. auto. apply H2 in H0. hnf in H0.
-  pose proof derivable_closed_element_derivable (proj1_sig Phi1).
-  pose proof derivable_closed_element_derivable (proj1_sig Phi2).
-  pose proof derivable_closed_element_derivable (proj1_sig Phi3).
-  assert (cP (proj1_sig Phi1)). Focus 2. apply H8 in H12. assert(proj1_sig Phi1 |-- boxp x). apply H9. auto. auto.
-  assert (cP (proj1_sig Phi2)). Focus 2. apply H8 in H14. assert(proj1_sig Phi2 |-- boxp x). apply H10. auto.
-  pose proof RewriteClass.TestInSequentCalculus.Unnamed_thm (proj1_sig Phi1)(boxp x) (boxp (boxp x)).
-  pose proof prooftheoies.K4_ModalLogic.about_K4_ModalLogic. apply H15 in H16. assert (proj1_sig Phi1 (boxp (boxp x))).
-  apply H9. auto. auto. apply H in H17. auto. auto. assert(proj1_sig Phi2 (boxp x)). apply H10. auto. auto.
-  apply H0 in H16. auto. apply (proj2_sig Phi2). apply (proj2_sig Phi1).
-Qed.
 
 Theorem complete_K4_ModalLogic_Kripke_all: 
-  strongly_complete prooftheoies.K4_ModalLogic.GD semantics.SM
- (KripkeModelClass _ (semantics.Kmodel_normal + semantics.Kmodel_trans)).
+  strongly_complete prooftheoies.s4_ModalLogic.GD semantics.SM
+ (KripkeModelClass _ (semantics.Kmodel_normal + semantics.Kmodel_trans + semantics.Kmodel_ref)).
 Proof.
   apply (@general_completeness _ _ _ _ _ _ _ _ cP rel LIN_CD TRUTH).
-  hnf. split. hnf. apply I.
-  hnf. apply denote_trans.
+  hnf. split. hnf. split. apply I.
+  hnf. Focus 2. exact (Canonical_denote_ref H_R AL_DC AL_CONSI LIN_CD).
+  exact (Canonical_denote_trans H_R AL_DC AL_CONSI LIN_CD).
 Qed.
-End K4_ModalLogic.
+End s4_ModalLogic.
+
+
