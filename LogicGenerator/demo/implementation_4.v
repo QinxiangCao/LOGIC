@@ -7,6 +7,7 @@ Module NaiveLang.
   Definition andp (e1 e2 : expr) : expr := fun st => e1 st /\ e2 st.
   Definition orp  (e1 e2 : expr) : expr := fun st => e1 st \/ e2 st.
   Definition falsep : expr := fun st => False.
+  Definition coq_prop (P: Prop): expr := fun _ => P.
 
   Definition join : (nat -> option Z) -> (nat -> option Z) -> (nat -> option Z) -> Prop :=
     fun x y z =>
@@ -18,7 +19,8 @@ Module NaiveLang.
     exists st1 st2, join st1 st2 st /\ e1 st1 /\ e2 st2.
   Definition emp : expr := fun st =>
     forall p, st p = None.
-
+  Definition corable (e: expr): Prop := forall s1 s2, e s1 <-> e s2.
+  
   Definition provable (e : expr) : Prop := forall st, e st.
 End NaiveLang.
 
@@ -70,6 +72,9 @@ Module NaiveRule.
   Axiom sepcon_emp : (forall x : expr, provable (iffp (sepcon x emp) x)) .
   Axiom falsep_sepcon_left : (forall x : expr, provable (impp (sepcon falsep x) falsep)) .
   Axiom orp_sepcon_left : (forall x y z : expr, provable (impp (sepcon (orp x y) z) (orp (sepcon x z) (sepcon y z)))) .
+  Axiom corable_coq_prop : (forall P : Prop, corable (coq_prop P)) .
+  Axiom corable_preserved' : (forall x y : expr, provable (iffp x y) -> corable x -> corable y) .
+  Axiom corable_andp_sepcon1 : (forall x y z : expr, corable x -> provable (iffp (sepcon (andp x y) z) (andp x (sepcon y z)))) .
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.
