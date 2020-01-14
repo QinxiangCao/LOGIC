@@ -568,6 +568,18 @@ Proof.
   eapply deduction_andp_elim2; eauto.
 Qed.
 
+Lemma solve_iffp_intros: forall x y: expr,
+  |-- x --> y ->
+  |-- y --> x ->
+  |-- x <--> y.
+Proof.
+  intros.
+  pose proof iffp_intros x y.
+  pose proof modus_ponens _ _ H1 H.
+  pose proof modus_ponens _ _ H2 H0.
+  auto.
+Qed.
+
 Lemma solve_impp_elim_left: forall x y: expr,
   |-- y -> |-- x --> y.
 Proof.
@@ -822,23 +834,26 @@ Proof.
       apply derivable_assum1.
 Qed.
 
-Lemma orp_comm: forall (x y: expr),
-  |-- x || y <--> y || x.
+Lemma orp_comm_impp: forall (x y: expr),
+  |-- x || y --> y || x.
 Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_iffp_intros.
-  + apply deduction_orp_elim.
-    - apply deduction_orp_intros2.
-      apply derivable_assum1.
-    - apply deduction_orp_intros1.
-      apply derivable_assum1.
-  + apply deduction_orp_elim.
-    - apply deduction_orp_intros2.
-      apply derivable_assum1.
-    - apply deduction_orp_intros1.
-      apply derivable_assum1.
+  rewrite <- deduction_theorem.
+  apply deduction_orp_elim.
+  + apply deduction_orp_intros2.
+    apply derivable_assum1.
+  + apply deduction_orp_intros1.
+    apply derivable_assum1.
+Qed.
+
+Lemma orp_comm: forall (x y: expr),
+  |-- x || y <--> y || x.
+Proof.
+  intros.
+  apply solve_iffp_intros;
+  apply orp_comm_impp.
 Qed.
 
 Lemma orp_assoc: forall (x y z: expr),

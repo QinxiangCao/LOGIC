@@ -19,16 +19,16 @@ Section PatternInstances0.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {orL: OrpLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+        {orpAX: OrpAxiomatization L Gamma}.
 
 Lemma or_Comm: Commutativity L Gamma orp.
 Proof.
   constructor.
   intros.
-  rewrite orp_comm.
+  rewrite <- orp_comm_impp.
   apply provable_impp_refl.
 Qed.
 
