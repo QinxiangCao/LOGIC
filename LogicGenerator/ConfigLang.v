@@ -12,6 +12,7 @@ Inductive connective :=
 | truep
 | negp
 | iffp
+| coq_prop
 | sepcon
 | wand
 | emp
@@ -81,6 +82,7 @@ Inductive rule_class :=
 | provability_OF_de_morgan
 | provability_OF_godel_dummett
 | provability_OF_classical_logic
+| provability_OF_coq_prop
 | provability_OF_sepcon_rule
 | provability_OF_wand_rule
 | provability_OF_emp_rule
@@ -126,6 +128,7 @@ Inductive type_class :=
 Inductive connective_class :=
 | MinimumLanguage
 | PropositionalLanguage
+| CoqPropLanguage
 | SepconLanguage
 | WandLanguage
 | EmpLanguage
@@ -357,6 +360,7 @@ match c1, c2 with
 | truep, truep
 | negp, negp
 | iffp, iffp
+| coq_prop, coq_prop
 | sepcon, sepcon
 | wand, wand
 | emp, emp
@@ -429,6 +433,7 @@ Definition eqb (cc1 cc2: connective_class) :=
 match cc1, cc2 with
 | MinimumLanguage, MinimumLanguage => true
 | PropositionalLanguage, PropositionalLanguage => true
+| CoqPropLanguage, CoqPropLanguage => true
 | SepconLanguage, SepconLanguage => true
 | WandLanguage, WandLanguage => true
 | EmpLanguage, EmpLanguage => true
@@ -482,10 +487,11 @@ match rc1, rc2 with
 | provability_OF_de_morgan, provability_OF_de_morgan => true
 | provability_OF_godel_dummett, provability_OF_godel_dummett => true
 | provability_OF_classical_logic, provability_OF_classical_logic => true
-| provability_OF_iter_sepcon, provability_OF_iter_sepcon => true
+| provability_OF_coq_prop, provability_OF_coq_prop => true
 | provability_OF_sepcon_rule, provability_OF_sepcon_rule => true
 | provability_OF_wand_rule, provability_OF_wand_rule => true
 | provability_OF_emp_rule, provability_OF_emp_rule => true
+| provability_OF_iter_sepcon, provability_OF_iter_sepcon => true
 | provability_OF_sepcon_orp_rule, provability_OF_sepcon_orp_rule => true
 | provability_OF_sepcon_falsep_rule, provability_OF_sepcon_falsep_rule => true
 | provability_OF_sepcon_rule_AS_weak, provability_OF_sepcon_rule_AS_weak => true

@@ -7,7 +7,7 @@ COQC=$(COQBIN)coqc
 COQDEP=$(COQBIN)coqdep
 
 DIRS = \
-  lib GeneralLogic MinimumLogic PropositionalLogic ModalLogic SeparationLogic \
+  lib GeneralLogic MinimumLogic PropositionalLogic MetaLogicInj ModalLogic SeparationLogic \
   QuantifierLogic Extensions HoareLogic LogicGenerator
 
 COQ_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
@@ -106,6 +106,21 @@ PropositionalLogic_FILES = \
   $(PropositionalLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v) \
   $(PropositionalLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v) \
   $(PropositionalLogic_Complete_FILES:%.v=Complete/%.v)
+
+MetaLogicInj_ProofTheory_FILES = \
+  ProofRules.v
+
+MetaLogicInj_Semantics_FILES = \
+  Kripke.v
+
+MetaLogicInj_Sound_FILES = \
+  Sound_Kripke.v
+
+MetaLogicInj_FILES = \
+  Syntax.v \
+  $(MetaLogicInj_ProofTheory_FILES:%.v=ProofTheory/%.v) \
+  $(MetaLogicInj_Semantics_FILES:%.v=Semantics/%.v) \
+  $(MetaLogicInj_Sound_FILES:%.v=Sound/%.v)
 
 ModalLogic_ProofTheory_FILES = \
   ModalLogic.v RewriteClass.v \
@@ -231,6 +246,7 @@ FILES = \
   $(GeneralLogic_FILES:%.v=GeneralLogic/%.v) \
   $(MinimumLogic_FILES:%.v=MinimumLogic/%.v) \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
+  $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.v) \
   $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \

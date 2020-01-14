@@ -16,6 +16,8 @@ Require Import SeparationLogic.ProofTheory.SeparationLogic.
 Require Import SeparationLogic.ProofTheory.RewriteClass.
 Require Import SeparationLogic.ProofTheory.IterSepcon.
 Require Import SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
+Require Import MetaLogicInj.Syntax.
+Require Import MetaLogicInj.ProofTheory.ProofRules.
 
 Require Logic.LogicGenerator.ConfigLang.
 Require Import Logic.LogicGenerator.Utils. 
@@ -36,6 +38,7 @@ Definition connectives: list connective :=
   ; negp
   ; falsep
   ; truep
+  ; coq_prop
   ; sepcon
   ; wand
   ; emp
@@ -76,6 +79,7 @@ Definition type_classes :=
 Definition connective_classes :=
   [ MinimumLanguage
   ; PropositionalLanguage
+  ; CoqPropLanguage
   ; SepconLanguage
   ; WandLanguage
   ; EmpLanguage
@@ -95,6 +99,7 @@ Definition rule_classes :=
   ; provability_OF_de_morgan
   ; provability_OF_godel_dummett
   ; provability_OF_classical_logic
+  ; provability_OF_coq_prop
   ; provability_OF_sepcon_rule
   ; provability_OF_wand_rule
   ; provability_OF_emp_rule
@@ -142,6 +147,7 @@ Definition Build_Language := Build_Language.
 Definition Build_MinimumLanguage := Build_MinimumLanguage.
 Definition Build_PropositionalLanguage := Build_PropositionalLanguage.
 Definition Build_IterAndLanguage := Build_IterAndLanguage.
+Definition Build_CoqPropLanguage := Build_CoqPropLanguage.
 Definition Build_SepconLanguage := Build_SepconLanguage.
 Definition Build_WandLanguage := Build_WandLanguage.
 Definition Build_EmpLanguage := Build_EmpLanguage.
@@ -159,6 +165,7 @@ Definition Build_IntuitionisticPropositionalLogic := Build_IntuitionisticProposi
 Definition Build_IterAndAxiomatization_left := Build_IterAndAxiomatization_left.
 Definition Build_DeMorganPropositionalLogic := Build_DeMorganPropositionalLogic.
 Definition Build_ClassicalPropositionalLogic := Build_ClassicalPropositionalLogic.
+Definition Build_CoqPropAxiomatization := Build_CoqPropAxiomatization.
 Definition Build_SepconAxiomatization := Build_SepconAxiomatization.
 Definition Build_WandAxiomatization := Build_WandAxiomatization.
 Definition Build_EmpAxiomatization := Build_EmpAxiomatization.
@@ -183,6 +190,7 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
         {iter_andp_L : IterAndLanguage L}
+        {coq_prop_L : CoqPropLanguage L}
         {sepconL : SepconLanguage L}
         {wandL : WandLanguage L}
         {empL: EmpLanguage L}
@@ -201,6 +209,7 @@ Context {L: Language}
         {cpAX: ClassicalPropositionalLogic L GammaP}
         {dmpAX: DeMorganPropositionalLogic L GammaP}
         {gdpAX: GodelDummettPropositionalLogic L GammaP}
+        {coq_prop_AX: CoqPropAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
@@ -235,6 +244,7 @@ Definition connectives: list Name :=
   ; negp
   ; falsep
   ; truep
+  ; coq_prop
   ; sepcon
   ; wand
   ; emp
@@ -276,6 +286,7 @@ Definition connective_instances_build :=
   [ (minL, Build_MinimumLanguage L impp)
   ; (pL, Build_PropositionalLanguage L andp orp falsep)
   ; (iter_andp_L, Build_IterAndLanguage L iter_andp)
+  ; (coq_prop_L, Build_CoqPropLanguage L coq_prop)
   ; (sepconL, Build_SepconLanguage L sepcon)
   ; (wandL, Build_WandLanguage L wand)
   ; (empL, Build_EmpLanguage L emp)
@@ -294,6 +305,7 @@ Definition rule_instances_build :=
   ; (dmpAX, Build_DeMorganPropositionalLogic L minL pL GammaP minAX ipAX weak_excluded_middle)
   ; (gdpAX, Build_GodelDummettPropositionalLogic L minL pL GammaP minAX ipAX impp_choice)
   ; (cpAX, Build_ClassicalPropositionalLogic L minL pL GammaP minAX ipAX excluded_middle)
+  ; (coq_prop_AX, Build_CoqPropAxiomatization L minL coq_prop_L GammaP coq_prop_intros coq_prop_elim)
   ; (sepconAX, Build_SepconAxiomatization L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1 sepcon_mono)
   ; (wandAX, Build_WandAxiomatization L minL sepconL wandL GammaP wand_sepcon_adjoint)
   ; (empAX, Build_EmpAxiomatization L minL sepconL empL GammaP sepcon_emp1 sepcon_emp2)
@@ -475,6 +487,8 @@ Definition derived_rules :=
   ; contrapositiveNN
   ; contrapositiveNP
   ; impp2orp
+  ; solve_weak_classic
+  ; solve_classic
   ; andp_proper_impp
   ; orp_proper_impp
   ; negp_proper_impp
@@ -489,6 +503,16 @@ Definition derived_rules :=
   ; iter_andp_spec_right
   ; iter_andp_unfold_left_assoc
   ; iter_andp_unfold_right_assoc
+
+  ; coq_prop_truep
+  ; coq_prop_andp
+  ; andp_coq_prop
+  ; coq_prop_andp_impp
+  ; andp_coq_prop_impp
+  ; impp_coq_prop
+  ; coq_prop_and
+  ; coq_prop_or
+  ; coq_prop_impl
 
   ; sepcon_orp_distr_l
   ; falsep_sepcon

@@ -12,6 +12,8 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
+Require Import MetaLogicInj.Syntax.
+Require Import MetaLogicInj.ProofTheory.ProofRules.
 Require Import SeparationLogic.Syntax.
 Require Import SeparationLogic.ProofTheory.SeparationLogic.
 Require Import SeparationLogic.ProofTheory.RewriteClass.
@@ -30,6 +32,7 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
         {iter_andp_L: IterAndLanguage L}
+        {coq_prop_L: CoqPropLanguage L}
         {sepconL : SepconLanguage L}
         {wandL : WandLanguage L}
         {empL: EmpLanguage L}
@@ -48,6 +51,7 @@ Context {L: Language}
         {cpAX: ClassicalPropositionalLogic L GammaP}
         {dmpAX: DeMorganPropositionalLogic L GammaP}
         {gdpAX: GodelDummettPropositionalLogic L GammaP}
+        {coq_prop_AX: CoqPropAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
@@ -254,6 +258,8 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.";
+  idtac "Require Import MetaLogicInj.Syntax.";
+  idtac "Require Import MetaLogicInj.ProofTheory.ProofRules.";
   idtac "Require Import Logic.SeparationLogic.Syntax.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.";
