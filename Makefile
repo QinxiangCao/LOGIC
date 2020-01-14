@@ -7,7 +7,7 @@ COQC=$(COQBIN)coqc
 COQDEP=$(COQBIN)coqdep
 
 DIRS = \
-  lib GeneralLogic MinimumLogic PropositionalLogic ModalLogic SeparationLogic \
+  lib GeneralLogic MinimumLogic PropositionalLogic MetaLogicInj ModalLogic SeparationLogic \
   QuantifierLogic Extensions HoareLogic LogicGenerator
 
 COQ_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
@@ -73,7 +73,8 @@ MinimumLogic_FILES = \
 PropositionalLogic_ProofTheory_FILES = \
   Intuitionistic.v DeMorgan.v \
   GodelDummett.v Classical.v \
-  RewriteClass.v ProofTheoryPatterns.v
+  RewriteClass.v ProofTheoryPatterns.v \
+  TheoryOfIteratedConnectives.v
 
 PropositionalLogic_Semantics_FILES = \
   Kripke.v Trivial.v
@@ -105,6 +106,21 @@ PropositionalLogic_FILES = \
   $(PropositionalLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v) \
   $(PropositionalLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v) \
   $(PropositionalLogic_Complete_FILES:%.v=Complete/%.v)
+
+MetaLogicInj_ProofTheory_FILES = \
+  ProofRules.v
+
+MetaLogicInj_Semantics_FILES = \
+  Kripke.v
+
+MetaLogicInj_Sound_FILES = \
+  Sound_Kripke.v
+
+MetaLogicInj_FILES = \
+  Syntax.v \
+  $(MetaLogicInj_ProofTheory_FILES:%.v=ProofTheory/%.v) \
+  $(MetaLogicInj_Semantics_FILES:%.v=Semantics/%.v) \
+  $(MetaLogicInj_Sound_FILES:%.v=Sound/%.v)
 
 ModalLogic_ProofTheory_FILES = \
   ModalLogic.v RewriteClass.v \
@@ -222,15 +238,20 @@ HoareLogic_FILES = \
 LogicGenerator_FILES = \
   ConfigLang.v ConfigDenot.v ConfigCompute.v Utils.v #Generate.v 
 
+Example_Files = \
+  Pub_Problem.v
+
 FILES = \
   $(lib_FILES:%.v=lib/%.v) \
   $(GeneralLogic_FILES:%.v=GeneralLogic/%.v) \
   $(MinimumLogic_FILES:%.v=MinimumLogic/%.v) \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
+  $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.v) \
   $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extensions_FILES:%.v=Extensions/%.v) \
+  $(Example_Files:%.v=Examples/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
 
@@ -284,6 +305,13 @@ lgen_demo_3:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_3.v
 	@echo COQC LogicGenerator/demo/implementation_3.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_3.v
+
+lgen_demo_4:
+	./logic_gen.sh LogicGenerator/demo/configuration_4.v LogicGenerator/demo/interface_4.v
+	@echo COQC LogicGenerator/demo/interface_4.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_4.v
+	@echo COQC LogicGenerator/demo/implementation_4.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_4.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend

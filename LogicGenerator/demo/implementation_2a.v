@@ -10,7 +10,6 @@ End NaiveLang.
 Require Import interface_2.
 
 Module NaiveRule.
-  Import NaiveLang.
   Include DerivedNames (NaiveLang).
   Lemma modus_ponens :
     forall x y : expr, provable (impp x y) -> provable x -> provable y.

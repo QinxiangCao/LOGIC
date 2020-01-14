@@ -254,17 +254,19 @@ Qed.
 
 Lemma sepcon_LU: LeftUnit L Gamma emp sepcon.
 Proof.
-  apply Build_LeftUnit'.
-  intros.
-  rewrite sepcon_comm.
-  apply sepcon_emp.
+  apply Build_LeftUnit; intros.
+  + rewrite sepcon_comm_impp.
+    apply sepcon_emp1.
+  + rewrite <- sepcon_comm_impp.
+    apply sepcon_emp2.
 Qed.
 
 Lemma sepcon_RU: RightUnit L Gamma emp sepcon.
 Proof.
-  apply Build_RightUnit'.
+  apply Build_RightUnit.
   intros.
-  apply sepcon_emp.
+  + apply sepcon_emp1.
+  + apply sepcon_emp2.
 Qed.
 
 End SepconRules.

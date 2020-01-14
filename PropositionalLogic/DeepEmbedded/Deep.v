@@ -3,6 +3,7 @@ Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -10,18 +11,14 @@ Import PropositionalLanguageNotation.
 
 Inductive expr : Type :=
 | andp : expr -> expr -> expr
-| orp : expr -> expr -> expr
 | impp : expr -> expr -> expr
-| falsep : expr
 | varp : nat -> expr
 .
 
 Fixpoint beq e1 e2 :=
   match e1, e2 with
-  | falsep , falsep => true
   | varp x, varp y => EqNat.beq_nat x y
   | andp p11 p12, andp p21 p22 => andb (beq p11 p21) (beq p12 p22)
-  | orp p11 p12, orp p21 p22 => andb (beq p11 p21) (beq p12 p22)
   | impp p11 p12, impp p21 p22 => andb (beq p11 p21) (beq p12 p22)
   | _, _ => false
   end.
@@ -42,8 +39,11 @@ Local Instance L : Language := Build_Language expr .
 
 Local Instance minL : MinimumLanguage L := Build_MinimumLanguage L impp.
 
-Local Instance pL : PropositionalLanguage L :=
-  Build_PropositionalLanguage L andp orp falsep.
+Local Instance andpL : AndpLanguage L :=
+  Build_AndpLanguage L andp.
+
+Local Instance iter_andp_L: IterAndLanguage L :=
+  Build_IterAndLanguage L (fun es => fold_left andp es truep).
 
 Inductive provable: expr -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -52,10 +52,6 @@ Inductive provable: expr -> Prop :=
 | andp_intros: forall x y, provable (x --> y --> x && y)
 | andp_elim1: forall x y, provable (x && y --> x)
 | andp_elim2: forall x y, provable (x && y --> y)
-| orp_intros1: forall x y, provable (x --> x || y)
-| orp_intros2: forall x y, provable (y --> x || y)
-| orp_elim: forall x y z, provable ((x --> z) --> (y --> z) --> (x || y --> z))
-| falsep_elim: forall x, provable (FF --> x)
 .
 
 Local Instance GP: Provable L := Build_Provable _ provable.
@@ -68,14 +64,16 @@ Proof.
   + apply axiom2.
 Qed.
 
-Local Instance ipG: IntuitionisticPropositionalLogic L GP.
+Local Instance andpAX: AndpAxiomatization L GP.
 Proof.
   constructor.
   + apply andp_intros.
   + apply andp_elim1.
   + apply andp_elim2.
-  + apply orp_intros1.
-  + apply orp_intros2.
-  + apply orp_elim.
-  + apply falsep_elim.
 Qed.
+
+Local Instance iter_andp_DL: IterAndDefinition_left L :=
+  Build_IterAndDefinition_left L _ _ _ (fun es => eq_refl).
+
+Local Instance iter_andp_AXL: IterAndAxiomatization_left L GP :=
+  IterAndFromDefToAX_L2L.

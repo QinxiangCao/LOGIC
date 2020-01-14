@@ -18,20 +18,20 @@ Section RewriteClass1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndpAxiomatization L Gamma}
-        {orpGamma: OrpAxiomatization L Gamma}
-        {falsepGamma: FalsepAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
-        {iffpGamma: IffpAxiomatization L Gamma}
-        {truepGamma: TruepAxiomatization L Gamma}.
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.
 
 Instance andp_proper_impp: Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) andp.
 Proof.
@@ -52,6 +52,7 @@ Qed.
 
 Instance orp_proper_impp: Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) orp.
 Proof.
+  clear - minAX orpAX.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
@@ -78,6 +79,7 @@ Qed.
 
 Instance provable_iffp_equiv: Equivalence (fun x y => |-- x <--> y).
 Proof.
+  clear - minAX iffpAX.
   AddSequentCalculus.
   constructor.
   + hnf; intros.
@@ -101,6 +103,7 @@ Qed.
 
 Instance provable_proper_iffp : Proper ((fun x y => |-- x <--> y) ==> iff) provable.
 Proof.
+  clear - minAX iffpAX.
   AddSequentCalculus.
   intros.
   hnf; intros.
@@ -115,6 +118,7 @@ Qed.
 
 Instance impp_proper_iffp : Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) impp.
 Proof.
+  clear - minAX iffpAX.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
@@ -204,23 +208,23 @@ Section RewriteClass2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndpLanguage L}
-        {orpL: OrpLanguage L}
-        {falsepL: FalsepLanguage L}
-        {negpL: NegpLanguage L}
-        {iffpL: IffpLanguage L}
-        {truepL: TruepLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {andpSC: AndpSequentCalculus L GammaD}
-        {orpSC: OrpSequentCalculus L GammaD}
-        {falsepSC: FalsepSequentCalculus L GammaD}
-        {inegpSC: IntuitionisticNegpSequentCalculus L GammaD}
-        {iffpSC: IffpSequentCalculus L GammaD}
-        {truepSC: TruepSequentCalculus L GammaD}.
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}.
 
 Instance derivable_proper_iffp : Proper (eq ==> (fun x y => |-- x <--> y) ==> iff) derivable.
 Proof.

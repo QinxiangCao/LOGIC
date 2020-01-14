@@ -10,6 +10,10 @@ Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
+Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
+Require Import MetaLogicInj.Syntax.
+Require Import MetaLogicInj.ProofTheory.ProofRules.
 Require Import SeparationLogic.Syntax.
 Require Import SeparationLogic.ProofTheory.SeparationLogic.
 Require Import SeparationLogic.ProofTheory.RewriteClass.
@@ -27,23 +31,31 @@ Section Generate.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
+        {iter_andp_L: IterAndLanguage L}
+        {coq_prop_L: CoqPropLanguage L}
         {sepconL : SepconLanguage L}
         {wandL : WandLanguage L}
         {empL: EmpLanguage L}
         {iter_sepcon_L: IterSepconLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {iter_sepcon_Def: NormalIterSepcon L}
+        {iter_andp_DL: IterAndDefinition_left L}
+        {iter_andp_DR: IterAndDefinition_right L}
+        {iter_sepcon_DL: IterSepconDefinition_left L}
+        {iter_sepcon_DR: IterSepconDefinition_right L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
         {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {iter_andp_AXL: IterAndAxiomatization_left L GammaP}
         {cpAX: ClassicalPropositionalLogic L GammaP}
         {dmpAX: DeMorganPropositionalLogic L GammaP}
         {gdpAX: GodelDummettPropositionalLogic L GammaP}
+        {coq_prop_AX: CoqPropAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
+        {iter_sepcon_AXL: IterSepconAxiomatization_left L GammaP}
         {sepcon_orp_AX: SepconOrAxiomatization L GammaP}
         {sepcon_falsep_AX: SepconFalseAxiomatization L GammaP}
         {sepconAX_weak: SepconAxiomatization_weak L GammaP}
@@ -211,7 +223,7 @@ Ltac two_stage_print :=
   newline;
 
   idtac "Module DerivedNames (Names: LanguageSig).";
-  idtac "  Import Names.";
+  idtac "Include Names.";
   dolist (print Der) derived_connectives;
   dolist (print Der) derived_judgements;
   idtac "End DerivedNames.";
@@ -219,7 +231,6 @@ Ltac two_stage_print :=
   newline;
 
   idtac "Module Type PrimitiveRuleSig (Names: LanguageSig).";
-  idtac "Import Names.";
   idtac "Include DerivedNames (Names).";
   dolist (print Axm) primary_rules;
   idtac "End PrimitiveRuleSig.";
@@ -227,8 +238,7 @@ Ltac two_stage_print :=
   newline;
 
   idtac "Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).";
-  idtac "  Include Rules.";
-  idtac "  Import Names Rules.";
+  idtac "Include Rules.";
   dolist (print Axm) derived_rules;
   dolist (print DIns) derived_rules_as_instance;
   idtac "End LogicTheoremSig.";
@@ -246,6 +256,10 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.Classical.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.";
+  idtac "Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.";
+  idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.";
+  idtac "Require Import MetaLogicInj.Syntax.";
+  idtac "Require Import MetaLogicInj.ProofTheory.ProofRules.";
   idtac "Require Import Logic.SeparationLogic.Syntax.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.";
@@ -254,9 +268,9 @@ Ltac two_stage_print :=
 
   newline;
 
-  idtac "Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names): LogicTheoremSig Names Rules.";
-  idtac "  Import Names Rules.";
-  idtac "  Include Rules.";
+  (* TODO: this "<:" should be ":". Currently, this is just a work-around for generated tactics. *)
+  idtac "Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.";
+  idtac "Include Rules.";
   dolist (print AIns) aux_primitive_instances;
   dolist (print AIns) aux_refl_instances_for_derivation;
   dolist (print AIns) aux_derived_instances;
