@@ -13,6 +13,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -69,92 +70,72 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
-        {wandL: WandLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
         {ipAX: IntuitionisticPropositionalLogic L Gamma}
         {sepconAX: SepconAxiomatization L Gamma}
-        {wandAX: WandAxiomatization L Gamma}
-        {CosAX: Corable L Gamma}.
+        {Cor: Corable L}
+        {CorAX: Corable_withAxiomatization L Gamma Cor}.
 
-Lemma corable_andp: forall x y, corable x -> corable y -> corable (x && y).
-Proof. intros. apply (@andp_stable L _ _ Gamma corable corable_pstable); auto. Qed.
-
-Lemma corable_orp: forall x y, corable x -> corable y -> corable (x || y).
-Proof. intros. apply (@orp_stable L _ _ Gamma corable corable_pstable); auto. Qed.
-
-Lemma corable_impp: forall x y, corable x -> corable y -> corable (x --> y).
-Proof. intros. apply (@impp_stable L _ _ Gamma corable corable_pstable); auto. Qed.
-
-Lemma corable_iffp: forall x y, corable x -> corable y -> corable (x <--> y).
-Proof. intros. apply (@iffp_stable L _ _ Gamma corable corable_pstable); auto. Qed.
-
-Lemma corable_falsep: corable FF.
-Proof. apply (@falsep_stable L _ _ Gamma corable corable_pstable); auto. Qed.
-
-Lemma corable_truep: corable TT.
-Proof. apply (@truep_stable L _ _ Gamma corable corable_pstable); auto. Qed.
-
-Lemma corable_sepcon: forall x y, corable x -> corable y -> corable (x * y).
-Proof. intros. apply (@sepcon_stable L _ _ _ Gamma corable corable_sstable); auto. Qed.
-
-Lemma corable_wand: forall x y, corable x -> corable y -> corable (x -* y).
-Proof. intros. apply (@wand_stable L _ _ _ Gamma corable corable_sstable); auto. Qed.
-
-Instance corable_proper_iff: Proper ((fun x y => |-- x <--> y) ==> iff) corable.
-Proof. apply (@stable_proper_iffp L _ _ Gamma corable corable_pstable); auto. Qed.
-
-Lemma corable_andp_sepcon1: forall x y z, corable x -> |-- (x && y) * z <--> x && (y * z).
-Proof. intros. apply (@stable_andp_sepcon1 L _ _ _ _ Gamma corable corable_sabs); auto. Qed.
-
-Lemma corable_andp_sepcon2: forall x y z, corable y -> |-- (x && y) * z <--> y && (x * z).
+Lemma corable_sepcon_andp2: forall P Q R,
+  corable P -> |-- Q * (R && P) <--> P && (Q * R).
 Proof.
   intros.
-  rewrite andp_comm.
+  rewrite ! (sepcon_comm Q).
+  rewrite (andp_comm R).
   apply corable_andp_sepcon1; auto.
 Qed.
 
-Lemma corable_sepcon_andp1: forall x y z, corable y -> |-- x * (y && z) <--> y && (x * z).
+Lemma corable_sepcon_andp1: forall P Q R,
+  corable P -> |-- Q * (P && R) <--> P && (Q * R).
 Proof.
   intros.
-  rewrite sepcon_comm.
-  rewrite (sepcon_comm x z).
+  rewrite !(sepcon_comm Q).
   apply corable_andp_sepcon1; auto.
 Qed.
 
-Lemma corable_sepcon_andp2: forall x y z, corable z -> |-- x * (y && z) <--> z && (x * y).
+Lemma corable_andp_sepcon2: forall P Q R,
+  corable P -> |-- Q && P * R <--> P && (Q * R).
 Proof.
   intros.
-  rewrite andp_comm.
-  apply corable_sepcon_andp1; auto.
+  rewrite (andp_comm Q).
+  apply corable_andp_sepcon1; auto.
 Qed.
 
-Lemma corable_sepcon_imply_andp: forall x y, corable x -> corable y -> |-- x * y --> x && y.
+Context {coq_prop_L: CoqPropLanguage L}
+        {coq_prop_AX: CoqPropAxiomatization L Gamma}
+        {coq_prop_Cor: CoqPropCorable L Cor}.
+
+Lemma prop_andp_sepcon1: forall P Q R,
+  |-- (!! P && Q) * R <--> !! P && (Q * R).
 Proof.
   intros.
-  rewrite <- (andp_truep y) at 1.
-  rewrite corable_sepcon_andp1 by auto.
-  rewrite <- (andp_truep x) at 1.
-  rewrite corable_andp_sepcon1 by auto.
-  rewrite <- andp_assoc.
-  rewrite (andp_comm x y).
-  apply andp_elim1.
+  apply corable_andp_sepcon1.
+  apply corable_coq_prop.
 Qed.
 
-Lemma corable_sepcon_is_andp {ExtsGamma: ExtSeparationLogic L Gamma}: forall x y, corable x -> corable y -> |-- x * y <--> x && y.
+Lemma prop_sepcon_andp2: forall P Q R,
+ |-- Q * (R && !! P) <--> !! P && (Q * R).
 Proof.
   intros.
-  rewrite <- (andp_truep y) at 1.
-  rewrite corable_sepcon_andp1 by auto.
-  rewrite <- (andp_truep x) at 1.
-  rewrite corable_andp_sepcon1 by auto.
-  rewrite <- andp_assoc.
-  rewrite (andp_comm x y).
-  rewrite provable_truep_sepcon_truep.
-  rewrite andp_truep.
-  apply provable_iffp_refl.
+  apply corable_sepcon_andp2.
+  apply corable_coq_prop.
+Qed.
+
+Lemma prop_sepcon_andp1: forall P Q R,
+  |-- Q * (!! P && R) <--> !! P && (Q * R).
+Proof.
+  intros.
+  apply corable_sepcon_andp1.
+  apply corable_coq_prop.
+Qed.
+
+Lemma prop_andp_sepcon2: forall P Q R,
+  |-- Q && !! P * R <--> !! P && (Q * R).
+Proof.
+  intros.
+  apply corable_andp_sepcon2.
+  apply corable_coq_prop.
 Qed.
 
 End Corable.
-
-Existing Instance corable_proper_iff.

@@ -164,7 +164,7 @@ QuantifierLogic_FILES = \
 
 SeparationLogic_ProofTheory_FILES = \
   SeparationLogic.v SeparationLogicExtension.v TheoryOfSeparationAxioms.v \
-  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v
+  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v Corable.v
 
 SeparationLogic_Model_FILES = \
   SeparationAlgebra.v OrderedSA.v \
