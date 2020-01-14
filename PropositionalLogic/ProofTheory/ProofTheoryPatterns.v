@@ -141,8 +141,11 @@ Proof.
   + apply Adjoint2RDistr.
 Qed.
 
+Context {iffpL: IffLanguage L}
+        {iffpAX: IffAxiomatization L Gamma}.
+
 (* TODO: l/r wrong *)
-Lemma prodp_orp_distr_l {iffpL: IffLanguage L} {iffpAX: IffAxiomatization L Gamma}:
+Lemma prodp_orp_distr_l:
   forall x y z: expr, |-- prodp (x || y) z <--> (prodp x z || prodp y z).
 Proof.
   intros.
@@ -151,8 +154,6 @@ Qed.
 
 (* TODO: l/r wrong *)
 Lemma prodp_orp_distr_r
-      {iffpL: IffLanguage L}
-      {iffpAX: IffAxiomatization L Gamma}
       {Comm: Commutativity L Gamma prodp}:
   forall x y z: expr, |-- prodp x (y || z) <--> (prodp x y || prodp x z).
 Proof.
@@ -162,9 +163,7 @@ Qed.
 
 Lemma orp_funcp
       {andpL: AndLanguage L}
-      {iffpL: IffLanguage L}
       {andpAX: AndAxiomatization L Gamma}
-      {iffpAX: IffAxiomatization L Gamma}
       {Comm: Commutativity L Gamma prodp}:
   forall x y z: expr, |-- funcp (x || y) z <--> (funcp x z && funcp y z).
 Proof.
@@ -188,9 +187,7 @@ Qed.
 (* TODO: l/r wrong *)
 Lemma funcp_andp_distr_r
       {andpL: AndLanguage L}
-      {iffpL: IffLanguage L}
-      {andpAX: AndAxiomatization L Gamma}
-      {iffpAX: IffAxiomatization L Gamma}:
+      {andpAX: AndAxiomatization L Gamma}:
   forall x y z: expr, |-- funcp x (y && z)  <--> (funcp x y && funcp x z).
 Proof.
   intros.
@@ -208,9 +205,7 @@ Qed.
 
 Lemma falsep_prodp
       {falsepL: FalseLanguage L}
-      {iffpL: IffLanguage L}
-      {falseAX: FalseAxiomatization L Gamma}
-      {iffpAX: IffAxiomatization L Gamma}:
+      {falseAX: FalseAxiomatization L Gamma}:
   forall x: expr, |-- prodp falsep x <--> falsep.
 Proof.
   intros.
@@ -222,9 +217,7 @@ Qed.
 
 Lemma prodp_falsep
       {falsepL: FalseLanguage L}
-      {iffpL: IffLanguage L}
       {falseAX: FalseAxiomatization L Gamma}
-      {iffpAX: IffAxiomatization L Gamma}
       {Comm: Commutativity L Gamma prodp}:
   forall x: expr, |-- prodp x falsep <--> falsep.
 Proof.
@@ -238,7 +231,9 @@ End AdjointTheorems.
 
 Section MonoTheorems.
 
-Context {Mono: Monotonicity L Gamma prodp}.
+Context {iffpL: IffLanguage L}
+        {iffpAX: IffAxiomatization L Gamma}
+        {Mono: Monotonicity L Gamma prodp}.
 
 Lemma prodp_iffp: forall x1 x2 y1 y2,
   |-- x1 <--> x2 ->
@@ -246,13 +241,13 @@ Lemma prodp_iffp: forall x1 x2 y1 y2,
   |-- prodp x1 y1 <--> prodp x2 y2.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply prodp_mono.
-    - eapply solve_andp_elim1; exact H.
-    - eapply solve_andp_elim1; exact H0.
+    - apply solve_iffp_elim1; exact H.
+    - apply solve_iffp_elim1; exact H0.
   + apply prodp_mono.
-    - eapply solve_andp_elim2; exact H.
-    - eapply solve_andp_elim2; exact H0.
+    - apply solve_iffp_elim2; exact H.
+    - apply solve_iffp_elim2; exact H0.
 Qed.
 
 Lemma fold_left_iffp: forall x1 x2 xs1 xs2,
@@ -261,18 +256,18 @@ Lemma fold_left_iffp: forall x1 x2 xs1 xs2,
   |-- fold_left prodp xs1 x1 <--> fold_left prodp xs2 x2.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply fold_left_mono.
     - revert H; apply Forall2_impl.
       intros.
-      eapply solve_andp_elim1; exact H.
-    - eapply solve_andp_elim1; exact H0.
+      apply solve_iffp_elim1; exact H.
+    - apply solve_iffp_elim1; exact H0.
   + apply fold_left_mono.
     - apply Forall2_rev.
       revert H; apply Forall2_impl.
       intros.
-      eapply solve_andp_elim2; exact H.
-    - eapply solve_andp_elim2; exact H0.
+      eapply solve_iffp_elim2; exact H.
+    - eapply solve_iffp_elim2; exact H0.
 Qed.
 
 Context {e: expr}.
@@ -330,14 +325,16 @@ End MonoTheorems.
 
 Section AssocTheorems.
 
-Context {e: expr}
+Context {iffpL: IffLanguage L}
+        {iffpAX: IffAxiomatization L Gamma}
+        {e: expr}
         {Mono: Monotonicity L Gamma prodp}
         {Assoc: Associativity L Gamma prodp}.
 
 Lemma prodp_assoc: forall x y z, |-- prodp x (prodp y z) <--> prodp (prodp x y) z.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply prodp_assoc1.
   + apply prodp_assoc2.
 Qed.
@@ -349,7 +346,7 @@ Lemma assoc_fold_left_fold_right_equiv: forall xs,
   |-- fold_left prodp xs e <--> fold_right prodp e xs.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply assoc_fold_left_fold_right.
   + apply assoc_fold_right_fold_left.
 Qed.
@@ -358,7 +355,7 @@ Lemma assoc_prodp_fold_left_equiv: forall xs1 xs2,
   |-- prodp (fold_left prodp xs1 e) (fold_left prodp xs2 e) <--> fold_left prodp (xs1 ++ xs2) e.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply assoc_prodp_fold_left.
   + apply assoc_fold_left_app.
 Qed.
@@ -367,7 +364,9 @@ End AssocTheorems.
 
 Section CommAssocTheorems.
 
-Context {e: expr}
+Context {iffpL: IffLanguage L}
+        {iffpAX: IffAxiomatization L Gamma}
+        {e: expr}
         {Mono: Monotonicity L Gamma prodp}
         {Comm: Commutativity L Gamma prodp}
         {Assoc: Associativity L Gamma prodp}.
@@ -400,23 +399,19 @@ Section ProofTheoryPatterns.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+        {iffpAX: IffAxiomatization L Gamma}.
 
 Lemma Build_LeftUnit': forall {e: expr} {prodp: expr -> expr -> expr},
   (forall x: expr, |-- prodp e x <--> x) ->
   LeftUnit L Gamma e prodp.
 Proof.
   intros.
-  constructor; intros; specialize (H x); revert H; AddSequentCalculus.
-  + rewrite !provable_derivable.
-    intros.
-    eapply deduction_andp_elim1; eauto.
-  + rewrite !provable_derivable.
-    intros.
-    eapply deduction_andp_elim2; eauto.
+  constructor; intros; specialize (H x); revert H.
+  + apply solve_iffp_elim1; auto.
+  + apply solve_iffp_elim2; auto.
 Qed.
 
 Lemma Build_RightUnit': forall {e: expr} {prodp: expr -> expr -> expr},
@@ -424,13 +419,9 @@ Lemma Build_RightUnit': forall {e: expr} {prodp: expr -> expr -> expr},
   RightUnit L Gamma e prodp.
 Proof.
   intros.
-  constructor; intros; specialize (H x); revert H; AddSequentCalculus.
-  + rewrite !provable_derivable.
-    intros.
-    eapply deduction_andp_elim1; eauto.
-  + rewrite !provable_derivable.
-    intros.
-    eapply deduction_andp_elim2; eauto.
+  constructor; intros; specialize (H x); revert H.
+  + apply solve_iffp_elim1; auto.
+  + apply solve_iffp_elim2; auto.
 Qed.
 
 Lemma Build_Associativity': forall {prodp: expr -> expr -> expr},
@@ -438,13 +429,9 @@ Lemma Build_Associativity': forall {prodp: expr -> expr -> expr},
   Associativity L Gamma prodp.
 Proof.
   intros.
-  constructor; intros; specialize (H x y z); revert H; AddSequentCalculus.
-  + rewrite !provable_derivable.
-    intros.
-    eapply deduction_andp_elim2; eauto.
-  + rewrite !provable_derivable.
-    intros.
-    eapply deduction_andp_elim1; eauto.
+  constructor; intros; specialize (H x y z); revert H.
+  + apply solve_iffp_elim2; auto.
+  + apply solve_iffp_elim1; auto.
 Qed.
 
 End ProofTheoryPatterns.
@@ -453,10 +440,10 @@ Section PatternInstances.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andL: AndLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+        {andpAX: AndAxiomatization L Gamma}.
 
 Lemma impp_andp_Adjoint: Adjointness L Gamma andp impp.
 Proof.
@@ -471,12 +458,8 @@ Qed.
 Lemma andp_Comm: Commutativity L Gamma andp.
 Proof.
   constructor.
-  AddSequentCalculus.
   intros.
-  rewrite provable_derivable.
-  eapply deduction_andp_elim1.
-  rewrite <- provable_derivable.
-  apply andp_comm.
+  apply andp_comm_impp.
 Qed.
 
 Lemma andp_Mono: Monotonicity L Gamma andp.
