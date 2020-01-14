@@ -18,10 +18,20 @@ Section RewriteClass1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndpLanguage L}
+        {orpL: OrpLanguage L}
+        {falsepL: FalsepLanguage L}
+        {negpL: NegpLanguage L}
+        {iffpL: IffpLanguage L}
+        {truepL: TruepLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+        {andpGamma: AndpAxiomatization L Gamma}
+        {orpGamma: OrpAxiomatization L Gamma}
+        {falsepGamma: FalsepAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegpAxiomatization L Gamma}
+        {iffpGamma: IffpAxiomatization L Gamma}
+        {truepGamma: TruepAxiomatization L Gamma}.
 
 Instance andp_proper_impp: Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) andp.
 Proof.
@@ -57,7 +67,8 @@ Instance negp_proper_impp: Proper ((fun x y => |-- impp x y) --> (fun x y => |--
 Proof.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
-  unfold negp.
+  pose proof negp_unfold x1. rewrite H0.
+  pose proof negp_fold x2. rewrite <- H1.
   apply impp_proper_impp; auto.
   apply provable_impp_refl.
 Qed.
@@ -71,19 +82,21 @@ Proof.
   constructor.
   + hnf; intros.
     rewrite provable_derivable.
-    apply deduction_andp_intros; apply derivable_impp_refl.
+    apply deduction_iffp_intros; apply deduction_theorem; apply derivable_impp_refl.
   + hnf; intros.
     rewrite provable_derivable in H |- *.
-    pose proof deduction_andp_elim1 _ _ _ H.
-    pose proof deduction_andp_elim2 _ _ _ H.
-    apply deduction_andp_intros; auto.
+    pose proof deduction_iffp_elim1 _ _ _ H.
+    pose proof deduction_iffp_elim2 _ _ _ H.
+    apply deduction_iffp_intros; auto.
   + hnf; intros.
     rewrite provable_derivable in H, H0 |- *.
-    pose proof deduction_andp_elim1 _ _ _ H.
-    pose proof deduction_andp_elim2 _ _ _ H.
-    pose proof deduction_andp_elim1 _ _ _ H0.
-    pose proof deduction_andp_elim2 _ _ _ H0.
-    apply deduction_andp_intros; eapply deduction_impp_trans; eauto.
+    pose proof deduction_iffp_elim1 _ _ _ H; apply deduction_theorem in H1.
+    pose proof deduction_iffp_elim2 _ _ _ H; apply deduction_theorem in H2.
+    pose proof deduction_iffp_elim1 _ _ _ H0; apply deduction_theorem in H3.
+    pose proof deduction_iffp_elim2 _ _ _ H0; apply deduction_theorem in H4.
+    apply deduction_iffp_intros; apply deduction_theorem.
+    - apply (deduction_impp_trans _ _ _ _ H1 H3).
+    - apply (deduction_impp_trans _ _ _ _ H4 H2).
 Qed.
 
 Instance provable_proper_iffp : Proper ((fun x y => |-- x <--> y) ==> iff) provable.
@@ -94,8 +107,8 @@ Proof.
   rewrite provable_derivable in H.
   rewrite provable_derivable.
   rewrite provable_derivable.
-  pose proof deduction_andp_elim1 _ _ _ H.
-  pose proof deduction_andp_elim2 _ _ _ H.
+  pose proof deduction_iffp_elim1 _ _ _ H; apply deduction_theorem in H0.
+  pose proof deduction_iffp_elim2 _ _ _ H; apply deduction_theorem in H1.
   split; intro;
   eapply deduction_modus_ponens; eauto.
 Qed.
@@ -108,15 +121,15 @@ Proof.
   rewrite provable_derivable in H.
   rewrite provable_derivable in H0.
   rewrite provable_derivable.
-  pose proof deduction_andp_elim1 _ _ _ H.
-  pose proof deduction_andp_elim2 _ _ _ H.
-  pose proof deduction_andp_elim1 _ _ _ H0.
-  pose proof deduction_andp_elim2 _ _ _ H0.
+  pose proof deduction_iffp_elim1 _ _ _ H; apply deduction_theorem in H1.
+  pose proof deduction_iffp_elim2 _ _ _ H; apply deduction_theorem in H2.
+  pose proof deduction_iffp_elim1 _ _ _ H0; apply deduction_theorem in H3.
+  pose proof deduction_iffp_elim2 _ _ _ H0; apply deduction_theorem in H4.
   rewrite <- provable_derivable in H1.
   rewrite <- provable_derivable in H2.
   rewrite <- provable_derivable in H3.
   rewrite <- provable_derivable in H4.
-  apply deduction_andp_intros; rewrite <- provable_derivable.
+  apply deduction_iffp_intros; apply deduction_theorem; rewrite <- provable_derivable.
   + apply impp_proper_impp; auto.
   + apply impp_proper_impp; auto.
 Qed.
@@ -129,15 +142,15 @@ Proof.
   rewrite provable_derivable in H.
   rewrite provable_derivable in H0.
   rewrite provable_derivable.
-  pose proof deduction_andp_elim1 _ _ _ H.
-  pose proof deduction_andp_elim2 _ _ _ H.
-  pose proof deduction_andp_elim1 _ _ _ H0.
-  pose proof deduction_andp_elim2 _ _ _ H0.
+  pose proof deduction_iffp_elim1 _ _ _ H; apply deduction_theorem in H1.
+  pose proof deduction_iffp_elim2 _ _ _ H; apply deduction_theorem in H2.
+  pose proof deduction_iffp_elim1 _ _ _ H0; apply deduction_theorem in H3.
+  pose proof deduction_iffp_elim2 _ _ _ H0; apply deduction_theorem in H4.
   rewrite <- provable_derivable in H1.
   rewrite <- provable_derivable in H2.
   rewrite <- provable_derivable in H3.
   rewrite <- provable_derivable in H4.
-  apply deduction_andp_intros; rewrite <- provable_derivable.
+  apply deduction_iffp_intros; apply deduction_theorem; rewrite <- provable_derivable.
   + apply andp_proper_impp; auto.
   + apply andp_proper_impp; auto.
 Qed.
@@ -150,15 +163,15 @@ Proof.
   rewrite provable_derivable in H.
   rewrite provable_derivable in H0.
   rewrite provable_derivable.
-  pose proof deduction_andp_elim1 _ _ _ H.
-  pose proof deduction_andp_elim2 _ _ _ H.
-  pose proof deduction_andp_elim1 _ _ _ H0.
-  pose proof deduction_andp_elim2 _ _ _ H0.
+  pose proof deduction_iffp_elim1 _ _ _ H; apply deduction_theorem in H1.
+  pose proof deduction_iffp_elim2 _ _ _ H; apply deduction_theorem in H2.
+  pose proof deduction_iffp_elim1 _ _ _ H0; apply deduction_theorem in H3.
+  pose proof deduction_iffp_elim2 _ _ _ H0; apply deduction_theorem in H4.
   rewrite <- provable_derivable in H1.
   rewrite <- provable_derivable in H2.
   rewrite <- provable_derivable in H3.
   rewrite <- provable_derivable in H4.
-  apply deduction_andp_intros; rewrite <- provable_derivable.
+  apply deduction_iffp_intros; apply deduction_theorem; rewrite <- provable_derivable.
   + apply orp_proper_impp; auto.
   + apply orp_proper_impp; auto.
 Qed.
@@ -168,16 +181,19 @@ Proof.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
-  unfold iffp.
+  pose proof iffp_fold_unfold (x1 <--> y1) (x2 <--> y2). rewrite H1.
+  pose proof iffp_fold_unfold x1 y1. rewrite H2.
+  pose proof iffp_fold_unfold x2 y2. rewrite H3.
   rewrite H, H0.
-  apply provable_iffp_refl.
+  rewrite provable_derivable. apply deduction_andp_intros; rewrite <- provable_derivable; apply provable_impp_refl.
 Qed.
 
 Instance negp_proper_iffp: Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) negp.
 Proof.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
-  unfold negp.
+  pose proof negp_fold_unfold x1. rewrite H0.
+  pose proof negp_fold_unfold x2. rewrite H1.
   apply impp_proper_iffp; auto.
   apply provable_iffp_refl.
 Qed.
@@ -188,21 +204,31 @@ Section RewriteClass2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndpLanguage L}
+        {orpL: OrpLanguage L}
+        {falsepL: FalsepLanguage L}
+        {negpL: NegpLanguage L}
+        {iffpL: IffpLanguage L}
+        {truepL: TruepLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}.
+        {andpSC: AndpSequentCalculus L GammaD}
+        {orpSC: OrpSequentCalculus L GammaD}
+        {falsepSC: FalsepSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegpSequentCalculus L GammaD}
+        {iffpSC: IffpSequentCalculus L GammaD}
+        {truepSC: TruepSequentCalculus L GammaD}.
 
 Instance derivable_proper_iffp : Proper (eq ==> (fun x y => |-- x <--> y) ==> iff) derivable.
 Proof.
   hnf; intros Phi Phi' ?; subst Phi'.
   hnf; intros x1 x2 ?.
   apply (deduction_weaken0 Phi) in H.
-  pose proof deduction_andp_elim1 _ _ _ H.
-  pose proof deduction_andp_elim2 _ _ _ H.
+  pose proof deduction_iffp_elim1 _ _ _ H; rewrite deduction_theorem in H0.
+  pose proof deduction_iffp_elim2 _ _ _ H; rewrite deduction_theorem in H1.
   split; intro;
   eapply deduction_modus_ponens; eauto.
 Qed.

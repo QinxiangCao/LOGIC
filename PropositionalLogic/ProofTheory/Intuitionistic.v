@@ -1000,6 +1000,31 @@ Proof.
   + apply impp_uncurry.
 Qed.
 
+Lemma negp_fold_unfold: forall (x: expr),
+  |-- (~~x) <--> (x --> FF).
+Proof.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
+  + apply negp_unfold.
+  + apply negp_fold.
+Qed.
+
+Lemma iffp_fold_unfold: forall (x y: expr),
+  |-- (x <--> y) <--> (x --> y) && (y --> x).
+Proof.
+AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
+  + pose proof iffp_elim1 x y. pose proof iffp_elim2 x y.
+    apply (solve_impp_andp _ _ _ H H0).
+  + pose proof iffp_intros x y.
+    pose proof impp_curry (x --> y) (y --> x) (x <--> y). rewrite H0 in H.
+    apply H.
+Qed.
+
 End DerivableRulesFromAxiomatization2.
 
 
