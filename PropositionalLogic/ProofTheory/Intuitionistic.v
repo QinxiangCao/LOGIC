@@ -657,6 +657,7 @@ Qed.
 Lemma provable_iffp_refl: forall (x: expr),
   |-- x <--> x.
 Proof.
+  clear - minAX iffpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
