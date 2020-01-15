@@ -849,31 +849,53 @@ Proof.
   apply andp_comm_impp.
 Qed.
 
+Lemma andp_assoc_impp1: forall (x y z: expr),
+  |-- x && y && z --> x && (y && z).
+Proof.
+  clear - minAX andpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros; [| apply deduction_andp_intros].
+  + eapply deduction_andp_elim1.
+    eapply deduction_andp_elim1.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim2.
+    eapply deduction_andp_elim1.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim2.
+    apply derivable_assum1.
+Qed.
+
+Lemma andp_assoc_impp2: forall (x y z: expr),
+  |-- x && (y && z) --> x && y && z.
+Proof.
+  clear - minAX andpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros; [apply deduction_andp_intros |].
+  + eapply deduction_andp_elim1.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim1.
+    eapply deduction_andp_elim2.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim2.
+    eapply deduction_andp_elim2.
+    apply derivable_assum1.
+Qed.
+
 Lemma andp_assoc: forall (x y z: expr),
   |-- x && y && z <--> x && (y && z).
 Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_iffp_intros.
-  + apply deduction_andp_intros; [| apply deduction_andp_intros].
-    - eapply deduction_andp_elim1.
-      eapply deduction_andp_elim1.
-      apply derivable_assum1.
-    - eapply deduction_andp_elim2.
-      eapply deduction_andp_elim1.
-      apply derivable_assum1.
-    - eapply deduction_andp_elim2.
-      apply derivable_assum1.
-  + apply deduction_andp_intros; [apply deduction_andp_intros |].
-    - eapply deduction_andp_elim1.
-      apply derivable_assum1.
-    - eapply deduction_andp_elim1.
-      eapply deduction_andp_elim2.
-      apply derivable_assum1.
-    - eapply deduction_andp_elim2.
-      eapply deduction_andp_elim2.
-      apply derivable_assum1.
+  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
+  + apply andp_assoc_impp1.
+  + apply andp_assoc_impp2.
 Qed.
 
 Lemma orp_comm_impp: forall (x y: expr),

@@ -495,9 +495,9 @@ Qed.
 Lemma andp_Assoc: Associativity L Gamma andp.
 Proof.
   intros.
-  apply Build_Associativity'.
-  intros.
-  apply andp_assoc.
+  constructor; intros.
+  + apply andp_assoc_impp2.
+  + apply andp_assoc_impp1.
 Qed.
 
 End PatternInstances.
@@ -506,37 +506,48 @@ Section DerivableRules.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.
 
 Lemma falsep_andp: forall x: expr,
   |-- FF && x <--> FF.
 Proof.
   intros.
-  apply (@falsep_prodp _ _ _ _ _ _ _ _ impp_andp_Adjoint).
+  apply (@falsep_prodp _ _ _ _ _ _ impp_andp_Adjoint _ _ _ _ x).
 Qed.
 
 Lemma andp_falsep: forall x: expr,
   |-- x && FF <--> FF.
 Proof.
   intros.
-  apply (@prodp_falsep _ _ _ _ _ _ _ _ impp_andp_Adjoint andp_Comm).
+  apply (@prodp_falsep _ _ _ _ _ _ impp_andp_Adjoint _ _ _ _ andp_Comm x).
 Qed.
 
 Lemma andp_orp_distr_l: forall x y z: expr,
   |-- (x || y) && z <--> (x && z) || (y && z).
 Proof.
   intros.
-  apply (@prodp_orp_distr_l _ _ _ _ _ _ _ _ impp_andp_Adjoint).
+  pose proof @prodp_orp_distr_l.
+  apply (@prodp_orp_distr_l _ _ _ _ _ _ _ _ impp_andp_Adjoint _ _ x y z).
 Qed.
 
 Lemma andp_orp_distr_r: forall x y z: expr,
   |-- x && (y || z) <--> (x && y) || (x && z).
 Proof.
   intros.
-  apply (@prodp_orp_distr_r _ _ _ _ _ _ _ _ impp_andp_Adjoint andp_Comm).
+  apply (@prodp_orp_distr_r _ _ _ _ _ _ _ _ impp_andp_Adjoint _ _ andp_Comm x y z).
 Qed.
 
 Context {iter_andp_L: IterAndLanguage L}
@@ -547,7 +558,7 @@ Lemma iter_andp_spec_right: forall (xs: list expr),
 Proof.
   intros.
   rewrite iter_andp_spec_left.
-  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ _ _ andp TT andp_Mono andp_Assoc andp_LU andp_RU.
+  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ andp _ _ TT andp_Mono andp_Assoc andp_LU andp_RU xs.
   auto.
 Qed.
 
@@ -562,7 +573,7 @@ Lemma iter_andp_unfold_right_assoc:  forall (xs: list expr),
 Proof.
   intros.
   rewrite iter_andp_spec_right.
-  pose proof @fold_right_prodp_unfold _ _ _ _ _ _ andp andp_Mono TT andp_RU.
+  pose proof @fold_right_prodp_unfold _ _ _ _ andp _ _ andp_Mono TT andp_RU xs.
   auto.
 Qed.
 
@@ -580,7 +591,7 @@ Lemma iter_andp_unfold_left_assoc:  forall (xs: list expr),
 Proof.
   intros.
   rewrite iter_andp_spec_left.
-  pose proof @fold_left_prodp_unfold _ _ _ _ _ _ andp andp_Mono TT andp_LU.
+  pose proof @fold_left_prodp_unfold _ _ _ _  andp _ _ andp_Mono TT andp_LU xs.
   apply H.
 Qed.
 
