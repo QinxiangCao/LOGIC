@@ -18,7 +18,12 @@ Import PropositionalLanguageNotation.
 Class IterAndDefinition_left
       (L: Language)
       {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}
       {iter_andp_L: IterAndLanguage L}: Prop := {
   iter_andp_def_l: forall xs, 
     iter_andp xs = fold_left andp xs truep
@@ -28,7 +33,12 @@ Class IterAndDefinition_left
 Class IterAndDefinition_right
       (L: Language)
       {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}
       {iter_andp_L: IterAndLanguage L}: Prop := {
   iter_andp_def_r: forall xs, 
     iter_andp xs = fold_right andp truep xs
@@ -36,7 +46,12 @@ Class IterAndDefinition_right
 
 Class IterOrDefinition_left
       (L: Language)
-      {pL: PropositionalLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}
       {iter_orp_L: IterOrLanguage L}: Prop := {
   iter_orp_def_l: forall xs, 
     iter_orp xs = fold_left orp xs falsep
@@ -44,7 +59,12 @@ Class IterOrDefinition_left
 
 Class IterOrDefinition_right
       (L: Language)
-      {pL: PropositionalLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}
       {iter_orp_L: IterOrLanguage L}: Prop := {
   iter_orp_def_r: forall xs, 
     iter_orp xs = fold_right orp falsep xs
@@ -53,37 +73,67 @@ Class IterOrDefinition_right
 Definition FoldLeftAnd2IterAnd
            {L: Language}
            {minL: MinimumLanguage L}
-           {pL: PropositionalLanguage L}: IterAndLanguage L :=
+           {andpL: AndLanguage L}
+           {orpL: OrLanguage L}
+           {falsepL: FalseLanguage L}
+           {negpL: NegLanguage L}
+           {iffpL: IffLanguage L}
+           {truepL: TrueLanguage L}: IterAndLanguage L :=
   Build_IterAndLanguage _ (fun xs => fold_left andp xs truep).
 
 Definition FoldRightAnd2IterAnd
            {L: Language}
            {minL: MinimumLanguage L}
-           {pL: PropositionalLanguage L}: IterAndLanguage L :=
+           {andpL: AndLanguage L}
+           {orpL: OrLanguage L}
+           {falsepL: FalseLanguage L}
+           {negpL: NegLanguage L}
+           {iffpL: IffLanguage L}
+           {truepL: TrueLanguage L}: IterAndLanguage L :=
   Build_IterAndLanguage _ (fun xs => fold_right andp truep xs).
 
 Lemma FoldLeftAnd2IterAnd_Normal
       {L: Language}
       {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}:
-  @IterAndDefinition_left L _ _ FoldLeftAnd2IterAnd.
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}:
+  @IterAndDefinition_left L _ _ _ _ _ _ _ FoldLeftAnd2IterAnd.
 Proof. constructor. reflexivity. Qed.
 
 Lemma FoldRightAnd2IterAnd_Normal
       {L: Language}
       {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}:
-  @IterAndDefinition_right L _ _ FoldRightAnd2IterAnd.
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}:
+  @IterAndDefinition_right L _ _ _ _ _ _ _ FoldRightAnd2IterAnd.
 Proof. constructor. reflexivity. Qed.
 
 Lemma IterAndFromDefToAX_L2L
       {L: Language}
       {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}
       {iter_andp_L: IterAndLanguage L}
       {GammaP: Provable L}
       {minAX: MinimumAxiomatization L GammaP}
-      {ipAX: IntuitionisticPropositionalLogic L GammaP}
+      {andpAX: AndAxiomatization L GammaP}
+      {orpAX: OrAxiomatization L GammaP}
+      {falsepAX: FalseAxiomatization L GammaP}
+      {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+      {iffpAX: IffAxiomatization L GammaP}
+      {truepAX: TrueAxiomatization L GammaP}
       {iter_andp_DL: IterAndDefinition_left L}:
   IterAndAxiomatization_left L GammaP.
 Proof.
@@ -97,11 +147,21 @@ Qed.
 Lemma IterAndFromDefToAX_R2L
       {L: Language}
       {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {iffpL: IffLanguage L}
+      {truepL: TrueLanguage L}
       {iter_andp_L: IterAndLanguage L}
       {GammaP: Provable L}
       {minAX: MinimumAxiomatization L GammaP}
-      {ipAX: IntuitionisticPropositionalLogic L GammaP}
+      {andpAX: AndAxiomatization L GammaP}
+      {orpAX: OrAxiomatization L GammaP}
+      {falsepAX: FalseAxiomatization L GammaP}
+      {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+      {iffpAX: IffAxiomatization L GammaP}
+      {truepAX: TrueAxiomatization L GammaP}
       {iter_andp_DR: IterAndDefinition_right L}:
   IterAndAxiomatization_left L GammaP.
 Proof.
@@ -109,8 +169,8 @@ Proof.
   constructor.
   intros.
   rewrite iter_andp_def_r.
-  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ _ _ andp TT andp_Mono andp_Assoc andp_LU andp_RU.
-  rewrite (H xs).
+  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ andp _ _ TT andp_Mono andp_Assoc andp_LU andp_RU xs.
+  rewrite H.
   apply provable_iffp_refl.
 Qed.
 
