@@ -73,6 +73,7 @@ Ltac AddAxiomatizationFromDeduction :=
   let GammaP := fresh "GammaP" in
   pose proof Derivable1ToProvable_trick as D1P;
   set (GammaP := Derivable1ToProvable) in D1P;
+  clearbody GammaP;
   rec_from_n (0%nat) pose_proof_Ax1_instance.
 
 Ltac AddAxiomatization :=
@@ -94,6 +95,7 @@ Ltac AddEquiv :=
   let GammaL :=fresh "GammaL" in
   pose proof Provable2Equiv_Normal as NEL;
   set (GammaL := Provable2Equiv) in NEL;
+  clearbody GammaL;
   rec_from_n (0%nat) pose_proof_NE_instance.
 
 Instance reg_Axiomatization2SequentCalculus_SC:

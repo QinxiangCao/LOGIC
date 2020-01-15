@@ -39,7 +39,7 @@ Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L
   deduction1_axiom1:forall x y, derivable1 x (y --> x);
   deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z);
   deduction_md:forall x y z,derivable1 (x --> y --> z) ((x --> y) --> (x --> z));
-  deduction_mid:forall x y, derivable1 ((x --> x) --> y) y
+  deduction_mid:forall x y, derivable1 ((x --> x) --> y) y;
 }.
 
 Class NormalEquiv (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaL:LogicEquiv L): Type := {
