@@ -11,7 +11,7 @@ Section TrivialSemantics.
 
 Context {Sigma: PropositionalVariables}.
 
-Existing Instances L minL pL.
+Existing Instances L minL andpL orpL falsepL.
 
 Definition model: Type := Var -> Prop.
 
@@ -37,15 +37,25 @@ Proof.
   apply Same_set_refl.
 Qed.
 
-Instance tpSM: TrivialPropositionalSemantics L MD SM.
+Instance andpSM: AndSemantics L MD SM.
 Proof.
   constructor.
-  + simpl; intros.
-    apply Same_set_refl.
-  + simpl; intros.
-    apply Same_set_refl.
-  + simpl; intros.
-    apply Same_set_refl.
+  simpl; intros.
+  apply Same_set_refl.
+Qed.
+
+Instance orpSM: OrSemantics L MD SM.
+Proof.
+  constructor.
+  simpl; intros.
+  apply Same_set_refl.
+Qed.
+
+Instance falsepSM: FalseSemantics L MD SM.
+Proof.
+  constructor.
+  simpl; intros.
+  apply Same_set_refl.
 Qed.
 
 End TrivialSemantics.

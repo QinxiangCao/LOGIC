@@ -14,7 +14,7 @@ Import PropositionalLanguageNotation.
 Import KripkeModelFamilyNotation.
 Import KripkeModelNotation_Intuitionistic.
 
-(* TODO: It is so obvious that this file is very similar with Trivial.v. The should be merged. The obstacle is the way that we formalize Kripke Semantics. See the "TODO" in GeneralLogic/Semantics/Kripke.v *)
+(* TODO: It is so obvious that the first 3 definitions in this file are very similar with Trivial.v. The should be merged. The obstacle is the way that we formalize Kripke Semantics. See the "TODO" in GeneralLogic/Semantics/Kripke.v *)
 Module Semantics.
 
 Definition andp {worlds: Type} (X: Ensemble worlds) (Y: Ensemble worlds): Ensemble worlds :=
@@ -109,7 +109,7 @@ End SemanticsMono.
 
 Class KripkeAndSemantics
       (L: Language)
-      {andpL: AndpLanguage L}
+      {andpL: AndLanguage L}
       (MD: Model)
       {kMD: KripkeModel MD}
       (M: Kmodel)
@@ -119,7 +119,7 @@ Class KripkeAndSemantics
 
 Class KripkeOrSemantics
       (L: Language)
-      {orpL: OrpLanguage L}
+      {orpL: OrLanguage L}
       (MD: Model)
       {kMD: KripkeModel MD}
       (M: Kmodel)
@@ -129,7 +129,7 @@ Class KripkeOrSemantics
 
 Class KripkeFalseSemantics
       (L: Language)
-      {falsepL: FalsepLanguage L}
+      {falsepL: FalseLanguage L}
       (MD: Model)
       {kMD: KripkeModel MD}
       (M: Kmodel)
@@ -139,7 +139,7 @@ Class KripkeFalseSemantics
 
 Class KripkeTrueSemantics
       (L: Language)
-      {truepL: TruepLanguage L}
+      {truepL: TrueLanguage L}
       (MD: Model)
       {kMD: KripkeModel MD}
       (M: Kmodel)
@@ -149,7 +149,7 @@ Class KripkeTrueSemantics
 
 Class KripkeIffSemantics
       (L: Language)
-      {iffpL: IffpLanguage L}
+      {iffpL: IffLanguage L}
       (MD: Model)
       {kMD: KripkeModel MD}
       (M: Kmodel)
@@ -160,7 +160,7 @@ Class KripkeIffSemantics
 
 Class KripkeNegSemantics
       (L: Language)
-      {negpL: NegpLanguage L}
+      {negpL: NegLanguage L}
       (MD: Model)
       {kMD: KripkeModel MD}
       (M: Kmodel)
@@ -178,7 +178,7 @@ Context {L: Language}
         {R: Relation (Kworlds M)}
         {SM: Semantics L MD}.
 
-Lemma sat_andp {andpL: AndpLanguage L} {andpSM: KripkeAndSemantics L MD M SM}:
+Lemma sat_andp {andpL: AndLanguage L} {andpSM: KripkeAndSemantics L MD M SM}:
   forall m x y, KRIPKE: M , m |= x && y <-> (KRIPKE: M , m |= x /\ KRIPKE: M , m |= y).
 Proof.
   intros; simpl.
@@ -187,7 +187,7 @@ Proof.
   split; [apply H | apply H0].
 Qed.
 
-Lemma sat_orp {orpL: OrpLanguage L} {orpSM: KripkeOrSemantics L MD M SM}:
+Lemma sat_orp {orpL: OrLanguage L} {orpSM: KripkeOrSemantics L MD M SM}:
   forall m x y, KRIPKE: M , m |= x || y <-> (KRIPKE: M , m |= x \/ KRIPKE: M , m |= y).
 Proof.
   intros; simpl.
@@ -196,7 +196,7 @@ Proof.
   split; [apply H | apply H0].
 Qed.
 
-Lemma sat_falsep {falsepL: FalsepLanguage L} {falsepSM: KripkeFalseSemantics L MD M SM}:
+Lemma sat_falsep {falsepL: FalseLanguage L} {falsepSM: KripkeFalseSemantics L MD M SM}:
   forall m, KRIPKE: M , m |= FF <-> False.
 Proof.
   intros; simpl.
@@ -205,7 +205,7 @@ Proof.
   split; [apply H | apply H0].
 Qed.
 
-Lemma sat_truep {truepL: TruepLanguage L} {truepSM: KripkeTrueSemantics L MD M SM}:
+Lemma sat_truep {truepL: TrueLanguage L} {truepSM: KripkeTrueSemantics L MD M SM}:
   forall m, KRIPKE: M , m |= TT <-> True.
 Proof.
   intros; simpl.
@@ -214,7 +214,7 @@ Proof.
   split; [apply H | apply H0].
 Qed.
 
-Lemma sat_iffp {iffpL: IffpLanguage L} {iffpSM: KripkeIffSemantics L MD M SM}:
+Lemma sat_iffp {iffpL: IffLanguage L} {iffpSM: KripkeIffSemantics L MD M SM}:
   forall m x y, (KRIPKE: M , m |= x <--> y) <->
                 (forall n, m <= n -> KRIPKE: M , n |= x <-> KRIPKE: M , n |= y).
 Proof.
@@ -232,7 +232,7 @@ Proof.
     split; hnf; intros; specialize (HH n H); tauto.
 Qed.
 
-Lemma sat_negp {negpL: NegpLanguage L} {negpSM: KripkeNegSemantics L MD M SM}:
+Lemma sat_negp {negpL: NegLanguage L} {negpSM: KripkeNegSemantics L MD M SM}:
   forall m x, (KRIPKE: M , m |= ~~ x) <->
                (forall n, m <= n -> ~ KRIPKE: M , n |= x).
 Proof.

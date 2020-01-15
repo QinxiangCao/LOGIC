@@ -591,6 +591,24 @@ Proof.
   auto.
 Qed.
 
+Lemma solve_iffp_elim1: forall x y: expr,
+  |-- x <--> y ->
+  |-- x --> y.
+Proof.
+  intros.
+  pose proof iffp_elim1 x y.
+  eapply modus_ponens; eauto.
+Qed.
+
+Lemma solve_iffp_elim2: forall x y: expr,
+  |-- x <--> y ->
+  |-- y --> x.
+Proof.
+  intros.
+  pose proof iffp_elim2 x y.
+  eapply modus_ponens; eauto.
+Qed.
+
 Lemma solve_impp_elim_left: forall x y: expr,
   |-- y -> |-- x --> y.
 Proof.
@@ -657,11 +675,9 @@ Qed.
 Lemma provable_iffp_refl: forall (x: expr),
   |-- x <--> x.
 Proof.
-  clear - minAX iffpAX.
-  AddSequentCalculus.
   intros.
-  rewrite provable_derivable.
-  apply derivable_iffp_refl.
+  apply solve_iffp_intros;
+  apply provable_impp_refl.
 Qed.
 
 Lemma contrapositivePP: forall (x y: expr),
@@ -810,23 +826,27 @@ Proof.
   apply truep_intros.
 Qed.
 
-Lemma andp_comm: forall (x y: expr),
-  |-- x && y <--> y && x.
+Lemma andp_comm_impp: forall (x y: expr),
+  |-- x && y --> y && x.
 Proof.
+  clear - minAX andpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_iffp_intros.
-  + apply deduction_andp_intros.
-    - eapply deduction_andp_elim2.
-      apply derivable_assum1.
-    - eapply deduction_andp_elim1.
-      apply derivable_assum1.
-  + apply deduction_andp_intros.
-    - eapply deduction_andp_elim2.
-      apply derivable_assum1.
-    - eapply deduction_andp_elim1.
-      apply derivable_assum1.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + eapply deduction_andp_elim2.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim1.
+    apply derivable_assum1.
+Qed.
+
+Lemma andp_comm: forall (x y: expr),
+  |-- x && y <--> y && x.
+Proof.
+  intros.
+  apply solve_iffp_intros;
+  apply andp_comm_impp.
 Qed.
 
 Lemma andp_assoc: forall (x y z: expr),
@@ -906,37 +926,68 @@ Proof.
       apply derivable_assum1.
 Qed.
 
-Lemma andp_truep: forall (x: expr),
-  |-- x && TT <--> x.
+Lemma andp_truep1: forall (x: expr),
+  |-- x && TT --> x.
 Proof.
+  intros.
+  apply andp_elim1.
+Qed.
+
+Lemma andp_truep2: forall (x: expr),
+  |-- x --> x && TT.
+Proof.
+  clear - minAX andpAX truepAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_iffp_intros; rewrite deduction_theorem.
-  + apply derivable_andp_elim1.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros.
-    - apply derivable_assum1.
-    - apply derivable_truep_intros.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + apply derivable_assum1.
+  + apply derivable_truep_intros.
+Qed.
+
+Lemma andp_truep: forall (x: expr),
+  |-- x && TT <--> x.
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply andp_truep1.
+  + apply andp_truep2.
+Qed.
+
+Lemma truep_andp1: forall (x: expr),
+  |-- TT && x --> x.
+Proof.
+  intros.
+  apply andp_elim2.
+Qed.
+
+Lemma truep_andp2: forall (x: expr),
+  |-- x --> TT && x.
+Proof.
+  clear - minAX andpAX truepAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + apply derivable_truep_intros.
+  + apply derivable_assum1.
 Qed.
 
 Lemma truep_andp: forall (x: expr),
   |-- TT && x <--> x.
 Proof.
-  AddSequentCalculus.
   intros.
-  rewrite provable_derivable.
-  apply deduction_iffp_intros; rewrite deduction_theorem.
-  + apply derivable_andp_elim2.
-  + rewrite <- deduction_theorem.
-    apply deduction_andp_intros.
-    - apply derivable_truep_intros.
-    - apply derivable_assum1.
+  apply solve_iffp_intros.
+  + apply truep_andp1.
+  + apply truep_andp2.
 Qed.
 
 Lemma falsep_orp: forall (x: expr),
   |-- FF || x <--> x.
 Proof.
+  clear - minAX falsepAX orpAX iffpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -950,6 +1001,7 @@ Qed.
 Lemma orp_falsep: forall (x: expr),
   |-- x || FF <--> x.
 Proof.
+  clear - minAX falsepAX orpAX iffpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -1001,6 +1053,7 @@ Qed.
 Lemma impp_curry: forall (x y z: expr),
   |-- (x --> y --> z) --> (x && y --> z).
 Proof.
+  clear - minAX andpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -1017,6 +1070,7 @@ Qed.
 Lemma impp_uncurry: forall (x y z: expr),
   |-- (x && y --> z) --> (x --> y --> z).
 Proof.
+  clear - minAX andpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -1030,10 +1084,8 @@ Qed.
 Lemma impp_curry_uncurry: forall (x y z: expr),
   |-- (x --> y --> z) <--> (x && y --> z).
 Proof.
-  AddSequentCalculus.
   intros.
-  rewrite provable_derivable.
-  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
+  apply solve_iffp_intros.
   + apply impp_curry.
   + apply impp_uncurry.
 Qed.
@@ -1052,7 +1104,7 @@ Qed.
 Lemma iffp_fold_unfold: forall (x y: expr),
   |-- (x <--> y) <--> (x --> y) && (y --> x).
 Proof.
-AddSequentCalculus.
+  AddSequentCalculus.
   intros.
   rewrite provable_derivable.
   apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
