@@ -101,17 +101,13 @@ Proof.
   subst. reflexivity.
 Qed.
 
-Definition boxp1 (Phi : context) : context :=
-  fun x => exists y, Phi y /\ x = boxp y.
+Definition boxp1 (Phi : context) : context := Canonical_Kripke.boxp1 Phi.
 
 Lemma aboutboxp1 : forall Phi Psi : context, forall x : expr,
-  Included _ (boxp1 Phi) Psi -> Phi |-- x -> Psi |-- boxp x.
+  Included _ (boxp1 Phi)  Psi ->  Phi |-- x -> Psi |-- boxp x.
 Proof.
-  intros.
-  pose proof deduction_weaken (boxp1 Phi) Psi (boxp x).
-  apply H1 in H. apply H.
-Admitted.
-
+  exact(Canonical_Kripke.aboutboxp1 ).
+Qed.
 Lemma truth_lemma_falsep:
   forall m Phi, rel m Phi -> (KRIPKE: canonical_Kmodel , m |= ModalLanguage.falsep <-> proj1_sig Phi ModalLanguage.falsep).
 Admitted.
@@ -121,41 +117,16 @@ Admitted.
 Lemma truth_lemma_andp:
   forall m Phi x y, rel m Phi -> (KRIPKE:canonical_Kmodel, m |= (andp x y) <-> proj1_sig Phi (andp x y)).
 Admitted.
+
 Lemma truth_lemma_orp:
   forall m Phi x y, rel m Phi -> (KRIPKE:canonical_Kmodel, m |=(orp x y)<-> proj1_sig Phi (orp x y)).
  Admitted.
+
 Lemma existence : forall x : expr , forall Phi,
  ~ proj1_sig Phi (boxp x) -> exists Psi,(Relation Phi Psi /\ ~ proj1_sig Psi x).
 Proof.
-  intros.
-  intros.
-  set( fun a => proj1_sig Phi (boxp a)).
-  pose proof ( LIN_CD).
-  unfold  Lindenbaum_constructable in H0. assert(cannot_derive x P).
-  Focus 2.
-  unfold  Lindenbaum_constructable in H0.
-  apply H0 in H1 as H3.
-  destruct H3.
-  exists x0.
-  split.
-  unfold Relation. intros. destruct H2. apply H2. auto.
-  destruct H2 as [h1 h2].
-  unfold not.
-  intros.
-  unfold not in H. apply H. unfold cannot_derive in h2. 
-  Search derivable. pose proof derivable_assum.
-  apply h2 in H3. exfalso. apply H3. apply H2. unfold cannot_derive.
-  pose proof derivable_assum. unfold not. intros.
-  pose proof aboutboxp1  P (proj1_sig Phi) x.
-  assert( Included _ (boxp1 P) (proj1_sig Phi)).
-  Focus 2. apply H3 in H4. pose proof aboutboxp1.
-  pose proof AL_DC. unfold at_least in H6. 
-  assert(cP (proj1_sig Phi)).
-  Focus 2. apply H6 in H7. unfold derivable_closed in H7. apply H7 in H4.
-  apply H; apply H4. apply (proj2_sig Phi). apply H2. unfold P. unfold Included. intros.
-Admitted.
-
-
+  exact (Canonical_Kripke.existence AL_DC AL_CONSI LIN_CD).
+Qed.
 Lemma sat_boxp : forall m x Phi, (KRIPKE: canonical_Kmodel, m |= boxp x /\ rel m Phi )
  <-> forall n Psi ,rel n Psi /\ Relation Phi Psi -> KRIPKE: canonical_Kmodel , n |= x.
 Admitted.
@@ -233,9 +204,53 @@ Theorem complete_K4_ModalLogic_Kripke_all:
 Proof.
   apply (@general_completeness _ _ _ _ _ _ _ _ cP rel LIN_CD TRUTH).
   hnf. split. hnf. split. apply I.
-  hnf. Focus 2. exact (Canonical_denote_ref H_R AL_DC AL_CONSI LIN_CD).
+  hnf. Focus 2.
+  exact (Canonical_denote_ref H_R AL_DC AL_CONSI LIN_CD).
   exact (Canonical_denote_trans H_R AL_DC AL_CONSI LIN_CD).
 Qed.
 End s4_ModalLogic.
 
+Section KB_ModalLogic.
+Existing Instances prooftheoies.KB_ModalLogic.GP prooftheoies.KB_ModalLogic.GD prooftheoies.KB_ModalLogic.AX prooftheoies.KB_ModalLogic.minAX prooftheoies.KB_ModalLogic.KmGamma
+prooftheoies.KB_ModalLogic.KBmGamma.
+Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC.
+
+Theorem complete_KB_ModalLogic_Kripke_all:
+  strongly_complete prooftheoies.KB_ModalLogic.GD semantics.SM
+ (KripkeModelClass _ (semantics.Kmodel_normal + semantics.Kmodel_symmetric)).
+Proof.
+  apply (@general_completeness _ _ _ _ _ _ _ _ cP rel LIN_CD TRUTH).
+  hnf. split. hnf. apply I.
+  hnf. exact(Canonical_denote_symmetric H_R AL_DC AL_CONSI LIN_CD).
+Qed.
+End KB_ModalLogic.
+
+Section KD_ModalLogic.
+Existing Instances prooftheoies.KD_ModalLogic.GP prooftheoies.KD_ModalLogic.GD prooftheoies.KD_ModalLogic.AX prooftheoies.KD_ModalLogic.minAX prooftheoies.KD_ModalLogic.KmGamma
+prooftheoies.KD_ModalLogic.KDmGamma.
+Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC.
+Theorem complete_KD_ModalLogic_Kripke_all:
+  strongly_complete prooftheoies.KD_ModalLogic.GD semantics.SM
+ (KripkeModelClass _ (semantics.Kmodel_normal + semantics.Kmodel_r_unbounded)).
+Proof.
+  apply (@general_completeness _ _ _ _ _ _ _ _ cP rel LIN_CD TRUTH).
+  hnf. split. apply I.
+  hnf. exact(Canonical_denote_r_unbounded H_R AL_DC AL_CONSI LIN_CD).
+Qed.
+End KD_ModalLogic.
+
+Section S5_ModalLogic.
+Existing Instances prooftheoies.S5_ModalLogic.GP prooftheoies.S5_ModalLogic.GD prooftheoies.S5_ModalLogic.AX prooftheoies.S5_ModalLogic.minAX prooftheoies.S5_ModalLogic.KmGamma
+prooftheoies.S5_ModalLogic.TmGamma prooftheoies.S5_ModalLogic.s4mGamma prooftheoies.S5_ModalLogic.s5mGamma.
+Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC.
+Theorem complete_S5_ModalLogic_Kripke_all:
+  strongly_complete prooftheoies.S5_ModalLogic.GD semantics.SM
+ (KripkeModelClass _ (semantics.Kmodel_normal + semantics.Kmodel_ref + semantics.Kmodel_trans )).
+Proof.
+  apply (@general_completeness _ _ _ _ _ _ _ _ cP rel LIN_CD TRUTH).
+  hnf. split. hnf. split. apply I.
+  hnf. exact(Canonical_denote_ref H_R AL_DC AL_CONSI LIN_CD).
+  hnf. exact(Canonical_denote_trans H_R AL_DC AL_CONSI LIN_CD).
+Qed.
+End S5_ModalLogic.
 
