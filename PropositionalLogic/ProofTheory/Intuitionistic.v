@@ -636,6 +636,15 @@ Proof.
   apply deduction_andp_intros; auto.
 Qed.
 
+Lemma impp_andp: forall (x y z: expr),
+  |-- (x --> y) --> (x --> z) --> (x --> y && z).
+Proof.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable. rewrite <- !deduction_theorem.
+  apply deduction_andp_intros; rewrite deduction_theorem; solve_assum.
+Qed.
+
 Lemma double_negp_intros: forall (x: expr),
   |-- x --> ~~ ~~ x.
 Proof.
