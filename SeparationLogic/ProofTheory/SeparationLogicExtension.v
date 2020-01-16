@@ -20,7 +20,12 @@ Import SeparationLogicNotation.
 Class SeparationLogic_Precise
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
   precise: expr -> Prop;
@@ -38,7 +43,12 @@ sepcon_cancel: forall x y z, |-- (x * z) --> (y * z) -> precise z -> |-- (x --> 
 Class SeparationLogic_PureFact
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         (Gamma: Provable L) := {
