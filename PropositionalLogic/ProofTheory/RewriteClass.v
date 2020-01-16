@@ -248,11 +248,15 @@ Section RewriteClass3.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
-        {Gamma:Derivable1 L}
-        {minD:MinimumDeduction L Gamma}
-        {ipD:IntuitionisticPropositionalDeduction L Gamma}
-        {BD:BasicDeduction L Gamma}.
+        {falsepL: FalseLanguage L}
+        {GammaD1: Derivable1 L}
+        {minD: MinimumDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
+
+Section andp.
+
+Context {andpL: AndLanguage L}
+        {andpD: AndpDeduction L GammaD1}.
 
 Instance andp_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivable1) andp.
 Proof.
@@ -265,6 +269,13 @@ Proof.
    pose proof deduction1_trans _ _ _ H1 H0. auto.
   Qed.
 
+End andp.
+
+Section orp.
+
+Context {orpL: OrLanguage L}
+        {orpD: OrpDeduction L GammaD1}.
+
 Instance orp_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivable1) orp.
 Proof.
   hnf;intros.
@@ -276,14 +287,27 @@ Proof.
    pose proof deduction1_trans _ _ _ H0 H1;auto.
 Qed.
 
+End orp.
+
+Section negp.
+
+Context {negpL: NegLanguage L}
+        {negpD: NegpDeduction L GammaD1}.
+
 Instance negp_proper_derivable1: Proper (derivable1 --> derivable1) negp.
 Proof.
   hnf;intros.
   unfold Basics.flip in H.
-  unfold negp.
-  apply deduction1_intros;[auto|].
-  apply deduction1_refl.
-Qed.
+  pose proof derivable1_negp_unfold x.
+  pose proof derivable1_negp_fold y.
+  pose proof deduction1_refl FF.
+  pose proof deduction1_intros _ _ _ _ H H2.
+  pose proof deduction1_trans _ _ _ H0 H3.
+  pose proof deduction1_trans _ _ _ H4 H1.
+  auto.
+  Qed.
+
+End negp.
 
 End RewriteClass3.
 
@@ -291,11 +315,14 @@ Section RewriteClass4.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
-        {Gamma:LogicEquiv L}
-        {minE:MinimumEquiv L Gamma}
-        {ipLE:IntuitionisticPropositionalLogicEquiv L Gamma}
-        {BLE:BasicLogicEquiv L Gamma}.
+        {GammaE: LogicEquiv L}
+        {minE: MinimumEquiv L GammaE}
+        {BE: BasicLogicEquiv L GammaE}.
+
+Section andp.
+
+Context {andpL: AndLanguage L}
+        {andpE: EquivAndp L GammaE}.
 
 Instance andp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) andp.
 Proof.
@@ -304,6 +331,13 @@ Proof.
   apply equiv_andp_congr;[auto|auto].
   Qed.
 
+End andp.
+
+Section orp.
+
+Context {orpL: OrLanguage L}
+        {orpE: EquivOrp L GammaE}.
+
 Instance orp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) orp.
 Proof.
   hnf;intros.
@@ -311,13 +345,49 @@ Proof.
   apply equiv_orp_congr;[auto|auto].
   Qed.
 
-Instance negp_proper_equiv: Proper (logic_equiv ==> logic_equiv) negp.
+End orp.
+
+Section negp.
+
+Context {negpL: NegLanguage L}
+        {negpE: EquivNegp L GammaE}.
+
+Instance negp_proper_equiv: Proper (logic_equiv  ==> logic_equiv ) negp.
 Proof.
   hnf;intros.
-  unfold negp.
-  apply equiv_impp;[auto|].
-  apply equiv_refl.
+  apply equiv_negp_intros;auto.
   Qed.
+
+End negp.
+
+Section iffp.
+
+Context {iffpL: IffLanguage L}
+        {andpL: AndLanguage L}
+        {andpE: EquivAndp L GammaE}
+        {iffE: EquivIffp L GammaE}.
+
+Instance iffp_proper_equiv: Proper (logic_equiv  ==> logic_equiv ==> logic_equiv) iffp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  pose proof equiv_iffp_intros x x0.
+  pose proof equiv_iffp_intros y y0.
+  apply equiv_trans with ((x --> x0) && (x0 --> x)).
+  apply equiv_symm;auto.
+  apply equiv_symm.
+  apply equiv_trans with ((y --> y0) && (y0 --> y)).
+  apply equiv_symm;auto.
+  apply equiv_andp_congr.
+  -apply equiv_impp.
+   apply equiv_symm;auto.
+   apply equiv_symm;auto.
+  -apply equiv_impp.
+   apply equiv_symm;auto.
+   apply equiv_symm;auto.
+  Qed.
+
+End iffp.
 
 End RewriteClass4.
 
