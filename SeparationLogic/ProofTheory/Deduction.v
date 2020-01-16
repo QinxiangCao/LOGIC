@@ -177,6 +177,8 @@ Instance reg_GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic:
   RegisterClass D1ToP_reg (fun gcsGamma:unit => @GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma) 7.
 Qed.
 
+(*Rules from SeparationLogic*)
+
 Section SLFromDeduction2SLFromAxiomatization2.
 
 Context {L: Language}
@@ -505,9 +507,7 @@ Proof.
 
 End WandRules.
 
-
-
-
+(*Rules from TheoryOfSeparationAxioms*)
 
 Class SepconMonoDeduction
         (L: Language)
@@ -556,11 +556,10 @@ Lemma SepconDeductionWeak2SepconDeduction
       {sepcon_mono_AX: SepconMonoDeduction L GammaD1}:
   SepconDeduction L GammaD1.
 Proof.
-  destruct sepconAX, sepcon_mono_AX.
   constructor.
-  + apply __sepcon_comm_impp0.
-  + apply __sepcon_assoc2.
-  + apply __sepcon_mono0.
+  - apply __sepcon_comm_impp.
+  - apply __sepcon_assoc1.
+  - apply __sepcon_mono.
 Qed.
 
 Section SepconDeduction_weak2SepconAxiomatization_weak.
@@ -575,14 +574,13 @@ Context {L: Language}
 
 Lemma SepconDeduction_weak2SepconAxiomatization_weak: SepconAxiomatization_weak L GammaP.
 Proof.
-  destruct sepconDw.
   constructor.
   -intros.
    apply derivable1_provable.
-   apply __sepcon_comm_impp0.
+   apply __sepcon_comm_impp.
   -intros.
    apply derivable1_provable.
-   apply __sepcon_assoc2.
+   apply __sepcon_assoc1.
    Qed.
 
 End SepconDeduction_weak2SepconAxiomatization_weak.
@@ -666,9 +664,9 @@ Proof.
   constructor.
   intros.
   unfold iffp.
-  destruct empE. pose proof __sepcon_emp0 x as H;clear __sepcon_emp0.
+  pose proof __sepcon_emp x.
   pose proof ipD2ipAx.
-   pose proof Derivable12Axiomatization_minAX.
+  pose proof Derivable12Axiomatization_minAX.
   apply equiv_derivable1 in H;destruct H.
   rewrite derivable1_provable in H, H2.
   pose proof andp_intros (x * emp --> x) (x --> x * emp).
@@ -702,8 +700,7 @@ Proof.
   constructor.
   intros.
   rewrite derivable1_provable in H0, H1 |- *.
-  destruct H.
-  apply __sepcon_mono0;auto.
+  apply TheoryOfSeparationAxioms.__sepcon_mono;auto.
   Qed.
 
 End FromSepconDeductionWeakToSepcon.
@@ -727,12 +724,11 @@ Lemma SepconLogicEquivWeakIff2SepconDeductionWeak:
 Proof.
   AddAxiomatization.
   pose proof SepconAxiomatizationWeakIff2SepconAxiomatizationWeak.
-  destruct H.
   constructor.
   -intros.
-   apply derivable1_provable;apply __sepcon_comm_impp0.
+   apply derivable1_provable;apply TheoryOfSeparationAxioms.__sepcon_comm_impp.
   -intros.
-   apply derivable1_provable;apply __sepcon_assoc2.
+   apply derivable1_provable;apply TheoryOfSeparationAxioms.__sepcon_assoc1.
    Qed.
 
 End FromSepconWeakIffToSepconDeductionWeak.
@@ -758,17 +754,17 @@ Proof.
   constructor.
   intros.
   apply derivable1_provable.
-  destruct H. apply orp_sepcon_left0.
+  apply SeparationLogic.orp_sepcon_left.
   Qed.
 
 Lemma Adj2SepconFalse: SepconFalseDeduction L GammaD1.
 Proof.
   AddAxiomatization.
   pose proof Adj2SepconFalse.
-  destruct H. constructor.
+  constructor.
   intros.
   apply derivable1_provable.
-  apply falsep_sepcon_left0.
+  apply SeparationLogic.falsep_sepcon_left.
   Qed.
 
 End FromAdjToSepconOrDeductionPropositionalCombination.
@@ -794,12 +790,11 @@ Lemma EmpLogicEquivIff2EmpDeduction:
 Proof.
   AddAxiomatization.
   pose proof EmpAxiomatizationIff2EmpAxiomatization.
-  destruct H.
   constructor.
   -intros.
-   apply derivable1_provable. apply sepcon_emp3.
+   apply derivable1_provable. apply SeparationLogic.sepcon_emp1.
   -intros.
-   apply derivable1_provable. apply sepcon_emp4.
+   apply derivable1_provable. apply SeparationLogic.sepcon_emp2.
    Qed.
 
 End FromEmpEIffToEmpD.
