@@ -21,7 +21,7 @@ lib_FILES = \
   Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v 
 
 GeneralLogic_ProofTheory_FILES = \
-  BasicSequentCalculus.v TheoryOfSequentCalculus.v
+  BasicSequentCalculus.v TheoryOfSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v
 
 GeneralLogic_Semantics_FILES = \
   Kripke.v
@@ -45,7 +45,7 @@ GeneralLogic_FILES = \
 
 MinimumLogic_ProofTheory_FILES = \
   Minimum.v ProofTheoryPatterns.v \
-  RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v
+  RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v TheoryOfJudgement.v
 
 MinimumLogic_Semantics_FILES = \
   Kripke.v Trivial.v SemanticEquiv.v
@@ -164,7 +164,7 @@ QuantifierLogic_FILES = \
 
 SeparationLogic_ProofTheory_FILES = \
   SeparationLogic.v SeparationLogicExtension.v TheoryOfSeparationAxioms.v \
-  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v Corable.v
+  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v Corable.v Deduction.v
 
 SeparationLogic_Model_FILES = \
   SeparationAlgebra.v OrderedSA.v \

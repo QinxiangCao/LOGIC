@@ -51,6 +51,42 @@ Proof.
   apply aux_minimun_rule01, H0.
 Qed.
 
+Section Derivable1.
+
+Context {GammaD: Derivable1 L}
+        {MD:MinimumDeduction L GammaD}.
+
+Instance impp_proper_derivable1:
+  Proper (derivable1 --> derivable1 ==> derivable1) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  unfold Basics.flip in H.
+  pose proof deduction1_intros _ _ _ _ H H0.
+  tauto.
+  Qed.
+
+End Derivable1.
+
+Section Derivable1_provable.
+
+Context {GammaD: Derivable1 L}
+        {MD:MinimumDeduction L GammaD}
+        {ND:NormalDeduction L GammaP GammaD}.
+
+Instance provable_proper_derivable1:
+  Proper (derivable1 ==> Basics.impl) provable.
+Proof.
+  hnf;intros.
+  intro.
+  pose proof derivable1_provable x y.
+  rewrite H1 in H.
+  pose proof modus_ponens _ _ H H0.
+  tauto.
+Qed.
+
+End Derivable1_provable.
+
 End Provable.
 
 Section Derivable.
@@ -70,7 +106,76 @@ Proof.
   exact (deduction_modus_ponens _ _ _ H0 H).
 Qed.
 
+Section Derivable1.
+
+Context {GammaD1:Derivable1 L}
+        {ND:NormalDeduction L GammaP GammaD1}.
+
+Instance derivable_proper_derivable1:
+  Proper (eq ==> derivable1 ==> Basics.impl) derivable.
+Proof.
+  hnf;intros;subst y.
+  hnf;intros.
+  intro.
+  pose proof derivable1_provable x0 y.
+  rewrite H1 in H.
+  rewrite H in H0.
+  tauto.
+Qed.
+
+End Derivable1.
+
 End Derivable.
+
+Section Logic_equiv.
+
+Existing Instance derivable_proper_impp.
+
+Context {GammaE:LogicEquiv L}
+        {ME:MinimumEquiv L GammaE}.
+
+Instance impp_proper_equiv:
+  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  unfold Basics.flip in H.
+  pose proof equiv_impp _ _ _ _ H H0.
+  auto.
+  Qed.
+
+Context {NE:NormalEquiv L GammaP GammaE}
+        {minAX: MinimumAxiomatization L GammaP}.
+
+Instance provable_proper_equiv : Proper (logic_equiv ==> iff) provable.
+Proof.
+  hnf;intros.
+  pose proof equiv_provable x y.
+  rewrite H0 in H.
+  destruct H.
+  split.
+  -intros. pose proof modus_ponens _ _ H H2;auto.
+  -intros. pose proof modus_ponens _ _ H1 H2;auto.
+  Qed.
+
+Context {GammaD:Derivable L}
+        {SC: NormalSequentCalculus L GammaP GammaD}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}.
+
+Instance derivable_proper_equiv:
+  Proper (eq ==> logic_equiv ==> iff) derivable.
+Proof.
+  hnf;intros;subst y.
+  hnf;intros.
+  pose proof equiv_provable x0 y. rewrite H0 in H.
+  destruct H.
+  split.
+  -intros. rewrite H in H2. auto.
+  -intros. rewrite H1 in H2. auto.
+Qed.
+
+End Logic_equiv.
 
 End RewriteClass.
 
@@ -169,3 +274,4 @@ Qed.
 End TestInSequentCalculus.
 
 End TestInSequentCalculus.
+

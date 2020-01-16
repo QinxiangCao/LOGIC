@@ -3,12 +3,15 @@ Require Import Coq.Classes.RelationClasses.
 Require Import Logic.lib.Coqlib.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import  Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import  Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
 Require Import Logic.MinimumLogic.ProofTheory.ExtensionTactic.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
+
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -208,6 +211,83 @@ Proof.
 Qed.
 
 End RewriteClass2.
+
+Section RewriteClass3.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {pL: PropositionalLanguage L}
+        {Gamma:Derivable1 L}
+        {minD:MinimumDeduction L Gamma}
+        {ipD:IntuitionisticPropositionalDeduction L Gamma}
+        {BD:BasicDeduction L Gamma}.
+
+Instance andp_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivable1) andp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply derivable1_andp_intros.
+  -pose proof derivable1_andp_elim1 x x0.
+   pose proof deduction1_trans _ _ _ H1 H. auto.
+  -pose proof derivable1_andp_elim2 x x0.
+   pose proof deduction1_trans _ _ _ H1 H0. auto.
+  Qed.
+
+Instance orp_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivable1) orp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply derivable1_orp_elim.
+  -pose proof derivable1_orp_intros1 y y0.
+   pose proof deduction1_trans _ _ _ H H1;auto.
+  -pose proof derivable1_orp_intros2 y y0.
+   pose proof deduction1_trans _ _ _ H0 H1;auto.
+Qed.
+
+Instance negp_proper_derivable1: Proper (derivable1 --> derivable1) negp.
+Proof.
+  hnf;intros.
+  unfold Basics.flip in H.
+  unfold negp.
+  apply deduction1_intros;[auto|].
+  apply deduction1_refl.
+Qed.
+
+End RewriteClass3.
+
+Section RewriteClass4.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {pL: PropositionalLanguage L}
+        {Gamma:LogicEquiv L}
+        {minE:MinimumEquiv L Gamma}
+        {ipLE:IntuitionisticPropositionalLogicEquiv L Gamma}
+        {BLE:BasicLogicEquiv L Gamma}.
+
+Instance andp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) andp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply equiv_andp_congr;[auto|auto].
+  Qed.
+
+Instance orp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) orp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply equiv_orp_congr;[auto|auto].
+  Qed.
+
+Instance negp_proper_equiv: Proper (logic_equiv ==> logic_equiv) negp.
+Proof.
+  hnf;intros.
+  unfold negp.
+  apply equiv_impp;[auto|].
+  apply equiv_refl.
+  Qed.
+
+End RewriteClass4.
 
 Existing Instances andp_proper_impp orp_proper_impp negp_proper_impp
                    provable_iffp_rewrite provable_iffp_equiv
