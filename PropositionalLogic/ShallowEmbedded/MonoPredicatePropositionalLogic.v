@@ -17,7 +17,12 @@ Require Import Logic.PropositionalLogic.Semantics.Kripke.
 Require Import Logic.PropositionalLogic.Sound.Sound_Kripke.
 
 Instance MonoPred_minL (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: MinimumLanguage (MonoPred_L A) := Build_MinimumLanguage (MonoPred_L A) SemanticsMono.impp.
-Instance MonoPred_pL (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: PropositionalLanguage (MonoPred_L A) := Build_PropositionalLanguage (MonoPred_L A) SemanticsMono.andp SemanticsMono.orp SemanticsMono.falsep.
+
+Instance MonoPred_andpL (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: AndLanguage (MonoPred_L A) := Build_AndLanguage (MonoPred_L A) SemanticsMono.andp.
+
+Instance MonoPred_orpL (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: OrLanguage (MonoPred_L A) := Build_OrLanguage (MonoPred_L A) SemanticsMono.orp.
+
+Instance MonoPred_falsepL (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: FalseLanguage (MonoPred_L A) := Build_FalseLanguage (MonoPred_L A) SemanticsMono.falsep.
 
 Instance MonoPred_kiSM (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: KripkeIntuitionisticSemantics (MonoPred_L A) (Build_Model A) (tt: @Kmodel _ (unit_kMD (Build_Model A))) (MonoPred_SM A).
 Proof.
@@ -31,11 +36,21 @@ Proof.
   intros; apply Same_set_refl.
 Qed.
 
-Instance MonoPred_kpSM (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: KripkePropositionalSemantics (MonoPred_L A) (Build_Model A) (tt: @Kmodel _ (unit_kMD (Build_Model A))) (MonoPred_SM A).
+Instance MonoPred_kandpSM (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: KripkeAndSemantics (MonoPred_L A) (Build_Model A) (tt: @Kmodel _ (unit_kMD (Build_Model A))) (MonoPred_SM A).
 Proof.
   constructor.
   + intros; apply Same_set_refl.
+Qed.
+
+Instance MonoPred_korpSM (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: KripkeOrSemantics (MonoPred_L A) (Build_Model A) (tt: @Kmodel _ (unit_kMD (Build_Model A))) (MonoPred_SM A).
+Proof.
+  constructor.
   + intros; apply Same_set_refl.
+Qed.
+
+Instance MonoPred_kfalsepSM (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: KripkeFalseSemantics (MonoPred_L A) (Build_Model A) (tt: @Kmodel _ (unit_kMD (Build_Model A))) (MonoPred_SM A).
+Proof.
+  constructor.
   + apply Same_set_refl.
 Qed.
 
@@ -55,33 +70,43 @@ Proof.
     exact (@sound_axiom2 (MonoPred_L A) _ (Build_Model A) (unit_kMD (Build_Model A)) tt R po_R (MonoPred_SM A) (MonoPred_kminSM A) x y z).
 Qed.
 
-Instance MonoPred_ipAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: IntuitionisticPropositionalLogic (MonoPred_L A) (MonoPred_Gamma A).
+Instance MonoPred_andpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: AndAxiomatization (MonoPred_L A) (MonoPred_Gamma A).
 Proof.
   constructor.
   + intros x y.
-    exact (@sound_andp_intros (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kiSM A) (MonoPred_kminSM A) (MonoPred_kpSM A) x y).
+    exact (@sound_andp_intros (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kiSM A) (MonoPred_kminSM A) (MonoPred_kandpSM A) x y).
   + intros x y.
-    exact (@sound_andp_elim1 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kpSM A) x y).
+    exact (@sound_andp_elim1 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kandpSM A) x y).
   + intros x y.
-    exact (@sound_andp_elim2 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kpSM A) x y).
-  + intros x y.
-    exact (@sound_orp_intros1 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kpSM A) x y).
-  + intros x y.
-    exact (@sound_orp_intros2 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kpSM A) x y).
-  + intros x y z.
-    exact (@sound_orp_elim (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R po_R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kpSM A) x y z).
-  + intros x.
-    exact (@sound_falsep_elim (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kpSM A) x).
+    exact (@sound_andp_elim2 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kandpSM A) x y).
 Qed.
 
-Instance MonoPred_gdpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation} {nkiM: NoBranchKripkeIntuitionisticModel A}: GodelDummettPropositionalLogic (MonoPred_L A) (MonoPred_Gamma A).
+Instance MonoPred_orpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: OrAxiomatization (MonoPred_L A) (MonoPred_Gamma A).
+Proof.
+  constructor.
+  + intros x y.
+    exact (@sound_orp_intros1 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_korpSM A) x y).
+  + intros x y.
+    exact (@sound_orp_intros2 (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_korpSM A) x y).
+  + intros x y z.
+    exact (@sound_orp_elim (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R po_R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_korpSM A) x y z).
+Qed.
+
+Instance MonoPred_falsepAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation}: FalseAxiomatization (MonoPred_L A) (MonoPred_Gamma A).
+Proof.
+  constructor.
+  + intros x.
+    exact (@sound_falsep_elim (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kfalsepSM A) x).
+Qed.
+
+Instance MonoPred_gdpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation} {nkiM: NoBranchKripkeIntuitionisticModel A}: GodelDummettPropositionalAxiomatization (MonoPred_L A) (MonoPred_Gamma A).
 Proof.
   constructor.
   intros x y.
-  exact (@sound_impp_choice_no_branch (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kiSM A) (MonoPred_kminSM A) (MonoPred_kpSM A) nkiM x y).
+  exact (@sound_impp_choice_no_branch (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kiSM A) (MonoPred_kminSM A) (MonoPred_korpSM A) nkiM x y).
 Qed.
-
-Instance MonoPred_dmpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation} {bkiM: BranchJoinKripkeIntuitionisticModel A}: DeMorganPropositionalLogic (MonoPred_L A) (MonoPred_Gamma A).
+(*TODO: need to adjust(about DeMorgan and Classical)
+Instance MonoPred_dmpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation} {bkiM: BranchJoinKripkeIntuitionisticModel A}: DeMorganPropositionalAxiomatization (MonoPred_L A) (MonoPred_Gamma A).
 Proof.
   constructor.
   intros x.
@@ -94,3 +119,4 @@ Proof.
   intros x.
   exact (@sound_excluded_middle_ident (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kpSM A) ikiM x).
 Qed.
+*)

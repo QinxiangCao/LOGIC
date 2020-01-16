@@ -39,8 +39,8 @@ Local Instance L : Language := Build_Language expr .
 
 Local Instance minL : MinimumLanguage L := Build_MinimumLanguage L impp.
 
-Local Instance andpL : AndpLanguage L :=
-  Build_AndpLanguage L andp.
+Local Instance andpL : AndLanguage L :=
+  Build_AndLanguage L andp.
 
 Local Instance iter_andp_L: IterAndLanguage L :=
   Build_IterAndLanguage L (fun es => fold_left andp es truep).
