@@ -179,6 +179,15 @@ Proof.
   apply deduction_modus_ponens with x; solve_assum.
 Qed.
 
+Lemma deduction_negp_fold_unfold: forall (Phi: context) (x: expr),
+  Phi |-- (~~ x) <-> Phi;;x |-- FF.
+Proof.
+  intros.
+  split.
+  apply deduction_negp_unfold.
+  apply deduction_negp_fold.
+Qed.
+
 Lemma derivable_iffp_intros: forall (Phi: context) (x y: expr),
   Phi |-- (x --> y) --> (y --> x) --> (x <--> y).
 Proof.
