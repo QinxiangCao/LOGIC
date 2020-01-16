@@ -205,6 +205,9 @@ SeparationLogic_FILES = \
   $(SeparationLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v) \
   $(SeparationLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
+ExportSolvers_FILES = \
+  Normalize.v
+
 Extensions_ProofTheory_FILES = \
   Stable.v ModalSeparation.v Corable.v CoreTransit.v
 
@@ -252,6 +255,7 @@ FILES = \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extensions_FILES:%.v=Extensions/%.v) \
   $(Example_Files:%.v=Examples/%.v) \
+  $(ExportSolvers_Files:%.v=ExportSolvers/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
 
