@@ -23,16 +23,31 @@ Section Lindenbaum_Kripke.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}.
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}.
 
 Lemma Lindenbaum_for_orp_witnessed: forall P,
   Lindenbaum_preserves P ->
