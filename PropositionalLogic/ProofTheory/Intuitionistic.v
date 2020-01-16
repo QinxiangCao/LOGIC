@@ -1,5 +1,6 @@
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -58,6 +59,7 @@ Class FalseSequentCalculus (L: Language) {falsepL: FalseLanguage L} (Gamma: Deri
   deduction_falsep_elim: forall Phi x, Phi |-- FF -> Phi |-- x
 }.
 
+
 Class IntuitionisticNegSequentCalculus (L: Language) {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) := {
   deduction_negp_unfold: forall Phi x, Phi |-- (~~x) -> Phi ;; x |-- FF;
   deduction_negp_fold: forall Phi x, Phi ;; x |-- FF -> Phi |-- (~~x)
@@ -80,8 +82,90 @@ Class IterAndAxiomatization_left
       {iffpL: IffLanguage L}
       {iter_andp_L: IterAndLanguage L}
       (Gamma: Provable L) := {
-  iter_andp_spec_left: forall (xs: list expr),
+      iter_andp_spec_left: forall (xs: list expr),
     |-- iter_andp xs <--> fold_left andp xs TT
+}.
+
+Class AndpDeduction (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_andp_intros:forall x y z,derivable1 x y -> derivable1 x z -> derivable1 x (y && z);
+  derivable1_andp_elim1:forall x y,derivable1 (x && y) x;
+  derivable1_andp_elim2:forall x y,derivable1 (x && y) y
+}.
+
+Class ImppAndpAdjoint (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_impp_andp_adjoint: forall x y z, derivable1 x (y-->z) <-> derivable1 (x && y) z
+}.
+
+Class OrpDeduction (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_orp_intros1:forall x y,derivable1 x (x || y);
+  derivable1_orp_intros2:forall x y,derivable1 y (x || y);
+  derivable1_orp_elim:forall x y z,derivable1 x z -> derivable1 y z -> derivable1 (x || y) z
+}.
+
+Class FalsepDeduction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_falsep_elim: forall x, derivable1 FF x
+}.
+
+Class NegpDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_negp_unfold: forall x, derivable1 (~~x) (x --> FF);
+  derivable1_negp_fold: forall x, derivable1 (x --> FF) (~~x)
+}.
+
+Class TruepDeduction (L: Language) {minL: MinimumLanguage L} {truepL: TrueLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_truep_intros: forall x, derivable1 x TT
+}.
+
+Class IffDeduction (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_iffp_intros: forall x y, derivable1 (x --> y) ((y --> x) --> (x <--> y));
+  derivable1_iffp_elim1: forall x y, derivable1 (x <--> y) (x --> y);
+  derivable1_iffp_elim2: forall x y, derivable1 (x <--> y) (y --> x)
+}.
+
+Class EquivAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
+  (x1 && y1) --||-- (x2 && y2);
+  equiv_andp_comm:forall x y,x && y --||-- y && x;
+  equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z)
+}.
+
+Class EquivOrp (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
+  (x1 || y1) --||-- (x2 || y2);
+  equiv_orp_comm:forall x y,x || y --||-- y || x;
+  equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z)
+}.
+
+Class EquivDistr (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
+  equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z)
+}.
+
+Class EquivDeMorgen (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {orpL: OrLanguage L} {negp: NegLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_DeMorgen: forall x y,~~ (x || y) --||-- (~~ x) && (~~y)
+}.
+
+Class EquivFalsepAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_false_andp:forall x,x && FF --||-- FF
+}.
+
+Class EquivFalsepOrp (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_falsep_orp:forall x,x || FF --||-- x
+}.
+
+Class EquiveTruepAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_truep_andp:forall x, x && TT --||-- x
+}.
+
+Class EquiveTruepOrp (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_truep_orp:forall x, x || TT --||-- TT
+}.
+
+Class EquivIffp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {iffpL: IffLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_iffp_intros: forall x y, (x --> y) && (y --> x) --||-- (x <--> y);
+}.
+
+Class EquivNegp (L:Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_negp_intros:forall x y, x --||-- y -> ~~ x --||-- ~~ y
 }.
 
 Section DerivableRulesFromSequentCalculus1.
@@ -1148,4 +1232,242 @@ Qed.
 
 End DerivableRulesFromAxiomatization2.
 
+Section DerivableRulesFromLogicEquiv.
 
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {orpL: OrLanguage L}
+        {iffpL: IffLanguage L}
+        {GammaE: LogicEquiv L}
+        {GammaP: Provable L}
+        {NE:NormalEquiv L GammaP GammaE}
+        {minAX: MinimumAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}.
+
+Lemma equiv_iffp : forall x y,
+  x --||-- y <-> |-- x <--> y.
+Proof.
+  intros.
+  split.
+  -intros. apply equiv_provable in H. destruct H.
+   pose proof iffp_intros x y.
+   pose proof modus_ponens _ _ H1 H.
+   pose proof modus_ponens _ _ H2 H0.
+   auto.
+  -intros.
+   apply equiv_provable.
+   split.
+     *pose proof iffp_elim1 x y.
+      pose proof modus_ponens _ _ H0 H;auto.
+     *pose proof iffp_elim2 x y.
+      pose proof modus_ponens _ _ H0 H;auto.
+  Qed.
+
+End DerivableRulesFromLogicEquiv.
+
+Lemma derivable1_distr
+       {L: Language}
+       {minL: MinimumLanguage L}
+       {andpL: AndLanguage L}
+       {orpL: OrLanguage L}
+       {GammaD1: Derivable1 L}
+       {minD: MinimumDeduction L GammaD1}
+       {andpD: AndpDeduction L GammaD1}
+       {orpD: OrpDeduction L GammaD1}
+       {adjD:ImppAndpAdjoint L GammaD1}
+       {BD: BasicDeduction L GammaD1}
+      :forall P x y z,
+  derivable1 (P && (x || y)) z <-> derivable1 ((P && x) || (P && y)) z.
+Proof.
+   split.
+   -intros.
+    apply derivable1_orp_elim.
+     *apply derivable1_impp_andp_adjoint in H.
+      pose proof derivable1_andp_elim1 P x.
+      pose proof derivable1_andp_elim2 P x.
+      pose proof derivable1_orp_intros1 x y.
+      pose proof deduction1_trans _ _ _ H1 H2;clear H1 H2.
+      pose proof deduction1_trans _ _ _ H0 H;clear H0 H.
+      AddAxiomatization.
+      rewrite derivable1_provable in H3, H1 |- *.
+      pose proof axiom2 (P && x) (x || y) z.
+      pose proof modus_ponens _ _ H H1.
+      pose proof modus_ponens _ _ H0 H3;auto.
+     *apply derivable1_impp_andp_adjoint in H.
+      pose proof derivable1_andp_elim1 P y.
+      pose proof derivable1_andp_elim2 P y.
+      pose proof derivable1_orp_intros2 x y.
+      pose proof deduction1_trans _ _ _ H1 H2;clear H1 H2.
+      pose proof deduction1_trans _ _ _ H0 H;clear H0 H.
+      AddAxiomatization.
+      rewrite derivable1_provable in H3, H1 |- *.
+      pose proof axiom2 (P && y) (x || y) z.
+      pose proof modus_ponens _ _ H H1.
+      pose proof modus_ponens _ _ H0 H3;auto.
+   -intros.
+    apply derivable1_impp_andp_adjoint.
+    pose proof derivable1_orp_intros1 (P && x) (P && y).
+    pose proof derivable1_orp_intros2 (P && x) (P && y).
+    pose proof deduction1_trans _ _ _ H0 H.
+    pose proof deduction1_trans _ _ _ H1 H.
+    apply derivable1_impp_andp_adjoint in H2.
+    apply derivable1_impp_andp_adjoint in H3.
+    apply deduction_exchange. apply deduction_exchange in H2. 
+    apply deduction_exchange in H3.
+    pose proof derivable1_orp_elim _ _ _ H2 H3;auto.
+  Qed.
+
+Section Derivabel1ToAxiomatization.
+
+Import Derivable1.
+Local Open Scope Derivable1.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD1: Derivable1 L}
+        {ND: NormalDeduction L GammaP GammaD1}
+        {minD: MinimumDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
+
+Section Deduction2Axiomatization1.
+
+Context {andpL: AndLanguage L}
+        {andpD: AndpDeduction L GammaD1}
+        {adjD: ImppAndpAdjoint L GammaD1}.
+
+Lemma Deduction2Axiomatization_andpAX : AndAxiomatization L GammaP.
+Proof.
+  constructor.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_impp_andp_adjoint. apply deduction1_refl.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_andp_elim1.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_andp_elim2.
+  Qed.
+
+Context {orpL: OrLanguage L}
+        {orpD: OrpDeduction L GammaD1}.
+
+Lemma Deduction2Axiomatization_orpAX: OrAxiomatization L GammaP.
+Proof.
+  constructor.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_orp_intros1.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_orp_intros2.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_impp_andp_adjoint.
+   apply derivable1_impp_andp_adjoint.
+   apply derivable1_distr.
+   apply derivable1_orp_elim.
+     *apply derivable1_impp_andp_adjoint.
+      apply derivable1_andp_elim1.
+     *apply derivable1_impp_andp_adjoint.
+      apply derivable1_andp_elim2.
+    Qed.
+
+End Deduction2Axiomatization1.
+
+Section Deduction2Axiomatization_falsepAX.
+
+Context {falsepL: FalseLanguage L}
+        {falsepD: FalsepDeduction L GammaD1}.
+
+Lemma Deduction2Axiomatization_falsepAX: FalseAxiomatization L GammaP.
+  constructor.
+   intros.
+   apply derivable1_provable.
+   apply derivable1_falsep_elim.
+   Qed.
+
+End Deduction2Axiomatization_falsepAX.
+
+Section Deduction2Axiomatization_truepAX.
+
+Context {truepL: TrueLanguage L}
+        {truepD: TruepDeduction L GammaD1}
+        {PD: Provable_Derivable1 L GammaP GammaD1}.
+
+Lemma Deduction2Axiomatization_truepAX: TrueAxiomatization L GammaP.
+Proof.
+  constructor.
+  pose proof derivable1_truep_intros (TT --> TT).
+  apply provable_derivable1;auto.
+  Qed.
+
+End Deduction2Axiomatization_truepAX.
+
+Section Deduction2Axiomatization_negpAX.
+
+Context {negpL: NegLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpD: NegpDeduction L GammaD1}.
+
+Lemma Deduction2Axiomatization_negpAX: IntuitionisticNegAxiomatization L GammaP.
+Proof.
+  constructor.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_negp_unfold.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_negp_fold.
+   Qed.
+
+End Deduction2Axiomatization_negpAX.
+
+Section Deduction2Axiomatization_iffpAX.
+
+Context {iffpL: IffLanguage L}
+        {iffpD: IffDeduction L GammaD1}.
+
+Lemma Deduction2Axiomatization_iffpAX: IffAxiomatization L GammaP.
+Proof.
+  constructor.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_iffp_intros.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_iffp_elim1.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_iffp_elim2.
+   Qed.
+
+End Deduction2Axiomatization_iffpAX.
+
+End Derivabel1ToAxiomatization.
+
+Instance reg_Deduction2Axiomatization_andpAX:
+  RegisterClass D1ToP_reg (fun anpAX:unit => @Deduction2Axiomatization_andpAX) 4.
+Qed.
+
+Instance reg_Deduction2Axiomatization_orpAX:
+  RegisterClass D1ToP_reg (fun orpAX:unit => @Deduction2Axiomatization_orpAX) 13.
+Qed.
+
+Instance reg_Deduction2Axiomatization_falsepAX:
+  RegisterClass D1ToP_reg (fun falsepAX:unit => @Deduction2Axiomatization_falsepAX) 14.
+Qed.
+
+Instance reg_Deduction2Axiomatization_truepAX:
+  RegisterClass D1ToP_reg (fun truepAX:unit => @Deduction2Axiomatization_truepAX) 15.
+Qed.
+
+Instance reg_Deduction2Axiomatization_negpAX:
+  RegisterClass D1ToP_reg (fun negpAX:unit => @Deduction2Axiomatization_negpAX) 16.
+Qed.
+
+Instance reg_Deduction2Axiomatization_iffpAX:
+  RegisterClass D1ToP_reg (fun iffpAX:unit => @Deduction2Axiomatization_iffpAX) 17.
+Qed.

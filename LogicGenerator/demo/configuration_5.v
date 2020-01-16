@@ -11,6 +11,7 @@ Definition how_connectives :=
   ;primitive_connective falsep
   ;primitive_connective coq_prop
   ;primitive_connective sepcon
+  ;primitive_connective wand
   ;primitive_connective emp
   ;FROM_andp_impp_TO_iffp
   ;FROM_falsep_impp_TO_negp
@@ -33,11 +34,10 @@ Definition transparent_names :=
 Definition primitive_rule_classes :=
   [ provability_OF_impp
   ; provability_OF_propositional_connectives
+  ; provability_OF_coq_prop
   ; provability_OF_classical_logic
   ; provability_OF_sepcon_rule_AS_weak_iffp
-  ; provability_OF_sepcon_rule_AS_mono
-  ; provability_OF_sepcon_orp_rule
-  ; provability_OF_sepcon_falsep_rule
+  ; provability_OF_wand_rule
   ; provability_OF_emp_rule_AS_iffp
   ; corability_OF_basic_setting
   ; corability_OF_coq_prop

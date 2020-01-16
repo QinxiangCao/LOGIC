@@ -31,6 +31,7 @@ Module NaiveRule.
   Axiom deduction_subst : (forall (Phi Psi : context) (y : expr), (forall x : expr, Psi x -> derivable Phi x) -> derivable (Union expr Phi Psi) y -> derivable Phi y) .
   Axiom coq_prop_intros : (forall P : Prop, P -> provable (coq_prop P)) .
   Axiom coq_prop_elim : (forall (P : Prop) (x : expr), (P -> provable x) -> provable (impp (coq_prop P) x)) .
+  Axiom coq_prop_impp : (forall P Q : Prop, provable (impp (impp (coq_prop P) (coq_prop Q)) (coq_prop (P -> Q)))) .
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.

@@ -28,6 +28,41 @@ Class MinimumSequentCalculus (L: Language) {minL: MinimumLanguage L} (Gamma: Der
   deduction_impp_intros: forall Phi x y, Phi;; x |-- y -> Phi |-- x --> y
 }.
 
+Class NormalDeduction (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaD:Derivable1 L): Type := {
+  derivable1_provable:forall x y,derivable1 x y <->
+                        provable (impp x y)
+}.
+
+Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L) := {
+  deduction1_intros:forall x1 x2 y1 y2, derivable1 x2 x1 -> derivable1 y1 y2 
+  -> derivable1 (x1 --> y1) (x2 --> y2);
+  deduction1_axiom1:forall x y, derivable1 x (y --> x);
+  deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z);
+  deduction_md:forall x y z,derivable1 (x --> y --> z) ((x --> y) --> (x --> z));
+  deduction_mid:forall x y, derivable1 ((x --> x) --> y) y;
+}.
+
+Class NormalEquiv (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaL:LogicEquiv L): Type := {
+  equiv_provable:forall x y, x --||-- y <->
+                        provable (impp x y) /\ provable (impp y x)
+}.
+
+Class NormalEquiv2 (L:Language) {minL: MinimumLanguage L} (GammaD:Derivable1 L) (GammaL:LogicEquiv L): Type :={
+  equiv_derivable1:forall x y,x --||-- y <->
+                        derivable1 x y /\ derivable1 y x
+}.
+
+Class MinimumEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:LogicEquiv L) := {
+  equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
+  (x1 --> y1) --||-- (x2 --> y2)
+}.
+
+Class Provable_Derivable1 (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable1 L): Type := {
+  provable_derivable1: forall x, derivable1 (impp x x) x <->
+                        provable x
+}.
+
+
 Section DerivableRulesFromAxiomatization.
 
 Context {L: Language}
@@ -525,10 +560,62 @@ Qed.
 
 End SequentCalculus2Axiomatization.
 
+Section NormalEquivToNormalEquiv2.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD: Derivable1 L}
+        {GammaL: LogicEquiv L}
+        {ND: NormalDeduction L GammaP GammaD}
+        {NE: NormalEquiv L GammaP GammaL}.
+
+Lemma NormalDeductionAndEquivToNormalEquiv2_NE2 : NormalEquiv2 L GammaD GammaL.
+Proof.
+  constructor.
+  intros. split.
+  -intros.
+   apply equiv_provable in H;destruct H.
+   split. apply derivable1_provable;auto. apply derivable1_provable;auto.
+  -intros. destruct H. apply derivable1_provable in H.
+   apply derivable1_provable in H0.
+   apply equiv_provable.
+   auto.
+  Qed.
+
+End NormalEquivToNormalEquiv2.
+
+Section NormalEquiv2ToNormalEquiv.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD: Derivable1 L}
+        {GammaL: LogicEquiv L}
+        {ND: NormalDeduction L GammaP GammaD}
+        {NE2: NormalEquiv2 L GammaD GammaL}.
+
+Lemma NormalDeductionAndEquiv2ToNormalEquiv_NE : NormalEquiv L GammaP GammaL.
+Proof.
+  constructor.
+  intros.
+  split.
+  -intros. apply equiv_derivable1 in H.
+   destruct H.
+   apply derivable1_provable in H. apply derivable1_provable in H0.
+   auto.
+  -intros.
+   apply equiv_derivable1. destruct H.
+   split.
+   apply derivable1_provable;auto. apply derivable1_provable;auto.
+  Qed.
+
+End NormalEquiv2ToNormalEquiv.
+
 Section Transformation.
 
 Context {L: Language} {minL: MinimumLanguage L}.
-  
+
 Definition Provable2Derivable {GammaP: Provable L}: Derivable L :=
   Build_Derivable L (fun Phi y => exists xs,
     Forall (fun x => Phi x) xs /\ |-- multi_imp xs y).
@@ -544,6 +631,30 @@ Definition Derivable2Provable {GammaD: Derivable L}: Provable L :=
 Definition Derivable2Provable_Normal {GammaD: Derivable L}:
   NormalSequentCalculus L Derivable2Provable GammaD :=
   Build_NormalSequentCalculus L Derivable2Provable GammaD (fun _ => iff_refl _).
+
+Definition Provable2Derivable1 {GammaP: Provable L}: Derivable1 L :=
+  Build_Derivable1 L (fun x y => |-- (impp x y)).
+
+Definition Provable2Derivable1_Normal {GammaP: Provable L}:
+  NormalDeduction L GammaP Provable2Derivable1 :=
+  Build_NormalDeduction
+    L minL GammaP Provable2Derivable1 (fun _ _ => iff_refl _).
+
+Definition Provable2Equiv {GammaP: Provable L}: LogicEquiv L :=
+  Build_LogicEquiv L (fun x y => |-- (impp x y) /\ provable (impp y x)).
+
+Definition Provable2Equiv_Normal {GammaP: Provable L}:
+  NormalEquiv L GammaP Provable2Equiv :=
+  Build_NormalEquiv
+    L minL GammaP Provable2Equiv (fun _ _ => iff_refl _).
+
+Definition Derivable1ToProvable {GammaD1: Derivable1 L}: Provable L :=
+  Build_Provable L (fun x => derivable1 (impp x x) x).
+
+Definition Derivable1ToProvable_trick {GammaD1: Derivable1 L}:
+  Provable_Derivable1 L Derivable1ToProvable GammaD1 :=
+  Build_Provable_Derivable1
+    L minL Derivable1ToProvable GammaD1 (fun _ => iff_refl _).
 
 End Transformation.
 

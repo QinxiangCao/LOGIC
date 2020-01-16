@@ -255,6 +255,16 @@ Qed.
 
 End DoubleNegativeElimination2ExcludedMiddle.
 
+Class ClassicalPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {negp:NegLanguage L} {falsepL: FalseLanguage L} (GammaD1:Derivable1 L) {minD:MinimumDeduction L GammaD1} := {
+  deduction_excluded_middle: forall x y,derivable1 x (y || ~~y)
+}.
+
+Class ClassicalPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {negpL: NegLanguage L}  (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_excluded_middle:forall x, x --||-- ~~(~~x);
+  equiv_DeMorgen:forall x y, ~~(x && y) --||-- (~~x) && (~~y)
+}.
+
+
 Section Axiomatization2SequentCalculus.
 
 Context {L: Language}

@@ -11,12 +11,15 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.MetaLogicInj.Syntax.
+Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
+Import CoqPropInLogicNotation.
 Import SeparationLogicNotation.
 
 Class SepconMonoAxiomatization
@@ -165,6 +168,7 @@ Context {L: Language}
         {negpL: NegLanguage L}
         {iffpL: IffLanguage L}
         {truepL: TrueLanguage L}
+        {coq_prop_L: CoqPropLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {Gamma: Provable L}
@@ -175,7 +179,7 @@ Context {L: Language}
         {inegpAX: IntuitionisticNegAxiomatization L Gamma}
         {iffpAX: IffAxiomatization L Gamma}
         {truepAX: TrueAxiomatization L Gamma}
-        {sepconAX: SepconAxiomatization L Gamma}
+        {coq_prop_AX: CoqPropAxiomatization L Gamma}
         {wandX: WandAxiomatization L Gamma}.
 
 Let RDistr: RightDistr L Gamma sepcon orp.
@@ -208,6 +212,30 @@ Proof.
   intros.
   rewrite (@falsep_prodp _ _ _ _ _ _ wand_sepcon_Adj); auto.
   apply provable_impp_refl.
+Qed.
+
+Lemma Adj2SepconCoqProp: SepconCoqPropAxiomatization L Gamma.
+Proof.
+  constructor.
+  intros.
+  apply solve_andp_intros.
+  + apply solve_impp_andp.
+    - apply wand_sepcon_adjoint.
+      apply coq_prop_andp_impp.
+      intros.
+      apply wand_sepcon_adjoint.
+      apply aux_minimun_rule00.
+      apply coq_prop_intros.
+      auto.
+    - apply sepcon_mono.
+      * apply andp_elim2.
+      * apply provable_impp_refl.
+  + apply coq_prop_andp_impp.
+    intros.
+    apply sepcon_mono.
+    - rewrite coq_prop_andp by auto.
+      apply provable_impp_refl.
+    - apply provable_impp_refl.
 Qed.
 
 End FromAdjToPropositionalCombination.
