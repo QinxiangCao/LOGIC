@@ -107,7 +107,7 @@ Instance wand_proper_derivable1: Proper (derivable1 --> derivable1 ==> derivable
 Proof.
   hnf;intros.
   hnf;intros.
-  apply wand_monoD;auto.
+  apply Deduction.wand_mono;auto.
   Qed.
 
 End RewriteClass2.
