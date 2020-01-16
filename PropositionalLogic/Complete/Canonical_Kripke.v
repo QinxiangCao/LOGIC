@@ -33,18 +33,33 @@ Section Canonical.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}
+        {andpSC: AndSequentCalculus L Gamma}
+        {orpSC: OrSequentCalculus L Gamma}
+        {falsepSC: FalseSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
+        {iffpSC: IffSequentCalculus L Gamma}
+        {truepSC: TrueSequentCalculus L Gamma}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}
         {R: Relation (Kworlds M)}
         {SM: Semantics L MD}
         {kminSM: KripkeMinimumSemantics L MD M SM}
-        {kpSM: KripkePropositionalSemantics L MD M SM}.
+        {kandpSM: KripkeAndSemantics L MD M SM}
+        {korpSM: KripkeOrSemantics L MD M SM}
+        {kfalsepSM: KripkeFalseSemantics L MD M SM}
+        {ktruepSM: KripkeTrueSemantics L MD M SM}
+        {kiffpSM: KripkeIffSemantics L MD M SM}
+        {knegpSM: KripkeNegSemantics L MD M SM}.
 
 Context (cP: context -> Prop)
         (rel: bijection (Kworlds M) (sig cP)).
@@ -76,6 +91,7 @@ Proof.
   exfalso.
   apply H in H1; unfold Ensembles.In in H1.
   rewrite derivable_closed_element_derivable in H0, H1 by (apply AL_DC, (proj2_sig Psi)).
+  apply (deduction_negp_unfold (proj1_sig Psi) x) in H1. rewrite deduction_theorem in H1.
   pose proof deduction_modus_ponens _ _ _ H0 H1.
   revert H2; change (~ proj1_sig Psi |-- FF).
   rewrite <- consistent_spec.
@@ -86,8 +102,13 @@ Lemma GodelDummett_canonical_no_branch
       {GammaP: Provable L}
       {SC: NormalSequentCalculus L GammaP Gamma}
       {minAX: MinimumAxiomatization L GammaP}
-      {ipAX: IntuitionisticPropositionalLogic L GammaP}
-      {gdpAX: GodelDummettPropositionalLogic L GammaP}
+      {andpAX: AndAxiomatization L GammaP}
+      {orpAX: OrAxiomatization L GammaP}
+      {falsepAX: FalseAxiomatization L GammaP}
+      {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+      {iffpAX: IffAxiomatization L GammaP}
+      {truepAX: TrueAxiomatization L GammaP}
+      {gdpAX: GodelDummettPropositionalAxiomatization L GammaP}
       (AL_DC: at_least derivable_closed cP)
       (AL_OW: at_least orp_witnessed cP):
   NoBranchKripkeIntuitionisticModel (Kworlds M).
@@ -133,8 +154,13 @@ Lemma DeMorgan_canonical_branch_join
       {AX: NormalAxiomatization L GammaP Gamma}
       {SC: NormalSequentCalculus L GammaP Gamma}
       {minAX: MinimumAxiomatization L GammaP}
-      {ipAX: IntuitionisticPropositionalLogic L GammaP}
-      {dmpAX: DeMorganPropositionalLogic L GammaP}
+      {andpAX: AndAxiomatization L GammaP}
+      {orpAX: OrAxiomatization L GammaP}
+      {falsepAX: FalseAxiomatization L GammaP}
+      {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+      {iffpAX: IffAxiomatization L GammaP}
+      {truepAX: TrueAxiomatization L GammaP}
+      {dmpAX: DeMorganPropositionalAxiomatization L GammaP}
       (AL_DC: at_least derivable_closed cP)
       (AL_OW: at_least orp_witnessed cP)
       (AL_CONSI: at_least consistent cP)
@@ -168,12 +194,15 @@ Proof.
     destruct H3.
     - apply H0 in H3; unfold Ensembles.In in H3.
       rewrite derivable_closed_element_derivable in H3 by (apply AL_DC, (proj2_sig Psi2)).
+      apply (deduction_negp_unfold (proj1_sig Psi2) x) in H3. rewrite deduction_theorem in H3.
       pose proof deduction_modus_ponens _ _ _ H1 H3.
       revert H4; change (~ proj1_sig Psi2 |-- FF).
       rewrite <- consistent_spec.
       apply AL_CONSI, (proj2_sig Psi2).
     - apply H in H3; unfold Ensembles.In in H3.
       rewrite derivable_closed_element_derivable in H3 by (apply AL_DC, (proj2_sig Psi1)).
+      apply (deduction_negp_unfold (proj1_sig Psi1) (~~ x)) in H3. rewrite deduction_theorem in H3.
+      rewrite <- deduction_theorem in H2. apply (deduction_negp_fold (proj1_sig Psi1) x) in H2.
       pose proof deduction_modus_ponens _ _ _ H2 H3.
       revert H4; change (~ proj1_sig Psi1 |-- FF).
       rewrite <- consistent_spec.
