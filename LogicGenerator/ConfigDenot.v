@@ -555,6 +555,10 @@ Definition derived_rules :=
   ; corable_sepcon_andp2
   ; corable_sepcon_andp1
   ; corable_andp_sepcon2
+  ; sepcon_proper_impp
+  ; wand_proper_impp
+  ; sepcon_proper_iffp
+  ; wand_proper_iffp
   ].
 
 Ltac filter_instance_rec l res :=

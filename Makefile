@@ -8,7 +8,7 @@ COQDEP=$(COQBIN)coqdep
 
 DIRS = \
   lib GeneralLogic MinimumLogic PropositionalLogic MetaLogicInj ModalLogic SeparationLogic \
-  QuantifierLogic Extensions HoareLogic LogicGenerator
+  QuantifierLogic Extensions HoareLogic ExportSolvers LogicGenerator
 
 COQ_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
 DEP_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
@@ -254,8 +254,8 @@ FILES = \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
   $(Extensions_FILES:%.v=Extensions/%.v) \
-  $(Example_Files:%.v=Examples/%.v) \
-  $(ExportSolvers_Files:%.v=ExportSolvers/%.v) \
+  $(Example_FILES:%.v=Examples/%.v) \
+  $(ExportSolvers_FILES:%.v=ExportSolvers/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
 
