@@ -89,6 +89,7 @@ Inductive rule_class :=
 | provability_OF_iter_sepcon
 | provability_OF_sepcon_orp_rule
 | provability_OF_sepcon_falsep_rule
+| provability_OF_sepcon_coq_prop
 | provability_OF_sepcon_rule_AS_weak
 | provability_OF_sepcon_rule_AS_weak_iffp
 | provability_OF_sepcon_rule_AS_mono
@@ -101,6 +102,8 @@ Inductive rule_class :=
 | derivitive_OF_de_morgan
 | derivitive_OF_godel_dummett
 | derivitive_OF_classical_logic
+| corability_OF_basic_setting
+| corability_OF_coq_prop
 | GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -139,6 +142,7 @@ Inductive connective_class :=
 Inductive judgement_class :=
 | Provable
 | Derivable
+| Corable
 .
 
 Inductive any_class :=
@@ -461,6 +465,7 @@ Definition eqb (jc1 jc2: judgement_class) :=
 match jc1, jc2 with
 | Provable, Provable => true
 | Derivable, Derivable => true
+| Corable, Corable => true
 | _, _ => false
 end.
 
@@ -494,6 +499,7 @@ match rc1, rc2 with
 | provability_OF_iter_sepcon, provability_OF_iter_sepcon => true
 | provability_OF_sepcon_orp_rule, provability_OF_sepcon_orp_rule => true
 | provability_OF_sepcon_falsep_rule, provability_OF_sepcon_falsep_rule => true
+| provability_OF_sepcon_coq_prop, provability_OF_sepcon_coq_prop => true
 | provability_OF_sepcon_rule_AS_weak, provability_OF_sepcon_rule_AS_weak => true
 | provability_OF_sepcon_rule_AS_weak_iffp, provability_OF_sepcon_rule_AS_weak_iffp => true
 | provability_OF_sepcon_rule_AS_mono, provability_OF_sepcon_rule_AS_mono => true
@@ -506,6 +512,8 @@ match rc1, rc2 with
 | derivitive_OF_de_morgan, derivitive_OF_de_morgan => true
 | derivitive_OF_godel_dummett, derivitive_OF_godel_dummett => true
 | derivitive_OF_classical_logic, derivitive_OF_classical_logic => true
+| corability_OF_basic_setting, corability_OF_basic_setting => true
+| corability_OF_coq_prop, corability_OF_coq_prop => true
 | GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp => true
 | GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp => true
 | GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon => true

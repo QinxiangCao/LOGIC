@@ -227,3 +227,14 @@ Proof.
   apply join_comm in H.
   exists e, v; auto.
 Qed.
+
+Record sem_corable
+       {worlds: Type}
+       {R: Relation worlds}
+       {J: Join worlds} (X: worlds -> Prop): Prop := {
+  local2global: forall w1 w2 w3,
+    join w1 w2 w3 -> X w1 -> X w3;
+  global2local: forall w1 w2 w3,
+    join w1 w2 w3 -> X w3 ->
+    exists w1' w2', join w1' w2' w3 /\ w1 <= w1' /\ w2 <= w2' /\ X w1
+}.

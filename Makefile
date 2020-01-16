@@ -164,7 +164,7 @@ QuantifierLogic_FILES = \
 
 SeparationLogic_ProofTheory_FILES = \
   SeparationLogic.v SeparationLogicExtension.v TheoryOfSeparationAxioms.v \
-  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v Deduction.v
+  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v Corable.v Deduction.v
 
 SeparationLogic_Model_FILES = \
   SeparationAlgebra.v OrderedSA.v \
@@ -180,7 +180,7 @@ SeparationLogic_Semantics_FILES = \
 
 SeparationLogic_Sound_FILES = \
   Sound_Downwards.v Sound_Upwards.v Sound_Flat.v \
-  Sound_DownUp_Fail.v
+  Sound_DownUp_Fail.v Sound_Flat_Corable.v
 
 SeparationLogic_Complete_FILES = \
   ContextProperty_Flat.v \
@@ -312,6 +312,13 @@ lgen_demo_4:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_4.v
 	@echo COQC LogicGenerator/demo/implementation_4.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_4.v
+
+lgen_demo_5:
+	./logic_gen.sh LogicGenerator/demo/configuration_5.v LogicGenerator/demo/interface_5.v
+	@echo COQC LogicGenerator/demo/interface_5.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_5.v
+	@echo COQC LogicGenerator/demo/implementation_5.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_5.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend

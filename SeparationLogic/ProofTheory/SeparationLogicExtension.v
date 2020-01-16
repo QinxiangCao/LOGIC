@@ -35,20 +35,3 @@ The following is not sound e.g. when x := a = 0 && emp, y := a = 1, z := a = 0
 sepcon_cancel: forall x y z, |-- (x * z) --> (y * z) -> precise z -> |-- (x --> y)
 *)
 
-Class SeparationLogic_PureFact
-        (L: Language)
-        {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
-        {sepconL: SepconLanguage L}
-        {wandL: WandLanguage L}
-        (Gamma: Provable L) := {
-  pure_fact: expr -> Prop;
-  pure_falsep: pure_fact FF;
-  pure_andp: forall x y, pure_fact x -> pure_fact y -> pure_fact (x && y);
-  pure_orp: forall x y, pure_fact x -> pure_fact y -> pure_fact (x || y);
-  pure_impp: forall x y, pure_fact x -> pure_fact y -> pure_fact (x --> y);
-  pure_specon: forall x y, pure_fact x -> pure_fact y -> pure_fact (x * y);
-  pure_wand: forall x y, pure_fact x -> pure_fact y -> pure_fact (x -* y);
-  andp_sepcon: forall x y z, pure_fact x -> |-- (x && (y * z)) <--> ((x && y) * z)
-}.
-

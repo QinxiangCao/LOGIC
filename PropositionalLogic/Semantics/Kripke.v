@@ -130,4 +130,18 @@ Proof.
   split; [apply H | apply H0].
 Qed.
 
+Lemma valid_iffp {po_R: PreOrder Krelation}: forall x y,
+  (forall m, KRIPKE: M , m |= x <--> y) ->
+  (forall m, KRIPKE: M , m |= x <-> KRIPKE: M , m |= y).
+Proof.
+  intros.
+  specialize (H m).
+  unfold iffp in H.
+  rewrite sat_andp, !sat_impp in H.
+  destruct H.
+  specialize (H m ltac:(reflexivity)).
+  specialize (H0 m ltac:(reflexivity)).
+  tauto.
+Qed.
+
 End KripkeSemantics.

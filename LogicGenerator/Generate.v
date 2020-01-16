@@ -17,8 +17,10 @@ Require Import MetaLogicInj.ProofTheory.ProofRules.
 Require Import SeparationLogic.Syntax.
 Require Import SeparationLogic.ProofTheory.SeparationLogic.
 Require Import SeparationLogic.ProofTheory.RewriteClass.
+Require Import SeparationLogic.ProofTheory.DerivedRules.
 Require Import SeparationLogic.ProofTheory.IterSepcon.
 Require Import SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
+Require Import SeparationLogic.ProofTheory.Corable.
 
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigDenot.
@@ -39,6 +41,7 @@ Context {L: Language}
         {iter_sepcon_L: IterSepconLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
+        {Cor: Corable L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}
@@ -58,6 +61,7 @@ Context {L: Language}
         {iter_sepcon_AXL: IterSepconAxiomatization_left L GammaP}
         {sepcon_orp_AX: SepconOrAxiomatization L GammaP}
         {sepcon_falsep_AX: SepconFalseAxiomatization L GammaP}
+        {sepcon_coq_prop_AX: SepconCoqPropAxiomatization L GammaP}
         {sepconAX_weak: SepconAxiomatization_weak L GammaP}
         {sepconAX_weak_iffp: SepconAxiomatization_weak_iffp L GammaP}
         {sepcon_mono_AX: SepconMonoAxiomatization L GammaP}
@@ -72,6 +76,8 @@ Context {L: Language}
         {minSC: MinimumSequentCalculus L GammaD}
         {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
         {cpSC: ClassicalPropositionalSequentCalculus L GammaD}
+        {CorAX: Corable_withAxiomatization L GammaP Cor}
+        {coq_prop_Cor: CoqPropCorable L Cor}
         .
         
 Import NameListNotations.
@@ -263,8 +269,10 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.SeparationLogic.Syntax.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.";
+  idtac "Require Import SeparationLogic.ProofTheory.DerivedRules.";
   idtac "Require Import SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.";
   idtac "Require Import SeparationLogic.ProofTheory.IterSepcon.";
+  idtac "Require Import SeparationLogic.ProofTheory.Corable.";
 
   newline;
 
