@@ -11,6 +11,8 @@ Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
+Require Import Logic.MetaLogicInj.Syntax.
+Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
@@ -18,6 +20,7 @@ Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
 Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
+Import CoqPropInLogicNotation.
 Import SeparationLogicNotation.
 
 Section DerivedRules.
@@ -71,6 +74,38 @@ Proof.
     apply truep_intros.
   + apply sepcon_ext.
 Qed.
+
+Section CoqProp.
+
+Context {coq_prop_L: CoqPropLanguage L}
+        {sepcon_coq_prop_AX: SepconCoqPropAxiomatization L Gamma}.
+
+Lemma prop_sepcon_andp2: forall P Q R,
+ |-- Q * (R && !! P) <--> !! P && (Q * R).
+Proof.
+  intros.
+  rewrite ! (sepcon_comm Q).
+  rewrite (andp_comm R).
+  apply prop_andp_sepcon1; auto.
+Qed.
+
+Lemma prop_sepcon_andp1: forall P Q R,
+  |-- Q * (!! P && R) <--> !! P && (Q * R).
+Proof.
+  intros.
+  rewrite !(sepcon_comm Q).
+  apply prop_andp_sepcon1; auto.
+Qed.
+
+Lemma prop_andp_sepcon2: forall P Q R,
+  |-- Q && !! P * R <--> !! P && (Q * R).
+Proof.
+  intros.
+  rewrite (andp_comm Q).
+  apply prop_andp_sepcon1; auto.
+Qed.
+
+End CoqProp.
 
 (* TODO: move this to TheoryOfSeparationAxioms. *)
 Lemma GC_Ext_Classical_collapse_aux

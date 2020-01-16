@@ -24,7 +24,8 @@ Class CoqPropAxiomatization
       {coq_prop_L: CoqPropLanguage L}
       (Gamma: Provable L): Prop := {
   coq_prop_intros: forall P: Prop, P -> |-- !! P;
-  coq_prop_elim: forall (P: Prop) x, (P -> |-- x) -> |-- !! P --> x
+  coq_prop_elim: forall (P: Prop) x, (P -> |-- x) -> |-- !! P --> x;
+  coq_prop_impp: forall (P Q: Prop), |-- (!! P --> !! Q) --> !! (P -> Q);
 }.
 
 Class CoqPropSequentCalculus
@@ -33,7 +34,8 @@ Class CoqPropSequentCalculus
       {coq_prop_L: CoqPropLanguage L}
       (Gamma: Derivable L): Prop := {
   derivable_coq_prop_intros: forall (P: Prop) Phi, P -> Phi |-- !! P;
-  derivable_coq_prop_elim: forall (P: Prop) Phi x, (P -> Phi |-- x) -> Phi;; !! P |-- x
+  derivable_coq_prop_elim: forall (P: Prop) Phi x, (P -> Phi |-- x) -> Phi;; !! P |-- x;
+  derivable_coq_prop_impp_left: forall (P Q: Prop) Phi, Phi;; !! P --> !! Q |-- !! (P -> Q)
 }.
 
 Section DerivedRules.
@@ -130,12 +132,14 @@ Proof.
       apply coq_prop_intros; auto.
 Qed.
 
-Lemma coq_prop_impl: forall P Q: Prop, |-- !! (P -> Q) --> (!! P --> !! Q).
+Lemma coq_prop_impl: forall P Q: Prop, |-- !! (P -> Q) <--> (!! P --> !! Q).
 Proof.
   intros.
-  apply coq_prop_elim; intros.
-  apply coq_prop_elim; intros.
-  apply coq_prop_intros; auto.
+  apply solve_andp_intros.
+  + apply coq_prop_elim; intros.
+    apply coq_prop_elim; intros.
+    apply coq_prop_intros; auto.
+  + apply coq_prop_impp.
 Qed.
 
 End DerivedRules.

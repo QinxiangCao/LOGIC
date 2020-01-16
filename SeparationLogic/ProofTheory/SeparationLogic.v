@@ -11,11 +11,14 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.MetaLogicInj.Syntax.
+Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.Syntax.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
+Import CoqPropInLogicNotation.
 Import SeparationLogicNotation.
 
 Class SepconAxiomatization
@@ -36,6 +39,17 @@ Class SepconOrAxiomatization
         (Gamma: Provable L) := {
   orp_sepcon_left: forall (x y z: expr),
     |-- (x || y) * z --> x * z || y * z
+}.
+
+Class SepconCoqPropAxiomatization
+        (L: Language)
+        {minL: MinimumLanguage L}
+        {pL: PropositionalLanguage L}
+        {coq_prop_L: CoqPropLanguage L}
+        {sepconL: SepconLanguage L}
+        (Gamma: Provable L) := {
+  prop_andp_sepcon1: forall P Q R,
+    |-- (!! P && Q) * R <--> !! P && (Q * R)
 }.
 
 Class SepconFalseAxiomatization
