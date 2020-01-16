@@ -17,10 +17,10 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD:Derivable L}
         {GammaD1: Derivable1 L}
-        {NDL: NormalDeduction L GammaP GammaD1}
+        {ND: NormalDeduction L GammaP GammaD1}
         {minAX: MinimumAxiomatization L GammaP}.
 
-Lemma Axiomatization2Deduction_minMD: MinimumDeduction L GammaD1.
+Lemma Axiomatization2Deduction_minD: MinimumDeduction L GammaD1.
 Proof.
   constructor.
   -intros.
@@ -42,7 +42,7 @@ Proof.
    auto.
   Qed.
 
-Lemma Axiomatization2BasicDeduction: BasicDeduction L GammaD1.
+Lemma Axiomatization2BasicDeduction_BD: BasicDeduction L GammaD1.
 Proof.
   constructor.
   -intros. 
@@ -62,10 +62,10 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {GammaL: LogicEquiv L}
-        {NEL:NormalEquiv L GammaP GammaL}
+        {NE:NormalEquiv L GammaP GammaL}
         {minAX: MinimumAxiomatization L GammaP}.
 
-Lemma Axiomatization2LogicEquiv_minME :MinimumEquiv L GammaL.
+Lemma Axiomatization2LogicEquiv_minE :MinimumEquiv L GammaL.
 Proof.
   constructor.
   intros.
@@ -78,7 +78,7 @@ Proof.
    apply provable_impp_refl.
   Qed.
 
-Lemma Axiomatization2BasicLogicEquiv: BasicLogicEquiv L GammaL.
+Lemma Axiomatization2BasicLogicEquiv_BE: BasicLogicEquiv L GammaL.
 Proof.
   constructor.
   -intros.
@@ -133,7 +133,7 @@ Context {L: Language}
         {minD: MinimumDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
-Lemma Derivable1ToAxiomatization : MinimumAxiomatization L GammaP.
+Lemma Derivable12Axiomatization_minAX : MinimumAxiomatization L GammaP.
 Proof.
   constructor.
   -intros.
@@ -170,14 +170,14 @@ Section Derivable1_Provable.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaP: Provable L}
-        {GammaD: Derivable1 L}.
+        {GammaD1: Derivable1 L}.
 
 Section provable2derivable1.
 
-Context {ND: NormalDeduction L GammaP GammaD}
+Context {ND: NormalDeduction L GammaP GammaD1}
         {minAX: MinimumAxiomatization L GammaP}.
 
-Lemma ND2PD : Provable_Derivable1 L GammaP GammaD.
+Lemma ND2PD : Provable_Derivable1 L GammaP GammaD1.
 Proof.
   constructor.
   intros. split.
@@ -194,14 +194,14 @@ End provable2derivable1.
 
 Section derivable12provable.
 
-Context {PD:Provable_Derivable1 L GammaP GammaD}
-        {MD: MinimumDeduction L GammaD}
-        {BD: BasicDeduction L GammaD}.
+Context {PD:Provable_Derivable1 L GammaP GammaD1}
+        {MD: MinimumDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
 
 Import Derivable1.
 Local Open Scope Derivable1.
 
-Lemma PD2ND: NormalDeduction L GammaP GammaD.
+Lemma PD2ND: NormalDeduction L GammaP GammaD1.
 Proof.
   constructor.
   intros. split.

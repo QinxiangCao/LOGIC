@@ -33,7 +33,7 @@ Class IntuitionisticPropositionalSequentCalculus (L: Language) {pL: Propositiona
   deduction_falsep_elim: forall Phi x, Phi |-- FF -> Phi |-- x
 }.
 
-Class IntuitionisticPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma: Derivable1 L) {minMD:MinimumDeduction L Gamma}:= {
+Class IntuitionisticPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
   derivable1_andp_intros:forall x y z,derivable1 x y -> derivable1 x z -> derivable1 x (y && z);
   derivable1_impp_andp_adjoint:forall x y z, derivable1 x (y-->z) <-> derivable1 (x && y) z;
   derivable1_andp_elim1:forall x y,derivable1 (x && y) x;
@@ -44,7 +44,7 @@ Class IntuitionisticPropositionalDeduction (L:Language) {minL: MinimumLanguage L
   derivable1_falsep_elim: forall x, derivable1 FF x
 }.
 
-Class IntuitionisticPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma:LogicEquiv L) {minME:MinimumEquiv L Gamma}:= {
+Class IntuitionisticPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
   equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 && y1) --||-- (x2 && y2);
   equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
@@ -72,10 +72,10 @@ Section DerivableRulesFromSequentCalculus1.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {Gamma: Derivable L}
-        {bSC: BasicSequentCalculus L Gamma}
-        {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}.
+        {GammaD: Derivable L}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
+        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}.
 
 Lemma derivable_andp_intros: forall (Phi: context) (x y: expr),
   Phi |-- x --> y --> x && y.
@@ -401,10 +401,10 @@ Section DerivableRulesFromSequentCalculus2.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {Gamma: Derivable L}
-        {bSC: BasicSequentCalculus L Gamma}
-        {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}.
+        {GammaD: Derivable L}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
+        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}.
 
 Lemma deduction_contrapositivePP: forall Phi (x y: expr),
   Phi |-- y --> x ->
@@ -435,9 +435,9 @@ Section DerivableRulesFromAxiomatization2.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {ipGamma: IntuitionisticPropositionalLogic L Gamma}.
+        {GammaP: Provable L}
+        {minAX: MinimumAxiomatization L GammaP}
+        {ipGamma: IntuitionisticPropositionalLogic L GammaP}.
 
 Lemma demorgan_orp_negp: forall (x y: expr),
   |-- ~~ x || ~~ y --> ~~ (x && y).
@@ -723,9 +723,9 @@ Section DerivableRulesFromLogicEquiv.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {GammaL: LogicEquiv L}
+        {GammaE: LogicEquiv L}
         {GammaP: Provable L}
-        {NE:NormalEquiv L GammaP GammaL}
+        {NE:NormalEquiv L GammaP GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {ipL:IntuitionisticPropositionalLogic L GammaP}.
 
@@ -754,10 +754,10 @@ Lemma derivable1_distr
        {L: Language}
        {minL: MinimumLanguage L}
        {pL: PropositionalLanguage L}
-       {GammaD: Derivable1 L}
-       {minD: MinimumDeduction L GammaD}
-       {ipD: IntuitionisticPropositionalDeduction L GammaD}
-       {BD: BasicDeduction L GammaD}
+       {GammaD1: Derivable1 L}
+       {minD: MinimumDeduction L GammaD1}
+       {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+       {BD: BasicDeduction L GammaD1}
       :forall P x y z,
   derivable1 (P && (x || y)) z <-> derivable1 ((P && x) || (P && y)) z.
 Proof.
@@ -808,11 +808,11 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
         {GammaP: Provable L}
-        {GammaD: Derivable1 L}
-        {ND: NormalDeduction L GammaP GammaD}
-        {minD: MinimumDeduction L GammaD}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD}
-        (BD: BasicDeduction L GammaD).
+        {GammaD1: Derivable1 L}
+        {ND: NormalDeduction L GammaP GammaD1}
+        {minD: MinimumDeduction L GammaD1}
+        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
 
 Lemma ipD2ipAx : IntuitionisticPropositionalLogic L GammaP.
 Proof.

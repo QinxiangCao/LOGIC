@@ -69,7 +69,7 @@ Ltac AddAxiomatizationFromSequentCalculus :=
   rec_from_n (0%nat) pose_proof_AX_instance.
 
 Ltac AddAxiomatizationFromDeduction :=
-  let D1P :=fresh "D1P" in
+  let D1P :=fresh "D2P" in
   let GammaP := fresh "GammaP" in
   pose proof Derivable1ToProvable_trick as D1P;
   set (GammaP := Derivable1ToProvable) in D1P;
@@ -91,8 +91,8 @@ Ltac AddDeduction :=
   rec_from_n (0%nat) pose_proof_ND_instance.
 
 Ltac AddEquiv :=
-  let NEL :=fresh "NEL" in
-  let GammaL :=fresh "GammaL" in
+  let NEL :=fresh "NE" in
+  let GammaL :=fresh "GammaE" in
   pose proof Provable2Equiv_Normal as NEL;
   set (GammaL := Provable2Equiv) in NEL;
   clearbody GammaL;
@@ -122,28 +122,28 @@ Instance reg_SequentCalculus2Axiomatization_minAX:
   RegisterClass D2P_reg (fun minAX: unit => @SequentCalculus2Axiomatization_minAX) 1.
 Qed.
 
-Instance reg_Axiomatization2Deduction_minMD:
-  RegisterClass P2D1_reg (fun minMD: unit => @Axiomatization2Deduction_minMD) 0.
+Instance reg_Axiomatization2Deduction_minD:
+  RegisterClass P2D1_reg (fun minD: unit => @Axiomatization2Deduction_minD) 0.
 Qed.
 
 Instance reg_Axiomatization2BasicDeduction:
-  RegisterClass P2D1_reg (fun BD: unit => @Axiomatization2BasicDeduction) 1.
+  RegisterClass P2D1_reg (fun BD: unit => @Axiomatization2BasicDeduction_BD) 1.
 Qed.
 
 Instance reg_Axiomatization2PD:
   RegisterClass P2D1_reg (fun PD: unit => @ND2PD) 2.
 Qed.
 
-Instance reg_Axiomatization2LogicEquiv_minME:
-  RegisterClass P2E_reg (fun minME: unit => @Axiomatization2LogicEquiv_minME) 0.
+Instance reg_Axiomatization2LogicEquiv_minE:
+  RegisterClass P2E_reg (fun minE: unit => @Axiomatization2LogicEquiv_minE) 0.
 Qed.
 
-Instance reg_Axiomatization2BasicLogicEquiv:
-  RegisterClass P2E_reg (fun BE: unit => @Axiomatization2BasicLogicEquiv) 1.
+Instance reg_Axiomatization2BasicLogicEquiv_BE:
+  RegisterClass P2E_reg (fun BE: unit => @Axiomatization2BasicLogicEquiv_BE) 1.
 Qed.
 
-Instance reg_Derivable1ToAxiomatization:
-  RegisterClass D1ToP_reg (fun minAx1: unit => @Derivable1ToAxiomatization) 0.
+Instance reg_Derivable1ToAxiomatization_minAX:
+  RegisterClass D1ToP_reg (fun minAx: unit => @Derivable12Axiomatization_minAX) 0.
 Qed.
 
 Instance reg_PD2ND:

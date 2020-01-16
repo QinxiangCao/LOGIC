@@ -54,7 +54,7 @@ Qed.
 Section Derivable1.
 
 Context {GammaD: Derivable1 L}
-        {MDL:MinimumDeduction L GammaD}.
+        {MD:MinimumDeduction L GammaD}.
 
 Instance impp_proper_derivable1:
   Proper (derivable1 --> derivable1 ==> derivable1) impp.
@@ -71,8 +71,8 @@ End Derivable1.
 Section Derivable1_provable.
 
 Context {GammaD: Derivable1 L}
-        {MDL:MinimumDeduction L GammaD}
-        {NDL:NormalDeduction L GammaP GammaD}.
+        {MD:MinimumDeduction L GammaD}
+        {ND:NormalDeduction L GammaP GammaD}.
 
 Instance provable_proper_derivable1:
   Proper (derivable1 ==> Basics.impl) provable.
@@ -109,7 +109,7 @@ Qed.
 Section Derivable1.
 
 Context {GammaD1:Derivable1 L}
-        {NDL:NormalDeduction L GammaP GammaD1}.
+        {ND:NormalDeduction L GammaP GammaD1}.
 
 Instance derivable_proper_derivable1:
   Proper (eq ==> derivable1 ==> Basics.impl) derivable.
@@ -131,8 +131,8 @@ Section Logic_equiv.
 
 Existing Instance derivable_proper_impp.
 
-Context {GammaL:LogicEquiv L}
-        {MEL:MinimumEquiv L GammaL}.
+Context {GammaE:LogicEquiv L}
+        {ME:MinimumEquiv L GammaE}.
 
 Instance impp_proper_equiv:
   Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
@@ -144,7 +144,7 @@ Proof.
   auto.
   Qed.
 
-Context {NEL:NormalEquiv L GammaP GammaL}
+Context {NE:NormalEquiv L GammaP GammaE}
         {minAX: MinimumAxiomatization L GammaP}.
 
 Instance provable_proper_equiv : Proper (logic_equiv ==> iff) provable.

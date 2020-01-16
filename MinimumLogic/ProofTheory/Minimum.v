@@ -567,10 +567,10 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD: Derivable1 L}
         {GammaL: LogicEquiv L}
-        {NDL: NormalDeduction L GammaP GammaD}
+        {ND: NormalDeduction L GammaP GammaD}
         {NE: NormalEquiv L GammaP GammaL}.
 
-Lemma NormalDeduction_EquivToNormalEquiv2 : NormalEquiv2 L GammaD GammaL.
+Lemma NormalDeductionAndEquivToNormalEquiv2_NE2 : NormalEquiv2 L GammaD GammaL.
 Proof.
   constructor.
   intros. split.
@@ -592,10 +592,10 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD: Derivable1 L}
         {GammaL: LogicEquiv L}
-        {NDL: NormalDeduction L GammaP GammaD}
+        {ND: NormalDeduction L GammaP GammaD}
         {NE2: NormalEquiv2 L GammaD GammaL}.
 
-Lemma NormalDeduction_Equiv2ToNormalEquiv : NormalEquiv L GammaP GammaL.
+Lemma NormalDeductionAndEquiv2ToNormalEquiv_NE : NormalEquiv L GammaP GammaL.
 Proof.
   constructor.
   intros.
