@@ -130,16 +130,26 @@ Lemma AndFromDefToAX_Or_Neg
       {orpAX: OrAxiomatization L GammaP}
       {falsepAx: FalseAxiomatization L GammaP}
       {inegpAx: IntuitionisticNegAxiomatization L GammaP}
-      {emAX: ExcludedMiddle L GammaP}
+      {dneAX: DoubleNegativeElimination L GammaP}
       {andp_Def_orp_negp: AndDefinition_Or_Neg L}:
       AndAxiomatization L GammaP.
 Proof.
+  AddSequentCalculus.
   intros.
   constructor; intros; rewrite orp_negp2andp.
-  + pose proof excluded_middle x.
-    rewrite <- contrapositivePN.
-
-Admitted.
+  + rewrite <- contrapositivePN.
+    rewrite <- provable_impp_arg_switch.
+    rewrite provable_derivable; rewrite <- deduction_theorem.
+    apply deduction_orp_elim.
+    - rewrite deduction_theorem.
+      apply deduction_impp_arg_switch.
+      apply derivable_contradiction_elim.
+    - rewrite <- deduction_theorem. solve_assum.
+  + rewrite <- (double_negp_elim x) at 2. rewrite <- contrapositivePP.
+    apply orp_intros1.
+  + rewrite <- (double_negp_elim y) at 2. rewrite <- contrapositivePP.
+    apply orp_intros2.
+Qed.
 
 Lemma IffFromDefToAX_And_Imp
       {L: Language}
@@ -188,7 +198,7 @@ Lemma NegFromDefToAX_False_Imp
 Proof.
   intros.
   constructor; intros; rewrite falsep_impp2negp; apply(provable_impp_refl (x --> FF)).
-
+Qed.
 
 
 

@@ -1099,6 +1099,28 @@ Proof.
   + apply truep_andp2.
 Qed.
 
+Lemma falsep_orp_impp1: forall (x: expr),
+  |-- FF || x --> x.
+Proof.
+  clear - minAX falsepAX orpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable. rewrite <- deduction_theorem.
+  apply deduction_orp_elim; rewrite deduction_theorem.
+  + apply derivable_falsep_elim.
+  + apply derivable_impp_refl.
+Qed.
+
+Lemma falsep_orp_impp2: forall (x: expr),
+  |-- x --> FF || x.
+Proof.
+  clear - minAX falsepAX orpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable. rewrite <- deduction_theorem.
+  rewrite deduction_theorem. apply derivable_orp_intros2.
+Qed.
+
 Lemma falsep_orp: forall (x: expr),
   |-- FF || x <--> x.
 Proof.
@@ -1106,11 +1128,9 @@ Proof.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_iffp_intros.
-  + apply deduction_orp_elim; rewrite deduction_theorem.
-    - apply derivable_falsep_elim.
-    - apply derivable_impp_refl.
-  + rewrite deduction_theorem. apply derivable_orp_intros2.
+  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
+  + apply falsep_orp_impp1.
+  + apply falsep_orp_impp2.
 Qed.
 
 Lemma orp_falsep: forall (x: expr),
