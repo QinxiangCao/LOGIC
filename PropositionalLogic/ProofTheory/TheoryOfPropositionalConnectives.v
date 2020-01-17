@@ -29,7 +29,16 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class IffDefinition_And_Impp
+Class AndDefinition_Or_Neg
+      (L: Language)
+      {orpL: OrLanguage L}
+      {negpL: NegLanguage L}
+      {andpL: AndLanguage L}: Prop:= {
+  orp_negp2andp: forall x y,
+  x && y = ~~ ((~~ x) || (~~ y))
+}.
+
+Class IffDefinition_And_Imp
       (L: Language)
       {minL: MinimumLanguage L}
       {andpL: AndLanguage L}
@@ -38,7 +47,7 @@ Class IffDefinition_And_Impp
   x <--> y = (x --> y) && (y --> x)
 }.
 
-Class TrueDefinition_False_Impp
+Class TrueDefinition_False_Imp
       (L: Language)
       {minL: MinimumLanguage L}
       {falsepL: FalseLanguage L}
@@ -47,7 +56,7 @@ Class TrueDefinition_False_Impp
   TT = FF --> FF
 }.
 
-Class NegDefinition_False_Impp
+Class NegDefinition_False_Imp
       (L: Language)
       {minL: MinimumLanguage L}
       {falsepL: FalseLanguage L}
@@ -55,6 +64,12 @@ Class NegDefinition_False_Impp
   falsep_impp2negp: forall x,
   ~~ x = x --> FF
 }.
+
+Definition OrNeg2And
+           {L: Language}
+           {orpL: OrLanguage L}
+           {negpL: NegLanguage L}: AndLanguage L :=
+  Build_AndLanguage _ (fun x y => ~~ ((~~ x) || (~~ y))).
 
 Definition AndImp2Iff
            {L: Language}
@@ -75,28 +90,58 @@ Definition FalseImp2Neg
            {falsepL: FalseLanguage L}: NegLanguage L :=
   Build_NegLanguage _ (fun x => (x --> FF)).
 
+Lemma OrNeg2And_Normal
+      {L: Language}
+      {orpL: OrLanguage L}
+      {negpL: NegLanguage L}:
+  @AndDefinition_Or_Neg L _ _ OrNeg2And.
+Proof. constructor. reflexivity. Qed.
+
 Lemma AndImp2Iff_Normal
       {L: Language}
       {minL: MinimumLanguage L}
       {andpL: AndLanguage L}:
-  @IffDefinition_And_Impp L _ _ AndImp2Iff.
+  @IffDefinition_And_Imp L _ _ AndImp2Iff.
 Proof. constructor. reflexivity. Qed.
 
 Lemma FalseImp2True_Normal
       {L: Language}
       {minL: MinimumLanguage L}
       {falsepL: FalseLanguage L}:
-  @TrueDefinition_False_Impp L _ _ FalseImp2True.
+  @TrueDefinition_False_Imp L _ _ FalseImp2True.
 Proof. constructor. reflexivity. Qed.
 
 Lemma FalseImp2Neg_Normal
       {L: Language}
       {minL: MinimumLanguage L}
       {falsepL: FalseLanguage L}:
-  @NegDefinition_False_Impp L _ _ FalseImp2Neg.
+  @NegDefinition_False_Imp L _ _ FalseImp2Neg.
 Proof. constructor. reflexivity. Qed.
 
-Lemma IffFromDefToAX_And_Impp
+Lemma AndFromDefToAX_Or_Neg
+      {L: Language}
+      {minL: MinimumLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {GammaP: Provable L}
+      {minAX: MinimumAxiomatization L GammaP}
+      {orpAX: OrAxiomatization L GammaP}
+      {falsepAx: FalseAxiomatization L GammaP}
+      {inegpAx: IntuitionisticNegAxiomatization L GammaP}
+      {emAX: ExcludedMiddle L GammaP}
+      {andp_Def_orp_negp: AndDefinition_Or_Neg L}:
+      AndAxiomatization L GammaP.
+Proof.
+  intros.
+  constructor; intros; rewrite orp_negp2andp.
+  + pose proof excluded_middle x.
+    rewrite <- contrapositivePN.
+
+Admitted.
+
+Lemma IffFromDefToAX_And_Imp
       {L: Language}
       {minL: MinimumLanguage L}
       {andpL: AndLanguage L}
@@ -104,7 +149,7 @@ Lemma IffFromDefToAX_And_Impp
       {GammaP: Provable L}
       {minAX: MinimumAxiomatization L GammaP}
       {andpAX: AndAxiomatization L GammaP}
-      {iffp_Def_andp_impp: IffDefinition_And_Impp L}:
+      {iffp_Def_andp_impp: IffDefinition_And_Imp L}:
       IffAxiomatization L GammaP.
 Proof.
   intros.
@@ -114,7 +159,7 @@ Proof.
   + apply andp_elim2.
 Qed.
 
-Lemma TrueFromDefToAX_False_Impp
+Lemma TrueFromDefToAX_False_Imp
       {L: Language}
       {minL: MinimumLanguage L}
       {falsepL: FalseLanguage L}
@@ -122,7 +167,7 @@ Lemma TrueFromDefToAX_False_Impp
       {GammaP: Provable L}
       {minAX: MinimumAxiomatization L GammaP}
       {falsepAX: FalseAxiomatization L GammaP}
-      {truep_Def_falsep_impp: TrueDefinition_False_Impp L}:
+      {truep_Def_falsep_impp: TrueDefinition_False_Imp L}:
       TrueAxiomatization L GammaP.
 Proof.
   intros.
@@ -130,7 +175,7 @@ Proof.
   apply (provable_impp_refl FF).
 Qed.
 
-Lemma NegFromDefToAX_False_Impp
+Lemma NegFromDefToAX_False_Imp
       {L: Language}
       {minL: MinimumLanguage L}
       {falsepL: FalseLanguage L}
@@ -138,12 +183,12 @@ Lemma NegFromDefToAX_False_Impp
       {GammaP: Provable L}
       {minAX: MinimumAxiomatization L GammaP}
       {falsepAX: FalseAxiomatization L GammaP}
-      {negp_Def_falsep_impp: NegDefinition_False_Impp L}:
+      {negp_Def_falsep_impp: NegDefinition_False_Imp L}:
       IntuitionisticNegAxiomatization L GammaP.
 Proof.
   intros.
   constructor; intros; rewrite falsep_impp2negp; apply(provable_impp_refl (x --> FF)).
-Qed.
+
 
 
 
