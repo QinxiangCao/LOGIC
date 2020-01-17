@@ -18,6 +18,10 @@ Class ExcludedMiddle (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L
   excluded_middle: forall x, |-- x || ~~ x
 }.
 
+Class ExcludedMiddleImply (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
+  excluded_middle_imply: forall x y, |-- (x --> y) --> (~~ x --> y) --> y
+}.
+
 Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) := {
   impp2orp: forall x y, |-- (x --> y) <--> (~~ x || y)
 }.

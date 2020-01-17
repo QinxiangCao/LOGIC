@@ -232,7 +232,7 @@ Lemma OrFromDefToAX_Imp_Neg
       {minAX: MinimumAxiomatization L GammaP}
       {falsepAx: FalseAxiomatization L GammaP}
       {inegpAx: IntuitionisticNegAxiomatization L GammaP}
-      {emAX: ExcludedMiddle L GammaP}
+      {emiAX: ExcludedMiddleImply L GammaP}
       {orp_Def_impp_negp: OrDefinition_Imp_Neg L}:
       OrAxiomatization L GammaP.
 Proof.
@@ -243,5 +243,13 @@ Proof.
   + rewrite provable_derivable. rewrite <- !deduction_theorem.
     solve_assum.
   + pose proof (aux_minimun_theorem00 (~~ x) y z).
-Admitted.
+    pose proof excluded_middle_imply x z.
+    rewrite <- (provable_impp_arg_switch (y --> z) (x --> z) ((~~ x --> y) --> z)).
+    rewrite <- (provable_impp_arg_switch (~~ x --> y) (x --> z) z).
+    rewrite provable_impp_arg_switch in H0.
+    rewrite provable_derivable in H |- *.
+    rewrite <- !deduction_theorem in H |- *. rewrite deduction_theorem in H |- *.
+    rewrite H0 in H.
+    apply H.
+Qed.
 
