@@ -145,7 +145,7 @@ Qed.
 Lemma coq_prop_impl: forall P Q: Prop, |-- !! (P -> Q) <--> (!! P --> !! Q).
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply coq_prop_elim; intros.
     apply coq_prop_elim; intros.
     apply coq_prop_intros; auto.

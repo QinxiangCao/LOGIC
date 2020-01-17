@@ -1449,25 +1449,25 @@ End Deduction2Axiomatization_iffpAX.
 End Derivabel1ToAxiomatization.
 
 Instance reg_Deduction2Axiomatization_andpAX:
-  RegisterClass D1ToP_reg (fun anpAX:unit => @Deduction2Axiomatization_andpAX) 4.
+  RegisterClass D1ToP_reg (fun anpAX:unit => @Deduction2Axiomatization_andpAX) 2.
 Qed.
 
 Instance reg_Deduction2Axiomatization_orpAX:
-  RegisterClass D1ToP_reg (fun orpAX:unit => @Deduction2Axiomatization_orpAX) 13.
+  RegisterClass D1ToP_reg (fun orpAX:unit => @Deduction2Axiomatization_orpAX) 3.
 Qed.
 
 Instance reg_Deduction2Axiomatization_falsepAX:
-  RegisterClass D1ToP_reg (fun falsepAX:unit => @Deduction2Axiomatization_falsepAX) 14.
+  RegisterClass D1ToP_reg (fun falsepAX:unit => @Deduction2Axiomatization_falsepAX) 4.
 Qed.
 
 Instance reg_Deduction2Axiomatization_truepAX:
-  RegisterClass D1ToP_reg (fun truepAX:unit => @Deduction2Axiomatization_truepAX) 15.
+  RegisterClass D1ToP_reg (fun truepAX:unit => @Deduction2Axiomatization_truepAX) 5.
 Qed.
 
 Instance reg_Deduction2Axiomatization_negpAX:
-  RegisterClass D1ToP_reg (fun negpAX:unit => @Deduction2Axiomatization_negpAX) 16.
+  RegisterClass D1ToP_reg (fun negpAX:unit => @Deduction2Axiomatization_negpAX) 6.
 Qed.
 
 Instance reg_Deduction2Axiomatization_iffpAX:
-  RegisterClass D1ToP_reg (fun iffpAX:unit => @Deduction2Axiomatization_iffpAX) 17.
+  RegisterClass D1ToP_reg (fun iffpAX:unit => @Deduction2Axiomatization_iffpAX) 7.
 Qed.

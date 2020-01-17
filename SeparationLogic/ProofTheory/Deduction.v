@@ -166,15 +166,15 @@ Proof.
 End SLFromDeduction2SLFromAxiomatization1.
 
 Instance reg_SepconOrDeduction2SepconOrAxiomatization:
-  RegisterClass D1ToP_reg (fun sepcon_orp_AX:unit => @SepconOrDeduction2SepconOrAxiomatization_sepcon_orp_AX) 5.
+  RegisterClass D1ToP_reg (fun sepcon_orp_AX:unit => @SepconOrDeduction2SepconOrAxiomatization_sepcon_orp_AX) 9.
 Qed.
 
 Instance reg_SepconFalseDeduction2SepconFalseAxiomatization:
-  RegisterClass D1ToP_reg (fun sepcon_false_AX:unit => @SepconFalseDeduction2SepconFalseAxiomatization_sepcon_false_AX) 6.
+  RegisterClass D1ToP_reg (fun sepcon_false_AX:unit => @SepconFalseDeduction2SepconFalseAxiomatization_sepcon_false_AX) 10.
 Qed.
 
 Instance reg_GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic:
-  RegisterClass D1ToP_reg (fun gcsGamma:unit => @GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma) 7.
+  RegisterClass D1ToP_reg (fun gcsGamma:unit => @GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma) 11.
 Qed.
 
 (*Rules from SeparationLogic*)
@@ -220,11 +220,11 @@ End SLFromDeduction2SLFromAxiomatization3.
 End SLFromDeduction2SLFromAxiomatization2.
 
 Instance reg_NonsplitEmpSeparationLogicD2NonsplitEmpSeparationLogic:
-  RegisterClass D1ToP_reg (fun nssGamma:unit => @NonsplitEmpSeparationLogicD2NonsplitEmpSeparationLogic_nssGamma) 8.
+  RegisterClass D1ToP_reg (fun nssGamma:unit => @NonsplitEmpSeparationLogicD2NonsplitEmpSeparationLogic_nssGamma) 12.
 Qed.
 
 Instance reg_EmpDeduction2EmpAxiomatization:
-  RegisterClass D1ToP_reg (fun empAx:unit => @EmpDeduction2EmpAxiomatization_empAX) 9.
+  RegisterClass D1ToP_reg (fun empAx:unit => @EmpDeduction2EmpAxiomatization_empAX) 13.
 Qed.
 
 Section SLFromDeduction2SLFromAxiomatization4.
@@ -251,11 +251,11 @@ Proof.
 End SLFromDeduction2SLFromAxiomatization4.
 
 Instance reg_WandDeduction1WandAxiomatization:
-  RegisterClass D1ToP_reg (fun WandX: unit => @WandDeduction2WandAxiomatization_WandX) 2.
+  RegisterClass D1ToP_reg (fun WandX: unit => @WandDeduction2WandAxiomatization_WandX) 14.
 Qed.
 
 Instance reg_SepconDeduction2SepconAxiomatization:
-  RegisterClass D1ToP_reg (fun SAx:unit => @SepconDeduction2SepconAxiomatization_sepconAX) 3.
+  RegisterClass D1ToP_reg (fun SAx:unit => @SepconDeduction2SepconAxiomatization_sepconAX) 15.
 Qed.
 
 Section SepconRulesFromDerivable1.
@@ -586,7 +586,7 @@ Proof.
 End SepconDeduction_weak2SepconAxiomatization_weak.
 
 Instance reg_SepconDeduction_weak2SepconAxiomatization_weak:
-  RegisterClass D1ToP_reg (fun sepconAX:unit => @SepconDeduction_weak2SepconAxiomatization_weak) 10.
+  RegisterClass D1ToP_reg (fun sepconAX:unit => @SepconDeduction_weak2SepconAxiomatization_weak) 16.
 Qed.
 
 Section SepconLogicEquiv_weak_iffpToSepconAxiomatization_weak_iffp.
@@ -637,7 +637,7 @@ Proof.
 End SepconLogicEquiv_weak_iffpToSepconAxiomatization_weak_iffp.
 
 Instance reg_SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp:
-  RegisterClass D1ToP_reg (fun sepcon_weak_iffp:unit => @SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp) 11.
+  RegisterClass D1ToP_reg (fun sepcon_weak_iffp:unit => @SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp) 17.
 Qed.
 
 Section EmpLogicEquiv_iffp2EmpAxiomatization_iffp.
@@ -678,7 +678,7 @@ Proof.
 End EmpLogicEquiv_iffp2EmpAxiomatization_iffp.
 
 Instance reg_EmpLogicEquiv_iffp2EmpAxiomatization_iffp:
-  RegisterClass D1ToP_reg (fun empAX_iffp:unit => @EmpLogicEquiv_iffp2EmpAxiomatization_iffp) 12.
+  RegisterClass D1ToP_reg (fun empAX_iffp:unit => @EmpLogicEquiv_iffp2EmpAxiomatization_iffp) 18.
 Qed.
 
 Section FromSepconDeductionWeakToSepcon.

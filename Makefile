@@ -108,7 +108,7 @@ PropositionalLogic_FILES = \
   $(PropositionalLogic_Complete_FILES:%.v=Complete/%.v)
 
 MetaLogicInj_ProofTheory_FILES = \
-  ProofRules.v
+  ProofRules.v Deduction.v
 
 MetaLogicInj_Semantics_FILES = \
   Kripke.v
