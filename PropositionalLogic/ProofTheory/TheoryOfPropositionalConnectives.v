@@ -65,6 +65,15 @@ Class NegDefinition_False_Imp
   ~~ x = x --> FF
 }.
 
+Class OrDefinition_Imp_Neg
+      (L: Language)
+      {minL: MinimumLanguage L}
+      {negpL: NegLanguage L}
+      {orpL: OrLanguage L}: Prop:= {
+  impp_negp2orp: forall x y,
+  x || y = ((~~ x) --> y)
+}.
+
 Definition OrNeg2And
            {L: Language}
            {orpL: OrLanguage L}
@@ -89,6 +98,12 @@ Definition FalseImp2Neg
            {minL: MinimumLanguage L}
            {falsepL: FalseLanguage L}: NegLanguage L :=
   Build_NegLanguage _ (fun x => (x --> FF)).
+
+Definition ImpNeg2Or
+           {L: Language}
+           {minL: MinimumLanguage L}
+           {negpL: NegLanguage L}: OrLanguage L :=
+  Build_OrLanguage _ (fun x y => ((~~ x) --> y)).
 
 Lemma OrNeg2And_Normal
       {L: Language}
@@ -116,6 +131,13 @@ Lemma FalseImp2Neg_Normal
       {minL: MinimumLanguage L}
       {falsepL: FalseLanguage L}:
   @NegDefinition_False_Imp L _ _ FalseImp2Neg.
+Proof. constructor. reflexivity. Qed.
+
+Lemma ImpNeg2Or_Normal
+      {L: Language}
+      {minL: MinimumLanguage L}
+      {negpL: NegLanguage L}:
+  @OrDefinition_Imp_Neg L _ _ ImpNeg2Or.
 Proof. constructor. reflexivity. Qed.
 
 Lemma AndFromDefToAX_Or_Neg
@@ -200,6 +222,26 @@ Proof.
   constructor; intros; rewrite falsep_impp2negp; apply(provable_impp_refl (x --> FF)).
 Qed.
 
-
-
+Lemma OrFromDefToAX_Imp_Neg
+      {L: Language}
+      {minL: MinimumLanguage L}
+      {orpL: OrLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {GammaP: Provable L}
+      {minAX: MinimumAxiomatization L GammaP}
+      {falsepAx: FalseAxiomatization L GammaP}
+      {inegpAx: IntuitionisticNegAxiomatization L GammaP}
+      {emAX: ExcludedMiddle L GammaP}
+      {orp_Def_impp_negp: OrDefinition_Imp_Neg L}:
+      OrAxiomatization L GammaP.
+Proof.
+  AddSequentCalculus.
+  intros.
+  constructor; intros; rewrite impp_negp2orp.
+  + rewrite provable_derivable. apply derivable_contradiction_elim.
+  + rewrite provable_derivable. rewrite <- !deduction_theorem.
+    solve_assum.
+  + pose proof (aux_minimun_theorem00 (~~ x) y z).
+Admitted.
 
