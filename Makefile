@@ -74,7 +74,8 @@ PropositionalLogic_ProofTheory_FILES = \
   Intuitionistic.v DeMorgan.v \
   GodelDummett.v Classical.v \
   RewriteClass.v ProofTheoryPatterns.v \
-  TheoryOfIteratedConnectives.v
+  TheoryOfIteratedConnectives.v \
+  TheoryOfPropositionalConnectives.v
 
 PropositionalLogic_Semantics_FILES = \
   Kripke.v Trivial.v

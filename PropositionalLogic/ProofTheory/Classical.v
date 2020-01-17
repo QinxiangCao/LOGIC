@@ -14,27 +14,27 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class ExcludedMiddle (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} := {
+Class ExcludedMiddle (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
   excluded_middle: forall x, |-- x || ~~ x
 }.
 
-Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} {iffpGamma: IffAxiomatization L Gamma} := {
+Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) := {
   impp2orp: forall x y, |-- (x --> y) <--> (~~ x || y)
 }.
 
-Class PeirceLaw (L: Language) {minL: MinimumLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} := {
+Class PeirceLaw (L: Language) {minL: MinimumLanguage L} (Gamma: Provable L) := {
   peirce_law: forall x y, |-- ((x --> y) --> x) --> x
 }.
 
-Class ByContradiction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} := {
+Class ByContradiction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
   by_contradiction: forall x y, |-- (~~ x --> y) --> (~~ x --> ~~ y) --> x
 }.
 
-Class DoubleNegativeElimination (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {falsepGamma: FalseAxiomatization L Gamma} {inegpGamma: IntuitionisticNegAxiomatization L Gamma} := {
+Class DoubleNegativeElimination (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
   double_negp_elim: forall x, |-- ~~ (~~ x) --> x
 }.
 
-Class ClassicalPropositionalSequentCalculus (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) {bSC: BasicSequentCalculus L Gamma} {minSC: MinimumSequentCalculus L Gamma} {orpSC: OrSequentCalculus L Gamma} {falsepSC: FalseSequentCalculus L Gamma} {inegpSC: IntuitionisticNegSequentCalculus L Gamma} := {
+Class ClassicalPropositionalSequentCalculus (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) := {
   derivable_excluded_middle: forall Phi x, Phi |-- x || ~~ x
 }.
 
@@ -394,6 +394,7 @@ Qed.
 Instance Classical2GodelDummett: GodelDummettPropositionalAxiomatization L Gamma.
 Proof.
   constructor.
+  clear - orpAX inegpAX emAX minAX falsepAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.

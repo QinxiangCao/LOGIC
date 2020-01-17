@@ -26,9 +26,6 @@ Context {L: Language}
         {andpL: AndLanguage L}
         {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {SC: NormalSequentCalculus L GammaP GammaD}
@@ -38,16 +35,10 @@ Context {L: Language}
         {andpSC: AndSequentCalculus L GammaD}
         {orpSC: OrSequentCalculus L GammaD}
         {falsepSC: FalseSequentCalculus L GammaD}
-        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
-        {iffpSC: IffSequentCalculus L GammaD}
-        {truepSC: TrueSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
-        {falsepAX: FalseAxiomatization L GammaP}
-        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
-        {iffpAX: IffAxiomatization L GammaP}
-        {truepAX: TrueAxiomatization L GammaP}.
+        {falsepAX: FalseAxiomatization L GammaP}.
 
 Lemma Lindenbaum_for_orp_witnessed: forall P,
   Lindenbaum_preserves P ->

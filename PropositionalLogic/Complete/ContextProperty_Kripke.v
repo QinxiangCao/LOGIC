@@ -90,7 +90,7 @@ Proof.
   hnf; intros.
   apply not_and_or.
   intros [? ?]; apply H; clear H.
-  rewrite <- (orp_dup x).
+  rewrite <- (orp_dup1 x).
   apply derivable_assum.
   exists x, x.
   split; [| split]; auto.

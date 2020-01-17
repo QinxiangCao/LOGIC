@@ -5,6 +5,7 @@ Require Import Logic.lib.Countable.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.PropositionalLogic.Syntax.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -23,6 +24,9 @@ Inductive expr {Sigma: PropositionalVariables}: Type :=
 
 Arguments expr Sigma: clear implicits.
 
+Definition negp {Sigma: PropositionalVariables} (x: expr Sigma): expr Sigma :=
+  impp x falsep.
+
 Instance L {Sigma: PropositionalVariables}: Language :=
   Build_Language (expr Sigma).
 
@@ -37,6 +41,12 @@ Instance orpL {Sigma: PropositionalVariables}: OrLanguage L :=
 
 Instance falsepL {Sigma: PropositionalVariables}: FalseLanguage L :=
   Build_FalseLanguage L falsep.
+
+Instance negpL {Sigma: PropositionalVariables}: NegLanguage L :=
+  Build_NegLanguage L negp.
+
+Instance negpDef {Sigma: PropositionalVariables}: NegDefinition_False_Impp L :=
+  FalseImp2Neg_Normal.
 
 Definition rank {Sigma: PropositionalVariables}: expr Sigma -> nat :=
   fix rank (x: expr Sigma): nat :=

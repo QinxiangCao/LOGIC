@@ -16,7 +16,7 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class GodelDummettPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {orpGamma: OrAxiomatization L Gamma} := {
+Class GodelDummettPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (Gamma: Provable L) := {
   impp_choice: forall x y, |-- (x --> y) || (y --> x)
 }.
 
@@ -24,20 +24,13 @@ Section GodelDummett.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
         {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndAxiomatization L Gamma}
         {orpGamma: OrAxiomatization L Gamma}
-        {falsepGamma: FalseAxiomatization L Gamma}
         {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {iffpGamma: IffAxiomatization L Gamma}
-        {truepGamma: TrueAxiomatization L Gamma}
         {gdpAX: GodelDummettPropositionalAxiomatization L Gamma}.
 (*
 Lemma derivable_impp_choice: forall (Phi: context) (x y: expr),
@@ -92,8 +85,8 @@ Proof.
   rewrite deduction_theorem in H0, H1.
   pose proof deduction_orp_elim' _ _ _ _ H0 H1.
   pose proof deduction_modus_ponens _ _ _ H H2.
-  pose proof negp_fold_unfold x. rewrite H4 at 1.
-  pose proof negp_fold_unfold (~~x). rewrite H5.
+  pose proof negp_fold (~~ x). rewrite <- H4.
+  pose proof negp_fold x. rewrite <- H5 at 1.
   apply H3.
 Qed.
 

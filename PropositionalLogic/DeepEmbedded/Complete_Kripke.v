@@ -46,9 +46,23 @@ Section Complete.
 Context {Sigma: PropositionalLanguage.PropositionalVariables}
         {CV: Countable PropositionalLanguage.Var}.
 
-Existing Instances PropositionalLanguage.L PropositionalLanguage.minL PropositionalLanguage.pL.
+Existing Instances PropositionalLanguage.L
+                   PropositionalLanguage.minL
+                   PropositionalLanguage.andpL
+                   PropositionalLanguage.orpL
+                   PropositionalLanguage.falsepL
+                   PropositionalLanguage.negpL
+                   PropositionalLanguage.negpDef.
 
-Existing Instances KripkeSemantics.MD KripkeSemantics.kMD KripkeSemantics.R KripkeSemantics.SM KripkeSemantics.kminSM KripkeSemantics.kpSM.
+Existing Instances KripkeSemantics.MD
+                   KripkeSemantics.kMD
+                   KripkeSemantics.R
+                   KripkeSemantics.SM
+                   KripkeSemantics.kminSM
+                   KripkeSemantics.andpSM
+                   KripkeSemantics.orpSM
+                   KripkeSemantics.falsepSM
+                   KripkeSemantics.negpSM.
 
 Section General_Completeness.
 
@@ -70,10 +84,14 @@ Context {SC: NormalSequentCalculus _ GammaP GammaD}
         {bSC: BasicSequentCalculus _ GammaD}
         {fwSC: FiniteWitnessedSequentCalculus _ GammaD}
         {minSC: MinimumSequentCalculus _ GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus _ GammaD}
+        {andpSC: AndSequentCalculus _ GammaD}
+        {orpSC: OrSequentCalculus _ GammaD}
+        {falsepSC: FalseSequentCalculus _ GammaD}
         {AX: NormalAxiomatization _ GammaP GammaD}
         {minAX: MinimumAxiomatization _ GammaP}
-        {ipAX: IntuitionisticPropositionalLogic _ GammaP}.
+        {andpAX: AndAxiomatization _ GammaP}
+        {orpAX: OrAxiomatization _ GammaP}
+        {falsepAX: FalseAxiomatization _ GammaP}.
 
 Lemma LIN_CD: forall x: expr, Lindenbaum_constructable (cannot_derive x) cP.
 Proof.
@@ -108,7 +126,6 @@ Proof.
   change (n = Psi) in H0.
   subst; reflexivity.
 Qed.
-Existing Instances PropositionalLanguage.L PropositionalLanguage.minL PropositionalLanguage.pL.
 
 Lemma TRUTH:
   forall x:  expr, forall m Phi, rel m Phi ->
@@ -126,9 +143,15 @@ End General_Completeness.
 
 Section Intuitionistic_Completeness.
 
-Existing Instances ProofTheories.IntuitionisticPropositionalLogic.GP ProofTheories.IntuitionisticPropositionalLogic.GD ProofTheories.IntuitionisticPropositionalLogic.AX ProofTheories.IntuitionisticPropositionalLogic.minAX ProofTheories.IntuitionisticPropositionalLogic.ipAX.
+Existing Instances ProofTheories.IntuitionisticPropositionalLogic.GP
+                   ProofTheories.IntuitionisticPropositionalLogic.GD
+                   ProofTheories.IntuitionisticPropositionalLogic.AX
+                   ProofTheories.IntuitionisticPropositionalLogic.minAX
+                   ProofTheories.IntuitionisticPropositionalLogic.andpAX
+                   ProofTheories.IntuitionisticPropositionalLogic.orpAX
+                   ProofTheories.IntuitionisticPropositionalLogic.falsepAX.
 
-Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_ipSC.
+Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC.
 
 Import Logic.PropositionalLogic.DeepEmbedded.KripkeSemantics.
 
@@ -149,9 +172,16 @@ End Intuitionistic_Completeness.
 
 Section DeMorgan_Completeness.
 
-Existing Instances ProofTheories.DeMorganPropositionalLogic.GP ProofTheories.DeMorganPropositionalLogic.GD ProofTheories.DeMorganPropositionalLogic.AX ProofTheories.DeMorganPropositionalLogic.minAX ProofTheories.DeMorganPropositionalLogic.ipAX ProofTheories.DeMorganPropositionalLogic.dmpAX.
+Existing Instances ProofTheories.DeMorganPropositionalLogic.GP
+                   ProofTheories.DeMorganPropositionalLogic.GD
+                   ProofTheories.DeMorganPropositionalLogic.AX
+                   ProofTheories.DeMorganPropositionalLogic.minAX
+                   ProofTheories.DeMorganPropositionalLogic.andpAX
+                   ProofTheories.DeMorganPropositionalLogic.orpAX
+                   ProofTheories.DeMorganPropositionalLogic.falsepAX
+                   ProofTheories.DeMorganPropositionalLogic.dmpAX.
 
-Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_ipSC.
+Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC.
 
 Import Logic.PropositionalLogic.DeepEmbedded.KripkeSemantics.
 

@@ -106,4 +106,7 @@ Proof. constructor. intros; apply Same_set_refl. Qed.
 Instance falsepSM (M: Kmodel): KripkeFalseSemantics L MD M SM.
 Proof. constructor. intros; apply Same_set_refl. Qed.
 
+Instance negpSM (M: Kmodel): KripkeNegSemantics L MD M SM.
+Proof. constructor. intros; apply Same_set_refl. Qed.
+
 End KripkeSemantics.

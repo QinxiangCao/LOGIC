@@ -98,10 +98,10 @@ Qed.
 
 Lemma sound_excluded_middle:
   forall x m,
-    m |= x || (x --> FF).
+    m |= x || (~~ x).
 Proof.
   intros.
-  rewrite sat_orp, sat_impp, sat_falsep.
+  rewrite sat_orp, sat_negp.
   tauto.
 Qed.
 

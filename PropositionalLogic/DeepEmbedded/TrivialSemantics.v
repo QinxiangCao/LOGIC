@@ -11,7 +11,7 @@ Section TrivialSemantics.
 
 Context {Sigma: PropositionalVariables}.
 
-Existing Instances L minL andpL orpL falsepL.
+Existing Instances L minL andpL orpL falsepL negpL negpDef.
 
 Definition model: Type := Var -> Prop.
 
@@ -52,6 +52,13 @@ Proof.
 Qed.
 
 Instance falsepSM: FalseSemantics L MD SM.
+Proof.
+  constructor.
+  simpl; intros.
+  apply Same_set_refl.
+Qed.
+
+Instance negpSM: NegSemantics L MD SM.
 Proof.
   constructor.
   simpl; intros.

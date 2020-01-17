@@ -1154,15 +1154,32 @@ Proof.
     apply deduction_andp_intros; apply derivable_assum1.
 Qed.
 
-Lemma orp_dup: forall (x: expr),
-  |-- x || x <--> x.
+Lemma orp_dup1: forall (x: expr),
+  |-- x || x --> x.
 Proof.
+  clear - orpAX minAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
-  apply deduction_iffp_intros.
-  + apply deduction_orp_elim; apply derivable_assum1.
-  + rewrite deduction_theorem. apply derivable_orp_intros1.
+  apply deduction_theorem.
+  apply deduction_orp_elim; apply derivable_assum1.
+Qed.
+
+
+Lemma orp_dup2: forall (x: expr),
+  |-- x --> x || x.
+Proof.
+  intros.
+  apply orp_intros1.
+Qed.
+
+Lemma orp_dup: forall (x: expr),
+  |-- x || x <--> x.
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply orp_dup1.
+  + apply orp_dup2.
 Qed.
 
 Lemma impp_curry: forall (x y z: expr),
