@@ -55,15 +55,15 @@ Ltac search_expr n l := let len := length l in search_expr' n len l l.
 Section Temp.
   Context {L : Language}
           {minL : MinimumLanguage L}
-          {pL : PropositionalLanguage L}.
+          {andpL : AndLanguage L}
+          (default: Base.expr)
+          (tbl : list Base.expr).
 
-  Fixpoint reflect (tbl : list Base.expr) (e : Deep.expr) : Base.expr :=
+  Fixpoint reflect (e : Deep.expr) : Base.expr :=
     match e with
-    | Deep.varp n => List.nth (pred n) tbl Syntax.falsep
-    | Deep.andp e1 e2 => Syntax.andp (reflect tbl e1) (reflect tbl e2)
-    | Deep.impp e1 e2 => Syntax.impp (reflect tbl e1) (reflect tbl e2)
-    | Deep.orp e1 e2 => Syntax.orp (reflect tbl e1) (reflect tbl e2)
-    | Deep.falsep => Syntax.falsep
+    | Deep.varp n => List.nth (pred n) tbl default
+    | Deep.andp e1 e2 => Syntax.andp (reflect e1) (reflect e2)
+    | Deep.impp e1 e2 => Syntax.impp (reflect e1) (reflect e2)
     end.
 End Temp.
 
@@ -92,48 +92,45 @@ Ltac shallowToDeep se :=
   match shallowToDeep' se constr:(@nil Base.expr) with
   | (?de, ?tbl) =>
     let tbl' := reverse tbl in
-    assert (reflect tbl' de = se) by reflexivity
+    assert (reflect se tbl' de = se) by reflexivity
   end.
 
 Section Temp.
   Context (L : Base.Language)
           (minL : Syntax.MinimumLanguage L)
-          (pL : Syntax.PropositionalLanguage L).
+          (andL : Syntax.AndLanguage L).
   Context (P Q R : Base.expr).
   Goal False.
     let n := search_expr 1 (1 :: 2 :: 3 :: 4 :: nil) in pose n.
     let n := search_expr 5 (1 :: 2 :: 3 :: 4 :: nil) in pose n.
-    shallowToDeep (Syntax.impp (Syntax.andp P Q) (Syntax.orp Q P)).
+    shallowToDeep (Syntax.impp (Syntax.andp P Q) (Syntax.andp Q P)).
   Abort.
 End Temp.
 
 Section Temp.
   Context {L: Language}
           {minL: MinimumLanguage L}
-          {pL: PropositionalLanguage L}
+          {andpL: AndLanguage L}
           {GammaP: Provable L}
           {minAX: MinimumAxiomatization L GammaP}
-          {ipGamma: IntuitionisticPropositionalLogic L GammaP}.
+          {andpAX: AndAxiomatization L GammaP}.
 
   Theorem reify_sound :
-    forall table (e : Deep.expr), Deep.provable e -> provable (reflect table e).
+    forall table (default: Base.expr) (e : Deep.expr),
+      Deep.provable e -> provable (reflect default table e).
   Proof.
     induction 1.
-    - apply (modus_ponens (reflect table x) (reflect table y)); assumption.
-    - apply (axiom1 (reflect table x) (reflect table y)); assumption.
-    - apply (axiom2 (reflect table x) (reflect table y)); assumption.
-    - apply (andp_intros (reflect table x) (reflect table y)); assumption.
-    - apply (andp_elim1 (reflect table x) (reflect table y)); assumption.
-    - apply (andp_elim2 (reflect table x) (reflect table y)); assumption.
-    - apply (orp_intros1 (reflect table x) (reflect table y)); assumption.
-    - apply (orp_intros2 (reflect table x) (reflect table y)); assumption.
-    - apply (orp_elim (reflect table x) (reflect table y)); assumption.
-    - apply falsep_elim.
+    - apply (modus_ponens (reflect default table x) (reflect default table y)); assumption.
+    - apply (axiom1 (reflect default table x) (reflect default table y)); assumption.
+    - apply (axiom2 (reflect default table x) (reflect default table y)); assumption.
+    - apply (andp_intros (reflect default table x) (reflect default table y)); assumption.
+    - apply (andp_elim1 (reflect default table x) (reflect default table y)); assumption.
+    - apply (andp_elim2 (reflect default table x) (reflect default table y)); assumption.
   Qed.
 End Temp.
 
 Module DSolver.
-  Local Existing Instances Deep.L Deep.minL Deep.pL Deep.iter_andp_L Deep.iter_andp_DL Deep.GP Deep.minAX Deep.ipG Deep.iter_andp_AXL.
+  Local Existing Instances Deep.L Deep.minL Deep.andpL Deep.truepL Deep.iffpL Deep.iter_andp_L Deep.iter_andp_DL Deep.GP Deep.minAX Deep.andpAX Deep.truepAX Deep.iffpAX Deep.iter_andp_AXL.
 
   Instance Adj : Adjointness _ _ andp impp.
   Proof.

@@ -145,7 +145,7 @@ Proof.
 Qed.
 
 Instance inegpAX: IntuitionisticNegAxiomatization PropositionalLanguage.L GP :=
-  NegFromDefToAX_False_Impp.
+  NegFromDefToAX_False_Imp.
 
 Instance dmpAX: DeMorganPropositionalAxiomatization PropositionalLanguage.L GP.
 Proof.
@@ -223,7 +223,7 @@ Proof.
 Qed.
 
 Instance inegpAX: IntuitionisticNegAxiomatization PropositionalLanguage.L GP :=
-  NegFromDefToAX_False_Impp.
+  NegFromDefToAX_False_Imp.
 
 Instance gdpAX: GodelDummettPropositionalAxiomatization PropositionalLanguage.L GP.
 Proof.
@@ -303,7 +303,7 @@ Proof.
 Qed.
 
 Instance inegpAX: IntuitionisticNegAxiomatization PropositionalLanguage.L GP :=
-  NegFromDefToAX_False_Impp.
+  NegFromDefToAX_False_Imp.
 
 Instance emAX: ExcludedMiddle PropositionalLanguage.L GP.
 Proof.

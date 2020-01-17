@@ -27,6 +27,12 @@ Arguments expr Sigma: clear implicits.
 Definition negp {Sigma: PropositionalVariables} (x: expr Sigma): expr Sigma :=
   impp x falsep.
 
+Definition iffp {Sigma: PropositionalVariables} (x y: expr Sigma): expr Sigma :=
+  andp (impp x y) (impp y x).
+
+Definition truep {Sigma: PropositionalVariables}: expr Sigma :=
+  impp falsep falsep.
+
 Instance L {Sigma: PropositionalVariables}: Language :=
   Build_Language (expr Sigma).
 
@@ -45,8 +51,20 @@ Instance falsepL {Sigma: PropositionalVariables}: FalseLanguage L :=
 Instance negpL {Sigma: PropositionalVariables}: NegLanguage L :=
   Build_NegLanguage L negp.
 
-Instance negpDef {Sigma: PropositionalVariables}: NegDefinition_False_Impp L :=
+Instance negpDef {Sigma: PropositionalVariables}: NegDefinition_False_Imp L :=
   FalseImp2Neg_Normal.
+
+Instance iffpL {Sigma: PropositionalVariables}: IffLanguage L :=
+  Build_IffLanguage L iffp.
+
+Instance iffpDef {Sigma: PropositionalVariables}: IffDefinition_And_Imp L :=
+  AndImp2Iff_Normal.
+
+Instance truepL {Sigma: PropositionalVariables}: TrueLanguage L :=
+  Build_TrueLanguage L truep.
+
+Instance truepDef {Sigma: PropositionalVariables}: TrueDefinition_False_Imp L :=
+  FalseImp2True_Normal.
 
 Definition rank {Sigma: PropositionalVariables}: expr Sigma -> nat :=
   fix rank (x: expr Sigma): nat :=
