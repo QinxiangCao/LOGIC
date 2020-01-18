@@ -70,7 +70,7 @@ Proof.
   rewrite provable_derivable.
   apply (deduction_modus_ponens _ (x || ~~ x)); [rewrite <- provable_derivable; apply excluded_middle |].
   apply deduction_orp_elim'.
-  +
+  + pose proof deduction_modus_ponens.
 Admitted.
 
 End ExcludedMiddle2Classic.
