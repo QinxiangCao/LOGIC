@@ -13,7 +13,13 @@ all: $(dst)
 Config.vo: Config.v
 	$(coq_exe) $(coq_flags) Config.v
 
-$(dst): $(src) Config.vo
+GeneratedGenerate.v: Config.vo
+	$(coq_exe) $(coq_flags) GenerateGenerate.v > GeneratedGenerate.v
+
+GeneratedGenerate.vo: GeneratedGenerate.v
+	$(coq_exe) $(coq_flags) GeneratedGenerate.v
+
+$(dst): $(src) Config.vo GeneratedGenerate.vo
 	$(coq_exe) $(coq_flags) $(src) > $@
 
 clean:

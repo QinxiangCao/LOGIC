@@ -1,7 +1,8 @@
 Open Scope list_scope.
 
 Tactic Notation "when" constr(b) ":" tactic3(t) :=
-  match b with
+  let bb := eval compute in b in 
+  match bb with
   | true => t
   | false => idtac
   end.

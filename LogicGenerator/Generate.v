@@ -27,7 +27,12 @@ Require Import Logic.LogicGenerator.ConfigDenot.
 Require Import Logic.LogicGenerator.ConfigCompute.
 Require Logic.LogicGenerator.ConfigLang.
 
+Require Import GeneratedGenerate.
 Require Config.
+
+Definition instance_para_open: bool :=
+  ltac:(first [ let XXX := eval compute in Config.instance_para_open in exact XXX
+              | exact false]).
 
 Section Generate.
 Context {L: Language}
@@ -188,9 +193,20 @@ Ltac print prt name :=
       | IPar ?l =>
         let l := eval hnf in l in
         let should_inline := in_name_list n l in
-        match should_inline with
-        | true => idtac "  Parameter Inline" n ":" T "."
-        | false => idtac "  Parameter" n ":" T "."
+        match n with
+        | expr =>
+            unify instance_para_open true;
+            match should_inline with
+            | true => def_inline_expr_tac
+            | false => def_expr_tac
+            end;
+            idtac "  Section LanguageSig.";
+            context_expr_tac
+        | _ =>
+            match should_inline with
+            | true => idtac "  Parameter Inline" n ":" T "."
+            | false => idtac "  Parameter" n ":" T "."
+            end
         end
       | Axm => idtac "  Axiom" n ":" T "."
       | Der => match n with
@@ -213,6 +229,7 @@ Ltac newline := idtac "".
 Set Printing Width 1000.
 
 Ltac two_stage_print :=
+  when instance_para_open: import_local_lib_tac;
   idtac "Require Import Coq.Lists.List.";
   idtac "Require Import Coq.Sets.Ensembles.";
   idtac "Import ListNotations.";
@@ -224,29 +241,48 @@ Ltac two_stage_print :=
   dolist (print Der) derived_types;
   dolist (print (IPar transparent_judgements)) primitive_judgements;
   dolist (print (IPar transparent_connectives)) primitive_connectives;
+  when instance_para_open: idtac "  End LanguageSig.";
   idtac "End LanguageSig.";
 
   newline;
 
   idtac "Module DerivedNames (Names: LanguageSig).";
   idtac "Include Names.";
+  when instance_para_open: (
+    idtac "  Section DerivedNames.";
+    context_expr_tac
+  );
   dolist (print Der) derived_connectives;
   dolist (print Der) derived_judgements;
+  when instance_para_open:
+    idtac "  End DerivedNames.";
   idtac "End DerivedNames.";
 
   newline;
 
   idtac "Module Type PrimitiveRuleSig (Names: LanguageSig).";
   idtac "Include DerivedNames (Names).";
+  when instance_para_open: (
+    idtac "  Section PrimitiveRuleSig.";
+    context_expr_tac
+  );
   dolist (print Axm) primary_rules;
+  when instance_para_open:
+    idtac "  End PrimitiveRuleSig.";
   idtac "End PrimitiveRuleSig.";
 
   newline;
 
   idtac "Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).";
   idtac "Include Rules.";
+  when instance_para_open: (
+    idtac "  Section LogicTheoremSig.";
+    context_expr_tac
+  );
   dolist (print Axm) derived_rules;
   dolist (print DIns) derived_rules_as_instance;
+  when instance_para_open:
+    idtac "  End LogicTheoremSig.";
   idtac "End LogicTheoremSig.";
 
   newline;
@@ -279,10 +315,16 @@ Ltac two_stage_print :=
   (* TODO: this "<:" should be ":". Currently, this is just a work-around for generated tactics. *)
   idtac "Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.";
   idtac "Include Rules.";
+  when instance_para_open: (
+    idtac "  Section LogicTheorem.";
+    context_expr_tac
+  );
   dolist (print AIns) aux_primitive_instances;
   dolist (print AIns) aux_refl_instances_for_derivation;
   dolist (print AIns) aux_derived_instances;
   dolist (print Def) derived_rules;
+  when instance_para_open:
+    idtac "  End LogicTheorem.";
   dolist (print DIns) derived_rules_as_instance;
   idtac "End LogicTheorem.";
 
