@@ -4,12 +4,12 @@ Require Import interface_6.
 Require Import implementation_6.
 Require Import export_lib_6.
 
-Module T.
+Module REAL.
 Include DerivedNames (NaiveLang).
 Include BETA.
-End T.
+End REAL.
 
-Module Tac := ExportTactic T.
+Module Tac := ExportTactic REAL.
 
 Parameter p: para.
 Existing Instance p.
@@ -17,8 +17,9 @@ Existing Instance p.
 Local Declare Scope syntax.
 Local Open Scope syntax.
 
-Import T.
+Import REAL.
 Import Tac.
+Import ___LogicTheorem___.
 
 Notation "|--  x" := (provable x) (at level 71, no associativity) : syntax.
 Notation "'!!' e" := (coq_prop e) (at level 25) : syntax.
@@ -32,8 +33,4 @@ Goal forall (P: Prop) (Q R S: (nat -> option X) -> Prop),
 Proof.
   intros.
   normalize.
-  Search Morphisms.Proper sepcon.
-  match goal with
-  | |- context [ !! ?P && ?Q * ?R ] => pose proof (prop_andp_sepcon1 P Q R)
-  end.
-Print Ltac normalize1.
+Abort.
