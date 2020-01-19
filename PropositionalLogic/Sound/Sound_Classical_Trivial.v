@@ -105,4 +105,13 @@ Proof.
   tauto.
 Qed.
 
+Lemma sound_peirce_law:
+  forall x y m,
+    m |= ((x --> y) --> x) --> x.
+Proof.
+  intros.
+  rewrite !sat_impp.
+  tauto.
+Qed.
+
 End Sound.

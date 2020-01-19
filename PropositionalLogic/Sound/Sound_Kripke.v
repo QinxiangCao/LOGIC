@@ -141,6 +141,27 @@ Proof.
   tauto.
 Qed.
 
+Lemma sound_peirce_law_ident {ikiM: IdentityKripkeIntuitionisticModel (Kworlds M)}:
+  forall x y: expr,
+    forall m, KRIPKE: M, m |= ((x --> y) --> x) --> x.
+Proof.
+  intros.
+  rewrite !sat_impp.
+  intros.
+  clear m H.
+  rewrite !sat_impp in H0.
+  specialize (H0 n ltac:(reflexivity)).
+  assert ((KRIPKE: M, n |= x -> KRIPKE: M, n |= y) -> KRIPKE: M, n |= x --> y).
+  {
+    rewrite sat_impp.
+    intros.
+    apply ikiM in H1.
+    subst n0.
+    auto.
+  }
+  tauto.
+Qed.
+
 Lemma sound_impp_choice_no_branch {nkiM: NoBranchKripkeIntuitionisticModel (Kworlds M)}:
   forall x y: expr,
     forall m, KRIPKE: M, m |= (x --> y) || (y --> x).

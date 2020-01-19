@@ -11,7 +11,7 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class DeMorganPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
+Class DeMorganAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
   weak_excluded_middle: forall x, |-- ~~ x || ~~ ~~ x
 }.
 
@@ -33,7 +33,7 @@ Context {L: Language}
         {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
         {iffpGamma: IffAxiomatization L Gamma}
         {truepGamma: TrueAxiomatization L Gamma}
-        {dmpAX: DeMorganPropositionalAxiomatization L Gamma}.
+        {dmpAX: DeMorganAxiomatization L Gamma}.
 
 Lemma demorgan_negp_andp: forall (x y: expr),
   |-- ~~ (x && y) <--> (~~ x || ~~ y).

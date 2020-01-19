@@ -67,7 +67,7 @@ Context (cP: context -> Prop)
 Hypothesis H_R: forall m n Phi Psi, rel m Phi -> rel n Psi -> (m <= n <-> Included _ (proj1_sig Phi) (proj1_sig Psi)).
 
 Lemma classical_canonical_ident
-      {cpSC: ClassicalPropositionalSequentCalculus L Gamma}
+      {cpSC: ClassicalSequentCalculus L Gamma}
       (AL_DC: at_least derivable_closed cP)
       (AL_OW: at_least orp_witnessed cP)
       (AL_CONSI: at_least consistent cP):
@@ -108,7 +108,7 @@ Lemma GodelDummett_canonical_no_branch
       {inegpAX: IntuitionisticNegAxiomatization L GammaP}
       {iffpAX: IffAxiomatization L GammaP}
       {truepAX: TrueAxiomatization L GammaP}
-      {gdpAX: GodelDummettPropositionalAxiomatization L GammaP}
+      {gdpAX: GodelDummettAxiomatization L GammaP}
       (AL_DC: at_least derivable_closed cP)
       (AL_OW: at_least orp_witnessed cP):
   NoBranchKripkeIntuitionisticModel (Kworlds M).
@@ -160,7 +160,7 @@ Lemma DeMorgan_canonical_branch_join
       {inegpAX: IntuitionisticNegAxiomatization L GammaP}
       {iffpAX: IffAxiomatization L GammaP}
       {truepAX: TrueAxiomatization L GammaP}
-      {dmpAX: DeMorganPropositionalAxiomatization L GammaP}
+      {dmpAX: DeMorganAxiomatization L GammaP}
       (AL_DC: at_least derivable_closed cP)
       (AL_OW: at_least orp_witnessed cP)
       (AL_CONSI: at_least consistent cP)

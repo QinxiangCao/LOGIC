@@ -759,6 +759,7 @@ Qed.
 Lemma double_negp_intros: forall (x: expr),
   |-- x --> ~~ ~~ x.
 Proof.
+  clear - minAX inegpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -1246,10 +1247,10 @@ Qed.
 Lemma negp_fold_unfold: forall (x: expr),
   |-- (~~x) <--> (x --> FF).
 Proof.
+  clear - minAX inegpAX iffpAX.
   AddSequentCalculus.
   intros.
-  rewrite provable_derivable.
-  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
+  apply solve_iffp_intros.
   + apply negp_unfold.
   + apply negp_fold.
 Qed.
@@ -1266,6 +1267,16 @@ Proof.
   + pose proof iffp_intros x y.
     pose proof impp_curry (x --> y) (y --> x) (x <--> y). rewrite H0 in H.
     apply H.
+Qed.
+
+Lemma impp2orp2: forall x y, |-- ~~ x || y --> (x --> y).
+Proof.
+  intros.
+  apply solve_orp_impp.
+  + rewrite negp_unfold.
+    apply aux_minimun_rule01.
+    apply falsep_elim.
+  + apply axiom1.
 Qed.
 
 End DerivableRulesFromAxiomatization2.

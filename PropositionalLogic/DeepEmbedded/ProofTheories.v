@@ -147,7 +147,7 @@ Qed.
 Instance inegpAX: IntuitionisticNegAxiomatization PropositionalLanguage.L GP :=
   NegFromDefToAX_False_Imp.
 
-Instance dmpAX: DeMorganPropositionalAxiomatization PropositionalLanguage.L GP.
+Instance dmpAX: DeMorganAxiomatization PropositionalLanguage.L GP.
 Proof.
   constructor.
   apply weak_excluded_middle.
@@ -225,13 +225,13 @@ Qed.
 Instance inegpAX: IntuitionisticNegAxiomatization PropositionalLanguage.L GP :=
   NegFromDefToAX_False_Imp.
 
-Instance gdpAX: GodelDummettPropositionalAxiomatization PropositionalLanguage.L GP.
+Instance gdpAX: GodelDummettAxiomatization PropositionalLanguage.L GP.
 Proof.
   constructor.
   apply impp_choice.
 Qed.
 
-Instance dmpAX: DeMorganPropositionalAxiomatization PropositionalLanguage.L GP :=
+Instance dmpAX: DeMorganAxiomatization PropositionalLanguage.L GP :=
   GodelDummett2DeMorgan.
 
 End GodelDummettPropositionalLogic.
@@ -263,7 +263,7 @@ Inductive provable: expr -> Prop :=
 | orp_intros2: forall x y, provable (y --> x || y)
 | orp_elim: forall x y z, provable ((x --> z) --> (y --> z) --> (x || y --> z))
 | falsep_elim: forall x, provable (FF --> x)
-| excluded_middle: forall x, provable (x || ~~ x).
+| peirce_law: forall x y, provable (((x --> y) --> x) --> x).
 
 Instance GP: Provable PropositionalLanguage.L := Build_Provable _ provable.
 
@@ -305,16 +305,16 @@ Qed.
 Instance inegpAX: IntuitionisticNegAxiomatization PropositionalLanguage.L GP :=
   NegFromDefToAX_False_Imp.
 
-Instance emAX: ExcludedMiddle PropositionalLanguage.L GP.
+Instance cpAX: ClassicalAxiomatization PropositionalLanguage.L GP.
 Proof.
   constructor.
-  apply excluded_middle.
+  apply peirce_law.
 Qed.
 
-Instance gdpAX: GodelDummettPropositionalAxiomatization PropositionalLanguage.L GP :=
+Instance gdpAX: GodelDummettAxiomatization PropositionalLanguage.L GP :=
   Classical2GodelDummett.
 
-Instance dmpAX: DeMorganPropositionalAxiomatization PropositionalLanguage.L GP :=
+Instance dmpAX: DeMorganAxiomatization PropositionalLanguage.L GP :=
   GodelDummett2DeMorgan.
 
 End ClassicalPropositionalLogic.

@@ -99,7 +99,7 @@ Proof.
     exact (@sound_falsep_elim (MonoPred_L A) _ _ (Build_Model A) (unit_kMD (Build_Model A)) tt R (MonoPred_SM A) (MonoPred_kminSM A) (MonoPred_kfalsepSM A) x).
 Qed.
 
-Instance MonoPred_gdpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation} {nkiM: NoBranchKripkeIntuitionisticModel A}: GodelDummettPropositionalAxiomatization (MonoPred_L A) (MonoPred_Gamma A).
+Instance MonoPred_gdpAX (A: Type) {R: Relation A} {po_R: PreOrder Krelation} {nkiM: NoBranchKripkeIntuitionisticModel A}: GodelDummettAxiomatization (MonoPred_L A) (MonoPred_Gamma A).
 Proof.
   constructor.
   intros x y.

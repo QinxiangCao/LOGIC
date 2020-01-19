@@ -35,9 +35,9 @@ Class Parametric_SeparationLogic
       {wandL: WandLanguage L}
       {empL: EmpLanguage L}
       (GammaP: Provable L) := {
-  Parametric_DM: WEM = true -> DeMorganPropositionalAxiomatization L GammaP;
-  Parametric_GD: IC = true -> GodelDummettPropositionalAxiomatization L GammaP;
-  Parametric_C: EM = true -> ExcludedMiddle L GammaP;
+  Parametric_DM: WEM = true -> DeMorganAxiomatization L GammaP;
+  Parametric_GD: IC = true -> GodelDummettAxiomatization L GammaP;
+  Parametric_C: EM = true -> ClassicalAxiomatization L GammaP;
   Parametric_GC: SCE = true -> GarbageCollectSeparationLogic L GammaP;
   Parametric_NE: ESE = true -> NonsplitEmpSeparationLogic L GammaP;
   Parametric_ED: ED = true -> DupEmpSeparationLogic L GammaP
@@ -74,7 +74,7 @@ Inductive provable: expr -> Prop :=
 | falsep_elim: forall x, provable (FF --> x)
 | weak_excluded_middle: WEM = true -> forall x, provable (~~ x || ~~ ~~ x)
 | impp_choice: IC = true -> forall x y, provable ((x --> y) || (y --> x))
-| excluded_middle: EM = true -> forall x, provable (x || ~~ x)
+| pierce_law: EM = true -> forall x y, provable (((x --> y) --> x) --> x)
 | sepcon_comm_impp: forall x y, provable (x * y --> y * x)
 | sepcon_assoc1: forall x y z, provable (x * (y * z) --> (x * y) * z)
 | wand_sepcon_adjoint1: forall x y z, provable (x * y --> z) -> provable (x --> (y -* z))
@@ -181,7 +181,7 @@ Proof.
   + intros; constructor.
     apply impp_choice; auto.
   + intros; constructor.
-    apply excluded_middle; auto.
+    apply pierce_law; auto.
   + intros; constructor.
     apply sepcon_elim1; auto.
   + intros; constructor.

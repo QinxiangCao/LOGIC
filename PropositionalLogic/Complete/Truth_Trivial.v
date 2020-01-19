@@ -50,7 +50,7 @@ Context {L: Language}
         {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
         {iffpSC: IffSequentCalculus L Gamma}
         {truepSC: TrueSequentCalculus L Gamma}
-        {cpSC: ClassicalPropositionalSequentCalculus L Gamma}
+        {cpSC: ClassicalSequentCalculus L Gamma}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}

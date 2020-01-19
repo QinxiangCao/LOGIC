@@ -9,306 +9,103 @@ Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfClassicalAxioms.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class ExcludedMiddle (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
-  excluded_middle: forall x, |-- x || ~~ x
-}.
-
-Class Classic (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
-  classic: forall x y, |-- (x --> y) --> (~~ x --> y) --> y
-}.
-
-Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) := {
-  impp2orp: forall x y, |-- (x --> y) <--> (~~ x || y)
-}.
-
-Class PeirceLaw (L: Language) {minL: MinimumLanguage L} (Gamma: Provable L) := {
+Class ClassicalAxiomatization (L: Language) {minL: MinimumLanguage L} (Gamma: Provable L) := {
   peirce_law: forall x y, |-- ((x --> y) --> x) --> x
 }.
 
-Class ByContradiction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
-  by_contradiction: forall x y, |-- (~~ x --> y) --> (~~ x --> ~~ y) --> x
-}.
-
-Class DoubleNegativeElimination (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
-  double_negp_elim: forall x, |-- ~~ (~~ x) --> x
-}.
-
-Class ClassicalPropositionalSequentCalculus (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) := {
+Class ClassicalSequentCalculus (L: Language) {orpL: OrLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) := {
   derivable_excluded_middle: forall Phi x, Phi |-- x || ~~ x
 }.
 
-Section ExcludedMiddle2Classic.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndAxiomatization L Gamma}
-        {orpGamma: OrAxiomatization L Gamma}
-        {falsepGamma: FalseAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {iffpGamma: IffAxiomatization L Gamma}
-        {truepGamma: TrueAxiomatization L Gamma}
-        {emAX: ExcludedMiddle L Gamma}.
-
-Lemma EM2Classic: Classic L Gamma.
-Proof.
-  constructor.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  apply (deduction_modus_ponens _ (x || ~~ x)); [rewrite <- provable_derivable; apply excluded_middle |].
-  apply deduction_orp_elim'.
-  + pose proof deduction_modus_ponens.
-Admitted.
-
-End ExcludedMiddle2Classic.
-
-Section Classic2ImplyToOr.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndAxiomatization L Gamma}
-        {orpGamma: OrAxiomatization L Gamma}
-        {falsepGamma: FalseAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {iffpGamma: IffAxiomatization L Gamma}
-        {truepGamma: TrueAxiomatization L Gamma}
-        {cAX: Classic L Gamma}.
-
-Lemma Classic2EM: ExcludedMiddle L Gamma.
-Proof.
-  constructor.
-  AddSequentCalculus.
-  intros.
-Admitted.
-
-Lemma Classic2ImplyToOr: ImplyToOr L Gamma.
-Proof.
-  pose proof Classic2EM as EM.
-  constructor.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  apply deduction_iffp_intros.
-  + apply (deduction_modus_ponens _ (x || ~~ x)).
-    - pose proof excluded_middle x.
-      pose proof solve_impp_elim_left (x-->y) _ H.
-      rewrite provable_derivable in H0.
-      rewrite <- deduction_theorem in H0. apply H0.
-    - apply deduction_orp_elim'.
-      * rewrite <- deduction_theorem.
-        apply deduction_orp_intros2.
-        rewrite -> deduction_theorem.
-        apply derivable_assum1.
-      * rewrite <- deduction_theorem.
-        apply deduction_orp_intros1.
-        apply derivable_assum1.
-  + rewrite deduction_theorem. apply deduction_orp_elim'.
-    - rewrite <- deduction_theorem.
-      rewrite <- deduction_theorem.
-      apply deduction_falsep_elim.
-      rewrite -> deduction_theorem.
-      pose proof negp_fold_unfold x. rewrite <- H.
-      apply derivable_assum1.
-   - apply derivable_axiom1.
-Qed.
-
-End Classic2ImplyToOr.
-
-Section ImplyToOr2PeirceLaw.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndAxiomatization L Gamma}
-        {orpGamma: OrAxiomatization L Gamma}
-        {falsepGamma: FalseAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {iffpGamma: IffAxiomatization L Gamma}
-        {truepGamma: TrueAxiomatization L Gamma}
-        {itoAX: ImplyToOr L Gamma}.
-
-Lemma ImplyToOr2EM: ExcludedMiddle L Gamma.
-Proof.
-  constructor.
-  AddSequentCalculus.
-  intros.
-  pose proof impp2orp x x.
-  rewrite orp_comm in H.
-  rewrite <- H.
-  rewrite provable_derivable. rewrite <- deduction_theorem.
-  solve_assum.
-Qed.
-
-Lemma ImplyToOr2PeirceLaw: PeirceLaw L Gamma.
-Proof.
-  pose proof ImplyToOr2EM as EM.
-  constructor.
-  AddSequentCalculus.
-  intros.
-  rewrite (impp2orp (x --> y) x).
-  rewrite provable_derivable.
-  apply deduction_orp_elim'.
-  + apply (deduction_modus_ponens _ (x || ~~ x)); [rewrite <- provable_derivable; apply excluded_middle |].
-    apply deduction_orp_elim'.
-    - rewrite <- !deduction_theorem. solve_assum.
-    - rewrite <- provable_derivable.
-      rewrite <- (falsep_elim x) at 3.
-      rewrite <- (negp_unfold (~~ (x --> y))).
-      rewrite <- double_negp_intros.
-      rewrite <- (falsep_elim y).
-      apply negp_unfold.
-  + rewrite <- deduction_theorem. solve_assum.
-Qed.
-
-End ImplyToOr2PeirceLaw.
-
-Section PeirceLaw2ByContradiction.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndAxiomatization L Gamma}
-        {orpGamma: OrAxiomatization L Gamma}
-        {falsepGamma: FalseAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {iffpGamma: IffAxiomatization L Gamma}
-        {truepGamma: TrueAxiomatization L Gamma}
-        {plAX: PeirceLaw L Gamma}.
-
-Lemma Peirce2ByContradiction: ByContradiction L Gamma.
-Proof.
-  constructor.
-  AddSequentCalculus.
-  intros.
-  pose proof peirce_law x FF.
-  rewrite <- (falsep_elim x) in H at 2.
-  rewrite -> (negp_fold x) in H.
-  pose proof negp_unfold y.
-  rewrite (provable_impp_arg_switch (~~y) y FF) in H0.
-  rewrite (impp_curry_uncurry y (~~y) FF) in H0.
-  pose proof impp_andp (~~ x) y (~~ y).
-  rewrite H0 in H1.
-  rewrite H in H1.
-  apply H1.
-Qed.
-
-End PeirceLaw2ByContradiction.
-
-Section ByContradiction2DoubleNegativeElimination.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndAxiomatization L Gamma}
-        {orpGamma: OrAxiomatization L Gamma}
-        {falsepGamma: FalseAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {iffpGamma: IffAxiomatization L Gamma}
-        {truepGamma: TrueAxiomatization L Gamma}
-        {bcAX: ByContradiction L Gamma}.
-
-Lemma ByContradiction2DoubleNegativeElimination:
-  DoubleNegativeElimination L Gamma.
-Proof.
-  constructor.
-  intros.
-  pose proof by_contradiction x (~~ (~~ x)).
-  pose proof double_negp_intros (~~ x).
-  pose proof axiom1 (~~ (~~ x)) (~~ x).
-  rewrite <- H1 in H.
-  rewrite -> (provable_impp_arg_switch (~~ (~~ x)) (~~ x --> ~~ (~~ (~~ x))) x) in H.
-  rewrite H in H0. apply H0.
-Qed.
-
-End ByContradiction2DoubleNegativeElimination.
-
-Section DoubleNegativeElimination2ExcludedMiddle.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {andpGamma: AndAxiomatization L Gamma}
-        {orpGamma: OrAxiomatization L Gamma}
-        {falsepGamma: FalseAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {iffpGamma: IffAxiomatization L Gamma}
-        {truepGamma: TrueAxiomatization L Gamma}
-        {dneAX: DoubleNegativeElimination L Gamma}.
-
-Lemma DoubleNegativeElimination2ExcludedMiddle: ExcludedMiddle L Gamma.
-Proof.
-  constructor.
-  intros.
-  pose proof negp_unfold x.
-  rewrite (provable_impp_arg_switch (~~ x) x FF) in H.
-  rewrite (impp_curry_uncurry x (~~ x) FF) in H.
-  rewrite <- (double_negp_elim x) in H at 1.
-  rewrite <- (demorgan_negp_orp (~~ x) x) in H.
-  rewrite (negp_fold (~~ (~~ x || x))) in H.
-  rewrite (double_negp_elim (~~ x || x)) in H.
-  rewrite orp_comm. apply H.
-Qed.
-
-End DoubleNegativeElimination2ExcludedMiddle.
-
-Class ClassicalPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {negp:NegLanguage L} {falsepL: FalseLanguage L} (GammaD1:Derivable1 L) {minD:MinimumDeduction L GammaD1} := {
+Class ClassicalDeduction (L:Language) {orpL: OrLanguage L} {negp:NegLanguage L} (GammaD1:Derivable1 L) := {
   deduction_excluded_middle: forall x y,derivable1 x (y || ~~y)
 }.
 
-Class ClassicalPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {negpL: NegLanguage L}  (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class ClassicalPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {negpL: NegLanguage L}  (GammaE:LogicEquiv L) := {
   equiv_excluded_middle:forall x, x --||-- ~~(~~x);
   equiv_DeMorgen:forall x y, ~~(x && y) --||-- (~~x) && (~~y)
 }.
 
+Section DerivableRulesFromAxiomatization0.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
+        {Gamma: Provable L}
+        {minAX: MinimumAxiomatization L Gamma}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}
+        {cpAX: ClassicalAxiomatization L Gamma}.
+
+Lemma by_contradiction: forall x y, |-- (~~ x --> y) --> (~~ x --> ~~ y) --> x.
+Proof.
+  pose proof Build_PeirceLaw _ _ _ peirce_law.
+  pose proof Peirce2ByContradiction.
+  apply __by_contradiction.
+Qed.
+
+Lemma double_negp_elim: forall x, |-- ~~ (~~ x) --> x.
+Proof.
+  pose proof Build_PeirceLaw _ _ _ peirce_law.
+  pose proof Peirce2ByContradiction.
+  pose proof ByContradiction2DoubleNegativeElimination.
+  apply __double_negp_elim.
+Qed.
+
+Lemma excluded_middle: forall x, |-- x || ~~ x.
+Proof.
+  pose proof Build_PeirceLaw _ _ _ peirce_law.
+  pose proof Peirce2ByContradiction.
+  pose proof ByContradiction2DoubleNegativeElimination.
+  pose proof DoubleNegativeElimination2ExcludedMiddle.
+  apply __excluded_middle.
+Qed.
+
+Lemma classic_analysis: forall x y, |-- (x --> y) --> (~~ x --> y) --> y.
+Proof.
+  pose proof Build_PeirceLaw _ _ _ peirce_law.
+  pose proof Peirce2ByContradiction.
+  pose proof ByContradiction2DoubleNegativeElimination.
+  pose proof DoubleNegativeElimination2ExcludedMiddle.
+  pose proof ExcludedMiddle2ClassicAnalysis.
+  apply __classic_analysis.
+Qed.
+
+Lemma impp2orp1: forall x y, |-- (x --> y) --> (~~ x || y).
+Proof.
+  pose proof Build_PeirceLaw _ _ _ peirce_law.
+  pose proof Peirce2ByContradiction.
+  pose proof ByContradiction2DoubleNegativeElimination.
+  pose proof DoubleNegativeElimination2ExcludedMiddle.
+  pose proof ExcludedMiddle2ClassicAnalysis.
+  pose proof ClassicAnalysis2ImplyToOr.
+  apply __impp2orp1.
+Qed.
+
+Lemma impp2orp: forall x y, |-- (x --> y) <--> (~~ x || y).
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply impp2orp1.
+  + apply impp2orp2.
+Qed.
+
+End DerivableRulesFromAxiomatization0.
 
 Section Axiomatization2SequentCalculus.
 
@@ -329,7 +126,7 @@ Context {L: Language}
         {inegpAX: IntuitionisticNegAxiomatization L GammaP}
         {iffpAX: IffAxiomatization L GammaP}
         {truepAX: TrueAxiomatization L GammaP}
-        {emAX: ExcludedMiddle L GammaP}
+        {cpAX: ClassicalAxiomatization L GammaP}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
@@ -341,7 +138,7 @@ Context {L: Language}
         {truepSC: TrueSequentCalculus L GammaD}.
 
 Lemma Axiomatization2SequentCalculus_cpSC:
-  ClassicalPropositionalSequentCalculus L GammaD.
+  ClassicalSequentCalculus L GammaD.
 Proof.
   intros.
   constructor.
@@ -377,7 +174,7 @@ Context {L: Language}
         {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
         {iffpSC: IffSequentCalculus L GammaD}
         {truepSC: TrueSequentCalculus L GammaD}
-        {cpSC: ClassicalPropositionalSequentCalculus L GammaD}
+        {cpSC: ClassicalSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
@@ -386,19 +183,26 @@ Context {L: Language}
         {iffpAX: IffAxiomatization L GammaP}
         {truepAX: TrueAxiomatization L GammaP}.
 
-Lemma SequentCalculus2Axiomatization_emAX: ExcludedMiddle L GammaP.
+Lemma SequentCalculus2Axiomatization_cpAX: ClassicalAxiomatization L GammaP.
 Proof.
   intros.
   constructor.
-  intros.
-  rewrite provable_derivable.
-  apply derivable_excluded_middle.
+  assert (forall x, |-- x || ~~ x). {
+    intros.
+    rewrite provable_derivable.
+    apply derivable_excluded_middle.
+  }
+  pose proof Build_ExcludedMiddle _ _ _ _ H.
+  pose proof ExcludedMiddle2ClassicAnalysis.
+  pose proof ClassicAnalysis2ImplyToOr.
+  pose proof ImplyToOr2PeirceLaw.
+  apply __peirce_law.
 Qed.
 
 End SequentCalculus2Axiomatization.
 
 Instance reg_SequentCalculus2Axiomatization_cpAX:
-  RegisterClass D2P_reg (fun cpAX: unit => @SequentCalculus2Axiomatization_emAX) 8.
+  RegisterClass D2P_reg (fun cpAX: unit => @SequentCalculus2Axiomatization_cpAX) 8.
 Qed.
 
 Section DerivableRulesFromAxiomatization1.
@@ -419,16 +223,11 @@ Context {L: Language}
         {inegpAX: IntuitionisticNegAxiomatization L Gamma}
         {iffpAX: IffAxiomatization L Gamma}
         {truepAX: TrueAxiomatization L Gamma}
-        {emAX: ExcludedMiddle L Gamma}.
+        {cpAX: ClassicalAxiomatization L Gamma}.
 
 Lemma double_negp: forall (x: expr),
   |-- ~~ (~~ x) <--> x.
 Proof.
-  pose proof EM2Classic.
-  pose proof Classic2ImplyToOr.
-  pose proof ImplyToOr2PeirceLaw.
-  pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -437,10 +236,10 @@ Proof.
   + apply double_negp_intros.
 Qed.
 
-Instance Classical2GodelDummett: GodelDummettPropositionalAxiomatization L Gamma.
+Instance Classical2GodelDummett: GodelDummettAxiomatization L Gamma.
 Proof.
   constructor.
-  clear - orpAX inegpAX emAX minAX falsepAX.
+  clear - orpAX inegpAX cpAX minAX falsepAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -464,11 +263,6 @@ Qed.
 Lemma contrapositiveNN: forall (x y: expr),
   |-- (~~ y --> ~~ x) --> (x --> y).
 Proof.
-  pose proof EM2Classic.
-  pose proof Classic2ImplyToOr.
-  pose proof ImplyToOr2PeirceLaw.
-  pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
   AddSequentCalculus.
   intros.
   rewrite <- (double_negp_elim y) at 2.
@@ -509,7 +303,7 @@ Context {L: Language}
         {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
         {iffpSC: IffSequentCalculus L Gamma}
         {truepSC: TrueSequentCalculus L Gamma}
-        {cpSC: ClassicalPropositionalSequentCalculus L Gamma}.
+        {cpSC: ClassicalSequentCalculus L Gamma}.
 
 Lemma deduction_contrapositiveNN: forall Phi (x y: expr),
   Phi |-- ~~ y --> ~~ x ->
@@ -551,7 +345,7 @@ Context {L: Language}
         {inegpAX: IntuitionisticNegAxiomatization L Gamma}
         {iffpAX: IffAxiomatization L Gamma}
         {truepAX: TrueAxiomatization L Gamma}
-        {emAX: ExcludedMiddle L Gamma}.
+        {cpAX: ClassicalAxiomatization L Gamma}.
 
 Lemma solve_classic: forall x y: expr,
   |-- x --> y ->

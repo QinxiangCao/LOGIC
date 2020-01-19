@@ -67,7 +67,7 @@ Proof.
   + apply sound_orp_intros2.
   + apply sound_orp_elim.
   + apply sound_falsep_elim.
-  + apply sound_excluded_middle.
+  + apply sound_peirce_law.
 Qed.
 
 End Sound_Classical_Trivial.
@@ -175,7 +175,7 @@ Proof.
   + apply sound_orp_intros2.
   + apply sound_orp_elim.
   + apply sound_falsep_elim.
-  + apply sound_excluded_middle_ident.
+  + apply sound_peirce_law_ident.
 Qed.
 
 End Sound_Kripke.

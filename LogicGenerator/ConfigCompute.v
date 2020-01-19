@@ -99,6 +99,8 @@ Definition DTOJ (j: judgement): list type :=
 match j with
 | provable => [expr]
 | derivable => [context; expr]
+| derivable1 => [expr]
+| logic_equiv => [expr]
 | corable => [expr]
 end.
 

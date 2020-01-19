@@ -75,7 +75,8 @@ PropositionalLogic_ProofTheory_FILES = \
   GodelDummett.v Classical.v \
   RewriteClass.v ProofTheoryPatterns.v \
   TheoryOfIteratedConnectives.v \
-  TheoryOfPropositionalConnectives.v
+  TheoryOfPropositionalConnectives.v \
+  TheoryOfClassicalAxioms.v
 
 PropositionalLogic_Semantics_FILES = \
   Kripke.v Trivial.v
@@ -283,6 +284,9 @@ QuantifierLogic: \
 
 SeparationLogic: \
   .depend $(SeparationLogic_FILES:%.v=SeparationLogic/%.vo)
+
+LogicGenerator: \
+  .depend $(LogicGenerator_FILES:%.v=LogicGenerator/%.vo)
 
 all: \
   $(FILES:%.v=%.vo)

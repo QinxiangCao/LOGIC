@@ -43,7 +43,7 @@ Context {L: Language}
         {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
         {iffpSC: IffSequentCalculus L Gamma}
         {truepSC: TrueSequentCalculus L Gamma}
-        {cpSC: ClassicalPropositionalSequentCalculus L Gamma}.
+        {cpSC: ClassicalSequentCalculus L Gamma}.
 
 Lemma classical_derivable_spec: forall (Phi: context) (x: expr),
   Phi |-- x <-> ~ consistent (Union _ Phi (Singleton _ (~~ x))).

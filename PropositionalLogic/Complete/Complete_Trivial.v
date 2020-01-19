@@ -49,7 +49,7 @@ Context {L: Language}
         {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
         {iffpSC: IffSequentCalculus L GammaD}
         {truepSC: TrueSequentCalculus L GammaD}
-        {cpSC: ClassicalPropositionalSequentCalculus L GammaD}
+        {cpSC: ClassicalSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}

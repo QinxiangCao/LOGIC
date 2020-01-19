@@ -16,7 +16,7 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class GodelDummettPropositionalAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (Gamma: Provable L) := {
+Class GodelDummettAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (Gamma: Provable L) := {
   impp_choice: forall x y, |-- (x --> y) || (y --> x)
 }.
 
@@ -31,7 +31,8 @@ Context {L: Language}
         {minAX: MinimumAxiomatization L Gamma}
         {orpGamma: OrAxiomatization L Gamma}
         {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
-        {gdpAX: GodelDummettPropositionalAxiomatization L Gamma}.
+        {gdpAX: GodelDummettAxiomatization L Gamma}.
+(* TODO: delete it *)
 (*
 Lemma derivable_impp_choice: forall (Phi: context) (x y: expr),
   Phi |-- (x --> y) || (y --> x).
@@ -41,7 +42,7 @@ Proof.
   apply deduction_weaken0; auto.
 Qed.
 *)
-Instance GodelDummett2DeMorgan: DeMorganPropositionalAxiomatization L Gamma.
+Instance GodelDummett2DeMorgan: DeMorganAxiomatization L Gamma.
 Proof.
   constructor.
   AddSequentCalculus.

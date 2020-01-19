@@ -205,12 +205,14 @@ Qed.
 Instance iffpAX: IffAxiomatization SeparationEmpLanguage.L GP :=
   IffFromDefToAX_And_Imp.
 
-Instance emAX: ExcludedMiddle SeparationEmpLanguage.L GP.
+(** TODO: Resume this by different constructors of cpAX. *)
+(*
+Instance cpAX: ClassicalAxiomatizatiom SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   apply excluded_middle.
 Qed.
-
+*)
 Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.

@@ -255,7 +255,7 @@ Existing Instances ProofTheories.ClassicalPropositionalLogic.GP
                    ProofTheories.ClassicalPropositionalLogic.inegpAX
                    ProofTheories.ClassicalPropositionalLogic.gdpAX
                    ProofTheories.ClassicalPropositionalLogic.dmpAX
-                   ProofTheories.ClassicalPropositionalLogic.emAX.
+                   ProofTheories.ClassicalPropositionalLogic.cpAX.
 
 Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC Axiomatization2SequentCalculus_cpSC.
 

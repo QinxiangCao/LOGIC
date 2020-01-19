@@ -110,7 +110,7 @@ End CoqProp.
 (* TODO: move this to TheoryOfSeparationAxioms. *)
 Lemma GC_Ext_Classical_collapse_aux
       {sepcon_orp_AX: SepconOrAxiomatization L Gamma}
-      {cpGamma: ExcludedMiddle L Gamma}
+      {cpGamma: ClassicalAxiomatization L Gamma}
       {gcsGamma: GarbageCollectSeparationLogic L Gamma}
       {ExtsGamma: ExtSeparationLogic L Gamma}:
   forall (x: expr), |-- x --> x * x.
@@ -139,9 +139,9 @@ Qed.
 (* TODO: move this to TheoryOfSeparationAxioms. *)
 Theorem GC_Ext_Classical_collapse
         {sepcon_orp_AX: SepconOrAxiomatization L Gamma}
-        {cpGamma: ExcludedMiddle L Gamma}
-        {gcsGamma: GarbageCollectSeparationLogic L Gamma}
-        {ExtsGamma: ExtSeparationLogic L Gamma}:
+        {cpAX: ClassicalAxiomatization L Gamma}
+        {gcsAX: GarbageCollectSeparationLogic L Gamma}
+        {ExtsAX: ExtSeparationLogic L Gamma}:
   forall (x y: expr), |-- x * y <--> x && y.
 Proof.
   intros.

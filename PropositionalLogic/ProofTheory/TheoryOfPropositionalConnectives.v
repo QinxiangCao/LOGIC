@@ -152,7 +152,7 @@ Lemma AndFromDefToAX_Or_Neg
       {orpAX: OrAxiomatization L GammaP}
       {falsepAx: FalseAxiomatization L GammaP}
       {inegpAx: IntuitionisticNegAxiomatization L GammaP}
-      {dneAX: DoubleNegativeElimination L GammaP}
+      {cpAX: ClassicalAxiomatization L GammaP}
       {andp_Def_orp_negp: AndDefinition_Or_Neg L}:
       AndAxiomatization L GammaP.
 Proof.
@@ -222,6 +222,7 @@ Proof.
   constructor; intros; rewrite falsep_impp2negp; apply(provable_impp_refl (x --> FF)).
 Qed.
 
+(* (* TODO: resume this proof after reorganizing classic theory. *)
 Lemma OrFromDefToAX_Imp_Neg
       {L: Language}
       {minL: MinimumLanguage L}
@@ -232,7 +233,7 @@ Lemma OrFromDefToAX_Imp_Neg
       {minAX: MinimumAxiomatization L GammaP}
       {falsepAx: FalseAxiomatization L GammaP}
       {inegpAx: IntuitionisticNegAxiomatization L GammaP}
-      {cAX: Classic L GammaP}
+      {cpAX: ClassicalAxiomatization L GammaP}
       {orp_Def_impp_negp: OrDefinition_Imp_Neg L}:
       OrAxiomatization L GammaP.
 Proof.
@@ -243,7 +244,7 @@ Proof.
   + rewrite provable_derivable. rewrite <- !deduction_theorem.
     solve_assum.
   + pose proof (aux_minimun_theorem00 (~~ x) y z).
-    pose proof classic x z.
+    pose proof classic_analysis x z.
     rewrite <- (provable_impp_arg_switch (y --> z) (x --> z) ((~~ x --> y) --> z)).
     rewrite <- (provable_impp_arg_switch (~~ x --> y) (x --> z) z).
     rewrite provable_impp_arg_switch in H0.
@@ -252,7 +253,7 @@ Proof.
     rewrite H0 in H.
     apply H.
 Qed.
-
+*)
 Ltac AddConnective_iffp :=
   let iffpL := fresh "iffpL" in
   let iffpDef := fresh "iffpDef" in
