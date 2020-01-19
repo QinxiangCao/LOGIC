@@ -192,7 +192,7 @@ Definition derived_rules_as_instance :=
 
 Import ListNotations.
 
-Inductive PrintType := IPar (Inline_list: list Name) | Axm | Der | Def | AIns | DIns.
+Inductive PrintType := IPar (Inline_list: list Name) | Axm | Der | Def | BetaDef | AIns | DIns.
 
 Ltac print prt name :=
   match name with
@@ -223,6 +223,7 @@ Ltac print prt name :=
                | (?n0, ?n1) => idtac "  Definition" n0 ":=" n1 "."
                end
       | Def => idtac "  Definition" n ":" T ":=" n "."
+      | BetaDef => idtac "  Definition" n ":= BETA" n "."
       | AIns => match n with
                 | (?n0, ?n1) =>
                   match type of n0 with
@@ -238,126 +239,51 @@ Ltac newline := idtac "".
 
 Set Printing Width 1000.
 
-Ltac two_stage_print :=
-  when instance_para_open: import_local_lib_tac;
+Ltac beta_print :=
+  import_local_lib_tac;
+  import_implementation_tac;
   idtac "Require Import Coq.Lists.List.";
   idtac "Require Import Coq.Sets.Ensembles.";
   idtac "Import ListNotations.";
 
   newline;
 
-  idtac "Module Type LanguageSig.";
-  dolist (print (IPar transparent_types)) primitive_types;
-  dolist (print Der) derived_types;
-  dolist (print (IPar transparent_judgements)) primitive_judgements;
-  dolist (print (IPar transparent_connectives)) primitive_connectives;
-  when instance_para_open: idtac "  End LanguageSig.";
-  idtac "End LanguageSig.";
+  set_up_module_name_tac;
+  idtac "Module BETA.";
+  idtac "Import ___LogicTheorem___.";
+  idtac "  Section BETA_SECTION.";
+  context_expr_tac;
+  newline;
+  idtac "  Ltac beta_tac x :=";
+  idtac "    match type of x with";
+  idtac "    | ?tx => let tx0 := eval cbv beta in tx in";
+  idtac "               exact (x: tx0)";
+  idtac "    end.";
+  idtac "  Declare Scope BETA_scope.";
+  idtac "  Local Notation ""'BETA' x"" := ltac:(beta_tac x) (at level 99): BETA_scope.";
+  idtac "  Local Open Scope BETA_scope.";
 
   newline;
 
-  idtac "Module DerivedNames (Names: LanguageSig).";
-  idtac "Include Names.";
-  when instance_para_open: (
-    idtac "  Section DerivedNames.";
-    context_expr_tac
-  );
-  dolist (print Der) derived_connectives;
-  dolist (print Der) derived_judgements;
-  when instance_para_open:
-    idtac "  End DerivedNames.";
-  idtac "End DerivedNames.";
+  dolist (print BetaDef) derived_rules;
 
   newline;
 
-  idtac "Module Type PrimitiveRuleSig (Names: LanguageSig).";
-  idtac "Include DerivedNames (Names).";
-  when instance_para_open: (
-    idtac "  Section PrimitiveRuleSig.";
-    context_expr_tac
-  );
-  dolist (print Axm) primary_rules;
-  when instance_para_open:
-    idtac "  End PrimitiveRuleSig.";
-  idtac "End PrimitiveRuleSig.";
+  idtac "  End BETA_SECTION.";
 
   newline;
 
-  idtac "Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).";
-  idtac "Include Rules.";
-  when instance_para_open: (
-    idtac "  Section LogicTheoremSig.";
-    context_expr_tac
-  );
-  dolist (print Axm) derived_rules;
   dolist (print DIns) derived_rules_as_instance;
-  when instance_para_open:
-    idtac "  End LogicTheoremSig.";
-  idtac "End LogicTheoremSig.";
 
   newline;
 
-  idtac "Require Import Logic.GeneralLogic.Base.";
-  idtac "Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.";
-  idtac "Require Import Logic.MinimumLogic.Syntax.";
-  idtac "Require Import Logic.MinimumLogic.ProofTheory.Minimum.";
-  idtac "Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.";
-  idtac "Require Import Logic.PropositionalLogic.Syntax.";
-  idtac "Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.";
-  idtac "Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.";
-  idtac "Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.";
-  idtac "Require Import Logic.PropositionalLogic.ProofTheory.Classical.";
-  idtac "Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.";
-  idtac "Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.";
-  idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.";
-  idtac "Require Import MetaLogicInj.Syntax.";
-  idtac "Require Import MetaLogicInj.ProofTheory.ProofRules.";
-  idtac "Require Import Logic.SeparationLogic.Syntax.";
-  idtac "Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.";
-  idtac "Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.";
-  idtac "Require Import SeparationLogic.ProofTheory.DerivedRules.";
-  idtac "Require Import SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.";
-  idtac "Require Import SeparationLogic.ProofTheory.IterSepcon.";
-  idtac "Require Import SeparationLogic.ProofTheory.Corable.";
+  idtac "End BETA.";
 
-  newline;
-
-  (* TODO: this "<:" should be ":". Currently, this is just a work-around for generated tactics. *)
-  idtac "Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.";
-  idtac "Include Rules.";
-  when instance_para_open: (
-    idtac "  Section LogicTheorem.";
-    context_expr_tac
-  );
-  dolist (print AIns) aux_primitive_instances;
-  dolist (print AIns) aux_refl_instances_for_derivation;
-  dolist (print AIns) aux_derived_instances;
-  dolist (print Def) derived_rules;
-  when instance_para_open:
-    idtac "  End LogicTheorem.";
-  dolist (print DIns) derived_rules_as_instance;
-  idtac "End LogicTheorem.";
-
-  newline;
-
-  idtac "Require Logic.PropositionalLogic.DeepEmbedded.Solver.";
-  idtac "Module IPSolver (Names: LanguageSig).";
-  idtac "  Import Names.";
-  idtac "  Ltac ip_solve :=";
-  idtac "    change expr with Base.expr;";
-  idtac "    change provable with Base.provable;";
-  idtac "    change impp with Syntax.impp;";
-  idtac "    change andp with Syntax.andp;";
-  idtac "    intros; Solver.SolverSound.ipSolver.";
-  idtac "End IPSolver.";
-
-
-
-  
   idtac.
+
   
 Goal False.
-  two_stage_print.
+  beta_print.
 Abort.
 
 End Generate.

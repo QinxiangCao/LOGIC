@@ -1,5 +1,6 @@
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -32,6 +33,35 @@ Class IntuitionisticPropositionalSequentCalculus (L: Language) {pL: Propositiona
   deduction_falsep_elim: forall Phi x, Phi |-- FF -> Phi |-- x
 }.
 
+Class IntuitionisticPropositionalDeduction (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+  derivable1_andp_intros:forall x y z,derivable1 x y -> derivable1 x z -> derivable1 x (y && z);
+  derivable1_impp_andp_adjoint:forall x y z, derivable1 x (y-->z) <-> derivable1 (x && y) z;
+  derivable1_andp_elim1:forall x y,derivable1 (x && y) x;
+  derivable1_andp_elim2:forall x y,derivable1 (x && y) y;
+  derivable1_orp_intros1:forall x y,derivable1 x (x || y);
+  derivable1_orp_intros2:forall x y,derivable1 y (x || y);
+  derivable1_orp_elim:forall x y z,derivable1 x z -> derivable1 y z -> derivable1 (x || y) z;
+  derivable1_falsep_elim: forall x, derivable1 FF x
+}.
+
+Class IntuitionisticPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+  equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
+  (x1 && y1) --||-- (x2 && y2);
+  equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
+  equiv_andp_comm:forall x y,x && y --||-- y && x;
+  equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z);
+  equiv_andp_falsep:forall x, x && TT --||-- x;
+  equiv_andp_truep:forall x,x && FF --||-- FF;
+  equiv_DeMorgen:forall x y,~~ (x || y) --||-- (~~ x) && (~~y);
+  equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
+  (x1 || y1) --||-- (x2 || y2);
+  equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z);
+  equiv_orp_comm:forall x y,x || y --||-- y || x;
+  equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z);
+  equiv_orp_falsep:forall x,x || FF --||-- x;
+  equiv_orp_truep:forall x, x || TT --||-- TT
+}.
+
 Class IterAndAxiomatization_left (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {iter_andp_L: IterAndLanguage L} (Gamma: Provable L) := {
   iter_andp_spec_left: forall (xs: list expr),
     |-- iter_andp xs <--> fold_left andp xs TT
@@ -42,10 +72,10 @@ Section DerivableRulesFromSequentCalculus1.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {Gamma: Derivable L}
-        {bSC: BasicSequentCalculus L Gamma}
-        {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}.
+        {GammaD: Derivable L}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
+        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}.
 
 Lemma derivable_andp_intros: forall (Phi: context) (x y: expr),
   Phi |-- x --> y --> x && y.
@@ -371,10 +401,10 @@ Section DerivableRulesFromSequentCalculus2.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {Gamma: Derivable L}
-        {bSC: BasicSequentCalculus L Gamma}
-        {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}.
+        {GammaD: Derivable L}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
+        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}.
 
 Lemma deduction_contrapositivePP: forall Phi (x y: expr),
   Phi |-- y --> x ->
@@ -405,9 +435,9 @@ Section DerivableRulesFromAxiomatization2.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {pL: PropositionalLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {ipGamma: IntuitionisticPropositionalLogic L Gamma}.
+        {GammaP: Provable L}
+        {minAX: MinimumAxiomatization L GammaP}
+        {ipGamma: IntuitionisticPropositionalLogic L GammaP}.
 
 Lemma demorgan_orp_negp: forall (x y: expr),
   |-- ~~ x || ~~ y --> ~~ (x && y).
@@ -687,4 +717,139 @@ Proof.
 Qed.
 
 End DerivableRulesFromAxiomatization2.
+
+Section DerivableRulesFromLogicEquiv.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {pL: PropositionalLanguage L}
+        {GammaE: LogicEquiv L}
+        {GammaP: Provable L}
+        {NE:NormalEquiv L GammaP GammaE}
+        {minAX: MinimumAxiomatization L GammaP}
+        {ipL:IntuitionisticPropositionalLogic L GammaP}.
+
+Lemma equiv_iffp : forall x y,
+  x --||-- y <-> |-- x <--> y.
+Proof.
+  intros.
+  split.
+  -intros. apply equiv_provable in H. destruct H.
+   unfold iffp.
+   pose proof andp_intros (x --> y) (y-->x).
+   pose proof modus_ponens _ _ H1 H.
+   pose proof modus_ponens _ _ H2 H0. auto.
+  -unfold iffp. intros.
+   apply equiv_provable.
+   pose proof andp_elim1 (x-->y) (y-->x).
+   pose proof modus_ponens _ _ H0 H.
+   pose proof  andp_elim2 (x -->y) (y-->x).
+   pose proof modus_ponens _ _ H2 H.
+   split;[auto|auto].
+  Qed.
+
+End DerivableRulesFromLogicEquiv.
+
+Lemma derivable1_distr
+       {L: Language}
+       {minL: MinimumLanguage L}
+       {pL: PropositionalLanguage L}
+       {GammaD1: Derivable1 L}
+       {minD: MinimumDeduction L GammaD1}
+       {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+       {BD: BasicDeduction L GammaD1}
+      :forall P x y z,
+  derivable1 (P && (x || y)) z <-> derivable1 ((P && x) || (P && y)) z.
+Proof.
+   split.
+   -intros.
+    apply derivable1_orp_elim.
+     *apply derivable1_impp_andp_adjoint in H.
+      pose proof derivable1_andp_elim1 P x.
+      pose proof derivable1_andp_elim2 P x.
+      pose proof derivable1_orp_intros1 x y.
+      pose proof deduction1_trans _ _ _ H1 H2;clear H1 H2.
+      pose proof deduction1_trans _ _ _ H0 H;clear H0 H.
+      AddAxiomatization.
+      rewrite derivable1_provable in H3, H1 |- *.
+      pose proof axiom2 (P && x) (x || y) z.
+      pose proof modus_ponens _ _ H H1.
+      pose proof modus_ponens _ _ H0 H3;auto.
+     *apply derivable1_impp_andp_adjoint in H.
+      pose proof derivable1_andp_elim1 P y.
+      pose proof derivable1_andp_elim2 P y.
+      pose proof derivable1_orp_intros2 x y.
+      pose proof deduction1_trans _ _ _ H1 H2;clear H1 H2.
+      pose proof deduction1_trans _ _ _ H0 H;clear H0 H.
+      AddAxiomatization.
+      rewrite derivable1_provable in H3, H1 |- *.
+      pose proof axiom2 (P && y) (x || y) z.
+      pose proof modus_ponens _ _ H H1.
+      pose proof modus_ponens _ _ H0 H3;auto.
+   -intros.
+    apply derivable1_impp_andp_adjoint.
+    pose proof derivable1_orp_intros1 (P && x) (P && y).
+    pose proof derivable1_orp_intros2 (P && x) (P && y).
+    pose proof deduction1_trans _ _ _ H0 H.
+    pose proof deduction1_trans _ _ _ H1 H.
+    apply derivable1_impp_andp_adjoint in H2.
+    apply derivable1_impp_andp_adjoint in H3.
+    apply deduction_exchange. apply deduction_exchange in H2. 
+    apply deduction_exchange in H3.
+    pose proof derivable1_orp_elim _ _ _ H2 H3;auto.
+  Qed.
+
+Section Derivabel1ToAxiomatization.
+
+Import Derivable1.
+Local Open Scope Derivable1.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {pL: PropositionalLanguage L}
+        {GammaP: Provable L}
+        {GammaD1: Derivable1 L}
+        {ND: NormalDeduction L GammaP GammaD1}
+        {minD: MinimumDeduction L GammaD1}
+        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
+
+Lemma ipD2ipAx : IntuitionisticPropositionalLogic L GammaP.
+Proof.
+  constructor.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_impp_andp_adjoint. apply deduction1_refl.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_andp_elim1.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_andp_elim2.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_orp_intros1.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_orp_intros2.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_impp_andp_adjoint.
+   apply derivable1_impp_andp_adjoint.
+   apply derivable1_distr.
+   apply derivable1_orp_elim.
+     *apply derivable1_impp_andp_adjoint.
+      apply derivable1_andp_elim1.
+     *apply derivable1_impp_andp_adjoint.
+      apply derivable1_andp_elim2.
+  -intros.
+   apply derivable1_provable.
+   apply derivable1_falsep_elim.
+   Qed.
+
+End Derivabel1ToAxiomatization.
+
+Instance reg_ipD2ipAx:
+  RegisterClass D1ToP_reg (fun ipAx:unit => @ipD2ipAx) 4.
+Qed.
 
