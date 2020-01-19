@@ -1,6 +1,16 @@
+Require Import String.
+Local Open Scope string.
+
+Definition instance_para_open := true.
+Definition local_lib_file := "HypotheticalExternLib".
+Definition implementation_file := "implementation_1".
+Definition result_module := "T".
+Definition instance_para := "para".
+
 Require Import Coq.Lists.List.
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigLang.
+
 
 Import ListNotations.
 
@@ -29,3 +39,4 @@ Definition primitive_rule_classes :=
   ; provability_OF_propositional_connectives
   ; provability_OF_classical_logic
   ].
+

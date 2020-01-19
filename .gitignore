@@ -6,4 +6,7 @@
 CONFIGURE
 LogicGenerator/Config.v
 LogicGenerator/Generated.v
+LogicGenerator/Generated2.v
+LogicGenerator/GeneratedGenerate.v
 LogicGenerator/demo/interface*.v
+LogicGenerator/demo/export_lib*.v
