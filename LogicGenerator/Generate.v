@@ -30,9 +30,19 @@ Require Logic.LogicGenerator.ConfigLang.
 Require Import GeneratedGenerate.
 Require Config.
 
-Definition instance_para_open: bool :=
-  ltac:(first [ let XXX := eval compute in Config.instance_para_open in exact XXX
+Module PARA_OPEN.
+
+Definition instance_para_open := false.
+
+Import Config.
+
+Definition PARA_OPEN: bool :=
+  ltac:(first [ let XXX := eval compute in instance_para_open in exact XXX
               | exact false]).
+
+End PARA_OPEN.
+
+Definition instance_para_open := PARA_OPEN.PARA_OPEN.
 
 Section Generate.
 Context {L: Language}

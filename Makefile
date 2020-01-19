@@ -284,6 +284,7 @@ all: \
   $(FILES:%.v=%.vo)
 
 lgen_demo_1:
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
 	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v
 	@echo COQC LogicGenerator/demo/interface_1.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_1.v

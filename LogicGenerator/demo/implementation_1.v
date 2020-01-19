@@ -1,8 +1,11 @@
+Require Import HypotheticalExternLib.
 Require Import ZArith.
 Require Import interface_1.
 
 Module NaiveLang.
-  Definition expr := (nat -> Z) -> Prop.
+  Definition expr {p: para} := (nat -> X * X) -> Prop.
+  Section NaiveLang.
+  Context {p: para}.
   Definition context := expr -> Prop.
   Definition impp (e1 e2 : expr) : expr := fun st => e1 st -> e2 st.
   Definition andp (e1 e2 : expr) : expr := fun st => e1 st /\ e2 st.
@@ -10,10 +13,13 @@ Module NaiveLang.
   Definition falsep : expr := fun st => False.
 
   Definition provable (e : expr) : Prop := forall st, e st.
+  End NaiveLang.
 End NaiveLang.
 
 Module NaiveRule.
   Include DerivedNames (NaiveLang).
+  Section NaiveRule.
+  Context {p: para}.
   Lemma modus_ponens :
     forall x y : expr, provable (impp x y) -> provable x -> provable y.
   Proof. unfold provable, impp. auto. Qed.
@@ -50,7 +56,7 @@ Module NaiveRule.
 
   Lemma excluded_middle : forall x : expr, provable (orp x (negp x)).
   Proof. unfold provable, orp, negp, impp, falsep. intros; tauto. Qed.
-
+  End NaiveRule.
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.
@@ -62,8 +68,7 @@ Notation "x --> y" := (impp x y)(at level 55, right associativity).
 Notation "x && y" := (andp x y)(at level 40, left associativity).
 Notation "|-- P " := (provable P) (at level 71, no associativity).
 
-Goal forall P Q R: (nat -> Z) -> Prop, |-- Q && P --> R --> P && Q && R.
+Goal forall {p: para} (P Q R: (nat -> X * X) -> Prop), |-- Q && P --> R --> P && Q && R.
   intros.
-  ip_solve.
+  Fail ip_solve.
 Abort.
-
