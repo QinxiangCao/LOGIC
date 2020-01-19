@@ -116,7 +116,7 @@ Context {L: Language}
         {ND: NormalDeduction L GammaP GammaD1}.
 
 Lemma SepconDeduction2SepconAxiomatization_sepconAX
-      {sD: SepconDeduction L GammaD1}:
+      {sepconD: SepconDeduction L GammaD1}:
   SepconAxiomatization L GammaP.
 Proof.
   constructor.
@@ -240,21 +240,22 @@ Context {L: Language}
         {GammaP: Provable L}
         {ND: NormalDeduction L GammaP GammaD1}.
 
-Lemma WandDeduction2WandAxiomatization_WandX:
-WandDeduction L GammaD1 -> WandAxiomatization L GammaP.
+Lemma WandDeduction2WandAxiomatization_wandAX
+      {wandD: WandDeduction L GammaD1}:
+  WandAxiomatization L GammaP.
 Proof.
   constructor.
   split.
-  -intros. apply derivable1_provable. apply derivable1_provable in H0.
+  -intros. apply derivable1_provable. apply derivable1_provable in H.
    apply wand_sepcon_adjoint;auto.
-  - intros. apply derivable1_provable. apply derivable1_provable in H0.
+  - intros. apply derivable1_provable. apply derivable1_provable in H.
    apply wand_sepcon_adjoint;auto.
    Qed.
 
 End SLFromDeduction2SLFromAxiomatization4.
 
 Instance reg_WandDeduction1WandAxiomatization:
-  RegisterClass D1ToP_reg (fun wandAX: unit => @WandDeduction2WandAxiomatization_WandX) 14.
+  RegisterClass D1ToP_reg (fun wandAX: unit => @WandDeduction2WandAxiomatization_wandAX) 14.
 Qed.
 
 Instance reg_SepconDeduction2SepconAxiomatization:
@@ -606,65 +607,55 @@ Proof.
 End SepconDeduction_weak2SepconAxiomatization_weak.
 
 Instance reg_SepconDeduction_weak2SepconAxiomatization_weak:
-  RegisterClass D1ToP_reg (fun sepconAX:unit => @SepconDeduction_weak2SepconAxiomatization_weak) 16.
+  RegisterClass D1ToP_reg (fun sepconAX:unit => @SepconDeduction_weak2SepconAxiomatization_weak) 15.
 Qed.
 
 Section SepconLogicEquiv_weak_iffpToSepconAxiomatization_weak_iffp.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {GammaE: LogicEquiv L}
         {GammaP: Provable L}
         {GammaD1: Derivable1 L}
         {D2P: Provable_Derivable1 L GammaP GammaD1}
+        {iffpD: IffDeduction L GammaD1}
         {sepconE: SepconLogicEquiv_weak_iffp L GammaE}
         {minD:MinimumDeduction L GammaD1}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}
         {ND: NormalDeduction L GammaP GammaD1}
         {NE2: NormalEquiv2 L GammaD1 GammaE}.
 
 Lemma SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp:
-SepconAxiomatization_weak_iffp L GammaP.
+  SepconAxiomatization_weak_iffp L GammaP.
 Proof.
+  pose proof Deduction2Axiomatization_minAX as minAX.
+  pose proof Deduction2Axiomatization_iffpAX as iffpAX.
   constructor.
-  -intros.
-   pose proof __sepcon_comm x y.
-   unfold iffp.
-   pose proof ipD2ipAx.
-   pose proof Derivable12Axiomatization_minAX.
-   apply equiv_derivable1 in H;destruct H.
-   rewrite derivable1_provable in H, H2.
-   pose proof andp_intros (x * y --> y * x) (y * x --> x * y).
-   pose proof modus_ponens _ _ H3 H.
-   pose proof modus_ponens _ _ H4 H2.
-   auto.
-  -intros.
-   pose proof __sepcon_assoc x y z.
-   unfold iffp.
-   pose proof ipD2ipAx.
-   pose proof Derivable12Axiomatization_minAX.
-   apply equiv_derivable1 in H;destruct H.
-   rewrite derivable1_provable in H, H2.
-   pose proof andp_intros (x * (y * z) --> x * y * z) (x * y * z --> x * (y * z)).
-   pose proof modus_ponens _ _ H3 H.
-   pose proof modus_ponens _ _ H4 H2.
-   auto.
-   Qed.
+  - intros.
+    pose proof __sepcon_comm x y.
+    apply equiv_derivable1 in H; destruct H.
+    rewrite derivable1_provable in H, H0.
+    apply solve_iffp_intros; auto.
+  - intros.
+    pose proof __sepcon_assoc x y z.
+    apply equiv_derivable1 in H; destruct H.
+    rewrite derivable1_provable in H, H0.
+    apply solve_iffp_intros; auto.
+Qed.
 
 End SepconLogicEquiv_weak_iffpToSepconAxiomatization_weak_iffp.
 
 Instance reg_SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp:
-  RegisterClass D1ToP_reg (fun sepcon_weak_iffp:unit => @SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp) 17.
+  RegisterClass D1ToP_reg (fun sepcon_weak_iffp:unit => @SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp) 16.
 Qed.
 
 Section EmpLogicEquiv_iffp2EmpAxiomatization_iffp.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         {GammaE: LogicEquiv L}
@@ -673,7 +664,7 @@ Context {L: Language}
         {D2P: Provable_Derivable1 L GammaP GammaD1}
         {empE: EmpLogicEquiv_iffp L GammaE}
         {minD:MinimumDeduction L GammaD1}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+        {iffpD: IffDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}
         {ND: NormalDeduction L GammaP GammaD1}
         {NE2: NormalEquiv2 L GammaD1 GammaE}.
@@ -681,37 +672,36 @@ Context {L: Language}
 Lemma EmpLogicEquiv_iffp2EmpAxiomatization_iffp:
 EmpAxiomatization_iffp L GammaP.
 Proof.
+  pose proof Deduction2Axiomatization_minAX as minAX.
+  pose proof Deduction2Axiomatization_iffpAX as iffpAX.
   constructor.
   intros.
-  unfold iffp.
   pose proof __sepcon_emp x.
-  pose proof ipD2ipAx.
-  pose proof Derivable12Axiomatization_minAX.
-  apply equiv_derivable1 in H;destruct H.
-  rewrite derivable1_provable in H, H2.
-  pose proof andp_intros (x * emp --> x) (x --> x * emp).
-  pose proof modus_ponens _ _ H3 H.
-  pose proof modus_ponens _ _ H4 H2.
-  auto.
-  Qed.
+  apply equiv_derivable1 in H; destruct H.
+  rewrite derivable1_provable in H, H0.
+  apply solve_iffp_intros; auto.
+Qed.
 
 End EmpLogicEquiv_iffp2EmpAxiomatization_iffp.
 
 Instance reg_EmpLogicEquiv_iffp2EmpAxiomatization_iffp:
-  RegisterClass D1ToP_reg (fun empAX_iffp:unit => @EmpLogicEquiv_iffp2EmpAxiomatization_iffp) 18.
+  RegisterClass D1ToP_reg (fun empAX_iffp:unit => @EmpLogicEquiv_iffp2EmpAxiomatization_iffp) 17.
 Qed.
 
 Section FromSepconDeductionWeakToSepcon.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {GammaD1: Derivable1 L}
         {minD: MinimumDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
         {wandD: WandDeduction L GammaD1}
         {sepconD: SepconDeduction_weak L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Lemma Adj2SepconMono: SepconMonoDeduction L GammaD1.
 Proof.
@@ -729,14 +719,17 @@ Section FromSepconWeakIffToSepconDeductionWeak.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {GammaE: LogicEquiv L}
         {GammaD1: Derivable1 L}
         {minD: MinimumDeduction L GammaD1}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
+        {iffpD: IffDeduction L GammaD1}
         {sepconE: SepconLogicEquiv_weak_iffp L GammaE}
-        {BD: BasicDeduction L GammaD1}
+        {bD: BasicDeduction L GammaD1}
         {NE2: NormalEquiv2 L GammaD1 GammaE}.
 
 Lemma SepconLogicEquivWeakIff2SepconDeductionWeak:
@@ -757,17 +750,20 @@ Section FromAdjToSepconOrDeductionPropositionalCombination.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {GammaD1: Derivable1 L}
         {minD: MinimumDeduction L GammaD1}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
+        {iffpD: IffDeduction L GammaD1}
         {sepconD: SepconDeduction L GammaD1}
         {wandD: WandDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
-Lemma Adj2SepconOrD: SepconOrDeduction L GammaD1.
+Lemma Adj2SepconOrD {orpL: OrLanguage L} {orpD: OrDeduction L GammaD1}: SepconOrDeduction L GammaD1.
 Proof.
   AddAxiomatization.
   pose proof Adj2SepconOr.
@@ -775,9 +771,9 @@ Proof.
   intros.
   apply derivable1_provable.
   apply SeparationLogic.orp_sepcon_left.
-  Qed.
+Qed.
 
-Lemma Adj2SepconFalse: SepconFalseDeduction L GammaD1.
+Lemma Adj2SepconFalse {falsepL: FalseLanguage L} {falsepD: FalseDeduction L GammaD1}: SepconFalseDeduction L GammaD1.
 Proof.
   AddAxiomatization.
   pose proof Adj2SepconFalse.
@@ -785,7 +781,7 @@ Proof.
   intros.
   apply derivable1_provable.
   apply SeparationLogic.falsep_sepcon_left.
-  Qed.
+Qed.
 
 End FromAdjToSepconOrDeductionPropositionalCombination.
 
@@ -793,13 +789,16 @@ Section FromEmpEIffToEmpD.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
         {minD: MinimumDeduction L GammaD1}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
+        {iffpD: IffDeduction L GammaD1}
         {sepconD: SepconDeduction L GammaD1}
         {empD: EmpLogicEquiv_iffp L GammaE}
         {BD: BasicDeduction L GammaD1}

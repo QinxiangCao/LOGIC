@@ -41,13 +41,7 @@ Class SepconAxiomatization_weak
 
 Class SepconAxiomatization_weak_iffp
         (L: Language)
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
         {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
   __sepcon_comm: forall x y, |-- x * y <--> y * x;
@@ -56,13 +50,7 @@ Class SepconAxiomatization_weak_iffp
 
 Class EmpAxiomatization_iffp
         (L: Language)
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
         {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         (Gamma: Provable L) := {
