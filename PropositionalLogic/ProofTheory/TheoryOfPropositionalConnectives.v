@@ -253,3 +253,13 @@ Proof.
     apply H.
 Qed.
 
+Ltac AddConnective_iffp :=
+  let iffpL := fresh "iffpL" in
+  let iffpDef := fresh "iffpDef" in
+  let iffpAX := fresh "iffpAX" in
+  set (iffpL := AndImp2Iff);
+  set (iffpDef := AndImp2Iff_Normal);
+  set (iffpAX := IffFromDefToAX_And_Imp);
+  clearbody iffpAX;
+  clear iffpDef;
+  clearbody iffpL.

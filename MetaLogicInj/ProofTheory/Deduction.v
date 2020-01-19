@@ -24,7 +24,7 @@ Import CoqPropInLogicNotation.
 Import Derivable1.
 Local Open Scope Derivable1.
 
-Class CoqPropDeduction
+Class CoqProDeduction
       (L: Language)
       {minL: MinimumLanguage L}
       {coq_prop_L: CoqPropLanguage L}
@@ -34,19 +34,19 @@ Class CoqPropDeduction
   coq_prop_impp: forall (P Q: Prop), (!! P --> !! Q) |-- !! (P -> Q);
 }.
 
-Section CoqPropDeduction2CoqPropAxiomatization.
+Section CoqProDeduction2CoqPropAxiomatization.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {GammaD1: Derivable1 L}
         {GammaP: Provable L}
-        {coq_prop_D: CoqPropDeduction L GammaD1}
+        {coq_prop_D: CoqProDeduction L GammaD1}
         {minD: MinimumDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}
         {P2D: Provable_Derivable1 L GammaP GammaD1}.
 
-Lemma CoqPropDeduction2CoqPropAxiomatization_coq_prop_AX:
+Lemma CoqProDeduction2CoqPropAxiomatization_coq_prop_AX:
 CoqPropAxiomatization L GammaP.
 Proof.
   constructor.
@@ -62,10 +62,10 @@ Proof.
    apply derivable1_provable. apply coq_prop_impp.
   Qed.
 
-End CoqPropDeduction2CoqPropAxiomatization.
+End CoqProDeduction2CoqPropAxiomatization.
 
-Instance reg_CoqPropDeduction2CoqPropAxiomatization_coq_prop_AX:
-  RegisterClass D1ToP_reg (fun coq_prop_AX:unit => @CoqPropDeduction2CoqPropAxiomatization_coq_prop_AX) 8.
+Instance reg_CoqProDeduction2CoqPropAxiomatization_coq_prop_AX:
+  RegisterClass D1ToP_reg (fun coq_prop_AX:unit => @CoqProDeduction2CoqPropAxiomatization_coq_prop_AX) 8.
 Qed.
 
 Section DeductionRules.
@@ -81,14 +81,14 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaD1: Derivable1 L}
         {minD: MinimumDeduction L GammaD1}
-        {andpD: AndpDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
         {adjD: ImppAndpAdjoint L GammaD1}
-        {orpD: OrpDeduction L GammaD1}
-        {falsepD: FalsepDeduction L GammaD1}
-        {inegpD: NegpDeduction L GammaD1}
+        {orpD: OrDeduction L GammaD1}
+        {falsepD: FalseDeduction L GammaD1}
+        {inegpD: NegDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
-        {truepD: TruepDeduction L GammaD1}
-        {coq_prop_D: CoqPropDeduction L GammaD1}
+        {truepD: TrueDeduction L GammaD1}
+        {coq_prop_D: CoqProDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
 Lemma coq_prop_andp_impp: 

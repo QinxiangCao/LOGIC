@@ -14,6 +14,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
@@ -130,29 +131,33 @@ Context {orpL: OrLanguage L}
         {truepL: TrueLanguage L}
         {falsepL: FalseLanguage L}.
 
-Lemma SepconOrDeduction2SepconOrAxiomatization_sepcon_orp_AX:
-SepconOrDeduction L GammaD1 -> SepconOrAxiomatization L GammaP.
+Lemma SepconOrDeduction2SepconOrAxiomatization_sepcon_orp_AX
+      {sepcon_orp_D: SepconOrDeduction L GammaD1}:
+  SepconOrAxiomatization L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply orp_sepcon_left.
   Qed.
 
-Lemma SepconFalseDeduction2SepconFalseAxiomatization_sepcon_false_AX:
-SepconFalseDeduction L GammaD1 -> SepconFalseAxiomatization L GammaP.
+Lemma SepconFalseDeduction2SepconFalseAxiomatization_sepcon_false_AX
+      {sepcon_falsep_D: SepconFalseDeduction L GammaD1}:
+  SepconFalseAxiomatization L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply falsep_sepcon_left.
   Qed.
 
-Lemma ExtSeparationLogicD2ExtSeparationLogic_esGamma:
-ExtSeparationLogicD L GammaD1 -> ExtSeparationLogic L GammaP.
+Lemma ExtSeparationLogicD2ExtSeparationLogic_esGamma
+      {esD: ExtSeparationLogicD L GammaD1}:
+  ExtSeparationLogic L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply sepcon_ext.
   Qed.
 
-Lemma GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma:
-GarbageCollectSeparationLogicD L GammaD1 -> GarbageCollectSeparationLogic L GammaP.
+Lemma GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma
+      {gcs: GarbageCollectSeparationLogicD L GammaD1}:
+  GarbageCollectSeparationLogic L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply sepcon_elim1.
@@ -253,16 +258,19 @@ Instance reg_WandDeduction1WandAxiomatization:
 Qed.
 
 Instance reg_SepconDeduction2SepconAxiomatization:
-  RegisterClass D1ToP_reg (fun SAx:unit => @SepconDeduction2SepconAxiomatization_sepconAX) 15.
+  RegisterClass D1ToP_reg (fun SAx:unit => @SepconDeduction2SepconAxiomatization_sepconAX) 8.
 Qed.
 
 Section SepconRulesFromDerivable1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
         {sepconL: SepconLanguage L}
         {GammaD1: Derivable1 L}
         {minD: MinimumDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
         {sepconD: SepconDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
@@ -274,10 +282,9 @@ Proof.
   apply sepcon_assoc2.
   Qed.
 
-Context {pL: PropositionalLanguage L}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}.
-
-Lemma orp_sepcon_right:
+Lemma orp_sepcon_right
+      {pL: OrLanguage L}
+      {orpD: OrDeduction L GammaD1}:
   forall (x y z: expr), x * z || y * z |-- (x || y) * z.
 Proof.
   AddAxiomatization.
@@ -286,7 +293,9 @@ Proof.
   apply orp_sepcon_right.
   Qed.
 
-Lemma falsep_sepcon_right:
+Lemma falsep_sepcon_right
+      {falsepL: FalseLanguage L}
+      {falsepD: FalseDeduction L GammaD1}:
   forall (x: expr), FF |-- FF * x.
 Proof.
   AddAxiomatization.
@@ -301,11 +310,14 @@ Section SepconRulesFromLogicEquiv.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
         {sepconL: SepconLanguage L}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
         {NE2: NormalEquiv2 L GammaD1 GammaE}
         {minD: MinimumDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
         {sepconD: SepconDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
@@ -327,8 +339,10 @@ Proof.
   -apply sepcon_assoc2.
   Qed.
 
-Context {pL: PropositionalLanguage L}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+Context {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {orpD: OrDeduction L GammaD1}
+        {falsepD: FalseDeduction L GammaD1}
         {sepcon_orp_D: SepconOrDeduction L GammaD1}
         {sepcon_false_D: SepconFalseDeduction L GammaD1}.
 
@@ -336,12 +350,13 @@ Lemma sepcon_orp_distr_r: forall (x y z: expr),
   (x || y) * z --||-- x * z || y * z.
 Proof.
   AddAxiomatization.
+  AddConnective_iffp.
   intros.
   apply equiv_derivable1.
   pose proof sepcon_orp_distr_r x y z.
   unfold iffp in H.
-  pose proof solve_andp_elim1 _ _ H.
-  pose proof solve_andp_elim2 _ _ H.
+  pose proof solve_iffp_elim1 _ _ H.
+  pose proof solve_iffp_elim2 _ _ H.
   rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
@@ -350,11 +365,12 @@ Lemma sepcon_orp_distr_l: forall (x y z: expr),
   x * (y || z) --||-- x * y || x * z.
 Proof.
   AddAxiomatization.
+  AddConnective_iffp.
   intros.
   pose proof sepcon_orp_distr_l x y z.
   unfold iffp in H.
-  pose proof solve_andp_elim1 _ _ H.
-  pose proof solve_andp_elim2 _ _ H.
+  pose proof solve_iffp_elim1 _ _ H.
+  pose proof solve_iffp_elim2 _ _ H.
   apply equiv_derivable1. rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
@@ -363,11 +379,12 @@ Lemma falsep_sepcon: forall (x: expr),
   FF * x --||-- FF.
 Proof.
   AddAxiomatization.
+  AddConnective_iffp.
   intros.
   pose proof falsep_sepcon x.
   unfold iffp in H.
-  pose proof solve_andp_elim1 _ _ H.
-  pose proof solve_andp_elim2 _ _ H.
+  pose proof solve_iffp_elim1 _ _ H.
+  pose proof solve_iffp_elim2 _ _ H.
   apply equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
@@ -376,11 +393,12 @@ Lemma sepcon_falsep: forall (x: expr),
   x * FF --||-- FF.
 Proof.
   AddAxiomatization.
+  AddConnective_iffp.
   intros.
   pose proof sepcon_falsep x.
   unfold iffp in H.
-  pose proof solve_andp_elim1 _ _ H.
-  pose proof solve_andp_elim2 _ _ H.
+  pose proof solve_iffp_elim1 _ _ H.
+  pose proof solve_iffp_elim2 _ _ H.
   apply equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
@@ -391,11 +409,12 @@ Context {empL: EmpLanguage L}
 Lemma sepcon_emp: forall x, x * emp --||-- x.
 Proof.
   AddAxiomatization.
+  AddConnective_iffp.
   intros.
   pose proof sepcon_emp x.
   unfold iffp in H.
-  pose proof solve_andp_elim1 _ _ H.
-  pose proof solve_andp_elim2 _ _ H.
+  pose proof solve_iffp_elim1 _ _ H.
+  pose proof solve_iffp_elim2 _ _ H.
   apply equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
@@ -443,8 +462,13 @@ Proof.
   apply H1 in H;[auto|auto].
   Qed.
 
-Context {pL: PropositionalLanguage L}
-        {ipD: IntuitionisticPropositionalDeduction L GammaD1}
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
+        {orpD: OrDeduction L GammaD1}
+        {falsepD: FalseDeduction L GammaD1}
         {sepcon_orp_D: SepconOrDeduction L GammaD1}
         {sepcon_false_D: SepconFalseDeduction L GammaD1}.
 
@@ -453,11 +477,12 @@ Lemma sepcon_elim2: forall {gcsD: GarbageCollectSeparationLogicD L GammaD1} (x y
 Proof.
   intros.
   AddAxiomatization.
+  AddConnective_iffp.
   pose proof sepcon_elim2 x y.
   apply derivable1_provable;auto.
   Qed.
 
-Lemma emp_sepcon_elim1: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicD L GammaD1} x y,
+Lemma emp_sepcon_elim1: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicD L GammaD1}  x y,
   x * y && emp |-- x.
 Proof.
   intros.
@@ -466,11 +491,12 @@ Proof.
   apply derivable1_provable;auto.
   Qed.
 
-Lemma emp_sepcon_elim2: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicD L GammaD1} x y,
+Lemma emp_sepcon_elim2: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicD L GammaD1} x y,
   x * y && emp |-- y.
 Proof.
   intros.
   AddAxiomatization.
+  AddConnective_iffp.
   pose proof emp_sepcon_elim2.
   apply derivable1_provable;auto.
   Qed.
@@ -482,11 +508,12 @@ Lemma wand_andp: forall x y z: expr,
   x -* y && z --||-- (x -* y) && (x -* z).
 Proof.
   AddAxiomatization.
+  AddConnective_iffp.
   intros.
   pose proof wand_andp x y z.
   unfold iffp in H.
-  pose proof solve_andp_elim1 _ _ H.
-  pose proof solve_andp_elim2 _ _ H.
+  pose proof solve_iffp_elim1 _ _ H.
+  pose proof solve_iffp_elim2 _ _ H.
   apply equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
@@ -495,10 +522,11 @@ Lemma orp_wand: forall x y z: expr,
   (x || y) -* z --||-- (x -* z) && (y -* z).
 Proof.
   AddAxiomatization.
+  AddConnective_iffp.
   intros.
   pose proof orp_wand x y z.
-  pose proof solve_andp_elim1 _ _ H.
-  pose proof solve_andp_elim2 _ _ H.
+  pose proof solve_iffp_elim1 _ _ H.
+  pose proof solve_iffp_elim2 _ _ H.
   apply equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
@@ -509,7 +537,6 @@ End WandRules.
 
 Class SepconMonoDeduction
         (L: Language)
-        {minL: MinimumLanguage L}
         {sepconL: SepconLanguage L}
         (GammaD1: Derivable1 L) := {
   __sepcon_mono: forall x1 x2 y1 y2 : expr, x1 |-- x2 -> y1 |-- y2 -> x1 * y1 |-- x2 * y2
@@ -517,7 +544,6 @@ Class SepconMonoDeduction
 
 Class SepconDeduction_weak
         (L: Language)
-        {minL: MinimumLanguage L}
         {sepconL: SepconLanguage L}
         (GammaD1: Derivable1 L) := {
   __sepcon_comm_impp: forall x y, x * y |-- y * x;
@@ -526,8 +552,6 @@ Class SepconDeduction_weak
 
 Class SepconLogicEquiv_weak_iffp
         (L: Language)
-        {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
         (GammaE: LogicEquiv L) := {
   __sepcon_comm: forall x y, x * y --||-- y * x;
@@ -536,8 +560,6 @@ Class SepconLogicEquiv_weak_iffp
 
 Class EmpLogicEquiv_iffp
         (L: Language)
-        {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         (GammaE: LogicEquiv L) := {

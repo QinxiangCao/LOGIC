@@ -86,42 +86,42 @@ Class IterAndAxiomatization_left
     |-- iter_andp xs <--> fold_left andp xs TT
 }.
 
-Class AndpDeduction (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+Class AndDeduction (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_andp_intros:forall x y z,derivable1 x y -> derivable1 x z -> derivable1 x (y && z);
   derivable1_andp_elim1:forall x y,derivable1 (x && y) x;
   derivable1_andp_elim2:forall x y,derivable1 (x && y) y
 }.
 
-Class ImppAndpAdjoint (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+Class ImpAndAdjoint (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_impp_andp_adjoint: forall x y z, derivable1 x (y-->z) <-> derivable1 (x && y) z
 }.
 
-Class OrpDeduction (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+Class OrDeduction (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_orp_intros1:forall x y,derivable1 x (x || y);
   derivable1_orp_intros2:forall x y,derivable1 y (x || y);
   derivable1_orp_elim:forall x y z,derivable1 x z -> derivable1 y z -> derivable1 (x || y) z
 }.
 
-Class FalsepDeduction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+Class FalseDeduction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_falsep_elim: forall x, derivable1 FF x
 }.
 
-Class NegpDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+Class NegDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_negp_unfold: forall x, derivable1 (~~x) (x --> FF);
   derivable1_negp_fold: forall x, derivable1 (x --> FF) (~~x)
 }.
 
-Class TruepDeduction (L: Language) {minL: MinimumLanguage L} {truepL: TrueLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+Class TrueDeduction (L: Language) {minL: MinimumLanguage L} {truepL: TrueLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_truep_intros: forall x, derivable1 x TT
 }.
 
-Class IffDeduction (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L} (GammaD1: Derivable1 L) {minD:MinimumDeduction L GammaD1}:= {
+Class IffDeduction (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_iffp_intros: forall x y, derivable1 (x --> y) ((y --> x) --> (x <--> y));
   derivable1_iffp_elim1: forall x y, derivable1 (x <--> y) (x --> y);
   derivable1_iffp_elim2: forall x y, derivable1 (x <--> y) (y --> x)
 }.
 
-Class EquivAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaE:LogicEquiv L) := {
   equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 && y1) --||-- (x2 && y2);
   equiv_andp_comm:forall x y,x && y --||-- y && x;
@@ -1311,9 +1311,9 @@ Lemma derivable1_distr
        {orpL: OrLanguage L}
        {GammaD1: Derivable1 L}
        {minD: MinimumDeduction L GammaD1}
-       {andpD: AndpDeduction L GammaD1}
-       {orpD: OrpDeduction L GammaD1}
-       {adjD:ImppAndpAdjoint L GammaD1}
+       {andpD: AndDeduction L GammaD1}
+       {orpD: OrDeduction L GammaD1}
+       {adjD: ImpAndAdjoint L GammaD1}
        {BD: BasicDeduction L GammaD1}
       :forall P x y z,
   derivable1 (P && (x || y)) z <-> derivable1 ((P && x) || (P && y)) z.
@@ -1372,8 +1372,8 @@ Context {L: Language}
 Section Deduction2Axiomatization1.
 
 Context {andpL: AndLanguage L}
-        {andpD: AndpDeduction L GammaD1}
-        {adjD: ImppAndpAdjoint L GammaD1}.
+        {andpD: AndDeduction L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}.
 
 Lemma Deduction2Axiomatization_andpAX : AndAxiomatization L GammaP.
 Proof.
@@ -1390,7 +1390,7 @@ Proof.
   Qed.
 
 Context {orpL: OrLanguage L}
-        {orpD: OrpDeduction L GammaD1}.
+        {orpD: OrDeduction L GammaD1}.
 
 Lemma Deduction2Axiomatization_orpAX: OrAxiomatization L GammaP.
 Proof.
@@ -1418,7 +1418,7 @@ End Deduction2Axiomatization1.
 Section Deduction2Axiomatization_falsepAX.
 
 Context {falsepL: FalseLanguage L}
-        {falsepD: FalsepDeduction L GammaD1}.
+        {falsepD: FalseDeduction L GammaD1}.
 
 Lemma Deduction2Axiomatization_falsepAX: FalseAxiomatization L GammaP.
   constructor.
@@ -1432,7 +1432,7 @@ End Deduction2Axiomatization_falsepAX.
 Section Deduction2Axiomatization_truepAX.
 
 Context {truepL: TrueLanguage L}
-        {truepD: TruepDeduction L GammaD1}
+        {truepD: TrueDeduction L GammaD1}
         {PD: Provable_Derivable1 L GammaP GammaD1}.
 
 Lemma Deduction2Axiomatization_truepAX: TrueAxiomatization L GammaP.
@@ -1448,7 +1448,7 @@ Section Deduction2Axiomatization_negpAX.
 
 Context {negpL: NegLanguage L}
         {falsepL: FalseLanguage L}
-        {negpD: NegpDeduction L GammaD1}.
+        {negpD: NegDeduction L GammaD1}.
 
 Lemma Deduction2Axiomatization_negpAX: IntuitionisticNegAxiomatization L GammaP.
 Proof.

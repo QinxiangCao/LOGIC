@@ -38,6 +38,7 @@ Context {L: Language}
 
 Instance andp_proper_impp: Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) andp.
 Proof.
+  clear - minAX andpAX.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
@@ -143,6 +144,7 @@ Qed.
 
 Instance andp_proper_iffp: Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) andp.
 Proof.
+  clear - minAX iffpAX andpAX.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
@@ -164,6 +166,7 @@ Qed.
 
 Instance orp_proper_iffp: Proper ((fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y) ==> (fun x y => |-- x <--> y)) orp.
 Proof.
+  clear - minAX iffpAX orpAX.
   AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
@@ -256,7 +259,7 @@ Context {L: Language}
 Section andp.
 
 Context {andpL: AndLanguage L}
-        {andpD: AndpDeduction L GammaD1}.
+        {andpD: AndDeduction L GammaD1}.
 
 Instance andp_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivable1) andp.
 Proof.
@@ -274,7 +277,7 @@ End andp.
 Section orp.
 
 Context {orpL: OrLanguage L}
-        {orpD: OrpDeduction L GammaD1}.
+        {orpD: OrDeduction L GammaD1}.
 
 Instance orp_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivable1) orp.
 Proof.
@@ -292,7 +295,7 @@ End orp.
 Section negp.
 
 Context {negpL: NegLanguage L}
-        {negpD: NegpDeduction L GammaD1}.
+        {negpD: NegDeduction L GammaD1}.
 
 Instance negp_proper_derivable1: Proper (derivable1 --> derivable1) negp.
 Proof.

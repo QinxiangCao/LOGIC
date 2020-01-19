@@ -272,6 +272,9 @@ MinimumLogic: \
 PropositionalLogic: \
   .depend $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.vo)
 
+MetaLogicInj: \
+  .depend $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.vo)
+
 ModalLogic: \
   .depend $(ModalLogic_FILES:%.v=ModalLogic/%.vo)
 
