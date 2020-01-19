@@ -9,6 +9,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
@@ -56,7 +57,7 @@ Existing Instances SeparationEmpLanguage.L
                    SeparationEmpLanguage.negpL
                    SeparationEmpLanguage.sepconL
                    SeparationEmpLanguage.wandL
-                   SeparationEmplanguage.empL.
+                   SeparationEmpLanguage.empL.
 
 Context (PAR: SL_Parameter).
 
@@ -98,17 +99,31 @@ Proof.
   + apply axiom2.
 Qed.
 
-Instance ipAX: IntuitionisticPropositionalLogic SeparationEmpLanguage.L GP.
+Instance andpAX: AndAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply andp_intros.
   + apply andp_elim1.
   + apply andp_elim2.
+Qed.
+
+
+Instance orpAX: OrAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
   + apply orp_intros1.
   + apply orp_intros2.
   + apply orp_elim.
-  + apply falsep_elim.
 Qed.
+
+Instance falsepAX: FalseAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
+  apply falsep_elim.
+Qed.
+
+Instance iffpAX: IffAxiomatization SeparationEmpLanguage.L GP :=
+  IffFromDefToAX_And_Imp.
 
 Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
