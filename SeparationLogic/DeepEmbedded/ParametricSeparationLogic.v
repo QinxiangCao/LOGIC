@@ -125,6 +125,12 @@ Qed.
 Instance iffpAX: IffAxiomatization SeparationEmpLanguage.L GP :=
   IffFromDefToAX_And_Imp.
 
+Instance truepAX: TrueAxiomatization SeparationEmpLanguage.L GP :=
+  TrueFromDefToAX_False_Imp.
+
+Instance inegpAX: IntuitionisticNegAxiomatization SeparationEmpLanguage.L GP :=
+  NegFromDefToAX_False_Imp.
+
 Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
