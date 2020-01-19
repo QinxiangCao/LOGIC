@@ -285,11 +285,13 @@ all: \
 
 lgen_demo_1:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
-	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v
+	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v LogicGenerator/demo/export_lib_1.v
 	@echo COQC LogicGenerator/demo/interface_1.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_1.v
 	@echo COQC LogicGenerator/demo/implementation_1.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_1.v
+	@echo COQC LogicGenerator/demo/export_lib_1.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/export_lib_1.v
 
 lgen_demo_2:
 	./logic_gen.sh LogicGenerator/demo/configuration_2.v LogicGenerator/demo/interface_2.v
