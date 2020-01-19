@@ -20,10 +20,23 @@ Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 Import SeparationLogicNotation.
 
-Class Parametric_SeparationLogic (PAR: SL_Parameter) (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {sepconL: SepconLanguage L} {wandL: WandLanguage L} {empL: EmpLanguage L} (GammaP: Provable L) {minAX: MinimumAxiomatization L GammaP} {ipAX: IntuitionisticPropositionalLogic L GammaP} {sepconAX: SepconAxiomatization L GammaP} {wandAX: WandAxiomatization L GammaP} {empAX: EmpAxiomatization L GammaP} := {
-  Parametric_DM: WEM = true -> DeMorganPropositionalLogic L GammaP;
-  Parametric_GD: IC = true -> GodelDummettPropositionalLogic L GammaP;
-  Parametric_C: EM = true -> ClassicalPropositionalLogic L GammaP;
+Class Parametric_SeparationLogic
+      (PAR: SL_Parameter)
+      (L: Language)
+      {minL: MinimumLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {iffpL: IffLanguage L}
+      {negpL: NegLanguage L}
+      {falsepL: FalseLanguage L}
+      {truepL: TrueLanguage L}
+      {sepconL: SepconLanguage L}
+      {wandL: WandLanguage L}
+      {empL: EmpLanguage L}
+      (GammaP: Provable L) := {
+  Parametric_DM: WEM = true -> DeMorganPropositionalAxiomatization L GammaP;
+  Parametric_GD: IC = true -> GodelDummettPropositionalAxiomatization L GammaP;
+  Parametric_C: EM = true -> ExcludedMiddle L GammaP;
   Parametric_GC: SCE = true -> GarbageCollectSeparationLogic L GammaP;
   Parametric_NE: ESE = true -> NonsplitEmpSeparationLogic L GammaP;
   Parametric_ED: ED = true -> DupEmpSeparationLogic L GammaP
@@ -33,7 +46,17 @@ Section SeparationLogic.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
+Existing Instances SeparationEmpLanguage.L
+                   SeparationEmpLanguage.minL
+                   SeparationEmpLanguage.andpL
+                   SeparationEmpLanguage.orpL
+                   SeparationEmpLanguage.falsepL
+                   SeparationEmpLanguage.truepL
+                   SeparationEmpLanguage.iffpL
+                   SeparationEmpLanguage.negpL
+                   SeparationEmpLanguage.sepconL
+                   SeparationEmpLanguage.wandL
+                   SeparationEmplanguage.empL.
 
 Context (PAR: SL_Parameter).
 

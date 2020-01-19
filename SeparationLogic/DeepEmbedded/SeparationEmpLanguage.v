@@ -139,6 +139,12 @@ Instance truepL {Sigma: PropositionalVariables}: TrueLanguage L :=
 Instance truepDef {Sigma: PropositionalVariables}: TrueDefinition_False_Imp L :=
   FalseImp2True_Normal.
 
+Instance sepconL {Sigma: PropositionalVariables}: SepconLanguage L :=
+  Build_SepconLanguage L sepcon.
+
+Instance wandL {Sigma: PropositionalVariables}: WandLanguage L :=
+  Build_WandLanguage L wand.
+
 Instance empL {Sigma: PropositionalVariables}: EmpLanguage L :=
   Build_EmpLanguage L emp.
 
