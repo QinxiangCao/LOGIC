@@ -10,6 +10,7 @@ Goal False.
   idtac "Ltac def_inline_expr_tac := idtac.".
   idtac "Ltac def_expr_tac := idtac.".
   idtac "Ltac context_expr_tac := idtac.".
+  idtac "Ltac def__PARA__para_tac := idtac.".
 
   try
   let LIB := eval compute in local_lib_file in
@@ -27,5 +28,7 @@ Goal False.
   let PARA := eval compute in instance_para in
   idtac "Ltac def_inline_expr_tac ::= idtac ""  Parameter Inline expr : forall `{""" PARA """}, Type ."" .";
   idtac "Ltac def_expr_tac ::= idtac ""  Parameter expr : forall `{""" PARA """}, Type ."" .";
-  idtac "Ltac context_expr_tac ::= idtac ""  Context `{""" PARA """}."" .".
+  idtac "Ltac context_expr_tac ::= idtac ""  Context `{""" PARA """}."" .";
+  idtac "Ltac def__PARA__para_tac ::= idtac ""  Definition __PARA__ : Type := """ PARA """."" .".
 Abort.
+

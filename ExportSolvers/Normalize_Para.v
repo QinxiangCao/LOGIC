@@ -26,7 +26,16 @@ Require Import RelationClasses.
 
 Module Type ASSUM.
 
-Parameter expr: Type.
+Parameter __PARA__: Type.
+  
+Parameter expr: forall `{__PARA__}, Type.
+
+Section ASSUM.
+
+Context {p: __PARA__}.
+
+Local Notation "'expr'" := (@expr p).
+
 Parameter provable: expr -> Prop.
 Parameter sepcon: expr -> expr -> expr.
 Parameter andp: expr -> expr -> expr.
@@ -73,6 +82,7 @@ Axiom coq_prop_andp: forall (P: Prop) Q,
 Axiom andp_coq_prop: forall (P: Prop) Q,
   P -> |-- Q && !! P <--> Q.
 
+End ASSUM.
 End ASSUM.
 
 Module ExportTactic (T: ASSUM).

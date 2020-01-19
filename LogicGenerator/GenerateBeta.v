@@ -265,6 +265,7 @@ Ltac beta_print :=
 
   newline;
 
+  dolist (print BetaDef) primary_rules;
   dolist (print BetaDef) derived_rules;
 
   newline;

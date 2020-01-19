@@ -206,7 +206,7 @@ SeparationLogic_FILES = \
   $(SeparationLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
 ExportSolvers_FILES = \
-  Normalize.v
+  Normalize.v Normalize_Para.v
 
 Extensions_ProofTheory_FILES = \
   Stable.v ModalSeparation.v Corable.v CoreTransit.v
@@ -326,6 +326,16 @@ lgen_demo_5:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_5.v
 	@echo COQC LogicGenerator/demo/implementation_5.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_5.v
+
+lgen_demo_6:
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
+	./logic_gen.sh LogicGenerator/demo/configuration_6.v LogicGenerator/demo/interface_6.v LogicGenerator/demo/export_lib_6.v
+	@echo COQC LogicGenerator/demo/interface_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_6.v
+	@echo COQC LogicGenerator/demo/implementation_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_6.v
+	@echo COQC LogicGenerator/demo/export_lib_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/export_lib_6.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend

@@ -259,6 +259,7 @@ Ltac two_stage_print :=
   idtac "Module DerivedNames (Names: LanguageSig).";
   idtac "Include Names.";
   when instance_para_open: (
+    def__PARA__para_tac;
     idtac "  Section DerivedNames.";
     context_expr_tac
   );
