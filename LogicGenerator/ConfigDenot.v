@@ -1,25 +1,26 @@
-Require Import GeneralLogic.Base.
+Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
-Require Import MinimumLogic.Syntax.
-Require Import MinimumLogic.ProofTheory.Minimum.
-Require Import MinimumLogic.ProofTheory.RewriteClass.
-Require Import PropositionalLogic.Syntax.
-Require Import PropositionalLogic.ProofTheory.Intuitionistic.
-Require Import PropositionalLogic.ProofTheory.Classical.
-Require Import PropositionalLogic.ProofTheory.DeMorgan.
-Require Import PropositionalLogic.ProofTheory.GodelDummett.
-Require Import PropositionalLogic.ProofTheory.RewriteClass.
-Require Import PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
-Require Import PropositionalLogic.ProofTheory.ProofTheoryPatterns.
-Require Import MetaLogicInj.Syntax.
-Require Import MetaLogicInj.ProofTheory.ProofRules.
-Require Import SeparationLogic.Syntax.
-Require Import SeparationLogic.ProofTheory.SeparationLogic.
-Require Import SeparationLogic.ProofTheory.RewriteClass.
-Require Import SeparationLogic.ProofTheory.DerivedRules.
-Require Import SeparationLogic.ProofTheory.IterSepcon.
-Require Import SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
-Require Import SeparationLogic.ProofTheory.Corable.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
+Require Import Logic.PropositionalLogic.Syntax.
+Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
+Require Import Logic.PropositionalLogic.ProofTheory.Classical.
+Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
+Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
+Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
+Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.MetaLogicInj.Syntax.
+Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
+Require Import Logic.SeparationLogic.Syntax.
+Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
+Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.
+Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
+Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
+Require Import Logic.SeparationLogic.ProofTheory.Corable.
 
 Require Logic.LogicGenerator.ConfigLang.
 Require Import Logic.LogicGenerator.Utils. 
@@ -162,7 +163,10 @@ Definition classes :=
         exact l).
 
 Definition refl_classes :=
-  [ RC GEN_iter_andp_FROM_fold_left_andp
+  [ RC GEN_iffp_FROM_andp_impp
+  ; RC GEN_truep_FROM_falsep_impp
+  ; RC GEN_negpp_FROM_falsep_impp
+  ; RC GEN_iter_andp_FROM_fold_left_andp
   ; RC GEN_iter_sepcon_FROM_fold_left_sepcon
   ; RC GEN_derivable_FROM_provable
   ; RC GEN_provable_FROM_derivable
@@ -254,6 +258,9 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
         {Cor: Corable L}
+        {iffpDef: IffDefinition_And_Imp L}
+        {truepDef: TrueDefinition_False_Imp L}
+        {negpDef: NegDefinition_False_Imp L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}
@@ -439,7 +446,10 @@ Definition instances_build :=
         exact instances_build).
 
 Definition refl_instances :=
-  [ (iter_andp_DL, FoldLeftAnd2IterAnd_Normal)
+  [ (iffpDef, AndImp2Iff_Normal)
+  ; (truepDef, FalseImp2True_Normal)
+  ; (negpDef, FalseImp2Neg_Normal)
+  ; (iter_andp_DL, FoldLeftAnd2IterAnd_Normal)
   ; (iter_sepcon_DL, FoldLeftSepcon2IterSepcon_Normal)
   ; (AX, Provable2Derivable_Normal)
   ; (SC, Derivable2Provable_Normal)

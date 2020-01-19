@@ -62,8 +62,8 @@ Module NaiveRule.
   Lemma falsep_elim : forall x : expr, provable (impp falsep x).
   Proof. unfold provable, impp, falsep. destruct 1. Qed.
 
-  Lemma excluded_middle : forall x : expr, provable (orp x (negp x)).
-  Proof. unfold provable, orp, negp, impp, falsep. intros; tauto. Qed.
+  Lemma peirce_law : forall x y: expr, provable (impp (impp (impp x y) x) x).
+  Proof. unfold provable, impp. intros; tauto. Qed.
 
   Axiom sepcon_comm: forall x y, provable (iffp (sepcon x y) (sepcon y x)).
   Axiom sepcon_assoc: forall x y z,

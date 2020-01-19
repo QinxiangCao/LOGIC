@@ -120,9 +120,9 @@ Inductive rule_class :=
 | derivitive_OF_classical_logic
 | corability_OF_basic_setting
 | corability_OF_coq_prop
-(*| GEN_iffp_FROM_andp_impp
+| GEN_iffp_FROM_andp_impp
 | GEN_truep_FROM_falsep_impp
-| GEN_negpp_FROM_falsep_impp*)
+| GEN_negpp_FROM_falsep_impp
 | GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -554,16 +554,19 @@ match rc1, rc2 with
 | derivitive_OF_truep, derivitive_OF_truep
 | derivitive_OF_iffp, derivitive_OF_iffp
 | derivitive_OF_negp, derivitive_OF_negp
-| derivitive_OF_de_morgan, derivitive_OF_de_morgan => true
-| derivitive_OF_godel_dummett, derivitive_OF_godel_dummett => true
-| derivitive_OF_classical_logic, derivitive_OF_classical_logic => true
-| corability_OF_basic_setting, corability_OF_basic_setting => true
-| corability_OF_coq_prop, corability_OF_coq_prop => true
-| GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp => true
-| GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp => true
-| GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon => true
-| GEN_iter_sepcon_FROM_fold_right_sepcon, GEN_iter_sepcon_FROM_fold_right_sepcon => true
-| GEN_derivable_FROM_provable, GEN_derivable_FROM_provable => true
+| derivitive_OF_de_morgan, derivitive_OF_de_morgan
+| derivitive_OF_godel_dummett, derivitive_OF_godel_dummett
+| derivitive_OF_classical_logic, derivitive_OF_classical_logic
+| corability_OF_basic_setting, corability_OF_basic_setting
+| corability_OF_coq_prop, corability_OF_coq_prop
+| GEN_iffp_FROM_andp_impp, GEN_iffp_FROM_andp_impp
+| GEN_truep_FROM_falsep_impp, GEN_truep_FROM_falsep_impp
+| GEN_negpp_FROM_falsep_impp, GEN_negpp_FROM_falsep_impp
+| GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp
+| GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp
+| GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon
+| GEN_iter_sepcon_FROM_fold_right_sepcon, GEN_iter_sepcon_FROM_fold_right_sepcon
+| GEN_derivable_FROM_provable, GEN_derivable_FROM_provable
 | GEN_provable_FROM_derivable, GEN_provable_FROM_derivable => true
 | _, _ => false
 end.

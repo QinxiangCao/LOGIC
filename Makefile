@@ -249,13 +249,13 @@ FILES = \
   $(MinimumLogic_FILES:%.v=MinimumLogic/%.v) \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
   $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.v) \
-  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
-  $(Extensions_FILES:%.v=Extensions/%.v) \
-  $(Example_Files:%.v=Examples/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
+#  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
+#  $(Extensions_FILES:%.v=Extensions/%.v) \
+#  $(Example_Files:%.v=Examples/%.v) \
 
 $(FILES:%.v=%.vo): %.vo: %.v
 	@echo COQC $*.v
