@@ -31,7 +31,12 @@ Section Down2Flat.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {MD: Model}

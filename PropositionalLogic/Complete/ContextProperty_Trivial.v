@@ -28,12 +28,22 @@ Section ContextProperties.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}
-        {cpSC: ClassicalPropositionalSequentCalculus L Gamma}.
+        {andpSC: AndSequentCalculus L Gamma}
+        {orpSC: OrSequentCalculus L Gamma}
+        {falsepSC: FalseSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
+        {iffpSC: IffSequentCalculus L Gamma}
+        {truepSC: TrueSequentCalculus L Gamma}
+        {cpSC: ClassicalSequentCalculus L Gamma}.
 
 Lemma classical_derivable_spec: forall (Phi: context) (x: expr),
   Phi |-- x <-> ~ consistent (Union _ Phi (Singleton _ (~~ x))).
@@ -43,7 +53,7 @@ Proof.
   AddAxiomatization.
   fold (@consistent L Gamma (Phi;; ~~ x)).
   rewrite <- (double_negp x) at 1.
-  unfold negp at 1.
+  rewrite (negp_fold_unfold (~~ x)) at 1.
   rewrite <- deduction_theorem.
   rewrite consistent_spec.
   tauto.
@@ -124,11 +134,12 @@ Proof.
     - exfalso.
       apply H0 in H2.
       rewrite MCS_element_derivable in H1, H2 by auto.
+      apply (deduction_negp_unfold Phi y) in H1. rewrite deduction_theorem in H1.
       pose proof deduction_modus_ponens _ _ _ H2 H1.
       destruct H as [? _].
       rewrite consistent_spec in H; auto.
     - rewrite MCS_element_derivable in H2 |- * by auto.
-      unfold negp in H2.
+      apply (deduction_negp_unfold Phi x) in H2. rewrite deduction_theorem in H2.
       rewrite <- deduction_theorem in H2 |- *.
       pose proof deduction_falsep_elim _ y H2.
       auto.
@@ -139,7 +150,10 @@ Lemma MCS_negp_iff: forall (Phi: context),
   (forall x: expr, Phi (~~ x) <-> ~ Phi x).
 Proof.
   intros.
-  unfold negp.
+  rewrite MCS_element_derivable by auto.
+  rewrite (deduction_negp_fold_unfold Phi x).
+  rewrite deduction_theorem.
+  rewrite <- MCS_element_derivable by auto.
   rewrite MCS_impp_iff by auto.
   assert (~ Phi FF); [| tauto].
   pose proof proj1 H.
@@ -169,7 +183,8 @@ Proof.
   apply derivable_assum in H5.
   eapply deduction_modus_ponens.
   - apply H4.
-  - apply H5.
+  - apply (deduction_negp_unfold Psi x) in H5.
+    rewrite deduction_theorem in H5. apply H5.
 Qed.
 
 End ContextProperties.

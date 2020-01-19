@@ -74,7 +74,9 @@ PropositionalLogic_ProofTheory_FILES = \
   Intuitionistic.v DeMorgan.v \
   GodelDummett.v Classical.v \
   RewriteClass.v ProofTheoryPatterns.v \
-  TheoryOfIteratedConnectives.v
+  TheoryOfIteratedConnectives.v \
+  TheoryOfPropositionalConnectives.v \
+  TheoryOfClassicalAxioms.v
 
 PropositionalLogic_Semantics_FILES = \
   Kripke.v Trivial.v
@@ -108,7 +110,7 @@ PropositionalLogic_FILES = \
   $(PropositionalLogic_Complete_FILES:%.v=Complete/%.v)
 
 MetaLogicInj_ProofTheory_FILES = \
-  ProofRules.v
+  ProofRules.v Deduction.v
 
 MetaLogicInj_Semantics_FILES = \
   Kripke.v
@@ -247,13 +249,13 @@ FILES = \
   $(MinimumLogic_FILES:%.v=MinimumLogic/%.v) \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
   $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.v) \
-  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
-  $(Extensions_FILES:%.v=Extensions/%.v) \
-  $(Example_Files:%.v=Examples/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
+#  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
+#  $(Extensions_FILES:%.v=Extensions/%.v) \
+#  $(Example_Files:%.v=Examples/%.v) \
 
 $(FILES:%.v=%.vo): %.vo: %.v
 	@echo COQC $*.v
@@ -271,6 +273,9 @@ MinimumLogic: \
 PropositionalLogic: \
   .depend $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.vo)
 
+MetaLogicInj: \
+  .depend $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.vo)
+
 ModalLogic: \
   .depend $(ModalLogic_FILES:%.v=ModalLogic/%.vo)
 
@@ -279,6 +284,9 @@ QuantifierLogic: \
 
 SeparationLogic: \
   .depend $(SeparationLogic_FILES:%.v=SeparationLogic/%.vo)
+
+LogicGenerator: \
+  .depend $(LogicGenerator_FILES:%.v=LogicGenerator/%.vo)
 
 all: \
   $(FILES:%.v=%.vo)

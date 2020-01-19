@@ -60,13 +60,23 @@ Context {Sigma: SeparationEmpLanguage.PropositionalVariables}
         {CV: Countable SeparationEmpLanguage.Var}
         (SLP: SL_Parameter).
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
+Existing Instances SeparationEmpLanguage.L
+                   SeparationEmpLanguage.minL
+                   SeparationEmpLanguage.andpL
+                   SeparationEmpLanguage.orpL
+                   SeparationEmpLanguage.falsepL
+                   SeparationEmpLanguage.truepL
+                   SeparationEmpLanguage.iffpL
+                   SeparationEmpLanguage.negpL
+                   SeparationEmpLanguage.sepconL
+                   SeparationEmpLanguage.wandL
+                   SeparationEmpLanguage.empL.
 
-Existing Instances ParametricSeparationLogic.GP ParametricSeparationLogic.GD ParametricSeparationLogic.AX ParametricSeparationLogic.minAX  ParametricSeparationLogic.ipAX ParametricSeparationLogic.sepconAX ParametricSeparationLogic.wandAX ParametricSeparationLogic.empAX ParametricSeparationLogic.sepcon_orp_AX ParametricSeparationLogic.sepcon_falsep_AX ParametricSeparationLogic.ParAX.
+Existing Instances ParametricSeparationLogic.GP ParametricSeparationLogic.GD ParametricSeparationLogic.AX ParametricSeparationLogic.minAX ParametricSeparationLogic.andpAX ParametricSeparationLogic.orpAX ParametricSeparationLogic.falsepAX ParametricSeparationLogic.iffpAX ParametricSeparationLogic.truepAX ParametricSeparationLogic.inegpAX ParametricSeparationLogic.sepconAX ParametricSeparationLogic.wandAX ParametricSeparationLogic.empAX ParametricSeparationLogic.sepcon_orp_AX ParametricSeparationLogic.sepcon_falsep_AX ParametricSeparationLogic.ParAX.
 
-Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_ipSC Axiomatization2SequentCalculus_cpSC.
+Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_truepSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_cpSC.
 
-Existing Instances FlatSemantics.MD FlatSemantics.kMD FlatSemantics.R FlatSemantics.J FlatSemantics.SM FlatSemantics.kminSM FlatSemantics.kpSM FlatSemantics.fsepconSM FlatSemantics.fwandSM FlatSemantics.fempSM.
+Existing Instances FlatSemantics.MD FlatSemantics.kMD FlatSemantics.R FlatSemantics.J FlatSemantics.SM FlatSemantics.kminSM FlatSemantics.andpSM FlatSemantics.orpSM FlatSemantics.falsepSM FlatSemantics.fsepconSM FlatSemantics.fwandSM FlatSemantics.fempSM.
 
 Definition cP : context -> Prop := Intersection _ (Intersection _ derivable_closed orp_witnessed) consistent.
 

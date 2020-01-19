@@ -16,36 +16,36 @@ Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 Import ModalLanguageNotation.
 
-Class SystemK (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} := {
+Class SystemK (L: Language) {minL: MinimumLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) := {
   axiom_K: forall x y, |-- boxp (x --> y) --> (boxp x --> boxp y); (* a.k.a. Distribution Axiom *)
   rule_N: forall x, |-- x -> |-- boxp x (* a.k.a. Necessitation Rule *)
 }.
 
-Class SystemT (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {KmGamma: SystemK L Gamma} := {
+Class SystemT (L: Language) {minL: MinimumLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) := {
   axiom_T: forall x, |-- boxp x --> x
 }.
 
-Class System4 (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {KmGamma: SystemK L Gamma} {TmGamma: SystemT L Gamma}:= {
+Class System4 (L: Language) {minL: MinimumLanguage L} {mL: ModalLanguage L} (Gamma: Provable L):= {
   axiom_4: forall x, |-- boxp x --> boxp (boxp x)
 }.
 
-Class SystemD (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {cpGamma: ClassicalPropositionalLogic L Gamma} {KmGamma: SystemK L Gamma} := {
+Class SystemD (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) := {
   axiom_D: forall x, |-- boxp x --> diamondp x
 }.
 
-Class SystemB (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {cpGamma: ClassicalPropositionalLogic L Gamma} {KmGamma: SystemK L Gamma} := {
+Class SystemB (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) := {
   axiom_B: forall x, |-- x --> boxp (diamondp x)
 }.
 
-Class System5 (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {cpGamma: ClassicalPropositionalLogic L Gamma} {KmGamma: SystemK L Gamma} {TmGamma: SystemT L Gamma} {s4mGamma: System4 L Gamma}:= {
+Class System5 (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) := {
   axiom_5: forall x, |-- diamondp x --> boxp (diamondp x)
 }.
 
-Class PropositionalTransparentModality (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {KmGamma: SystemK L Gamma} := {
+Class PropositionalTransparentModality (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {iffpL: IffLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) := {
   boxp_orp: forall x y, |-- boxp (x || y) <--> boxp x || boxp y
 }.
 
-Class StrongPropositionalTransparentModality (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipGamma: IntuitionisticPropositionalLogic L Gamma} {KmGamma: SystemK L Gamma} {pmGamma: PropositionalTransparentModality L Gamma} := {
+Class StrongPropositionalTransparentModality (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L} {mL: ModalLanguage L} (Gamma: Provable L) := {
   boxp_impp: forall x y, |-- boxp (x --> y) <--> (boxp x --> boxp y)
 }.
 

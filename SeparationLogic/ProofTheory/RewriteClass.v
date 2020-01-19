@@ -47,14 +47,24 @@ Proof.
   apply wand_mono; auto.
 Qed.
 
-Context {pL: PropositionalLanguage L}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.
 
 Instance sepcon_proper_iffp: Proper ((fun x y => |-- iffp x y) ==> (fun x y => |-- iffp x y) ==> (fun x y => |-- iffp x y)) sepcon.
 Proof.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply sepcon_mono.
     - rewrite H; apply provable_impp_refl.
     - rewrite H0; apply provable_impp_refl.
@@ -67,7 +77,7 @@ Instance wand_proper_iffp: Proper ((fun x y => |-- iffp x y) ==> (fun x y => |--
 Proof.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply wand_mono.
     - rewrite H; apply provable_impp_refl.
     - rewrite H0; apply provable_impp_refl.

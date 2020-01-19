@@ -119,7 +119,6 @@ Definition sem_precise
 Lemma sem_precise_spec
         {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
         {MD: Model}
         {J: Join model}
@@ -155,7 +154,6 @@ Context {P: ProgrammingLanguage}
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD (tt: @Kmodel MD (unit_kMD _)) SM}

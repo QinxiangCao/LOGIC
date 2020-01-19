@@ -40,7 +40,7 @@ Proof.
   apply equiv_trans.
   Qed.
 
-Instance equiv_proper_impp:
+Instance equiv_proper_equiv:
   Proper ( logic_equiv ==> logic_equiv ==> Basics.impl) logic_equiv.
 Proof.
   hnf;intros.

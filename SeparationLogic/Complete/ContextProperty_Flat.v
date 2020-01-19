@@ -44,16 +44,31 @@ Definition context_sepcon_included_l (Phi2 Psi: context): context -> Prop :=
 Definition context_sepcon_included_r (Phi1 Psi: context): context -> Prop :=
   fun Phi2 => Included _ (context_sepcon Phi1 Phi2) Psi.
 
-Context {pL: PropositionalLanguage L}
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {wandL: WandLanguage L}
         {SC: NormalSequentCalculus L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
         {AX: NormalAxiomatization L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {sepcon_orp_AX: SepconOrAxiomatization L GammaP}
@@ -71,8 +86,8 @@ Proof.
   + exists TT, TT.
     split; [| split].
     - apply aux_minimun_rule00; auto.
-    - apply derivable_impp_refl.
-    - apply derivable_impp_refl.
+    - apply derivable_truep_intros.
+    - apply derivable_truep_intros.
   + pose proof provable_multi_imp_arg_switch1 l x z.
     pose proof modus_ponens _ _ H2 H1.
     specialize (IHForall _ H3); clear H1 H2 H3.
@@ -104,7 +119,7 @@ Proof.
   rewrite <- (falsep_sepcon TT).
   apply derivable_assum.
   apply H; exists FF, TT; split; [| split]; auto.
-  apply derivable_impp_refl.
+  apply derivable_truep_intros.
 Qed.
 
 Lemma context_sepcon_included_l_derivable_subset_preserved: forall Phi2 Psi,

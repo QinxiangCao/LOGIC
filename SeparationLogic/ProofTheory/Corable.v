@@ -27,10 +27,8 @@ Class Corable (L: Language): Type := {
 
 Class Corable_withAxiomatization
       (L: Language)
-(*      {andpL: AndLanguage L}
-      {iffpL: IffLanguage L} *)
-      {minL: MinimumLanguage L}
-      {pL: PropositionalLanguage L}
+      {andpL: AndLanguage L}
+      {iffpL: IffLanguage L}
       {sepconL: SepconLanguage L}
       (GammaP: Provable L)
       (Cor: Corable L) := {
@@ -68,11 +66,13 @@ Section Corable.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {andpAX: AndAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization L Gamma}
         {Cor: Corable L}
         {CorAX: Corable_withAxiomatization L Gamma Cor}.

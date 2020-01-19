@@ -138,12 +138,12 @@ Instance reg_Axiomatization2LogicEquiv_minE:
   RegisterClass P2E_reg (fun minE: unit => @Axiomatization2LogicEquiv_minE) 0.
 Qed.
 
-Instance reg_Axiomatization2BasicLogicEquiv_BE:
-  RegisterClass P2E_reg (fun BE: unit => @Axiomatization2BasicLogicEquiv_BE) 1.
+Instance reg_Axiomatization2BasicLogicEquiv_bE:
+  RegisterClass P2E_reg (fun bE: unit => @Axiomatization2BasicLogicEquiv_bE) 1.
 Qed.
 
 Instance reg_Derivable1ToAxiomatization_minAX:
-  RegisterClass D1ToP_reg (fun minAx: unit => @Derivable12Axiomatization_minAX) 0.
+  RegisterClass D1ToP_reg (fun minAX: unit => @Deduction2Axiomatization_minAX) 0.
 Qed.
 
 Instance reg_PD2ND:
