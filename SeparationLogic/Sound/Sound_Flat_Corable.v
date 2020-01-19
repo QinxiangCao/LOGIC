@@ -74,9 +74,8 @@ Lemma sound_corable_andp_sepcon1: forall x y z,
   forall m, KRIPKE: M, m |= (x && y) * z <--> x && (y * z).
 Proof.
   intros.
-  unfold iffp.
-  rewrite sat_andp, !sat_impp.
-  split; intros ? _; clear m.
+  rewrite sat_iffp.
+  intros ? _; clear m; split.
   + intros.
     rewrite sat_andp, sat_sepcon.
     rewrite sat_sepcon in H0.

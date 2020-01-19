@@ -44,7 +44,8 @@ Class SepconOrAxiomatization
 Class SepconCoqPropAxiomatization
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {

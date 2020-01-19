@@ -94,7 +94,7 @@ Context {L: Language}
         {wandL: WandLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {wandX: WandAxiomatization L Gamma}
+        {wandAX: WandAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization_weak L Gamma}.
 
 Let sepcon_Comm: Commutativity L Gamma sepcon.
@@ -180,7 +180,8 @@ Context {L: Language}
         {iffpAX: IffAxiomatization L Gamma}
         {truepAX: TrueAxiomatization L Gamma}
         {coq_prop_AX: CoqPropAxiomatization L Gamma}
-        {wandX: WandAxiomatization L Gamma}.
+        {speconAX: SepconAxiomatization L Gamma}
+        {wandAX: WandAxiomatization L Gamma}.
 
 Let RDistr: RightDistr L Gamma sepcon orp.
 Proof.
@@ -218,7 +219,7 @@ Lemma Adj2SepconCoqProp: SepconCoqPropAxiomatization L Gamma.
 Proof.
   constructor.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply solve_impp_andp.
     - apply wand_sepcon_adjoint.
       apply coq_prop_andp_impp.
