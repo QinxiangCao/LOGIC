@@ -82,7 +82,7 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
-        {adjD: ImppAndpAdjoint L GammaD1}
+        {adjD: ImpAndAdjoint L GammaD1}
         {orpD: OrDeduction L GammaD1}
         {falsepD: FalseDeduction L GammaD1}
         {inegpD: NegDeduction L GammaD1}
