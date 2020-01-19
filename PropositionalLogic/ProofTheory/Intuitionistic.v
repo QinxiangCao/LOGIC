@@ -86,7 +86,7 @@ Class IterAndAxiomatization_left
     |-- iter_andp xs <--> fold_left andp xs TT
 }.
 
-Class AndDeduction (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) := {
+Class AndDeduction (L: Language) {andpL: AndLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_andp_intros:forall x y z,derivable1 x y -> derivable1 x z -> derivable1 x (y && z);
   derivable1_andp_elim1:forall x y,derivable1 (x && y) x;
   derivable1_andp_elim2:forall x y,derivable1 (x && y) y
@@ -96,13 +96,13 @@ Class ImpAndAdjoint (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage 
   derivable1_impp_andp_adjoint: forall x y z, derivable1 x (y-->z) <-> derivable1 (x && y) z
 }.
 
-Class OrDeduction (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (GammaD1: Derivable1 L) := {
+Class OrDeduction (L: Language) {orpL: OrLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_orp_intros1:forall x y,derivable1 x (x || y);
   derivable1_orp_intros2:forall x y,derivable1 y (x || y);
   derivable1_orp_elim:forall x y z,derivable1 x z -> derivable1 y z -> derivable1 (x || y) z
 }.
 
-Class FalseDeduction (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) := {
+Class FalseDeduction (L: Language) {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_falsep_elim: forall x, derivable1 FF x
 }.
 
@@ -111,7 +111,7 @@ Class NegDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L
   derivable1_negp_fold: forall x, derivable1 (x --> FF) (~~x)
 }.
 
-Class TrueDeduction (L: Language) {minL: MinimumLanguage L} {truepL: TrueLanguage L} (GammaD1: Derivable1 L) := {
+Class TrueDeduction (L: Language) {truepL: TrueLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_truep_intros: forall x, derivable1 x TT
 }.
 
@@ -121,50 +121,50 @@ Class IffDeduction (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L
   derivable1_iffp_elim2: forall x y, derivable1 (x <--> y) (y --> x)
 }.
 
-Class EquivAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaE:LogicEquiv L) := {
+Class EquivAndp (L:Language) {andpL: AndLanguage L} (GammaE:LogicEquiv L) := {
   equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 && y1) --||-- (x2 && y2);
   equiv_andp_comm:forall x y,x && y --||-- y && x;
   equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z)
 }.
 
-Class EquivOrp (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivOrp (L:Language) {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
   equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
   (x1 || y1) --||-- (x2 || y2);
   equiv_orp_comm:forall x y,x || y --||-- y || x;
   equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z)
 }.
 
-Class EquivDistr (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivDistr (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
   equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
   equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z)
 }.
 
-Class EquivDeMorgen (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {orpL: OrLanguage L} {negp: NegLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivDeMorgen (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} {negp: NegLanguage L} (GammaE:LogicEquiv L):= {
   equiv_DeMorgen: forall x y,~~ (x || y) --||-- (~~ x) && (~~y)
 }.
 
-Class EquivFalsepAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivFalsepAndp (L:Language) {andpL: AndLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
   equiv_false_andp:forall x,x && FF --||-- FF
 }.
 
-Class EquivFalsepOrp (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivFalsepOrp (L:Language) {orpL: OrLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
   equiv_falsep_orp:forall x,x || FF --||-- x
 }.
 
-Class EquiveTruepAndp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquiveTruepAndp (L:Language) {andpL: AndLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
   equiv_truep_andp:forall x, x && TT --||-- x
 }.
 
-Class EquiveTruepOrp (L:Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquiveTruepOrp (L:Language) {orpL: OrLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
   equiv_truep_orp:forall x, x || TT --||-- TT
 }.
 
-Class EquivIffp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {iffpL: IffLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivIffp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {iffpL: IffLanguage L} (GammaE:LogicEquiv L):= {
   equiv_iffp_intros: forall x y, (x --> y) && (y --> x) --||-- (x <--> y);
 }.
 
-Class EquivNegp (L:Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (GammaE:LogicEquiv L) {minE:MinimumEquiv L GammaE}:= {
+Class EquivNegp (L:Language) {negpL: NegLanguage L} (GammaE:LogicEquiv L):= {
   equiv_negp_intros:forall x y, x --||-- y -> ~~ x --||-- ~~ y
 }.
 

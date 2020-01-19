@@ -263,3 +263,26 @@ Ltac AddConnective_iffp :=
   clearbody iffpAX;
   clear iffpDef;
   clearbody iffpL.
+
+Ltac AddConnective_truep :=
+  let truepL := fresh "truepL" in
+  let truepDef := fresh "truepDef" in
+  let truepAX := fresh "truepAX" in
+  set (truepL := FalseImp2True);
+  set (truepDef := FalseImp2True_Normal);
+  set (truepAX := TrueFromDefToAX_False_Imp);
+  clearbody truepAX;
+  clear truepDef;
+  clearbody truepL.
+
+Ltac AddConnective_negp :=
+  let negpL := fresh "negpL" in
+  let negpDef := fresh "negpDef" in
+  let negpAX := fresh "inegpAX" in
+  set (negpL := FalseImp2Neg);
+  set (negpDef := FalseImp2Neg_Normal);
+  set (negpAX := NegFromDefToAX_False_Imp);
+  clearbody negpAX;
+  clear negpDef;
+  clearbody negpL.
+

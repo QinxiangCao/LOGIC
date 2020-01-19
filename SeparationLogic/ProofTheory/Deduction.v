@@ -813,10 +813,10 @@ Proof.
   AddAxiomatization.
   pose proof EmpAxiomatizationIff2EmpAxiomatization.
   constructor.
-  -intros.
-   apply derivable1_provable. apply SeparationLogic.sepcon_emp1.
-  -intros.
-   apply derivable1_provable. apply SeparationLogic.sepcon_emp2.
-   Qed.
+  + intros.
+    apply derivable1_provable. apply SeparationLogic.sepcon_emp1.
+  + intros.
+    apply derivable1_provable. apply SeparationLogic.sepcon_emp2.
+Qed.
 
 End FromEmpEIffToEmpD.
