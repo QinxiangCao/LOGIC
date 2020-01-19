@@ -1150,6 +1150,7 @@ Qed.
 Lemma truep_impp: forall (x: expr),
   |-- (TT --> x) <--> x.
 Proof.
+  clear - minAX truepAX iffpAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.

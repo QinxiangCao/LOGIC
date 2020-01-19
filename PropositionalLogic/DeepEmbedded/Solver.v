@@ -141,21 +141,17 @@ Module DSolver.
 
   Instance Comm : Commutativity _ _ andp.
   Proof.
-    constructor. intros.
-    rewrite andp_comm. apply provable_impp_refl.
+    apply andp_Comm.
   Qed.
 
   Instance Mono : Monotonicity _ _ andp.
   Proof.
-    constructor. intros.
-    apply solve_impp_andp.
-    - rewrite andp_elim1. auto.
-    - rewrite andp_elim2. auto.
+    apply andp_Mono.
   Qed.
 
   Instance Assoc : Associativity _ _ andp.
   Proof.
-    constructor; intros; rewrite andp_assoc; apply provable_impp_refl.
+    apply andp_Assoc.
   Qed.
 
   Instance LUnit : LeftUnit _ _ truep andp.
@@ -206,22 +202,21 @@ Module DSolver.
       | change (flatten_and_inv _) with (andp truep (Deep.varp n))
       ]*).
     {
-      unfold iffp in IHe1, IHe2.
-      apply solve_andp_intros. 
+      apply solve_iffp_intros. 
       {
         rewrite <- assoc_prodp_fold_left.
-        rewrite andp_elim1 in IHe1.
-        rewrite andp_elim1 in IHe2.
+        rewrite iffp_elim1 in IHe1.
+        rewrite iffp_elim1 in IHe2.
         apply prodp_mono; auto.
       }
       {
         rewrite assoc_fold_left_app.
-        rewrite andp_elim2 in IHe1.
-        rewrite andp_elim2 in IHe2.
+        rewrite iffp_elim2 in IHe1.
+        rewrite iffp_elim2 in IHe2.
         apply prodp_mono; auto.
       }
     }
-    all: apply solve_andp_intros;
+    all: apply solve_iffp_intros;
       cbv [fold_left];
       [rewrite <- left_unit2 | rewrite left_unit1];
       apply provable_impp_refl.
@@ -283,7 +278,7 @@ Module DSolver.
       pose proof flatten_and_sound a.
       change (flatten_imp_inv _) with (impp a (multi_imp es r)).
       apply multi_imp_weaken.
-      apply solve_andp_elim1 in H0.
+      apply solve_iffp_elim1 in H0.
       eapply aux_minimun_rule02; eauto.
     + apply aux_minimun_rule00, IHes, H.
   Qed.
@@ -346,8 +341,8 @@ Module SolverSound.
       let tbl' := reverse tbl in
       let b := eval hnf in (DSolver.all_in_context de) in
       assert (DSolver.all_in_context de = b) by reflexivity;
-      assert (@eq (@Base.expr L) (reflect tbl' de) (se)) by reflexivity;
-      apply (@reify_sound L _ _ _ _ _ tbl' de);
+      assert (@eq (@Base.expr L) (reflect se tbl' de) (se)) by reflexivity;
+      apply (@reify_sound L _ _ _ _ _ tbl' se de);
       apply DSolver.all_in_provable;
       match goal with
       | [H : DSolver.all_in_context _ = true |- _] => apply H
@@ -362,10 +357,10 @@ Module SolverSound.
   Section Temp.
     Context {L: Language}
             {minL: MinimumLanguage L}
-            {pL: PropositionalLanguage L}
+            {andpL: AndLanguage L}
             {GammaP: Provable L}
             {minAX: MinimumAxiomatization L GammaP}
-            {ipGamma: IntuitionisticPropositionalLogic L GammaP}.
+            {andpAX: AndAxiomatization L GammaP}.
     Parameter (P Q R : expr).
     Goal (provable (impp (andp P Q) (andp Q P))).
       ipSolver.

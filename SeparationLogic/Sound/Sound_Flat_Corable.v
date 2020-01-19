@@ -26,7 +26,8 @@ Section Sound_Flat_Corable.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {sepconL: SepconLanguage L}
         {MD: Model}
@@ -40,7 +41,8 @@ Context {L: Language}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD M SM}
         {kminSM: KripkeMinimumSemantics L MD M SM}
-        {kpSM: KripkePropositionalSemantics L MD M SM}
+        {andpSM: KripkeAndSemantics L MD M SM}
+        {iffpSM: KripkeIffSemantics L MD M SM}
         {coq_prop_SM : CoqPropSemantics L MD M SM}
         {fsepconSM: FlatSemantics.SepconSemantics L MD M SM}.
 

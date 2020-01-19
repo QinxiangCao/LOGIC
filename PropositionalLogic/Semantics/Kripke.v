@@ -248,4 +248,19 @@ Proof.
     hnf; intros; specialize (HH n H); tauto.
 Qed.
 
+Lemma valid_iffp
+      {po_R: PreOrder Krelation}
+      {iffpL: IffLanguage L}
+      {iffpSM: KripkeIffSemantics L MD M SM}:
+  forall x y,
+  (forall m, KRIPKE: M , m |= x <--> y) ->
+  (forall m, KRIPKE: M , m |= x <-> KRIPKE: M , m |= y).
+Proof.
+  intros.
+  specialize (H m).
+  rewrite sat_iffp in H.
+  apply H.
+  reflexivity.
+Qed.
+
 End KripkeSemantics.

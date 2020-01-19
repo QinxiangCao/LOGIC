@@ -598,6 +598,8 @@ Qed.
 Lemma iter_andp_multi_imp: forall (xs: list expr) (y: expr),
   |-- (iter_andp xs --> y) <--> (multi_imp xs y).
 Proof.
+  clear dependent orpL.
+  clear dependent falsepL.
   intros.
   unfold multi_imp.
   rewrite iter_andp_spec_right.
