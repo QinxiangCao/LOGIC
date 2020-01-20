@@ -165,3 +165,4 @@ Existing Instances sepcon_proper_impp
                    wand_proper_derivable1
                    sepcon_proper_logic_equiv
                    wand_proper_logic_equiv.
+

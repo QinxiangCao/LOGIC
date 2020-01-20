@@ -64,26 +64,6 @@ Module Solver := IPSolver NaiveLang.
 Import T.
 Import Solver.
 
-
-Section Foo.
-Context `{para}.
-
-Ltac beta_tac x :=
-  match type of x with
-  | ?tx => let tx0 := eval cbv beta in tx in
-             exact (x: tx0)
-  end.
-
-Declare Scope BETA_scope.
-Local Notation "'BETA' x" := ltac:(beta_tac x) (at level 99): BETA_scope.
-Local Open Scope BETA_scope.
-
-Definition orp_intros1 := BETA T.orp_intros1.
-
-End Foo.
-
-
-
 Notation "x --> y" := (impp x y)(at level 55, right associativity).
 Notation "x && y" := (andp x y)(at level 40, left associativity).
 Notation "|-- P " := (provable P) (at level 71, no associativity).

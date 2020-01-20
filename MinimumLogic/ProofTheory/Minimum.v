@@ -48,7 +48,7 @@ Class NormalEquiv (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (Ga
                         provable (impp x y) /\ provable (impp y x)
 }.
 
-Class NormalEquiv2 (L:Language) {minL: MinimumLanguage L} (GammaD:Derivable1 L) (GammaL:LogicEquiv L): Type :={
+Class NormalEquiv2 (L:Language) (GammaD:Derivable1 L) (GammaL:LogicEquiv L): Type :={
   equiv_derivable1:forall x y,x --||-- y <->
                         derivable1 x y /\ derivable1 y x
 }.
@@ -82,6 +82,13 @@ Proof.
   pose proof modus_ponens _ _ H H0.
   pose proof modus_ponens _ _ H2 H1.
   auto.
+Qed.
+
+Lemma provable_impp_refl': forall (x y: expr), x = y -> |-- x --> y.
+Proof.
+  intros.
+  subst y.
+  apply provable_impp_refl.
 Qed.
 
 Lemma aux_minimun_rule00: forall (x y: expr), |-- x -> |-- y --> x.
@@ -174,6 +181,15 @@ Proof.
   pose proof provable_impp_arg_switch (y --> z) (x --> y) (x --> z).
   eapply modus_ponens; eauto. clear H.
   apply aux_minimun_theorem00.
+Qed.
+
+Lemma solve_impp_trans: forall (x y z: expr), |-- (x --> y) -> |-- (y --> z) -> |-- (x --> z).
+Proof.
+  intros.
+  pose proof provable_impp_trans x y z.
+  pose proof modus_ponens _ _ H1 H.
+  pose proof modus_ponens _ _ H2 H0.
+  auto.
 Qed.
 
 End DerivableRulesFromAxiomatization.
@@ -664,6 +680,14 @@ Definition Provable2Equiv_Normal {GammaP: Provable L}:
   NormalEquiv L GammaP Provable2Equiv :=
   Build_NormalEquiv
     L minL GammaP Provable2Equiv (fun _ _ => iff_refl _).
+
+Definition Derivable12Equiv {GammaD1: Derivable1 L}: LogicEquiv L :=
+  Build_LogicEquiv L (fun x y => derivable1 x y /\ derivable1 y x).
+
+Definition Derivable12Equiv_Normal {GammaD1: Derivable1 L}:
+  NormalEquiv2 L GammaD1 Derivable12Equiv :=
+  Build_NormalEquiv2
+    L GammaD1 Derivable12Equiv (fun _ _ => iff_refl _).
 
 Definition Derivable1ToProvable {GammaD1: Derivable1 L}: Provable L :=
   Build_Provable L (fun x => derivable1 (impp x x) x).

@@ -1542,3 +1542,4 @@ Qed.
 Instance reg_Deduction2Axiomatization_iffpAX:
   RegisterClass D1ToP_reg (fun iffpAX:unit => @Deduction2Axiomatization_iffpAX) 7.
 Qed.
+

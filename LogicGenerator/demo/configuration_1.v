@@ -11,7 +11,6 @@ Require Import Coq.Lists.List.
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigLang.
 
-
 Import ListNotations.
 
 Definition how_connectives :=

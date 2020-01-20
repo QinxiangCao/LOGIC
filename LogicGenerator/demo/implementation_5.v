@@ -17,6 +17,8 @@ Module NaiveLang.
        (x p = None /\ y p = None /\ z p = None).
   Definition sepcon (e1 e2 : expr) : expr := fun st =>
     exists st1 st2, join st1 st2 st /\ e1 st1 /\ e2 st2.
+  Definition wand (e1 e2 : expr) : expr := fun st =>
+    forall st1 st2, join st st1 st2 -> e1 st1 -> e2 st2.
   Definition emp : expr := fun st =>
     forall p, st p = None.
   Definition corable (e: expr): Prop := forall s1 s2, e s1 <-> e s2.
@@ -24,7 +26,7 @@ Module NaiveLang.
   Definition provable (e : expr) : Prop := forall st, e st.
 End NaiveLang.
 
-Require Import interface_4.
+Require Import interface_5.
 
 Module NaiveRule.
   Include DerivedNames (NaiveLang).
@@ -65,6 +67,15 @@ Module NaiveRule.
   Lemma peirce_law : forall x y: expr, provable (impp (impp (impp x y) x) x).
   Proof. unfold provable, impp. intros; tauto. Qed.
 
+  Lemma coq_prop_intros : (forall P : Prop, P -> provable (coq_prop P)) .
+  Proof. unfold provable, coq_prop. intros; tauto. Qed.
+  
+  Lemma coq_prop_elim : (forall (P : Prop) (x : expr), (P -> provable x) -> provable (impp (coq_prop P) x)) .
+  Proof. unfold provable, impp, coq_prop. intros; auto. Qed.
+    
+  Lemma coq_prop_impp : (forall P Q : Prop, provable (impp (impp (coq_prop P) (coq_prop Q)) (coq_prop (P -> Q)))) .
+  Proof. unfold provable, impp, coq_prop. intros; auto. Qed.
+  
   Axiom sepcon_comm: forall x y, provable (iffp (sepcon x y) (sepcon y x)).
   Axiom sepcon_assoc: forall x y z,
       provable (iffp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z)).
@@ -75,6 +86,7 @@ Module NaiveRule.
   Axiom corable_coq_prop : (forall P : Prop, corable (coq_prop P)) .
   Axiom corable_preserved' : (forall x y : expr, provable (iffp x y) -> corable x -> corable y) .
   Axiom corable_andp_sepcon1 : (forall x y z : expr, corable x -> provable (iffp (sepcon (andp x y) z) (andp x (sepcon y z)))) .
+  Axiom wand_sepcon_adjoint : (forall x y z : expr, provable (impp (sepcon x y) z) <-> provable (impp x (wand y z))) .
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.
@@ -82,4 +94,22 @@ Module Solver := IPSolver NaiveLang.
 Import T.
 Import Solver.
 
+
+Require Import ExportSolvers.Normalize.
+
+Notation "|--  x" := (provable x) (at level 71, no associativity) : syntax.
+Notation "'!!' e" := (coq_prop e) (at level 25) : syntax.
+Notation "x && y" := (andp x y) (at level 40, left associativity) : syntax.
+Notation "x <--> y" := (iffp x y) (at level 60, no associativity) : syntax.
+Notation "x --> y" := (impp x y) (at level 55, right associativity) : syntax.
+Notation "x * y" := (sepcon x y) (at level 40, left associativity) : syntax.
+
+Module Normalize := ExportTactic T.
+Import Normalize.
+Local Open Scope syntax.
+Goal forall x y z (P: Prop), |-- (!! P && x) * y * z --> (!! P && x) * (!! P && y) * (!! P && z).
+Proof.
+  intros.
+  repeat normalize.
+Abort.
 

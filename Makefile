@@ -8,7 +8,7 @@ COQDEP=$(COQBIN)coqdep
 
 DIRS = \
   lib GeneralLogic MinimumLogic PropositionalLogic MetaLogicInj ModalLogic SeparationLogic \
-  QuantifierLogic Extensions HoareLogic LogicGenerator
+  QuantifierLogic Extensions HoareLogic ExportSolvers LogicGenerator
 
 COQ_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
 DEP_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
@@ -207,6 +207,9 @@ SeparationLogic_FILES = \
   $(SeparationLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v) \
   $(SeparationLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
+ExportSolvers_FILES = \
+  Normalize.v Normalize_Para.v SepApply.v SepApply_Para.v
+
 Extensions_ProofTheory_FILES = \
   Stable.v ModalSeparation.v Corable.v CoreTransit.v
 
@@ -251,6 +254,7 @@ FILES = \
   $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
+  $(ExportSolvers_FILES:%.v=ExportSolvers/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
 #  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
@@ -330,6 +334,16 @@ lgen_demo_5:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_5.v
 	@echo COQC LogicGenerator/demo/implementation_5.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_5.v
+
+lgen_demo_6:
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
+	./logic_gen.sh LogicGenerator/demo/configuration_6.v LogicGenerator/demo/interface_6.v LogicGenerator/demo/export_lib_6.v
+	@echo COQC LogicGenerator/demo/interface_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_6.v
+	@echo COQC LogicGenerator/demo/implementation_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_6.v
+	@echo COQC LogicGenerator/demo/export_lib_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/export_lib_6.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend

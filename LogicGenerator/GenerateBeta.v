@@ -2,9 +2,11 @@ Require Import Coq.Lists.List.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
@@ -77,6 +79,9 @@ Context {L: Language}
         {iter_sepcon_DR: IterSepconDefinition_right L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
+        {ND : NormalDeduction L GammaP GammaD1}
+        {NE : NormalEquiv L GammaP GammaE}
+        {NE2 : NormalEquiv2 L GammaD1 GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
@@ -303,6 +308,7 @@ Ltac beta_print :=
 
   newline;
 
+  dolist (print BetaDef) primary_rules;
   dolist (print BetaDef) derived_rules;
 
   newline;

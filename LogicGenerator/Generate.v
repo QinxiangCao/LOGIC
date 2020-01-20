@@ -2,9 +2,11 @@ Require Import Coq.Lists.List.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
@@ -77,6 +79,9 @@ Context {L: Language}
         {iter_sepcon_DR: IterSepconDefinition_right L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
+        {ND : NormalDeduction L GammaP GammaD1}
+        {NE : NormalEquiv L GammaP GammaE}
+        {NE2 : NormalEquiv2 L GammaD1 GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
@@ -129,6 +134,8 @@ Context {L: Language}
         {empD : EmpDeduction L GammaD1}
         {sepcon_orp_D : SepconOrDeduction L GammaD1}
         {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
+        {bE: BasicLogicEquiv L GammaE}
+        {minE: MinimumEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .
@@ -297,6 +304,7 @@ Ltac two_stage_print :=
   idtac "Module DerivedNames (Names: LanguageSig).";
   idtac "Include Names.";
   when instance_para_open: (
+    def__PARA__para_tac;
     idtac "  Section DerivedNames.";
     context_expr_tac
   );
@@ -341,6 +349,7 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.MinimumLogic.Syntax.";
   idtac "Require Import Logic.MinimumLogic.ProofTheory.Minimum.";
   idtac "Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.";
+  idtac "Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.";
   idtac "Require Import Logic.PropositionalLogic.Syntax.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.";
@@ -361,6 +370,7 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.Corable.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.Deduction.";
+  idtac "Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.";
 
   newline;
 

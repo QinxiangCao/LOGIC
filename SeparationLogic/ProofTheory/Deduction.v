@@ -264,6 +264,31 @@ Instance reg_SepconDeduction2SepconAxiomatization:
   RegisterClass D1ToP_reg (fun SAx:unit => @SepconDeduction2SepconAxiomatization_sepconAX) 16.
 Qed.
 
+Section FromAxiomatizationToDeduction.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {GammaD1: Derivable1 L}
+        {GammaP: Provable L}
+        {ND: NormalDeduction L GammaP GammaD1}.
+
+Lemma Axiomatization2Deduction_sepconD
+      {sepconAX: SepconAxiomatization L GammaP}:
+  SepconDeduction L GammaD1.
+Proof.
+  intros.
+  constructor; intros.
+  + rewrite derivable1_provable.
+    apply sepcon_comm_impp.
+  + rewrite derivable1_provable.
+    apply sepcon_assoc1.
+  + rewrite derivable1_provable in H, H0 |- *.
+    apply sepcon_mono; auto.
+Qed.
+
+End FromAxiomatizationToDeduction.
+
 Section SepconRulesFromDerivable1.
 
 Context {L: Language}
@@ -309,6 +334,41 @@ Proof.
 
 End SepconRulesFromDerivable1.
 
+(* TODO: This is fully temporary. *)
+Section SepconRulesFromLogicEquiv'.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
+        {sepconL: SepconLanguage L}
+        {GammaP: Provable L}
+        {GammaE: LogicEquiv L}
+        {NE: NormalEquiv L GammaP GammaE}
+        {minAX: MinimumAxiomatization L GammaP}
+        {sepconAX: SepconAxiomatization L GammaP}.
+
+Lemma sepcon_assoc_equiv:
+  forall x y z, x * (y * z) --||-- (x * y) * z.
+Proof.
+  intros.
+  apply equiv_provable. split.
+  + apply sepcon_assoc1.
+  + apply sepcon_assoc2.
+Qed.
+
+Context {empL: EmpLanguage L}
+        {empAX: EmpAxiomatization L GammaP}.
+
+Lemma sepcon_emp_equiv: forall x, x * emp --||-- x.
+Proof.
+  intros.
+  apply equiv_provable. split.
+  + apply sepcon_emp1.
+  + apply sepcon_emp2.
+Qed.
+
+End SepconRulesFromLogicEquiv'.
+
 Section SepconRulesFromLogicEquiv.
 
 Context {L: Language}
@@ -332,7 +392,7 @@ Proof.
   -apply derivable1_sepcon_comm.
   -apply derivable1_sepcon_comm.
   Qed.
-
+(*
 Lemma sepcon_assoc_equiv:
   forall x y z, x * (y * z) --||-- (x * y) * z.
 Proof.
@@ -341,7 +401,7 @@ Proof.
   -apply derivable1_sepcon_assoc1.
   -apply derivable1_sepcon_assoc2.
   Qed.
-
+*)
 Context {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}
         {orpD: OrDeduction L GammaD1}
@@ -405,7 +465,7 @@ Proof.
   apply equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
-
+(*
 Context {empL: EmpLanguage L}
         {empD: EmpDeduction L GammaD1}.
 
@@ -421,7 +481,7 @@ Proof.
   apply equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
-
+*)
 End SepconRulesFromLogicEquiv.
 
 Section WandRules.
@@ -819,3 +879,4 @@ Proof.
 Qed.
 
 End FromEmpEIffToEmpD.
+
