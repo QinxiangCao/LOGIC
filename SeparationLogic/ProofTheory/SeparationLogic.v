@@ -37,7 +37,7 @@ Class SepconOrAxiomatization
         {orpL: OrLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
-  orp_sepcon_left: forall (x y z: expr),
+  orp_sepcon_impp: forall (x y z: expr),
     |-- (x || y) * z --> x * z || y * z
 }.
 
@@ -59,7 +59,7 @@ Class SepconFalseAxiomatization
         {falsepL: FalseLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
-  falsep_sepcon_left: forall (x: expr),
+  falsep_sepcon_impp: forall (x: expr),
     |-- FF * x --> FF
 }.
 
@@ -200,7 +200,7 @@ Proof.
   apply (@prodp_assoc _ _ _ _ _ _ _ sepcon_Assoc).
 Qed.
 
-Lemma orp_sepcon_right:
+Lemma impp_orp_sepcon:
   forall (x y z: expr), |-- x * z || y * z --> (x || y) * z.
 Proof.
   intros.
@@ -211,7 +211,7 @@ Proof.
   - apply provable_impp_refl.
 Qed.
 
-Lemma falsep_sepcon_right:
+Lemma impp_falsep_sepcon:
   forall (x: expr),|-- FF --> FF * x.
 Proof.
   intros.
@@ -224,8 +224,8 @@ Context {sepcon_orp_AX: SepconOrAxiomatization L Gamma}
 Lemma sepcon_orp_RDistr: RightDistr L Gamma sepcon orp.
 Proof.
   constructor; intros.
-  + apply orp_sepcon_left.
-  + apply orp_sepcon_right.
+  + apply orp_sepcon_impp.
+  + apply impp_orp_sepcon.
 Qed.
 
 Lemma sepcon_orp_LDistr: LeftDistr L Gamma sepcon orp.
@@ -255,8 +255,8 @@ Lemma falsep_sepcon: forall (x: expr),
 Proof.
   intros.
   apply solve_iffp_intros.
-  + apply falsep_sepcon_left.
-  + apply falsep_sepcon_right.
+  + apply falsep_sepcon_impp.
+  + apply impp_falsep_sepcon.
 Qed.
 
 Lemma sepcon_falsep: forall (x: expr),

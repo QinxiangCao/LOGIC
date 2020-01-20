@@ -92,7 +92,7 @@ Class AndDeduction (L: Language) {andpL: AndLanguage L} (GammaD1: Derivable1 L) 
   derivable1_andp_elim2:forall x y,derivable1 (x && y) y
 }.
 
-Class ImpAndAdjoint (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) := {
+Class ImpAndAdjointDeduction (L: Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_impp_andp_adjoint: forall x y z, derivable1 x (y-->z) <-> derivable1 (x && y) z
 }.
 
@@ -106,7 +106,7 @@ Class FalseDeduction (L: Language) {falsepL: FalseLanguage L} (GammaD1: Derivabl
   derivable1_falsep_elim: forall x, derivable1 FF x
 }.
 
-Class NegDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) := {
+Class IntuitionisticNegDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_negp_unfold: forall x, derivable1 (~~x) (x --> FF);
   derivable1_negp_fold: forall x, derivable1 (x --> FF) (~~x)
 }.
@@ -1315,6 +1315,28 @@ Proof.
 
 End DerivableRulesFromLogicEquiv.
 
+Lemma provable_derivable1_true
+       {L: Language}
+       {minL: MinimumLanguage L}
+       {truepL: TrueLanguage L}
+       {GammaP: Provable L}
+       {GammaD1: Derivable1 L}
+       {minAX: MinimumAxiomatization L GammaP}
+       {trueD: TrueDeduction L GammaD1}
+       {bD: BasicDeduction L GammaD1}
+       {D12P: NormalDeduction L GammaP GammaD1}
+       {P2D1: Provable_Derivable1 L GammaP GammaD1}
+      :forall x,
+  provable x <-> derivable1 TT x.
+Proof.
+  intros.
+  split; intros.
+  + apply provable_right; auto.
+  + rewrite <- provable_derivable1.
+    rewrite <- H at 3.
+    apply derivable1_truep_intros.
+Qed.
+
 Lemma derivable1_distr
        {L: Language}
        {minL: MinimumLanguage L}
@@ -1324,7 +1346,7 @@ Lemma derivable1_distr
        {minD: MinimumDeduction L GammaD1}
        {andpD: AndDeduction L GammaD1}
        {orpD: OrDeduction L GammaD1}
-       {adjD: ImpAndAdjoint L GammaD1}
+       {adjD: ImpAndAdjointDeduction L GammaD1}
        {BD: BasicDeduction L GammaD1}
       :forall P x y z,
   derivable1 (P && (x || y)) z <-> derivable1 ((P && x) || (P && y)) z.
@@ -1384,7 +1406,7 @@ Section Deduction2Axiomatization1.
 
 Context {andpL: AndLanguage L}
         {andpD: AndDeduction L GammaD1}
-        {adjD: ImpAndAdjoint L GammaD1}.
+        {adjD: ImpAndAdjointDeduction L GammaD1}.
 
 Lemma Deduction2Axiomatization_andpAX : AndAxiomatization L GammaP.
 Proof.
@@ -1459,7 +1481,7 @@ Section Deduction2Axiomatization_negpAX.
 
 Context {negpL: NegLanguage L}
         {falsepL: FalseLanguage L}
-        {negpD: NegDeduction L GammaD1}.
+        {inegpD: IntuitionisticNegDeduction L GammaD1}.
 
 Lemma Deduction2Axiomatization_negpAX: IntuitionisticNegAxiomatization L GammaP.
 Proof.

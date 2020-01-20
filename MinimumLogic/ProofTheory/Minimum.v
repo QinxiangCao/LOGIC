@@ -33,6 +33,7 @@ Class NormalDeduction (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L)
                         provable (impp x y)
 }.
 
+(* TODO: rename it to ImpDeduction *)
 Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L) := {
   deduction1_intros:forall x1 x2 y1 y2, derivable1 x2 x1 -> derivable1 y1 y2 
   -> derivable1 (x1 --> y1) (x2 --> y2);
@@ -52,11 +53,13 @@ Class NormalEquiv2 (L:Language) {minL: MinimumLanguage L} (GammaD:Derivable1 L) 
                         derivable1 x y /\ derivable1 y x
 }.
 
+(* TODO: rename it to ImpEquiv *)
 Class MinimumEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:LogicEquiv L) := {
   equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 --> y1) --||-- (x2 --> y2)
 }.
 
+(* TODO: use truep instead of "impp x x"? *)
 Class Provable_Derivable1 (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable1 L): Type := {
   provable_derivable1: forall x, derivable1 (impp x x) x <->
                         provable x
@@ -510,6 +513,20 @@ Proof.
 Qed.
 
 End DerivableRulesFromSequentCalculus.
+
+Lemma provable_right
+      {L: Language}
+      {minL: MinimumLanguage L}
+      {GammaP: Provable L}
+      {GammaD1: Derivable1 L}
+      {D12P: NormalDeduction L GammaP GammaD1}
+      {minAX: MinimumAxiomatization L GammaP}:
+  forall x y, |-- x -> derivable1 y x.
+Proof.
+  intros.
+  rewrite derivable1_provable.
+  apply aux_minimun_rule00; auto.
+Qed.
 
 Section SequentCalculus2Axiomatization.
 

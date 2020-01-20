@@ -24,48 +24,69 @@ Import CoqPropInLogicNotation.
 Import Derivable1.
 Local Open Scope Derivable1.
 
-Class CoqProDeduction
+Class CoqPropDeduction
+      (L: Language)
+      {truepL: TrueLanguage L}
+      {coq_prop_L: CoqPropLanguage L}
+      (GammaD1: Derivable1 L): Prop := {
+  coq_prop_right: forall (P: Prop) x, P -> x |-- !! P;
+  coq_prop_left: forall (P: Prop) x, (P -> TT |-- x) -> !! P |-- x;
+}.
+
+Class CoqPropImpDeduction
       (L: Language)
       {minL: MinimumLanguage L}
       {coq_prop_L: CoqPropLanguage L}
       (GammaD1: Derivable1 L): Prop := {
-  coq_prop_intros: forall P: Prop, P -> (!! P --> !! P)|-- !! P;
-  coq_prop_elim: forall (P: Prop) x, (P -> (x --> x) |-- x) -> (!! P |-- x);
-  coq_prop_impp: forall (P Q: Prop), (!! P --> !! Q) |-- !! (P -> Q);
+  derivable1_coq_prop_impp: forall (P Q: Prop), (!! P --> !! Q) |-- !! (P -> Q);
 }.
 
-Section CoqProDeduction2CoqPropAxiomatization.
+Section CoqPropDeduction2CoqPropAxiomatization.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
+        {truepL: TrueLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {GammaD1: Derivable1 L}
         {GammaP: Provable L}
-        {coq_prop_D: CoqProDeduction L GammaD1}
-        {minD: MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}
+        {coq_prop_D: CoqPropDeduction L GammaD1}
+        {minAX: MinimumAxiomatization L GammaP}
+        {bD: BasicDeduction L GammaD1}
+        {trupD: TrueDeduction L GammaD1}
+        {D12P: NormalDeduction L GammaP GammaD1}
         {P2D: Provable_Derivable1 L GammaP GammaD1}.
 
-Lemma CoqProDeduction2CoqPropAxiomatization_coq_prop_AX:
-CoqPropAxiomatization L GammaP.
+Lemma Deduction2Axiomatization_coq_prop_AX:
+  CoqPropAxiomatization L GammaP.
+Proof.  
+  constructor.
+  + intros.
+    rewrite provable_derivable1_true. apply coq_prop_right. auto.
+  + intros.
+    apply derivable1_provable.
+    rewrite provable_derivable1_true in H.
+    apply coq_prop_left.
+    auto.
+Qed.
+
+Lemma Deduction2Axiomatization_coq_prop_impp_AX
+      {coq_prop_impp_D: CoqPropImpDeduction L GammaD1}:
+  CoqPropImpAxiomatization L GammaP.
 Proof.
   constructor.
-  -intros.
-   apply provable_derivable1. apply coq_prop_intros. auto.
-  -intros.
-   pose proof PD2ND.
-   apply derivable1_provable.
-   rewrite <- provable_derivable1 in H.
-   apply coq_prop_elim;auto.
-  -intros.
-   pose proof PD2ND.
-   apply derivable1_provable. apply coq_prop_impp.
-  Qed.
+  intros.
+  apply derivable1_provable. apply derivable1_coq_prop_impp.
+Qed.
 
-End CoqProDeduction2CoqPropAxiomatization.
+End CoqPropDeduction2CoqPropAxiomatization.
 
-Instance reg_CoqProDeduction2CoqPropAxiomatization_coq_prop_AX:
-  RegisterClass D1ToP_reg (fun coq_prop_AX:unit => @CoqProDeduction2CoqPropAxiomatization_coq_prop_AX) 8.
+Instance reg_Deduction2Axiomatization_coq_prop_AX:
+  RegisterClass D1ToP_reg (fun coq_prop_AX:unit => @Deduction2Axiomatization_coq_prop_AX) 8.
+Qed.
+
+Instance reg_Deduction2Axiomatization_coq_prop_impp_AX:
+  RegisterClass D1ToP_reg (fun coq_prop_impp_AX:unit => @Deduction2Axiomatization_coq_prop_impp_AX) 9.
 Qed.
 
 Section DeductionRules.
@@ -82,16 +103,16 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
-        {adjD: ImpAndAdjoint L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
         {orpD: OrDeduction L GammaD1}
         {falsepD: FalseDeduction L GammaD1}
-        {inegpD: NegDeduction L GammaD1}
+        {inegpD: IntuitionisticNegDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
         {truepD: TrueDeduction L GammaD1}
-        {coq_prop_D: CoqProDeduction L GammaD1}
+        {coq_prop_D: CoqPropDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
-Lemma coq_prop_andp_impp: 
+Lemma coq_prop_andp_left: 
 forall (P: Prop) Q R, (P -> Q |-- R) -> !! P && Q |-- R.
 Proof.
   AddAxiomatization.
@@ -101,7 +122,7 @@ Proof.
   auto.
   Qed.
 
-Lemma andp_coq_prop_impp: 
+Lemma andp_coq_prop_left: 
 forall (P: Prop) Q R, (P -> Q |-- R) -> Q && !! P |-- R.
 Proof.
   AddAxiomatization.
@@ -111,21 +132,12 @@ Proof.
   auto.
   Qed.
 
-Lemma impp_coq_prop: forall (P: Prop) Q, P -> Q |-- !! P.
-Proof.
-  AddAxiomatization.
-  intros.
-  pose proof impp_coq_prop P Q.
-  rewrite derivable1_provable.
-  auto.
-  Qed.
-
 Section LogicEquiv.
 
 Context {GammaE: LogicEquiv L}
         {NE2: NormalEquiv2 L GammaD1 GammaE}.
 
-Lemma coq_prop_truep: forall (P: Prop), P -> !! P --||-- truep.
+Lemma coq_prop_truep_equiv: forall (P: Prop), P -> !! P --||-- truep.
 Proof.
   AddAxiomatization.
   intros.
@@ -142,7 +154,7 @@ Proof.
    apply H0;auto.
    Qed.
 
-Lemma coq_prop_andp: forall (P: Prop) Q, P -> !! P && Q --||-- Q.
+Lemma coq_prop_andp_equiv: forall (P: Prop) Q, P -> !! P && Q --||-- Q.
 Proof.
   AddAxiomatization.
   intros.
@@ -157,7 +169,7 @@ Proof.
    auto.
    Qed.
 
-Lemma andp_coq_prop: forall (P: Prop) Q, P -> Q && !! P --||-- Q.
+Lemma andp_coq_prop_equiv: forall (P: Prop) Q, P -> Q && !! P --||-- Q.
 Proof.
   AddAxiomatization.
   intros.
@@ -175,7 +187,7 @@ Proof.
    auto.
    Qed.
 
-Lemma coq_prop_and: forall P Q: Prop, !! (P /\ Q) --||-- !! P && !! Q.
+Lemma coq_prop_and_equiv: forall P Q: Prop, !! (P /\ Q) --||-- !! P && !! Q.
 Proof.
   AddAxiomatization.
   intros.
@@ -190,7 +202,7 @@ Proof.
    pose proof modus_ponens _ _ H0 H;auto.
    Qed.
 
-Lemma coq_prop_or: forall P Q: Prop, !! (P \/ Q) --||-- !! P || !! Q.
+Lemma coq_prop_or_equiv: forall P Q: Prop, !! (P \/ Q) --||-- !! P || !! Q.
 Proof.
   AddAxiomatization.
   intros.
@@ -205,7 +217,8 @@ Proof.
    pose proof modus_ponens _ _ H0 H;auto.
    Qed.
 
-Lemma coq_prop_impl: forall P Q: Prop, !! (P -> Q) --||-- (!! P --> !! Q).
+Lemma coq_prop_impl_equiv {coq_prop_impp_D: CoqPropImpDeduction L GammaD1}:
+  forall P Q: Prop, !! (P -> Q) --||-- (!! P --> !! Q).
 Proof.
   AddAxiomatization.
   intros.

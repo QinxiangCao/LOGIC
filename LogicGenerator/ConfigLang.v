@@ -81,6 +81,7 @@ Definition USE_fin_conseq_FOR_derivable :=
 Definition USE_mono_fin_conseq_FOR_derivable :=
   ___USE_consequence_FOR_derivable true true.
 
+(* TODO: Add coq_prop for derivitive1; improve classical logic's choices; *)
 Inductive rule_class :=
 | provability_OF_impp
 | provability_OF_andp
@@ -94,6 +95,7 @@ Inductive rule_class :=
 | provability_OF_godel_dummett
 | provability_OF_classical_logic
 | provability_OF_coq_prop
+| provability_OF_coq_prop_impp
 | provability_OF_sepcon_rule
 | provability_OF_wand_rule
 | provability_OF_emp_rule
@@ -118,6 +120,19 @@ Inductive rule_class :=
 | derivitive_OF_de_morgan
 | derivitive_OF_godel_dummett
 | derivitive_OF_classical_logic
+| derivitive1_OF_basic_setting
+| derivitive1_OF_impp_andp_adjoint
+| derivitive1_OF_andp
+| derivitive1_OF_orp
+| derivitive1_OF_falsep
+| derivitive1_OF_truep
+| derivitive1_OF_iffp
+| derivitive1_OF_negp
+| derivitive1_OF_sepcon
+| derivitive1_OF_wand
+| derivitive1_OF_emp
+| derivitive1_OF_sepcon_orp_rule
+| derivitive1_OF_sepcon_falsep_rule
 | corability_OF_basic_setting
 | corability_OF_coq_prop
 | GEN_iffp_FROM_andp_impp
@@ -532,10 +547,11 @@ match rc1, rc2 with
 | provability_OF_de_morgan, provability_OF_de_morgan
 | provability_OF_godel_dummett, provability_OF_godel_dummett
 | provability_OF_classical_logic, provability_OF_classical_logic
-| provability_OF_coq_prop, provability_OF_coq_prop => true
-| provability_OF_sepcon_rule, provability_OF_sepcon_rule => true
-| provability_OF_wand_rule, provability_OF_wand_rule => true
-| provability_OF_emp_rule, provability_OF_emp_rule => true
+| provability_OF_coq_prop, provability_OF_coq_prop
+| provability_OF_coq_prop_impp, provability_OF_coq_prop_impp
+| provability_OF_sepcon_rule, provability_OF_sepcon_rule
+| provability_OF_wand_rule, provability_OF_wand_rule
+| provability_OF_emp_rule, provability_OF_emp_rule
 | provability_OF_iter_sepcon, provability_OF_iter_sepcon => true
 | provability_OF_sepcon_orp_rule, provability_OF_sepcon_orp_rule => true
 | provability_OF_sepcon_falsep_rule, provability_OF_sepcon_falsep_rule => true
@@ -557,6 +573,19 @@ match rc1, rc2 with
 | derivitive_OF_de_morgan, derivitive_OF_de_morgan
 | derivitive_OF_godel_dummett, derivitive_OF_godel_dummett
 | derivitive_OF_classical_logic, derivitive_OF_classical_logic
+| derivitive1_OF_basic_setting, derivitive1_OF_basic_setting
+| derivitive1_OF_impp_andp_adjoint, derivitive1_OF_impp_andp_adjoint
+| derivitive1_OF_andp, derivitive1_OF_andp
+| derivitive1_OF_orp, derivitive1_OF_orp
+| derivitive1_OF_falsep, derivitive1_OF_falsep
+| derivitive1_OF_truep, derivitive1_OF_truep
+| derivitive1_OF_iffp, derivitive1_OF_iffp
+| derivitive1_OF_negp, derivitive1_OF_negp
+| derivitive1_OF_sepcon, derivitive1_OF_sepcon
+| derivitive1_OF_wand, derivitive1_OF_wand
+| derivitive1_OF_emp, derivitive1_OF_emp
+| derivitive1_OF_sepcon_orp_rule, derivitive1_OF_sepcon_orp_rule
+| derivitive1_OF_sepcon_falsep_rule, derivitive1_OF_sepcon_falsep_rule
 | corability_OF_basic_setting, corability_OF_basic_setting
 | corability_OF_coq_prop, corability_OF_coq_prop
 | GEN_iffp_FROM_andp_impp, GEN_iffp_FROM_andp_impp
