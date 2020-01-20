@@ -1,6 +1,7 @@
 Require Import Coq.Lists.List.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -12,15 +13,18 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
-Require Import MetaLogicInj.Syntax.
-Require Import MetaLogicInj.ProofTheory.ProofRules.
-Require Import SeparationLogic.Syntax.
-Require Import SeparationLogic.ProofTheory.SeparationLogic.
-Require Import SeparationLogic.ProofTheory.RewriteClass.
-Require Import SeparationLogic.ProofTheory.DerivedRules.
-Require Import SeparationLogic.ProofTheory.IterSepcon.
-Require Import SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
-Require Import SeparationLogic.ProofTheory.Corable.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
+Require Import Logic.MetaLogicInj.Syntax.
+Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
+Require Import Logic.MetaLogicInj.ProofTheory.Deduction.
+Require Import Logic.SeparationLogic.Syntax.
+Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
+Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.
+Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
+Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
+Require Import Logic.SeparationLogic.ProofTheory.Corable.
+Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigDenot.
@@ -47,7 +51,12 @@ Definition instance_para_open := PARA_OPEN.PARA_OPEN.
 Section Generate.
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {truepL: TrueLanguage L}
+        {iffpL: IffLanguage L}
+        {negpL: NegLanguage L}
         {iter_andp_L: IterAndLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {sepconL : SepconLanguage L}
@@ -56,7 +65,12 @@ Context {L: Language}
         {iter_sepcon_L: IterSepconLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
+        {GammaD1: Derivable1 L}
+        {GammaE: LogicEquiv L}
         {Cor: Corable L}
+        {iffpDef: IffDefinition_And_Imp L}
+        {truepDef: TrueDefinition_False_Imp L}
+        {negpDef: NegDefinition_False_Imp L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}
@@ -64,12 +78,18 @@ Context {L: Language}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
         {iter_andp_AXL: IterAndAxiomatization_left L GammaP}
-        {cpAX: ClassicalPropositionalLogic L GammaP}
-        {dmpAX: DeMorganPropositionalLogic L GammaP}
-        {gdpAX: GodelDummettPropositionalLogic L GammaP}
+        {cpAX: ClassicalAxiomatization L GammaP}
+        {dmpAX: DeMorganAxiomatization L GammaP}
+        {gdpAX: GodelDummettAxiomatization L GammaP}
         {coq_prop_AX: CoqPropAxiomatization L GammaP}
+        {coq_prop_impp_AX: CoqPropImpAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
@@ -89,8 +109,26 @@ Context {L: Language}
         {bSC : BasicSequentCalculus L GammaD}
         {fwSC : FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
-        {cpSC: ClassicalPropositionalSequentCalculus L GammaD}
+        {andpSC : AndSequentCalculus L GammaD}
+        {orpSC : OrSequentCalculus L GammaD}
+        {falsepSC : FalseSequentCalculus L GammaD}
+        {truepSC : TrueSequentCalculus L GammaD}
+        {iffpSC : IffSequentCalculus L GammaD}
+        {inegpSC : IntuitionisticNegSequentCalculus L GammaD}
+        {cpSC: ClassicalSequentCalculus L GammaD}
+        {bD : BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD : AndDeduction L GammaD1}
+        {orpD : OrDeduction L GammaD1}
+        {falsepD : FalseDeduction L GammaD1}
+        {truepD : TrueDeduction L GammaD1}
+        {iffpD : IffDeduction L GammaD1}
+        {inegpD : IntuitionisticNegDeduction L GammaD1}
+        {sepconD : SepconDeduction L GammaD1}
+        {wandD : WandDeduction L GammaD1}
+        {empD : EmpDeduction L GammaD1}
+        {sepcon_orp_D : SepconOrDeduction L GammaD1}
+        {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .

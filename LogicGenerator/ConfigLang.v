@@ -24,6 +24,8 @@ Inductive connective :=
 Inductive judgement :=
 | provable
 | derivable
+| derivable1
+| logic_equiv
 | corable.
 
 Inductive type :=
@@ -62,7 +64,11 @@ Inductive how_judgement :=
 | ___USE_valid_FOR_provable (mono: bool)
 | ___USE_consequence_FOR_derivable (mono fin: bool)
 | FROM_provable_TO_derivable
-| FROM_derivable_TO_provable.
+| FROM_derivable_TO_provable(*
+| FROM_provable_TO_derivable1
+| FROM_derivable1_TO_provable
+| FROM_provable_TO_logic_equiv
+| FROM_derivable1_TO_logic_equiv*).
 
 Definition USE_valid_FOR_provable := ___USE_valid_FOR_provable false.
 Definition USE_mono_valid_FOR_provable := ___USE_valid_FOR_provable true.
@@ -75,14 +81,21 @@ Definition USE_fin_conseq_FOR_derivable :=
 Definition USE_mono_fin_conseq_FOR_derivable :=
   ___USE_consequence_FOR_derivable true true.
 
+(* TODO: Add coq_prop for derivitive1; improve classical logic's choices; *)
 Inductive rule_class :=
 | provability_OF_impp
-| provability_OF_propositional_connectives
+| provability_OF_andp
+| provability_OF_orp
+| provability_OF_falsep
+| provability_OF_truep
+| provability_OF_iffp
+| provability_OF_negp
 | provability_OF_iter_andp
 | provability_OF_de_morgan
 | provability_OF_godel_dummett
 | provability_OF_classical_logic
 | provability_OF_coq_prop
+| provability_OF_coq_prop_impp
 | provability_OF_sepcon_rule
 | provability_OF_wand_rule
 | provability_OF_emp_rule
@@ -98,12 +111,33 @@ Inductive rule_class :=
 | derivitive_OF_basic_setting
 | derivitive_OF_finite_derivation
 | derivitive_OF_impp
-| derivitive_OF_propositional_connectives
+| derivitive_OF_andp
+| derivitive_OF_orp
+| derivitive_OF_falsep
+| derivitive_OF_truep
+| derivitive_OF_iffp
+| derivitive_OF_negp
 | derivitive_OF_de_morgan
 | derivitive_OF_godel_dummett
 | derivitive_OF_classical_logic
+| derivitive1_OF_basic_setting
+| derivitive1_OF_impp_andp_adjoint
+| derivitive1_OF_andp
+| derivitive1_OF_orp
+| derivitive1_OF_falsep
+| derivitive1_OF_truep
+| derivitive1_OF_iffp
+| derivitive1_OF_negp
+| derivitive1_OF_sepcon
+| derivitive1_OF_wand
+| derivitive1_OF_emp
+| derivitive1_OF_sepcon_orp_rule
+| derivitive1_OF_sepcon_falsep_rule
 | corability_OF_basic_setting
 | corability_OF_coq_prop
+| GEN_iffp_FROM_andp_impp
+| GEN_truep_FROM_falsep_impp
+| GEN_negpp_FROM_falsep_impp
 | GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -130,7 +164,12 @@ Inductive type_class :=
 
 Inductive connective_class :=
 | MinimumLanguage
-| PropositionalLanguage
+| AndLanguage
+| OrLanguage
+| FalseLanguage
+| TrueLanguage
+| IffLanguage
+| NegLanguage
 | CoqPropLanguage
 | SepconLanguage
 | WandLanguage
@@ -142,6 +181,8 @@ Inductive connective_class :=
 Inductive judgement_class :=
 | Provable
 | Derivable
+| Derivable1
+| LogicEquiv
 | Corable
 .
 
@@ -394,6 +435,8 @@ Definition eqb (j1 j2: judgement) :=
 match j1, j2 with
 | provable, provable
 | derivable, derivable
+| derivable1, derivable1
+| logic_equiv, logic_equiv
 | corable, corable => true
 | _, _ => false
 end.
@@ -435,12 +478,17 @@ Definition t := connective_class.
 
 Definition eqb (cc1 cc2: connective_class) :=
 match cc1, cc2 with
-| MinimumLanguage, MinimumLanguage => true
-| PropositionalLanguage, PropositionalLanguage => true
-| CoqPropLanguage, CoqPropLanguage => true
-| SepconLanguage, SepconLanguage => true
-| WandLanguage, WandLanguage => true
-| EmpLanguage, EmpLanguage => true
+| MinimumLanguage, MinimumLanguage
+| AndLanguage, AndLanguage
+| OrLanguage, OrLanguage
+| FalseLanguage, FalseLanguage
+| TrueLanguage, TrueLanguage
+| IffLanguage, IffLanguage
+| NegLanguage, NegLanguage
+| CoqPropLanguage, CoqPropLanguage
+| SepconLanguage, SepconLanguage
+| WandLanguage, WandLanguage
+| EmpLanguage, EmpLanguage
 | IterAndLanguage, IterAndLanguage
 | IterSepconLanguage, IterSepconLanguage => true
 | _, _ => false
@@ -463,8 +511,10 @@ Definition t := judgement_class.
 
 Definition eqb (jc1 jc2: judgement_class) :=
 match jc1, jc2 with
-| Provable, Provable => true
-| Derivable, Derivable => true
+| Provable, Provable
+| Derivable, Derivable
+| Derivable1, Derivable1
+| LogicEquiv, LogicEquiv
 | Corable, Corable => true
 | _, _ => false
 end.
@@ -486,16 +536,22 @@ Definition t := rule_class.
 
 Definition eqb (rc1 rc2: rule_class) :=
 match rc1, rc2 with
-| provability_OF_impp, provability_OF_impp => true
-| provability_OF_propositional_connectives, provability_OF_propositional_connectives => true
-| provability_OF_iter_andp, provability_OF_iter_andp => true
-| provability_OF_de_morgan, provability_OF_de_morgan => true
-| provability_OF_godel_dummett, provability_OF_godel_dummett => true
-| provability_OF_classical_logic, provability_OF_classical_logic => true
-| provability_OF_coq_prop, provability_OF_coq_prop => true
-| provability_OF_sepcon_rule, provability_OF_sepcon_rule => true
-| provability_OF_wand_rule, provability_OF_wand_rule => true
-| provability_OF_emp_rule, provability_OF_emp_rule => true
+| provability_OF_impp, provability_OF_impp
+| provability_OF_andp, provability_OF_andp
+| provability_OF_orp, provability_OF_orp
+| provability_OF_falsep, provability_OF_falsep
+| provability_OF_truep, provability_OF_truep
+| provability_OF_iffp, provability_OF_iffp
+| provability_OF_negp, provability_OF_negp
+| provability_OF_iter_andp, provability_OF_iter_andp
+| provability_OF_de_morgan, provability_OF_de_morgan
+| provability_OF_godel_dummett, provability_OF_godel_dummett
+| provability_OF_classical_logic, provability_OF_classical_logic
+| provability_OF_coq_prop, provability_OF_coq_prop
+| provability_OF_coq_prop_impp, provability_OF_coq_prop_impp
+| provability_OF_sepcon_rule, provability_OF_sepcon_rule
+| provability_OF_wand_rule, provability_OF_wand_rule
+| provability_OF_emp_rule, provability_OF_emp_rule
 | provability_OF_iter_sepcon, provability_OF_iter_sepcon => true
 | provability_OF_sepcon_orp_rule, provability_OF_sepcon_orp_rule => true
 | provability_OF_sepcon_falsep_rule, provability_OF_sepcon_falsep_rule => true
@@ -505,20 +561,41 @@ match rc1, rc2 with
 | provability_OF_sepcon_rule_AS_mono, provability_OF_sepcon_rule_AS_mono => true
 | provability_OF_emp_rule_AS_iffp, provability_OF_emp_rule_AS_iffp => true
 | provability_OF_garbage_collected_sl, provability_OF_garbage_collected_sl => true
-| derivitive_OF_basic_setting, derivitive_OF_basic_setting => true
-| derivitive_OF_finite_derivation, derivitive_OF_finite_derivation => true
-| derivitive_OF_impp, derivitive_OF_impp => true
-| derivitive_OF_propositional_connectives, derivitive_OF_propositional_connectives => true
-| derivitive_OF_de_morgan, derivitive_OF_de_morgan => true
-| derivitive_OF_godel_dummett, derivitive_OF_godel_dummett => true
-| derivitive_OF_classical_logic, derivitive_OF_classical_logic => true
-| corability_OF_basic_setting, corability_OF_basic_setting => true
-| corability_OF_coq_prop, corability_OF_coq_prop => true
-| GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp => true
-| GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp => true
-| GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon => true
-| GEN_iter_sepcon_FROM_fold_right_sepcon, GEN_iter_sepcon_FROM_fold_right_sepcon => true
-| GEN_derivable_FROM_provable, GEN_derivable_FROM_provable => true
+| derivitive_OF_basic_setting, derivitive_OF_basic_setting
+| derivitive_OF_finite_derivation, derivitive_OF_finite_derivation
+| derivitive_OF_impp, derivitive_OF_impp
+| derivitive_OF_andp, derivitive_OF_andp
+| derivitive_OF_orp, derivitive_OF_orp
+| derivitive_OF_falsep, derivitive_OF_falsep
+| derivitive_OF_truep, derivitive_OF_truep
+| derivitive_OF_iffp, derivitive_OF_iffp
+| derivitive_OF_negp, derivitive_OF_negp
+| derivitive_OF_de_morgan, derivitive_OF_de_morgan
+| derivitive_OF_godel_dummett, derivitive_OF_godel_dummett
+| derivitive_OF_classical_logic, derivitive_OF_classical_logic
+| derivitive1_OF_basic_setting, derivitive1_OF_basic_setting
+| derivitive1_OF_impp_andp_adjoint, derivitive1_OF_impp_andp_adjoint
+| derivitive1_OF_andp, derivitive1_OF_andp
+| derivitive1_OF_orp, derivitive1_OF_orp
+| derivitive1_OF_falsep, derivitive1_OF_falsep
+| derivitive1_OF_truep, derivitive1_OF_truep
+| derivitive1_OF_iffp, derivitive1_OF_iffp
+| derivitive1_OF_negp, derivitive1_OF_negp
+| derivitive1_OF_sepcon, derivitive1_OF_sepcon
+| derivitive1_OF_wand, derivitive1_OF_wand
+| derivitive1_OF_emp, derivitive1_OF_emp
+| derivitive1_OF_sepcon_orp_rule, derivitive1_OF_sepcon_orp_rule
+| derivitive1_OF_sepcon_falsep_rule, derivitive1_OF_sepcon_falsep_rule
+| corability_OF_basic_setting, corability_OF_basic_setting
+| corability_OF_coq_prop, corability_OF_coq_prop
+| GEN_iffp_FROM_andp_impp, GEN_iffp_FROM_andp_impp
+| GEN_truep_FROM_falsep_impp, GEN_truep_FROM_falsep_impp
+| GEN_negpp_FROM_falsep_impp, GEN_negpp_FROM_falsep_impp
+| GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp
+| GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp
+| GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon
+| GEN_iter_sepcon_FROM_fold_right_sepcon, GEN_iter_sepcon_FROM_fold_right_sepcon
+| GEN_derivable_FROM_provable, GEN_derivable_FROM_provable
 | GEN_provable_FROM_derivable, GEN_provable_FROM_derivable => true
 | _, _ => false
 end.

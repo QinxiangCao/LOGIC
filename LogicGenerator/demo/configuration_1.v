@@ -35,7 +35,9 @@ Definition transparent_names :=
 
 Definition primitive_rule_classes :=
   [ provability_OF_impp
-  ; provability_OF_propositional_connectives
+  ; provability_OF_andp
+  ; provability_OF_orp
+  ; provability_OF_falsep
   ; provability_OF_classical_logic
   ].
 

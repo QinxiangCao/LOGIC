@@ -23,7 +23,7 @@ Section Sound_Upwards.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {MD: Model}
@@ -37,7 +37,7 @@ Context {L: Language}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD M SM}
         {kminSM: KripkeMinimumSemantics L MD M SM}
-        {kpSM: KripkePropositionalSemantics L MD M SM}
+        {kiffpSM: KripkeIffSemantics L MD M SM}
         {usepconSM: UpwardsSemantics.SepconSemantics L MD M SM}
         {uwandSM: UpwardsSemantics.WandSemantics L MD M SM}.
 
@@ -61,11 +61,9 @@ Lemma sound_sepcon_assoc:
       KRIPKE: M, m |= x * (y * z) <--> (x * y) * z.
 Proof.
   intros.
-  unfold iffp.
-  rewrite sat_andp.
+  apply sat_iffp.
   split; intros.
-  + rewrite sat_impp; intros.
-    rewrite sat_sepcon in H0.
+  + rewrite sat_sepcon in H0.
     destruct H0 as [mx [myz [? [? ?]]]].
     rewrite sat_sepcon in H2.
     destruct H2 as [my [mz [? [? ?]]]].
@@ -80,8 +78,7 @@ Proof.
     rewrite sat_sepcon.
     exists mx, my.
     split; [| split]; auto.
-  + rewrite sat_impp; intros.
-    rewrite sat_sepcon in H0.
+  + rewrite sat_sepcon in H0.
     destruct H0 as [mxy [mz [? [? ?]]]].
     rewrite sat_sepcon in H1.
     destruct H1 as [mx [my [? [? ?]]]].
@@ -180,19 +177,16 @@ Lemma sound_sepcon_emp {USA': UnitalSeparationAlgebra' (Kworlds M)}:
     forall m, KRIPKE: M, m |= x * emp <--> x.
 Proof.
   intros.
-  unfold iffp.
-  rewrite sat_andp.
-  split.
-  + rewrite sat_impp; intros.
-    rewrite sat_sepcon in H0.
+  apply sat_iffp.
+  split; intros.
+  + rewrite sat_sepcon in H0.
     destruct H0 as [n' [u [? [? ?]]]].
     rewrite sat_emp in H2.
     apply join_comm in H0.
     unfold increasing in H2.
     specialize (H2 _ ltac:(reflexivity) _ _ H0).
     eapply sat_mono; eauto.
-  + rewrite sat_impp; intros.
-    rewrite sat_sepcon.
+  + rewrite sat_sepcon.
     destruct (incr'_exists n) as [u [? ?]].
     destruct H1 as [n' [H1 H1']].
     exists n', u.

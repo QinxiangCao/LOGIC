@@ -28,6 +28,8 @@ Definition transparent_names: list parameter :=
 Definition primitive_rule_classes :=
   [ derivitive_OF_basic_setting
   ; derivitive_OF_impp
-  ; derivitive_OF_propositional_connectives
+  ; derivitive_OF_andp
+  ; derivitive_OF_orp
+  ; derivitive_OF_falsep
   ; GEN_provable_FROM_derivable
   ].

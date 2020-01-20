@@ -28,7 +28,13 @@ Section Sound.
 
 Context {Sigma: PropositionalLanguage.PropositionalVariables}.
 
-Existing Instances PropositionalLanguage.L PropositionalLanguage.minL PropositionalLanguage.pL.
+Existing Instances PropositionalLanguage.L
+                   PropositionalLanguage.minL
+                   PropositionalLanguage.andpL
+                   PropositionalLanguage.orpL
+                   PropositionalLanguage.falsepL
+                   PropositionalLanguage.negpL
+                   PropositionalLanguage.negpDef.
 
 Section Sound_Classical_Trivial.
 
@@ -36,8 +42,13 @@ Import Logic.MinimumLogic.Semantics.Trivial.
 Import Logic.MinimumLogic.Sound.Sound_Classical_Trivial.
 Import Logic.PropositionalLogic.Sound.Sound_Classical_Trivial.
 
-Existing Instances ProofTheories.ClassicalPropositionalLogic.minAX ProofTheories.ClassicalPropositionalLogic.ipAX.
-Existing Instances TrivialSemantics.MD TrivialSemantics.SM TrivialSemantics.tminSM TrivialSemantics.tpSM.
+Existing Instances TrivialSemantics.MD
+                   TrivialSemantics.SM
+                   TrivialSemantics.tminSM
+                   TrivialSemantics.andpSM
+                   TrivialSemantics.orpSM
+                   TrivialSemantics.falsepSM
+                   TrivialSemantics.negpSM.
 
 Theorem sound_classical_trivial: provable_sound ProofTheories.ClassicalPropositionalLogic.GP TrivialSemantics.SM (AllModel _).
 Proof.
@@ -56,7 +67,7 @@ Proof.
   + apply sound_orp_intros2.
   + apply sound_orp_elim.
   + apply sound_falsep_elim.
-  + apply sound_excluded_middle.
+  + apply sound_peirce_law.
 Qed.
 
 End Sound_Classical_Trivial.
@@ -67,8 +78,15 @@ Import Logic.MinimumLogic.Sound.Sound_Kripke.
 Import Logic.PropositionalLogic.Sound.Sound_Kripke.
 Import Logic.PropositionalLogic.DeepEmbedded.KripkeSemantics.
 
-Existing Instances ProofTheories.IntuitionisticPropositionalLogic.minAX ProofTheories.IntuitionisticPropositionalLogic.ipAX.
-Existing Instances KripkeSemantics.MD KripkeSemantics.kMD KripkeSemantics.SM KripkeSemantics.kminSM KripkeSemantics.kpSM KripkeSemantics.R.
+Existing Instances KripkeSemantics.MD
+                   KripkeSemantics.kMD
+                   KripkeSemantics.SM
+                   KripkeSemantics.kminSM
+                   KripkeSemantics.andpSM
+                   KripkeSemantics.orpSM
+                   KripkeSemantics.falsepSM
+                   KripkeSemantics.negpSM
+                   KripkeSemantics.R.
 
 Theorem sound_intuitionistic_Kripke_all:
   provable_sound ProofTheories.IntuitionisticPropositionalLogic.GP KripkeSemantics.SM (KripkeModelClass _ (Kmodel_Monotonic + Kmodel_PreOrder)).
@@ -157,7 +175,7 @@ Proof.
   + apply sound_orp_intros2.
   + apply sound_orp_elim.
   + apply sound_falsep_elim.
-  + apply sound_excluded_middle_ident.
+  + apply sound_peirce_law_ident.
 Qed.
 
 End Sound_Kripke.

@@ -25,6 +25,13 @@ Class CoqPropAxiomatization
       (Gamma: Provable L): Prop := {
   coq_prop_intros: forall P: Prop, P -> |-- !! P;
   coq_prop_elim: forall (P: Prop) x, (P -> |-- x) -> |-- !! P --> x;
+}.
+
+Class CoqPropImpAxiomatization
+      (L: Language)
+      {minL: MinimumLanguage L}
+      {coq_prop_L: CoqPropLanguage L}
+      (Gamma: Provable L): Prop := {
   coq_prop_impp: forall (P Q: Prop), |-- (!! P --> !! Q) --> !! (P -> Q);
 }.
 
@@ -42,17 +49,27 @@ Section DerivedRules.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}
         {coq_prop_AX: CoqPropAxiomatization L Gamma}.
 
 Lemma coq_prop_truep: forall (P: Prop), P -> |-- !! P <--> truep.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply coq_prop_elim.
     intros.
     apply provable_truep.
@@ -105,7 +122,7 @@ Qed.
 Lemma coq_prop_and: forall P Q: Prop, |-- !! (P /\ Q) <--> !! P && !! Q.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply coq_prop_elim.
     intros [? ?].
     apply solve_andp_intros; apply coq_prop_intros; auto.
@@ -118,7 +135,7 @@ Qed.
 Lemma coq_prop_or: forall P Q: Prop, |-- !! (P \/ Q) <--> !! P || !! Q.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply coq_prop_elim.
     intros [? | ?].
     - apply solve_orp_intros1.
@@ -132,10 +149,11 @@ Proof.
       apply coq_prop_intros; auto.
 Qed.
 
-Lemma coq_prop_impl: forall P Q: Prop, |-- !! (P -> Q) <--> (!! P --> !! Q).
+Lemma coq_prop_impl {coq_prop_impp_AX: CoqPropImpAxiomatization L Gamma}:
+  forall P Q: Prop, |-- !! (P -> Q) <--> (!! P --> !! Q).
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply coq_prop_elim; intros.
     apply coq_prop_elim; intros.
     apply coq_prop_intros; auto.

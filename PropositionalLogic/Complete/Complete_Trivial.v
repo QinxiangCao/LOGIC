@@ -32,21 +32,42 @@ Section Completeness.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {bSC: BasicSequentCalculus L GammaD}
         {mpSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
-        {cpSC: ClassicalPropositionalSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
+        {cpSC: ClassicalSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}
         {SM: Semantics L MD}
         {tminSM: TrivialMinimumSemantics L MD SM}
-        {tpSM: TrivialPropositionalSemantics L MD SM}
+        {andpSM: AndSemantics L MD SM}
+        {orpSM: OrSemantics L MD SM}
+        {falsepSM: FalseSemantics L MD SM}
+        {truepSM: TrueSemantics L MD SM}
+        {iffpSM: IffSemantics L MD SM}
+        {negpSM: NegSemantics L MD SM}
         {kMC: Kmodel -> Prop}.
 
 Context (cP: context -> Prop)
@@ -75,7 +96,7 @@ Proof.
     clear H.
 
     specialize (H0 ltac:(constructor; auto) H1).
-    unfold negp in H2; rewrite sat_impp, sat_falsep in H2.
+    rewrite sat_negp in H2.
     auto.
   }
   intros.

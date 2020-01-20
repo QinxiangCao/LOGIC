@@ -44,14 +44,24 @@ Section IterSepconRules.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {empL: EmpLanguage L}
         {iter_sepcon_L: IterSepconLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization L Gamma}
         {wandAX: WandAxiomatization L Gamma}
         {empAX: EmpAxiomatization L Gamma}
@@ -61,7 +71,7 @@ Lemma iter_sepcon_spec_left: forall xs,
   |-- iter_sepcon xs <--> fold_left sepcon xs emp.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply iter_sepcon_spec_left1.
   + apply iter_sepcon_spec_left2.
 Qed.
@@ -71,7 +81,7 @@ Lemma iter_sepcon_spec_right: forall xs,
 Proof.
   intros.
   rewrite iter_sepcon_spec_left.
-  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ _ _ sepcon emp sepcon_Mono sepcon_Assoc sepcon_LU sepcon_RU.
+  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ sepcon _ _ emp sepcon_Mono sepcon_Assoc sepcon_LU sepcon_RU.
   rewrite H.
   apply provable_iffp_refl.
 Qed.
@@ -97,9 +107,9 @@ Lemma iter_sepcon_unfold_right_assoc:
 Proof.
   intros.
   rewrite iter_sepcon_spec_left.
-  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ _ _ sepcon emp sepcon_Mono sepcon_Assoc sepcon_LU sepcon_RU.
+  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ sepcon _ _ emp sepcon_Mono sepcon_Assoc sepcon_LU sepcon_RU.
   rewrite H.
-  pose proof @fold_right_prodp_unfold _ _ _ _ _ _ sepcon sepcon_Mono emp sepcon_RU.
+  pose proof @fold_right_prodp_unfold _ _ _ _ sepcon _ _ sepcon_Mono emp sepcon_RU.
   apply H0.
 Qed.
 
@@ -117,7 +127,7 @@ Lemma iter_sepcon_unfold_left_assoc:
 Proof.
   intros.
   rewrite iter_sepcon_spec_left.
-  pose proof @fold_left_prodp_unfold _ _ _ _ _ _ sepcon sepcon_Mono emp sepcon_LU.
+  pose proof @fold_left_prodp_unfold _ _ _ _ sepcon _ _ sepcon_Mono emp sepcon_LU.
   apply H.
 Qed.
 

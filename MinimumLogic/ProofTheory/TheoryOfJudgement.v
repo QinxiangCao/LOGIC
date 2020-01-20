@@ -78,7 +78,7 @@ Proof.
    apply provable_impp_refl.
   Qed.
 
-Lemma Axiomatization2BasicLogicEquiv_BE: BasicLogicEquiv L GammaL.
+Lemma Axiomatization2BasicLogicEquiv_bE: BasicLogicEquiv L GammaL.
 Proof.
   constructor.
   -intros.
@@ -133,7 +133,7 @@ Context {L: Language}
         {minD: MinimumDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
-Lemma Derivable12Axiomatization_minAX : MinimumAxiomatization L GammaP.
+Lemma Deduction2Axiomatization_minAX : MinimumAxiomatization L GammaP.
 Proof.
   constructor.
   -intros.

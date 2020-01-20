@@ -41,8 +41,7 @@ Class SepconAxiomatization_weak
 
 Class SepconAxiomatization_weak_iffp
         (L: Language)
-        {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
   __sepcon_comm: forall x y, |-- x * y <--> y * x;
@@ -51,8 +50,7 @@ Class SepconAxiomatization_weak_iffp
 
 Class EmpAxiomatization_iffp
         (L: Language)
-        {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         (Gamma: Provable L) := {
@@ -84,7 +82,7 @@ Context {L: Language}
         {wandL: WandLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {wandX: WandAxiomatization L Gamma}
+        {wandAX: WandAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization_weak L Gamma}.
 
 Let sepcon_Comm: Commutativity L Gamma sepcon.
@@ -115,11 +113,21 @@ Section FromSepconWeakIffToSepconWeak.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization_weak_iffp L Gamma}.
 
 Lemma SepconAxiomatizationWeakIff2SepconAxiomatizationWeak:
@@ -128,11 +136,11 @@ Proof.
   constructor.
   + pose proof __sepcon_comm.
     intros.
-    eapply solve_andp_elim1.
+    eapply solve_iffp_elim1.
     apply H.
   + pose proof __sepcon_assoc.
     intros.
-    eapply solve_andp_elim1.
+    eapply solve_iffp_elim1.
     apply H.
 Qed.
 
@@ -142,16 +150,26 @@ Section FromAdjToPropositionalCombination.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}
         {coq_prop_AX: CoqPropAxiomatization L Gamma}
-        {sepconAX: SepconAxiomatization L Gamma}
-        {wandX: WandAxiomatization L Gamma}.
+        {speconAX: SepconAxiomatization L Gamma}
+        {wandAX: WandAxiomatization L Gamma}.
 
 Let RDistr: RightDistr L Gamma sepcon orp.
 Proof.
@@ -181,7 +199,7 @@ Proof.
   intros.
   constructor.
   intros.
-  rewrite (@falsep_prodp _ _ _ _ _ _ _ _ wand_sepcon_Adj).
+  rewrite (@falsep_prodp _ _ _ _ _ _ wand_sepcon_Adj); auto.
   apply provable_impp_refl.
 Qed.
 
@@ -189,7 +207,7 @@ Lemma Adj2SepconCoqProp: SepconCoqPropAxiomatization L Gamma.
 Proof.
   constructor.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply solve_impp_andp.
     - apply wand_sepcon_adjoint.
       apply coq_prop_andp_impp.
@@ -215,12 +233,22 @@ Section FromEmpIffToEmp.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization L Gamma}
         {empAX: EmpAxiomatization_iffp L Gamma}.
 
@@ -230,11 +258,11 @@ Proof.
   constructor.
   + pose proof __sepcon_emp.
     intros.
-    eapply solve_andp_elim1.
+    eapply solve_iffp_elim1.
     apply H.
   + pose proof __sepcon_emp.
     intros.
-    eapply solve_andp_elim2.
+    eapply solve_iffp_elim2.
     apply H.
 Qed.
 

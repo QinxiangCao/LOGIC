@@ -21,7 +21,12 @@ Section Sound_Kripke.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}
@@ -30,7 +35,12 @@ Context {L: Language}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD M SM}
         {kminSM: KripkeMinimumSemantics L MD M SM}
-        {kpSM: KripkePropositionalSemantics L MD M SM}.
+        {andpSM: KripkeAndSemantics L MD M SM}
+        {orpSM: KripkeOrSemantics L MD M SM}
+        {falsepSM: KripkeFalseSemantics L MD M SM}
+        {negpSM: KripkeNegSemantics L MD M SM}
+        {iffpSM: KripkeIffSemantics L MD M SM}
+        {truepSM: KripkeTrueSemantics L MD M SM}.
 
 Lemma sound_andp_intros:
   forall x y: expr,
@@ -124,11 +134,31 @@ Lemma sound_excluded_middle_ident {ikiM: IdentityKripkeIntuitionisticModel (Kwor
     forall m, KRIPKE: M, m |= x || ~~ x.
 Proof.
   intros.
-  unfold negp.
-  rewrite sat_orp, sat_impp.
+  rewrite sat_orp, sat_negp.
   destruct (Classical_Prop.classic (KRIPKE: M, m |= x)); auto.
   right; intros.
   apply ikiM in H0; subst n.
+  tauto.
+Qed.
+
+Lemma sound_peirce_law_ident {ikiM: IdentityKripkeIntuitionisticModel (Kworlds M)}:
+  forall x y: expr,
+    forall m, KRIPKE: M, m |= ((x --> y) --> x) --> x.
+Proof.
+  intros.
+  rewrite !sat_impp.
+  intros.
+  clear m H.
+  rewrite !sat_impp in H0.
+  specialize (H0 n ltac:(reflexivity)).
+  assert ((KRIPKE: M, n |= x -> KRIPKE: M, n |= y) -> KRIPKE: M, n |= x --> y).
+  {
+    rewrite sat_impp.
+    intros.
+    apply ikiM in H1.
+    subst n0.
+    auto.
+  }
   tauto.
 Qed.
 
@@ -161,8 +191,7 @@ Lemma sound_weak_excluded_middle_branch_join {bkiM: BranchJoinKripkeIntuitionist
     forall m, KRIPKE: M, m |= ~~ x || ~~ ~~ x.
 Proof.
   intros.
-  unfold negp.
-  rewrite sat_orp, !sat_impp.
+  rewrite sat_orp, !sat_negp.
   apply Classical_Prop.NNPP; intro.
   apply not_or_and in H; destruct H.
   apply not_all_ex_not in H.
@@ -177,9 +206,9 @@ Proof.
   destruct (Korder_branch_join n1 n2 m H H0) as [n [? ?]].
   eapply sat_mono in H2; [| eassumption].
   eapply sat_mono in H1; [| eassumption].
-  rewrite sat_impp in H2.
+  rewrite sat_negp in H2.
   apply (H2 n) in H1; [| reflexivity].
-  apply sat_falsep in H1; auto.
+  auto.
 Qed.
 
 End Sound_Kripke.

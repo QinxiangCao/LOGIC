@@ -10,12 +10,13 @@ Require Import Logic.MinimumLogic.ProofTheory.ExtensionTactic.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
+Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class GodelDummettPropositionalLogic (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} (Gamma: Provable L) {minAX: MinimumAxiomatization L Gamma} {ipAX: IntuitionisticPropositionalLogic L Gamma} := {
+Class GodelDummettAxiomatization (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} (Gamma: Provable L) := {
   impp_choice: forall x y, |-- (x --> y) || (y --> x)
 }.
 
@@ -23,11 +24,15 @@ Section GodelDummett.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
-        {gdpAX: GodelDummettPropositionalLogic L Gamma}.
+        {orpGamma: OrAxiomatization L Gamma}
+        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
+        {gdpAX: GodelDummettAxiomatization L Gamma}.
+(* TODO: delete it *)
 (*
 Lemma derivable_impp_choice: forall (Phi: context) (x y: expr),
   Phi |-- (x --> y) || (y --> x).
@@ -37,7 +42,7 @@ Proof.
   apply deduction_weaken0; auto.
 Qed.
 *)
-Instance GodelDummett2DeMorgan: DeMorganPropositionalLogic L Gamma.
+Instance GodelDummett2DeMorgan: DeMorganAxiomatization L Gamma.
 Proof.
   constructor.
   AddSequentCalculus.
@@ -60,6 +65,7 @@ Proof.
       left; auto.
     + rewrite deduction_theorem.
       rewrite deduction_theorem.
+      pose proof negp_unfold x. rewrite <- H0.
       apply derivable_assum1.
   }
   assert (Phi |-- (~~ x --> x) --> (~~ x --> FF)).
@@ -69,6 +75,7 @@ Proof.
     set (Psi := Union expr Phi (Singleton expr (~~ x --> x))) in H1 |- *; clearbody Psi.
     rewrite <- deduction_theorem in H1 |- *.
     pose proof derivable_assum1 Psi (~~ x).
+    pose proof negp_unfold x. rewrite H3 in H2 at 2.
     pose proof deduction_modus_ponens _ _ _ H1 H2.
     auto.
   }
@@ -79,7 +86,9 @@ Proof.
   rewrite deduction_theorem in H0, H1.
   pose proof deduction_orp_elim' _ _ _ _ H0 H1.
   pose proof deduction_modus_ponens _ _ _ H H2.
-  auto.
+  pose proof negp_fold (~~ x). rewrite <- H4.
+  pose proof negp_fold x. rewrite <- H5 at 1.
+  apply H3.
 Qed.
 
 End GodelDummett.

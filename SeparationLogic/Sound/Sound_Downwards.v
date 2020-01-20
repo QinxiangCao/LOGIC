@@ -23,7 +23,7 @@ Section Sound_Downwards.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {MD: Model}
@@ -37,7 +37,7 @@ Context {L: Language}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD M SM}
         {kminSM: KripkeMinimumSemantics L MD M SM}
-        {kpSM: KripkePropositionalSemantics L MD M SM}
+        {kiffpSM: KripkeIffSemantics L MD M SM}
         {dsepconSM: DownwardsSemantics.SepconSemantics L MD M SM}
         {dwandSM: DownwardsSemantics.WandSemantics L MD M SM}.
 
@@ -61,11 +61,9 @@ Lemma sound_sepcon_assoc:
       KRIPKE: M, m |= x * (y * z) <--> (x * y) * z.
 Proof.
   intros.
-  unfold iffp.
-  rewrite sat_andp.
+  apply sat_iffp.
   split; intros.
-  + rewrite sat_impp; intros.
-    rewrite sat_sepcon in H0.
+  + rewrite sat_sepcon in H0.
     destruct H0 as [n' [mx' [myz' [? [? [? ?]]]]]].
     rewrite sat_sepcon in H3.
     destruct H3 as [myz'' [my'' [mz'' [? [? [? ?]]]]]].
@@ -84,8 +82,7 @@ Proof.
       exists mxy'', mx', my''.
       split; [| split; [| split]]; auto.
       reflexivity.
-  + rewrite sat_impp; intros.
-    rewrite sat_sepcon in H0.
+  + rewrite sat_sepcon in H0.
     destruct H0 as [n' [mxy' [mz' [? [? [? ?]]]]]].
     rewrite sat_sepcon in H2.
     destruct H2 as [mxy'' [mx'' [my'' [? [? [? ?]]]]]].
@@ -189,11 +186,9 @@ Lemma sound_sepcon_emp {USA: UnitalSeparationAlgebra (Kworlds M)}:
     forall m, KRIPKE: M, m |= x * emp <--> x.
 Proof.
   intros.
-  unfold iffp.
-  rewrite sat_andp.
-  split.
-  + rewrite sat_impp; intros.
-    clear m H.
+  apply sat_iffp.
+  split; intros.
+  + clear m H.
     rewrite sat_sepcon in H0.
     destruct H0 as [m'' [m' [u [? [? [? ?]]]]]].
     rewrite sat_emp in H2.
@@ -202,8 +197,7 @@ Proof.
     apply H2 in H0.
     eapply sat_mono; eauto.
     eapply sat_mono; eauto.
-  + rewrite sat_impp; intros.
-    rewrite sat_sepcon.
+  + rewrite sat_sepcon.
     destruct (incr_exists n) as [u [? ?]].
     destruct H1 as [n' [H1 H1']].
     exists n, n', u.

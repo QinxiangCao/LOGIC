@@ -36,13 +36,17 @@ Context {P: ProgrammingLanguage}
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD tt SM}
         {kminSM: KripkeMinimumSemantics L MD tt SM}
-        {kpSM: KripkePropositionalSemantics L MD tt SM}.
+        {kandpSM: KripkeAndSemantics L MD tt SM}
+        {kfalsepSM: KripkeFalseSemantics L MD tt SM}
+        {knegpSM: KripkeNegSemantics L MD tt SM}.
 
 Lemma hoare_seq_partial_sound: forall c1 c2 P1 P2 P3,
   triple_partial_valid P1 c1 P2 ->
@@ -88,7 +92,7 @@ Proof.
   + assert (KRIPKE: s |= P1 && ~~ B).
     {
       rewrite sat_andp; split; auto.
-      unfold negp; rewrite sat_impp.
+      apply sat_negp. unfold not.
       intros.
       rewrite H in H7.
       pose proof eval_bool_stable b _ _ H6.
@@ -121,8 +125,7 @@ Proof.
       eapply sat_mono; [eassumption |].
       rewrite sat_andp.
       split; auto.
-      unfold negp.
-      rewrite sat_impp; intros.
+      apply sat_negp; unfold not; intros.
       rewrite H in H6.
       pose proof eval_bool_stable b _ _ H4.
       simpl in H6, H7.
@@ -163,13 +166,17 @@ Context {P: ProgrammingLanguage}
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD tt SM}
         {kminSM: KripkeMinimumSemantics L MD tt SM}
-        {kpSM: KripkePropositionalSemantics L MD tt SM}.
+        {kandpSM: KripkeAndSemantics L MD tt SM}
+        {kfalsepSM: KripkeFalseSemantics L MD tt SM}
+        {knegpSM: KripkeNegSemantics L MD tt SM}.
 
 Lemma hoare_seq_total_sound: forall c1 c2 P1 P2 P3,
   triple_total_valid P1 c1 P2 ->
@@ -211,7 +218,7 @@ Proof.
   + assert (KRIPKE: s |= P1 && ~~ B).
     {
       rewrite sat_andp; split; auto.
-      unfold negp; rewrite sat_impp.
+      apply sat_negp; unfold not.
       intros.
       rewrite H in H7.
       pose proof eval_bool_stable b _ _ H6.
@@ -246,8 +253,7 @@ Proof.
     eapply sat_mono; [eassumption |].
     rewrite sat_andp.
     split; auto.
-    unfold negp.
-    rewrite sat_impp; intros.
+    apply sat_negp; unfold not; intros.
     rewrite H in H6.
     pose proof eval_bool_stable b _ _ H4.
     simpl in H6, H7.

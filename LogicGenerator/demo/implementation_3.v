@@ -8,7 +8,6 @@ Module NaiveLang.
   Definition andp (e1 e2 : expr) : expr := fun st => e1 st /\ e2 st.
   Definition orp  (e1 e2 : expr) : expr := fun st => e1 st \/ e2 st.
   Definition falsep : expr := fun st => False.
-  Definition coq_prop (P : Prop) : expr := fun _ => P.
 
   Definition derivable (Phi: context) (e : expr) : Prop := forall st, (forall e0, Phi e0 -> e0 st) -> e st.
 End NaiveLang.
@@ -29,9 +28,6 @@ Module NaiveRule.
   Axiom deduction_weaken : (forall (Phi Psi : Ensemble expr) (x : expr), Included expr Phi Psi -> derivable Phi x -> derivable Psi x) .
   Axiom derivable_assum : (forall (Phi : Ensemble expr) (x : expr), In expr Phi x -> derivable Phi x) .
   Axiom deduction_subst : (forall (Phi Psi : context) (y : expr), (forall x : expr, Psi x -> derivable Phi x) -> derivable (Union expr Phi Psi) y -> derivable Phi y) .
-  Axiom coq_prop_intros : (forall P : Prop, P -> provable (coq_prop P)) .
-  Axiom coq_prop_elim : (forall (P : Prop) (x : expr), (P -> provable x) -> provable (impp (coq_prop P) x)) .
-  Axiom coq_prop_impp : (forall P Q : Prop, provable (impp (impp (coq_prop P) (coq_prop Q)) (coq_prop (P -> Q)))) .
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.

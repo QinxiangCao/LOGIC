@@ -34,17 +34,18 @@ Class SepconAxiomatization
 Class SepconOrAxiomatization
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {orpL: OrLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
-  orp_sepcon_left: forall (x y z: expr),
+  orp_sepcon_impp: forall (x y z: expr),
     |-- (x || y) * z --> x * z || y * z
 }.
 
 Class SepconCoqPropAxiomatization
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {coq_prop_L: CoqPropLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
@@ -55,10 +56,10 @@ Class SepconCoqPropAxiomatization
 Class SepconFalseAxiomatization
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {falsepL: FalseLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
-  falsep_sepcon_left: forall (x: expr),
+  falsep_sepcon_impp: forall (x: expr),
     |-- FF * x --> FF
 }.
 
@@ -84,7 +85,7 @@ Class WandAxiomatization
 Class ExtSeparationLogic
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {trueL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
   sepcon_ext: forall x, |-- x --> x * TT
@@ -93,7 +94,8 @@ Class ExtSeparationLogic
 Class NonsplitEmpSeparationLogic
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         (Gamma: Provable L) := {
@@ -103,7 +105,7 @@ Class NonsplitEmpSeparationLogic
 Class DupEmpSeparationLogic
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         (Gamma: Provable L) := {
@@ -114,7 +116,8 @@ Class DupEmpSeparationLogic
 Class MallocFreeSeparationLogic
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
         (Gamma: Provable L) := {
@@ -127,7 +130,6 @@ Class MallocFreeSeparationLogic
 Class GarbageCollectSeparationLogic
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
   sepcon_elim1: forall x y, |-- x * y --> x
@@ -171,8 +173,18 @@ Proof.
   apply (@prodp_assoc2 _ _ _ _ sepcon_Assoc).
 Qed.
 
-Context {pL: PropositionalLanguage L}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.
 
 Lemma sepcon_comm:
   forall (x y: expr), |-- x * y <--> y * x.
@@ -188,7 +200,7 @@ Proof.
   apply (@prodp_assoc _ _ _ _ _ _ _ sepcon_Assoc).
 Qed.
 
-Lemma orp_sepcon_right:
+Lemma impp_orp_sepcon:
   forall (x y z: expr), |-- x * z || y * z --> (x || y) * z.
 Proof.
   intros.
@@ -199,7 +211,7 @@ Proof.
   - apply provable_impp_refl.
 Qed.
 
-Lemma falsep_sepcon_right:
+Lemma impp_falsep_sepcon:
   forall (x: expr),|-- FF --> FF * x.
 Proof.
   intros.
@@ -212,8 +224,8 @@ Context {sepcon_orp_AX: SepconOrAxiomatization L Gamma}
 Lemma sepcon_orp_RDistr: RightDistr L Gamma sepcon orp.
 Proof.
   constructor; intros.
-  + apply orp_sepcon_left.
-  + apply orp_sepcon_right.
+  + apply orp_sepcon_impp.
+  + apply impp_orp_sepcon.
 Qed.
 
 Lemma sepcon_orp_LDistr: LeftDistr L Gamma sepcon orp.
@@ -242,9 +254,9 @@ Lemma falsep_sepcon: forall (x: expr),
   |-- FF * x <--> FF.
 Proof.
   intros.
-  apply solve_andp_intros.
-  + apply falsep_sepcon_left.
-  + apply falsep_sepcon_right.
+  apply solve_iffp_intros.
+  + apply falsep_sepcon_impp.
+  + apply impp_falsep_sepcon.
 Qed.
 
 Lemma sepcon_falsep: forall (x: expr),
@@ -261,7 +273,7 @@ Context {empL: EmpLanguage L}
 Lemma sepcon_emp: forall x, |-- x * emp <--> x.
 Proof.
   intros.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply sepcon_emp1.
   + apply sepcon_emp2.
 Qed.
@@ -326,8 +338,18 @@ Proof.
   apply (@funcp_mono _ _ _ _ _ _ wand_sepcon_Adj sepcon_Mono); auto.
 Qed.
 
-Context {pL: PropositionalLanguage L}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}
         {sepcon_orp_AX: SepconOrAxiomatization L Gamma}
         {sepcon_false_AX: SepconFalseAxiomatization L Gamma}.
 
@@ -335,14 +357,14 @@ Lemma wand_andp: forall x y z: expr,
   |-- x -* y && z <--> (x -* y) && (x -* z).
 Proof.
   intros.
-  apply (@funcp_andp_distr_r _ _ _ _ _ _ _ _ wand_sepcon_Adj); auto.
+  apply (@funcp_andp_distr_r _ _ _ _ _ _ wand_sepcon_Adj); auto.
 Qed.
 
 Lemma orp_wand: forall x y z: expr,
   |-- (x || y) -* z <--> (x -* z) && (y -* z).
 Proof.
   intros.
-  apply (@orp_funcp _ _ _ _ _ _ _ _ wand_sepcon_Adj sepcon_Comm); auto.
+  apply (@orp_funcp _ _ _ _ _ _ _ _ wand_sepcon_Adj _ _ _ _ sepcon_Comm); auto.
 Qed.
 
 Lemma sepcon_elim2: forall {gcsGamma: GarbageCollectSeparationLogic L Gamma} (x y: expr),
@@ -372,3 +394,4 @@ Proof.
 Qed.
 
 End WandRules.
+

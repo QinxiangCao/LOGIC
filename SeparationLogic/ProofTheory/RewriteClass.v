@@ -15,6 +15,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -47,14 +48,24 @@ Proof.
   apply wand_mono; auto.
 Qed.
 
-Context {pL: PropositionalLanguage L}
-        {ipAX: IntuitionisticPropositionalLogic L Gamma}.
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.
 
 Instance sepcon_proper_iffp: Proper ((fun x y => |-- iffp x y) ==> (fun x y => |-- iffp x y) ==> (fun x y => |-- iffp x y)) sepcon.
 Proof.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply sepcon_mono.
     - rewrite H; apply provable_impp_refl.
     - rewrite H0; apply provable_impp_refl.
@@ -67,7 +78,7 @@ Instance wand_proper_iffp: Proper ((fun x y => |-- iffp x y) ==> (fun x y => |--
 Proof.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
-  apply solve_andp_intros.
+  apply solve_iffp_intros.
   + apply wand_mono.
     - rewrite H; apply provable_impp_refl.
     - rewrite H0; apply provable_impp_refl.
@@ -77,8 +88,6 @@ Proof.
 Qed.
 
 End RewriteClass1.
-
-Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 
 Section RewriteClass2.
 
@@ -96,7 +105,7 @@ Instance sepcon_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivab
 Proof.
   hnf;intros.
   hnf;intros.
-  apply sepcon_mono;auto.
+  apply derivable1_sepcon_mono;auto.
   Qed.
 
 Context {wandL: WandLanguage L}
@@ -107,13 +116,52 @@ Instance wand_proper_derivable1: Proper (derivable1 --> derivable1 ==> derivable
 Proof.
   hnf;intros.
   hnf;intros.
-  apply Deduction.wand_mono;auto.
+  apply derivable1_wand_mono;auto.
   Qed.
 
 End RewriteClass2.
 
 Section RewriteClass3.
 
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {GammaD1: Derivable1 L}
+        {GammaE: LogicEquiv L}
+        {NE: NormalEquiv2 L GammaD1 GammaE}
+        {minD: MinimumDeduction L GammaD1}
+        {sepconD: SepconDeduction L GammaD1}.
+
+Instance sepcon_proper_logic_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) sepcon.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply equiv_derivable1 in H;
+  apply equiv_derivable1 in H0.
+  apply equiv_derivable1; split;
+  apply derivable1_sepcon_mono; tauto.
+  Qed.
+
+Context {wandL: WandLanguage L}
+        {wandD: WandDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
+
+Instance wand_proper_logic_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) wand.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply equiv_derivable1 in H;
+  apply equiv_derivable1 in H0.
+  apply equiv_derivable1; split;
+  apply derivable1_wand_mono; tauto.
+  Qed.
 End RewriteClass3.
 
-Existing Instances sepcon_proper_impp wand_proper_impp sepcon_proper_iffp wand_proper_iffp.
+Existing Instances sepcon_proper_impp
+                   wand_proper_impp
+                   sepcon_proper_iffp
+                   wand_proper_iffp
+                   sepcon_proper_derivable1
+                   wand_proper_derivable1
+                   sepcon_proper_logic_equiv
+                   wand_proper_logic_equiv.

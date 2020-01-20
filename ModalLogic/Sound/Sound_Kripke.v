@@ -23,7 +23,8 @@ Section Sound_Kripke.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {orpL: OrLanguage L}
+        {iffpL: IffLanguage L}
         {mL: ModalLanguage L}
         {MD: Model}
         {kMD: KripkeModel MD}
@@ -31,7 +32,8 @@ Context {L: Language}
         {R: Relation (Kworlds M)}
         {SM: Semantics L MD}
         {tminSM: TrivialMinimumSemantics L MD SM}
-        {tpSM: TrivialPropositionalSemantics L MD SM}
+        {orpSM: OrSemantics L MD SM}
+        {iffpSM: IffSemantics L MD SM}
         {kmSM: KripkeModalSemantics L MD M SM}.
 
 Lemma sound_axiom_K:
@@ -62,8 +64,7 @@ Lemma sound_boxp_orp {pf_R: PartialFunctional KM.Krelation}:
     KRIPKE: M, m |= boxp (x || y) <--> (boxp x || boxp y).
 Proof.
   intros.
-  unfold iffp.
-  rewrite sat_andp, !sat_impp, !sat_orp, !sat_boxp.
+  rewrite sat_iffp, !sat_orp, !sat_boxp.
   split; intros.
   + apply NNPP.
     intro.

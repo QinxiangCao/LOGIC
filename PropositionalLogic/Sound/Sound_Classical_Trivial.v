@@ -14,11 +14,21 @@ Section Sound.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {MD: Model}
         {SM: Semantics L MD}
         {tminSM: TrivialMinimumSemantics L MD SM}
-        {tpSM: TrivialPropositionalSemantics L MD SM}.
+        {andpSM: AndSemantics L MD SM}
+        {orpSM: OrSemantics L MD SM}
+        {falsepSM: FalseSemantics L MD SM}
+        {negpSM: NegSemantics L MD SM}
+        {iffpSM: IffSemantics L MD SM}
+        {truepSM: TrueSemantics L MD SM}.
 
 Lemma sound_andp_intros:
   forall x y m,
@@ -88,10 +98,19 @@ Qed.
 
 Lemma sound_excluded_middle:
   forall x m,
-    m |= x || (x --> FF).
+    m |= x || (~~ x).
 Proof.
   intros.
-  rewrite sat_orp, sat_impp, sat_falsep.
+  rewrite sat_orp, sat_negp.
+  tauto.
+Qed.
+
+Lemma sound_peirce_law:
+  forall x y m,
+    m |= ((x --> y) --> x) --> x.
+Proof.
+  intros.
+  rewrite !sat_impp.
   tauto.
 Qed.
 

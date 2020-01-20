@@ -20,7 +20,12 @@ Import SeparationLogicNotation.
 Class SeparationLogic_Precise
         (L: Language)
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         (Gamma: Provable L) := {
   precise: expr -> Prop;
@@ -34,4 +39,3 @@ precise_impp: forall x y, |-- x --> y -> precise y -> precise x
 The following is not sound e.g. when x := a = 0 && emp, y := a = 1, z := a = 0
 sepcon_cancel: forall x y z, |-- (x * z) --> (y * z) -> precise z -> |-- (x --> y)
 *)
-

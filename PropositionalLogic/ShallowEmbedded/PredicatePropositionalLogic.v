@@ -16,7 +16,12 @@ Require Import Logic.PropositionalLogic.Sound.Sound_Classical_Trivial.
 (* TODO: split part of this file into MinimumLogic folder. *)
 
 Instance Pred_minL (A: Type): MinimumLanguage (Pred_L A) := Build_MinimumLanguage (Pred_L A) Semantics.impp.
-Instance Pred_pL (A: Type): PropositionalLanguage (Pred_L A) := Build_PropositionalLanguage (Pred_L A) Semantics.andp Semantics.orp Semantics.falsep.
+
+Instance Pred_andpL (A: Type): AndLanguage (Pred_L A) := Build_AndLanguage (Pred_L A) Semantics.andp.
+
+Instance Pred_orpL (A: Type): OrLanguage (Pred_L A) := Build_OrLanguage (Pred_L A) Semantics.orp.
+
+Instance Pred_falsepL (A: Type): FalseLanguage (Pred_L A) := Build_FalseLanguage (Pred_L A) Semantics.falsep.
 
 Instance Pred_tminSM (A: Type): TrivialMinimumSemantics (Pred_L A) (Build_Model A) (Pred_SM A).
 Proof.
@@ -24,11 +29,21 @@ Proof.
   intros; apply Same_set_refl.
 Qed.
 
-Instance Pred_tpSM (A: Type): TrivialPropositionalSemantics (Pred_L A) (Build_Model A) (Pred_SM A).
+Instance Pred_andpSM (A: Type): AndSemantics (Pred_L A) (Build_Model A) (Pred_SM A).
 Proof.
   constructor.
   + intros; apply Same_set_refl.
+Qed.
+
+Instance Pred_orpSM (A: Type): OrSemantics (Pred_L A) (Build_Model A) (Pred_SM A).
+Proof.
+  constructor.
   + intros; apply Same_set_refl.
+Qed.
+
+Instance Pred_falsepSM (A: Type): FalseSemantics (Pred_L A) (Build_Model A) (Pred_SM A).
+Proof.
+  constructor.
   + apply Same_set_refl.
 Qed.
 
@@ -47,32 +62,42 @@ Proof.
     exact (@sound_axiom2 (Pred_L A) _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) x y z).
 Qed.
 
-Instance Pred_ipAX (A: Type): IntuitionisticPropositionalLogic (Pred_L A) (Pred_Gamma A).
+Instance Pred_andpAX (A: Type): AndAxiomatization (Pred_L A) (Pred_Gamma A).
 Proof.
   constructor.
   + intros x y.
-    exact (@sound_andp_intros (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x y).
+    exact (@sound_andp_intros (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_andpSM A) x y).
   + intros x y.
-    exact (@sound_andp_elim1 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x y).
+    exact (@sound_andp_elim1 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_andpSM A) x y).
   + intros x y.
-    exact (@sound_andp_elim2 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x y).
-  + intros x y.
-    exact (@sound_orp_intros1 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x y).
-  + intros x y.
-    exact (@sound_orp_intros2 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x y).
-  + intros x y z.
-    exact (@sound_orp_elim (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x y z).
-  + intros x.
-    exact (@sound_falsep_elim (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x).
+    exact (@sound_andp_elim2 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_andpSM A) x y).
 Qed.
 
+Instance Pred_orpAX (A: Type): OrAxiomatization (Pred_L A) (Pred_Gamma A).
+Proof.
+  constructor.
+  + intros x y.
+    exact (@sound_orp_intros1 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_orpSM A) x y).
+  + intros x y.
+    exact (@sound_orp_intros2 (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_orpSM A) x y).
+  + intros x y z.
+    exact (@sound_orp_elim (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_orpSM A) x y z).
+Qed.
+
+Instance Pred_falsepAX (A: Type): FalseAxiomatization (Pred_L A) (Pred_Gamma A).
+Proof.
+  constructor.
+  + intros x.
+    exact (@sound_falsep_elim (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_falsepSM A) x).
+Qed.
+(*TODO: need to adjust(about classical)
 Instance Pred_cpGamma (A: Type): ClassicalPropositionalLogic (Pred_L A) (Pred_Gamma A).
 Proof.
   constructor.
   intros x.
   exact (@sound_excluded_middle (Pred_L A) _ _ (Build_Model A) (Pred_SM A) (Pred_tminSM A) (Pred_tpSM A) x).
 Qed.
-
+*)
 Require Import Logic.GeneralLogic.Semantics.Kripke.
 Require Import Logic.MinimumLogic.Semantics.Kripke.
 Require Import Logic.MinimumLogic.Semantics.SemanticEquiv.
@@ -84,10 +109,20 @@ Instance Pred_kiSM (A: Type): @KripkeIntuitionisticSemantics (Pred_L A) (Build_M
 Instance Pred_kminSM (A: Type): @KripkeMinimumSemantics (Pred_L A) (Pred_minL A) (Build_Model A) (unit_kMD _) tt eq (Pred_SM A) :=
   @Trivial2Kripke _ _ _ _ (Pred_tminSM A).
 
-Instance Pred_kpSM (A: Type): @KripkePropositionalSemantics (Pred_L A) (Pred_minL A) (Pred_pL A) (Build_Model A) (unit_kMD _) tt eq (Pred_SM A) (Pred_kminSM A).
+Instance Pred_kandpSM (A: Type): @KripkeAndSemantics (Pred_L A) (Pred_andpL A) (Build_Model A) (unit_kMD _) tt (Pred_SM A).
 Proof.
   constructor.
   + intros; apply Same_set_refl.
+Qed.
+
+Instance Pred_korpSM (A: Type): @KripkeOrSemantics (Pred_L A) (Pred_orpL A) (Build_Model A) (unit_kMD _) tt (Pred_SM A).
+Proof.
+  constructor.
   + intros; apply Same_set_refl.
+Qed.
+
+Instance Pred_kfalsepSM (A: Type): @KripkeFalseSemantics (Pred_L A) (Pred_falsepL A) (Build_Model A) (unit_kMD _) tt (Pred_SM A).
+Proof.
+  constructor.
   + apply Same_set_refl.
 Qed.

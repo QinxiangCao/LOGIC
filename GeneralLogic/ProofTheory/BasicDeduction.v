@@ -21,8 +21,6 @@ Context {L:Language}
 Instance Derivable_impp_rewrite: RewriteRelation derivable1.
 Qed.
 
-Section Derivable1.
-
 Instance derivable1_refl: Reflexive derivable1.
 Proof.
   hnf; intros.
@@ -40,16 +38,14 @@ Proof.
   pose proof deduction1_trans _ _ _ H H2;tauto.
   Qed.
 
-End Derivable1.
-
 End BDRewriteClass.
-
-Module TestRewriteClass.
-Section TestRewriteClass.
 
 Existing Instances Derivable_impp_rewrite
                    derivable1_refl
                    derivable1_proper_derivable1.
+
+Module TestRewriteClass.
+Section TestRewriteClass.
 
 Goal forall {L: Language} {Gamma:Derivable1 L} {BD:BasicDeduction L Gamma} x1 x2 y1 y2,
   x1 |-- x2 ->
@@ -64,3 +60,4 @@ Qed.
 
 End TestRewriteClass.
 End TestRewriteClass.
+

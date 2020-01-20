@@ -64,8 +64,8 @@ Module NaiveRule.
   Lemma falsep_elim : forall x : expr, provable (impp falsep x).
   Proof. unfold provable, impp, falsep. destruct 1. Qed.
 
-  Lemma excluded_middle : forall x : expr, provable (orp x (negp x)).
-  Proof. unfold provable, orp, negp, impp, falsep. intros; tauto. Qed.
+  Lemma peirce_law : forall x y: expr, provable (impp (impp (impp x y) x) x).
+  Proof. unfold provable, impp. intros; tauto. Qed.
 
   Lemma coq_prop_intros : (forall P : Prop, P -> provable (coq_prop P)) .
   Proof. unfold provable, coq_prop. intros; tauto. Qed.

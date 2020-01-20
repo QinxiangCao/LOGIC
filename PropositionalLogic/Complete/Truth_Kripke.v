@@ -29,18 +29,33 @@ Section TruthLemma.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}
+        {andpSC: AndSequentCalculus L Gamma}
+        {orpSC: OrSequentCalculus L Gamma}
+        {falsepSC: FalseSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
+        {iffpSC: IffSequentCalculus L Gamma}
+        {truepSC: TrueSequentCalculus L Gamma}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}
         {R: Relation (Kworlds M)}
         {SM: Semantics L MD}
         {kminSM: KripkeMinimumSemantics L MD M SM}
-        {kpSM: KripkePropositionalSemantics L MD M SM}.
+        {kandpSM: KripkeAndSemantics L MD M SM}
+        {korpSM: KripkeOrSemantics L MD M SM}
+        {kfalsepSM: KripkeFalseSemantics L MD M SM}
+        {ktruepSM: KripkeTrueSemantics L MD M SM}
+        {kiffpSM: KripkeIffSemantics L MD M SM}
+        {knegpSM: KripkeNegSemantics L MD M SM}.
 
 Context (P: context -> Prop)
         (rel: bijection (Kworlds M) (sig P)).
