@@ -707,6 +707,23 @@ Definition derived_rules :=
   ; corable_sepcon_andp2
   ; corable_sepcon_andp1
   ; corable_andp_sepcon2
+
+
+  ; derivable1_sepcon_assoc2
+  ; orp_sepcon_right
+  ; falsep_sepcon_right
+(*  ; sepcon_comm_equiv
+  ; sepcon_assoc_equiv
+  ; sepcon_orp_distr_r_equiv
+  ; sepcon_orp_distr_l_equiv
+  ; falsep_sepcon_equiv
+  ; sepcon_falsep_equiv
+  ; sepcon_emp_equiv*)
+  ; derivable1_wand_sepcon_modus_ponens1
+  ; derivable1_wand_sepcon_modus_ponens2
+  ; derivable1_wand_mono
+(*  ; wand_andp_equiv
+  ; orp_wand_equiv*)
   ].
 
 Ltac filter_instance_rec l res :=
