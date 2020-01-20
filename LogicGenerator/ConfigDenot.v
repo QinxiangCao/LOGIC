@@ -709,6 +709,7 @@ Definition derived_rules :=
   ; corable_andp_sepcon2
 
 
+(*
   ; derivable1_sepcon_assoc2
   ; orp_sepcon_right
   ; falsep_sepcon_right
@@ -724,6 +725,7 @@ Definition derived_rules :=
   ; derivable1_wand_mono
 (*  ; wand_andp_equiv
   ; orp_wand_equiv*)
+*)
   ].
 
 Ltac filter_instance_rec l res :=
