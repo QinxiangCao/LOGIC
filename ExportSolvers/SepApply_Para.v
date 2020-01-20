@@ -51,7 +51,7 @@ Notation "x * y" := (sepcon x y) (at level 40, left associativity) : syntax.
 
 Axiom impp_proper_equiv:
   Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
-Axiom sepcon_proper_equiv:
+Axiom sepcon_proper_logic_equiv:
   Proper (logic_equiv ==> logic_equiv ==> logic_equiv) sepcon.
 Axiom provable_proper_equiv : Proper (logic_equiv ==> iff) provable.
 Axiom logic_equiv_refl: Reflexive logic_equiv.
@@ -84,7 +84,7 @@ Notation "x --> y" := (impp x y) (at level 55, right associativity) : syntax.
 Notation "x * y" := (sepcon x y) (at level 40, left associativity) : syntax.
 
 Existing Instances impp_proper_equiv
-                   sepcon_proper_equiv
+                   sepcon_proper_logic_equiv
                    provable_proper_equiv
                    logic_equiv_refl.
 

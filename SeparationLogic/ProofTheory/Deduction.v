@@ -264,6 +264,31 @@ Instance reg_SepconDeduction2SepconAxiomatization:
   RegisterClass D1ToP_reg (fun SAx:unit => @SepconDeduction2SepconAxiomatization_sepconAX) 16.
 Qed.
 
+Section FromAxiomatizationToDeduction.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {GammaD1: Derivable1 L}
+        {GammaP: Provable L}
+        {ND: NormalDeduction L GammaP GammaD1}.
+
+Lemma Axiomatization2Deduction_sepconD
+      {sepconAX: SepconAxiomatization L GammaP}:
+  SepconDeduction L GammaD1.
+Proof.
+  intros.
+  constructor; intros.
+  + rewrite derivable1_provable.
+    apply sepcon_comm_impp.
+  + rewrite derivable1_provable.
+    apply sepcon_assoc1.
+  + rewrite derivable1_provable in H, H0 |- *.
+    apply sepcon_mono; auto.
+Qed.
+
+End FromAxiomatizationToDeduction.
+
 Section SepconRulesFromDerivable1.
 
 Context {L: Language}
@@ -819,3 +844,4 @@ Proof.
 Qed.
 
 End FromEmpEIffToEmpD.
+

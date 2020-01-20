@@ -11,6 +11,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.MetaLogicInj.Syntax.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.Syntax.
@@ -293,6 +294,54 @@ Proof.
   intros.
   + apply sepcon_emp1.
   + apply sepcon_emp2.
+Qed.
+
+(** Proof rules for cancel. **)
+
+Lemma cancel_ready: forall x y, |-- x * emp --> y -> |-- x --> y.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite <- sepcon_emp2 in H.
+  auto.
+Qed.
+
+Lemma cancel_one_succeed: forall u x y z,
+  |-- x * y --> z -> |-- (u * x) * y --> u * z.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite sepcon_assoc2.
+  apply sepcon_mono; auto.
+  apply provable_impp_refl.
+Qed.
+
+Lemma cancel_one_giveup: forall x y z w v,
+  |-- x * (y * z) --> w * v-> |-- (y * x) * z --> w * v.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite <- H.
+  pose proof sepcon_comm_impp y x.
+  pose proof sepcon_mono _ _ _ _ H0 (provable_impp_refl z).
+  rewrite H1.
+  apply sepcon_assoc2.
+Qed.
+
+Lemma cancel_rev: forall x y z w,  |-- (y * x) * z --> w -> |-- x * (y * z) --> w.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite <- H.
+  pose proof sepcon_comm_impp x y.
+  pose proof sepcon_mono _ _ _ _ H0 (provable_impp_refl z).
+  rewrite <- H1.
+  apply sepcon_assoc1.
+Qed.
+
+Lemma cancel_finish: forall x, |-- x * emp --> x.
+Proof.
+  apply sepcon_emp1.
 Qed.
 
 End SepconRules.

@@ -706,6 +706,11 @@ Definition derived_rules :=
   ; prop_sepcon_andp1
   ; prop_andp_sepcon2
   ; sepcon_iter_sepcon
+  ; cancel_ready
+  ; cancel_one_succeed
+  ; cancel_one_giveup
+  ; cancel_rev
+  ; cancel_finish
   ; iter_sepcon_unfold_right_assoc
   ; iter_sepcon_unfold_left_assoc
   ; corable_sepcon_andp2
