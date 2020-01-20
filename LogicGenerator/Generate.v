@@ -2,6 +2,7 @@ Require Import Coq.Lists.List.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -77,6 +78,9 @@ Context {L: Language}
         {iter_sepcon_DR: IterSepconDefinition_right L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
+        {ND : NormalDeduction L GammaP GammaD1}
+        {NE : NormalEquiv L GammaP GammaE}
+        {NE2 : NormalEquiv2 L GammaD1 GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
@@ -362,6 +366,7 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.Corable.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.Deduction.";
+  idtac "Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.";
 
   newline;
 

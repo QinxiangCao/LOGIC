@@ -39,6 +39,9 @@ match hj with
                                              ]
 | FROM_provable_TO_derivable => [FROM_ensemble_expr_TO_context]
 | FROM_derivable_TO_provable => [FROM_ensemble_expr_TO_context]
+| FROM_provable_TO_derivable1 => []
+| FROM_provable_TO_logic_equiv => []
+| FROM_derivable1_TO_logic_equiv => []
 end.
 
 (* generated connective *)
@@ -63,6 +66,9 @@ match hj with
 | ___USE_consequence_FOR_derivable _ _ => derivable
 | FROM_provable_TO_derivable => derivable
 | FROM_derivable_TO_provable => provable
+| FROM_provable_TO_derivable1 => derivable1
+| FROM_provable_TO_logic_equiv => logic_equiv
+| FROM_derivable1_TO_logic_equiv => logic_equiv
 end.
 
 (* generated type *)
@@ -126,6 +132,9 @@ match hj with
 | ___USE_consequence_FOR_derivable _ _ => []
 | FROM_provable_TO_derivable => [provable]
 | FROM_derivable_TO_provable => [derivable]
+| FROM_provable_TO_derivable1 => [provable]
+| FROM_provable_TO_logic_equiv => [provable]
+| FROM_derivable1_TO_logic_equiv => [derivable1]
 end.
 
 (* depended types of types *)
@@ -159,6 +168,9 @@ match hj with
 | ___USE_consequence_FOR_derivable _ _ => None
 | FROM_provable_TO_derivable => Some GEN_derivable_FROM_provable
 | FROM_derivable_TO_provable => Some GEN_provable_FROM_derivable
+| FROM_provable_TO_derivable1 => Some GEN_derivable1_FROM_provable
+| FROM_provable_TO_logic_equiv => Some GEN_logic_equiv_FROM_provable
+| FROM_derivable1_TO_logic_equiv => Some GEN_logic_equiv_FROM_derivable1
 end.
 
 Definition all_how_instances: list how_instance :=
@@ -583,3 +595,4 @@ Eval compute in (result how_connectives how_judgements transparent_names primiti
 End test3.
 
 *)
+

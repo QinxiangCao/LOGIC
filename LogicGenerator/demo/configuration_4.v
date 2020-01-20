@@ -25,6 +25,8 @@ Definition how_judgements :=
   [primitive_judgement provable
   ;primitive_judgement corable
   ;FROM_provable_TO_derivable
+  ;FROM_provable_TO_derivable1
+  ;FROM_provable_TO_logic_equiv
   ].
 
 Definition transparent_names :=

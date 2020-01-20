@@ -48,7 +48,7 @@ Class NormalEquiv (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (Ga
                         provable (impp x y) /\ provable (impp y x)
 }.
 
-Class NormalEquiv2 (L:Language) {minL: MinimumLanguage L} (GammaD:Derivable1 L) (GammaL:LogicEquiv L): Type :={
+Class NormalEquiv2 (L:Language) (GammaD:Derivable1 L) (GammaL:LogicEquiv L): Type :={
   equiv_derivable1:forall x y,x --||-- y <->
                         derivable1 x y /\ derivable1 y x
 }.
@@ -673,6 +673,14 @@ Definition Provable2Equiv_Normal {GammaP: Provable L}:
   NormalEquiv L GammaP Provable2Equiv :=
   Build_NormalEquiv
     L minL GammaP Provable2Equiv (fun _ _ => iff_refl _).
+
+Definition Derivable12Equiv {GammaD1: Derivable1 L}: LogicEquiv L :=
+  Build_LogicEquiv L (fun x y => derivable1 x y /\ derivable1 y x).
+
+Definition Derivable12Equiv_Normal {GammaD1: Derivable1 L}:
+  NormalEquiv2 L GammaD1 Derivable12Equiv :=
+  Build_NormalEquiv2
+    L GammaD1 Derivable12Equiv (fun _ _ => iff_refl _).
 
 Definition Derivable1ToProvable {GammaD1: Derivable1 L}: Provable L :=
   Build_Provable L (fun x => derivable1 (impp x x) x).

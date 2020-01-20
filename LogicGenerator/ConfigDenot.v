@@ -1,6 +1,7 @@
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -79,6 +80,9 @@ Definition how_connectives: list how_connective :=
 Definition how_judgements: list how_judgement :=
   [ FROM_provable_TO_derivable
   ; FROM_derivable_TO_provable
+  ; FROM_provable_TO_derivable1
+  ; FROM_provable_TO_logic_equiv
+  ; FROM_derivable1_TO_logic_equiv
   ].
 
 Definition type_classes :=
@@ -168,6 +172,9 @@ Definition rule_classes :=
   ; GEN_iter_sepcon_FROM_fold_right_sepcon
   ; GEN_derivable_FROM_provable
   ; GEN_provable_FROM_derivable
+  ; GEN_derivable1_FROM_provable
+  ; GEN_logic_equiv_FROM_provable
+  ; GEN_logic_equiv_FROM_derivable1
   ].
 
 Definition classes :=
@@ -186,6 +193,9 @@ Definition refl_classes :=
   ; RC GEN_iter_sepcon_FROM_fold_left_sepcon
   ; RC GEN_derivable_FROM_provable
   ; RC GEN_provable_FROM_derivable
+  ; RC GEN_derivable1_FROM_provable
+  ; RC GEN_logic_equiv_FROM_provable
+  ; RC GEN_logic_equiv_FROM_derivable1
   ].
 
 End D.
@@ -215,6 +225,9 @@ Definition Build_IterSepconDefinition_left := Build_IterSepconDefinition_left.
 Definition Build_IterSepconDefinition_right := Build_IterSepconDefinition_right.
 Definition Build_NormalAxiomatization := Build_NormalAxiomatization.
 Definition Build_NormalSequentCalculus := Build_NormalSequentCalculus.
+Definition Build_NormalDeduction := Build_NormalDeduction.
+Definition Build_NormalEquiv := Build_NormalEquiv.
+Definition Build_NormalEquiv2 := Build_NormalEquiv2.
 Definition Build_MinimumAxiomatization := Build_MinimumAxiomatization.
 Definition Build_AndAxiomatization := Build_AndAxiomatization.
 Definition Build_OrAxiomatization := Build_OrAxiomatization.
@@ -297,6 +310,9 @@ Context {L: Language}
         {iter_sepcon_DR: IterSepconDefinition_right L}
         {AX: NormalAxiomatization L GammaP GammaD}
         {SC : NormalSequentCalculus L GammaP GammaD}
+        {ND: NormalDeduction L GammaP GammaD1}
+        {NE: NormalEquiv L GammaP GammaE}
+        {NE2: NormalEquiv2 L GammaD1 GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
@@ -401,6 +417,9 @@ Definition how_connectives: list Name :=
 Definition how_judgements: list Name :=
   [ (derivable, fun Phi x => exists xs, Forall Phi xs /\ provable (multi_imp xs x))
   ; (provable, fun x => derivable empty_context x)
+  ; (derivable1, fun x y => provable (impp x y))
+  ; (logic_equiv, fun x y => provable (impp x y) /\ provable (impp y x))
+  ; (logic_equiv, fun x y => derivable1 x y /\ derivable1 y x)
   ].
 
 Definition type_instances_build :=
@@ -488,6 +507,9 @@ Definition rule_instances_build :=
   ; (iter_sepcon_DR, Build_IterSepconDefinition_right L sepconL empL iter_sepcon_L iter_sepcon_def_r)
   ; (AX, Build_NormalAxiomatization L minL GammaP GammaD derivable_provable)
   ; (SC, Build_NormalSequentCalculus L GammaP GammaD provable_derivable)
+  ; (ND, Build_NormalDeduction L minL GammaP GammaD1 derivable1_provable)
+  ; (NE, Build_NormalEquiv L minL GammaP GammaE equiv_provable)
+  ; (NE2, Build_NormalEquiv2 L GammaD1 GammaE equiv_derivable1)
   ].
 
 Definition instances_build :=
@@ -511,6 +533,9 @@ Definition refl_instances :=
   ; (iter_sepcon_DL, FoldLeftSepcon2IterSepcon_Normal)
   ; (AX, Provable2Derivable_Normal)
   ; (SC, Derivable2Provable_Normal)
+  ; (ND, Provable2Derivable1_Normal)
+  ; (NE, Provable2Equiv_Normal)
+  ; (NE2, Derivable12Equiv_Normal)
   ].
 
 Definition instance_transitions :=

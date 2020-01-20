@@ -64,11 +64,11 @@ Inductive how_judgement :=
 | ___USE_valid_FOR_provable (mono: bool)
 | ___USE_consequence_FOR_derivable (mono fin: bool)
 | FROM_provable_TO_derivable
-| FROM_derivable_TO_provable(*
+| FROM_derivable_TO_provable
 | FROM_provable_TO_derivable1
-| FROM_derivable1_TO_provable
 | FROM_provable_TO_logic_equiv
-| FROM_derivable1_TO_logic_equiv*).
+| FROM_derivable1_TO_logic_equiv(*
+| FROM_derivable1_TO_provable*).
 
 Definition USE_valid_FOR_provable := ___USE_valid_FOR_provable false.
 Definition USE_mono_valid_FOR_provable := ___USE_valid_FOR_provable true.
@@ -144,6 +144,9 @@ Inductive rule_class :=
 | GEN_iter_sepcon_FROM_fold_right_sepcon
 | GEN_derivable_FROM_provable
 | GEN_provable_FROM_derivable
+| GEN_derivable1_FROM_provable
+| GEN_logic_equiv_FROM_provable
+| GEN_logic_equiv_FROM_derivable1
 .
 
 (** * What users need not to know **)
@@ -596,7 +599,10 @@ match rc1, rc2 with
 | GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon
 | GEN_iter_sepcon_FROM_fold_right_sepcon, GEN_iter_sepcon_FROM_fold_right_sepcon
 | GEN_derivable_FROM_provable, GEN_derivable_FROM_provable
-| GEN_provable_FROM_derivable, GEN_provable_FROM_derivable => true
+| GEN_provable_FROM_derivable, GEN_provable_FROM_derivable
+| GEN_derivable1_FROM_provable, GEN_derivable1_FROM_provable
+| GEN_logic_equiv_FROM_provable, GEN_logic_equiv_FROM_provable
+| GEN_logic_equiv_FROM_derivable1, GEN_logic_equiv_FROM_derivable1 => true
 | _, _ => false
 end.
 
