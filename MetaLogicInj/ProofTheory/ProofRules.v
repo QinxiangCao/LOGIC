@@ -25,6 +25,13 @@ Class CoqPropAxiomatization
       (Gamma: Provable L): Prop := {
   coq_prop_intros: forall P: Prop, P -> |-- !! P;
   coq_prop_elim: forall (P: Prop) x, (P -> |-- x) -> |-- !! P --> x;
+}.
+
+Class CoqPropImpAxiomatization
+      (L: Language)
+      {minL: MinimumLanguage L}
+      {coq_prop_L: CoqPropLanguage L}
+      (Gamma: Provable L): Prop := {
   coq_prop_impp: forall (P Q: Prop), |-- (!! P --> !! Q) --> !! (P -> Q);
 }.
 
@@ -142,7 +149,8 @@ Proof.
       apply coq_prop_intros; auto.
 Qed.
 
-Lemma coq_prop_impl: forall P Q: Prop, |-- !! (P -> Q) <--> (!! P --> !! Q).
+Lemma coq_prop_impl {coq_prop_impp_AX: CoqPropImpAxiomatization L Gamma}:
+  forall P Q: Prop, |-- !! (P -> Q) <--> (!! P --> !! Q).
 Proof.
   intros.
   apply solve_iffp_intros.

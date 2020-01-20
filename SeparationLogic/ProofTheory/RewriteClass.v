@@ -15,6 +15,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -88,8 +89,6 @@ Qed.
 
 End RewriteClass1.
 
-Require Import Logic.SeparationLogic.ProofTheory.Deduction.
-
 Section RewriteClass2.
 
 Import Derivable1.
@@ -106,7 +105,7 @@ Instance sepcon_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivab
 Proof.
   hnf;intros.
   hnf;intros.
-  apply sepcon_mono;auto.
+  apply derivable1_sepcon_mono;auto.
   Qed.
 
 Context {wandL: WandLanguage L}
@@ -117,13 +116,52 @@ Instance wand_proper_derivable1: Proper (derivable1 --> derivable1 ==> derivable
 Proof.
   hnf;intros.
   hnf;intros.
-  apply Deduction.wand_mono;auto.
+  apply derivable1_wand_mono;auto.
   Qed.
 
 End RewriteClass2.
 
 Section RewriteClass3.
 
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {GammaD1: Derivable1 L}
+        {GammaE: LogicEquiv L}
+        {NE: NormalEquiv2 L GammaD1 GammaE}
+        {minD: MinimumDeduction L GammaD1}
+        {sepconD: SepconDeduction L GammaD1}.
+
+Instance sepcon_proper_logic_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) sepcon.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply equiv_derivable1 in H;
+  apply equiv_derivable1 in H0.
+  apply equiv_derivable1; split;
+  apply derivable1_sepcon_mono; tauto.
+  Qed.
+
+Context {wandL: WandLanguage L}
+        {wandD: WandDeduction L GammaD1}
+        {BD: BasicDeduction L GammaD1}.
+
+Instance wand_proper_logic_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) wand.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply equiv_derivable1 in H;
+  apply equiv_derivable1 in H0.
+  apply equiv_derivable1; split;
+  apply derivable1_wand_mono; tauto.
+  Qed.
 End RewriteClass3.
 
-Existing Instances sepcon_proper_impp wand_proper_impp sepcon_proper_iffp wand_proper_iffp.
+Existing Instances sepcon_proper_impp
+                   wand_proper_impp
+                   sepcon_proper_iffp
+                   wand_proper_iffp
+                   sepcon_proper_derivable1
+                   wand_proper_derivable1
+                   sepcon_proper_logic_equiv
+                   wand_proper_logic_equiv.

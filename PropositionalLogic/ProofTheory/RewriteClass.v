@@ -295,7 +295,7 @@ End orp.
 Section negp.
 
 Context {negpL: NegLanguage L}
-        {negpD: NegDeduction L GammaD1}.
+        {inegpD: IntuitionisticNegDeduction L GammaD1}.
 
 Instance negp_proper_derivable1: Proper (derivable1 --> derivable1) negp.
 Proof.

@@ -1,6 +1,7 @@
 Require Import Coq.Lists.List.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -15,6 +16,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.MetaLogicInj.Syntax.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
+Require Import Logic.MetaLogicInj.ProofTheory.Deduction.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
@@ -22,6 +24,7 @@ Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.
 Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
+Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigDenot.
@@ -86,6 +89,7 @@ Context {L: Language}
         {dmpAX: DeMorganAxiomatization L GammaP}
         {gdpAX: GodelDummettAxiomatization L GammaP}
         {coq_prop_AX: CoqPropAxiomatization L GammaP}
+        {coq_prop_impp_AX: CoqPropImpAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
@@ -112,6 +116,19 @@ Context {L: Language}
         {iffpSC : IffSequentCalculus L GammaD}
         {inegpSC : IntuitionisticNegSequentCalculus L GammaD}
         {cpSC: ClassicalSequentCalculus L GammaD}
+        {bD : BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD : AndDeduction L GammaD1}
+        {orpD : OrDeduction L GammaD1}
+        {falsepD : FalseDeduction L GammaD1}
+        {truepD : TrueDeduction L GammaD1}
+        {iffpD : IffDeduction L GammaD1}
+        {inegpD : IntuitionisticNegDeduction L GammaD1}
+        {sepconD : SepconDeduction L GammaD1}
+        {wandD : WandDeduction L GammaD1}
+        {empD : EmpDeduction L GammaD1}
+        {sepcon_orp_D : SepconOrDeduction L GammaD1}
+        {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .

@@ -1,5 +1,6 @@
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -15,6 +16,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
 Require Import Logic.MetaLogicInj.Syntax.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.Syntax.
+Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
 Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.
@@ -120,6 +122,7 @@ Definition rule_classes :=
   ; provability_OF_godel_dummett
   ; provability_OF_classical_logic
   ; provability_OF_coq_prop
+  ; provability_OF_coq_prop_impp
   ; provability_OF_sepcon_rule
   ; provability_OF_wand_rule
   ; provability_OF_emp_rule
@@ -144,6 +147,19 @@ Definition rule_classes :=
 (*  ; derivitive_OF_de_morgan *)
 (*  ; derivitive_OF_godel_dummett *)
   ; derivitive_OF_classical_logic
+  ; derivitive1_OF_basic_setting
+  ; derivitive1_OF_impp_andp_adjoint
+  ; derivitive1_OF_andp
+  ; derivitive1_OF_orp
+  ; derivitive1_OF_falsep
+  ; derivitive1_OF_truep
+  ; derivitive1_OF_iffp
+  ; derivitive1_OF_negp
+  ; derivitive1_OF_sepcon
+  ; derivitive1_OF_wand
+  ; derivitive1_OF_emp
+  ; derivitive1_OF_sepcon_orp_rule
+  ; derivitive1_OF_sepcon_falsep_rule
   ; corability_OF_basic_setting
   ; corability_OF_coq_prop
   ; GEN_iter_andp_FROM_fold_left_andp
@@ -210,6 +226,7 @@ Definition Build_IterAndAxiomatization_left := Build_IterAndAxiomatization_left.
 Definition Build_DeMorganAxiomatization := Build_DeMorganAxiomatization.
 Definition Build_ClassicalAxiomatization := Build_ClassicalAxiomatization.
 Definition Build_CoqPropAxiomatization := Build_CoqPropAxiomatization.
+Definition Build_CoqPropImpAxiomatization := Build_CoqPropImpAxiomatization.
 Definition Build_SepconAxiomatization := Build_SepconAxiomatization.
 Definition Build_WandAxiomatization := Build_WandAxiomatization.
 Definition Build_EmpAxiomatization := Build_EmpAxiomatization.
@@ -232,6 +249,19 @@ Definition Build_TrueSequentCalculus := Build_TrueSequentCalculus.
 Definition Build_IffSequentCalculus := Build_IffSequentCalculus.
 Definition Build_IntuitionisticNegSequentCalculus := Build_IntuitionisticNegSequentCalculus.
 Definition Build_ClassicalSequentCalculus := Build_ClassicalSequentCalculus.
+Definition Build_BasicDeduction := Build_BasicDeduction.
+Definition Build_AndDeduction := Build_AndDeduction.
+Definition Build_ImpAndAdjointDeduction := Build_ImpAndAdjointDeduction.
+Definition Build_OrDeduction := Build_OrDeduction.
+Definition Build_FalseDeduction := Build_FalseDeduction.
+Definition Build_TrueDeduction := Build_TrueDeduction.
+Definition Build_IffDeduction := Build_IffDeduction.
+Definition Build_IntuitionisticNegDeduction := Build_IntuitionisticNegDeduction.
+Definition Build_SepconDeduction := Build_SepconDeduction.
+Definition Build_WandDeduction := Build_WandDeduction.
+Definition Build_EmpDeduction := Build_EmpDeduction.
+Definition Build_SepconOrDeduction := Build_SepconOrDeduction.
+Definition Build_SepconFalseDeduction := Build_SepconFalseDeduction.
 Definition Build_Corable_withAxiomatization := Build_Corable_withAxiomatization.
 Definition Build_CoqPropCorable := Build_CoqPropCorable.
 
@@ -279,6 +309,7 @@ Context {L: Language}
         {dmpAX: DeMorganAxiomatization L GammaP}
         {gdpAX: GodelDummettAxiomatization L GammaP}
         {coq_prop_AX: CoqPropAxiomatization L GammaP}
+        {coq_prop_impp_AX: CoqPropImpAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {empAX: EmpAxiomatization L GammaP}
@@ -305,6 +336,19 @@ Context {L: Language}
         {iffpSC : IffSequentCalculus L GammaD}
         {inegpSC : IntuitionisticNegSequentCalculus L GammaD}
         {cpSC : ClassicalSequentCalculus L GammaD}
+        {bD : BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD : AndDeduction L GammaD1}
+        {orpD : OrDeduction L GammaD1}
+        {falsepD : FalseDeduction L GammaD1}
+        {truepD : TrueDeduction L GammaD1}
+        {iffpD : IffDeduction L GammaD1}
+        {inegpD : IntuitionisticNegDeduction L GammaD1}
+        {sepconD : SepconDeduction L GammaD1}
+        {wandD : WandDeduction L GammaD1}
+        {empD : EmpDeduction L GammaD1}
+        {sepcon_orp_D : SepconOrDeduction L GammaD1}
+        {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .
@@ -399,13 +443,14 @@ Definition rule_instances_build :=
   ; (dmpAX, Build_DeMorganAxiomatization L minL orpL falsepL negpL GammaP weak_excluded_middle)
   ; (gdpAX, Build_GodelDummettAxiomatization L minL orpL GammaP impp_choice)
   ; (cpAX, Build_ClassicalAxiomatization L minL GammaP peirce_law)
-  ; (coq_prop_AX, Build_CoqPropAxiomatization L minL coq_prop_L GammaP coq_prop_intros coq_prop_elim coq_prop_impp)
+  ; (coq_prop_AX, Build_CoqPropAxiomatization L minL coq_prop_L GammaP coq_prop_intros coq_prop_elim)
+  ; (coq_prop_impp_AX, Build_CoqPropImpAxiomatization L minL coq_prop_L GammaP coq_prop_impp)
   ; (sepconAX, Build_SepconAxiomatization L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1 sepcon_mono)
   ; (wandAX, Build_WandAxiomatization L minL sepconL wandL GammaP wand_sepcon_adjoint)
   ; (empAX, Build_EmpAxiomatization L minL sepconL empL GammaP sepcon_emp1 sepcon_emp2)
   ; (iter_sepcon_AXL, Build_IterSepconAxiomatization_left L minL sepconL empL iter_sepcon_L GammaP iter_sepcon_spec_left1 iter_sepcon_spec_left2)
-  ; (sepcon_orp_AX, Build_SepconOrAxiomatization L minL orpL sepconL GammaP orp_sepcon_left)
-  ; (sepcon_falsep_AX, Build_SepconFalseAxiomatization L minL falsepL sepconL GammaP falsep_sepcon_left)
+  ; (sepcon_orp_AX, Build_SepconOrAxiomatization L minL orpL sepconL GammaP orp_sepcon_impp)
+  ; (sepcon_falsep_AX, Build_SepconFalseAxiomatization L minL falsepL sepconL GammaP falsep_sepcon_impp)
   ; (sepcon_coq_prop_AX, Build_SepconCoqPropAxiomatization L minL andpL iffpL coq_prop_L sepconL GammaP prop_andp_sepcon1)
   ; (sepconAX_weak, Build_SepconAxiomatization_weak L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1)
   ; (sepconAX_weak_iffp, Build_SepconAxiomatization_weak_iffp L iffpL sepconL GammaP sepcon_comm sepcon_assoc)
@@ -422,6 +467,19 @@ Definition rule_instances_build :=
   ; (iffpSC, Build_IffSequentCalculus L iffpL GammaD deduction_iffp_intros deduction_iffp_elim1 deduction_iffp_elim2)
   ; (inegpSC, Build_IntuitionisticNegSequentCalculus L falsepL negpL GammaD deduction_negp_unfold deduction_negp_fold)
   ; (cpSC, Build_ClassicalSequentCalculus L orpL negpL GammaD derivable_excluded_middle)
+  ; (bD, Build_BasicDeduction L GammaD1 deduction1_refl deduction1_trans)
+  ; (adjD, Build_ImpAndAdjointDeduction L minL andpL GammaD1 derivable1_impp_andp_adjoint)
+  ; (andpD, Build_AndDeduction L andpL GammaD1 derivable1_andp_intros derivable1_andp_elim1 derivable1_andp_elim2)
+  ; (orpD, Build_OrDeduction L orpL GammaD1 derivable1_orp_intros1 derivable1_orp_intros2 derivable1_orp_elim)
+  ; (falsepD, Build_FalseDeduction L falsepL GammaD1 derivable1_falsep_elim)
+  ; (truepD, Build_TrueDeduction L truepL GammaD1 derivable1_truep_intros)
+  ; (iffpD, Build_IffDeduction L minL iffpL GammaD1 derivable1_iffp_intros derivable1_iffp_elim1 derivable1_iffp_elim2)
+  ; (inegpD, Build_IntuitionisticNegDeduction L minL negpL falsepL GammaD1 derivable1_negp_unfold derivable1_negp_fold)
+  ; (sepconD, Build_SepconDeduction L sepconL GammaD1 derivable1_sepcon_comm derivable1_sepcon_assoc1 derivable1_sepcon_mono)
+  ; (wandD, Build_WandDeduction L sepconL wandL GammaD1 derivable1_wand_sepcon_adjoint)
+  ; (empD, Build_EmpDeduction L sepconL empL GammaD1 sepcon_emp_left sepcon_emp_right)
+  ; (sepcon_orp_D, Build_SepconOrDeduction L orpL sepconL GammaD1 orp_sepcon_left)
+  ; (sepcon_falsep_D, Build_SepconFalseDeduction L falsepL sepconL GammaD1 falsep_sepcon_left)
   ; (CorAX, Build_Corable_withAxiomatization L andpL iffpL sepconL GammaP Cor corable_preserved' corable_andp_sepcon1)
   ; (coq_prop_Cor, Build_CoqPropCorable L coq_prop_L Cor corable_coq_prop)
   ; (iter_andp_DL, Build_IterAndDefinition_left L andpL truepL iter_andp_L iter_andp_def_l)
@@ -649,6 +707,23 @@ Definition derived_rules :=
   ; corable_sepcon_andp2
   ; corable_sepcon_andp1
   ; corable_andp_sepcon2
+
+
+  ; derivable1_sepcon_assoc2
+  ; orp_sepcon_right
+  ; falsep_sepcon_right
+(*  ; sepcon_comm_equiv
+  ; sepcon_assoc_equiv
+  ; sepcon_orp_distr_r_equiv
+  ; sepcon_orp_distr_l_equiv
+  ; falsep_sepcon_equiv
+  ; sepcon_falsep_equiv
+  ; sepcon_emp_equiv*)
+  ; derivable1_wand_sepcon_modus_ponens1
+  ; derivable1_wand_sepcon_modus_ponens2
+  ; derivable1_wand_mono
+(*  ; wand_andp_equiv
+  ; orp_wand_equiv*)
   ].
 
 Ltac filter_instance_rec l res :=
