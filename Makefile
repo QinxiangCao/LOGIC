@@ -208,7 +208,7 @@ SeparationLogic_FILES = \
   $(SeparationLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
 ExportSolvers_FILES = \
-  Normalize.v Normalize_Para.v
+  Normalize.v Normalize_Para.v SepApply.v SepApply_Para.v
 
 Extensions_ProofTheory_FILES = \
   Stable.v ModalSeparation.v Corable.v CoreTransit.v

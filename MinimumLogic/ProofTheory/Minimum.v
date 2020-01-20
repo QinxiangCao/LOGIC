@@ -176,6 +176,15 @@ Proof.
   apply aux_minimun_theorem00.
 Qed.
 
+Lemma solve_impp_trans: forall (x y z: expr), |-- (x --> y) -> |-- (y --> z) -> |-- (x --> z).
+Proof.
+  intros.
+  pose proof provable_impp_trans x y z.
+  pose proof modus_ponens _ _ H1 H.
+  pose proof modus_ponens _ _ H2 H0.
+  auto.
+Qed.
+
 End DerivableRulesFromAxiomatization.
 
 Section DerivableRules_multi_impp.

@@ -657,6 +657,10 @@ Definition derived_rules :=
   ; orp_dup
   ; impp_curry
   ; impp_uncurry
+  ; solve_impp_trans
+  ; solve_andp_intros
+  ; solve_andp_elim1
+  ; solve_andp_elim2
   ; double_negp_elim
   ; double_negp
   ; contrapositiveNN
