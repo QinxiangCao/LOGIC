@@ -84,6 +84,13 @@ Proof.
   auto.
 Qed.
 
+Lemma provable_impp_refl': forall (x y: expr), x = y -> |-- x --> y.
+Proof.
+  intros.
+  subst y.
+  apply provable_impp_refl.
+Qed.
+
 Lemma aux_minimun_rule00: forall (x y: expr), |-- x -> |-- y --> x.
 Proof.
   intros.

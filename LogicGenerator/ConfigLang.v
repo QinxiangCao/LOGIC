@@ -133,11 +133,13 @@ Inductive rule_class :=
 | derivitive1_OF_emp
 | derivitive1_OF_sepcon_orp_rule
 | derivitive1_OF_sepcon_falsep_rule
+| equivalence_OF_basic_setting
+| equivalence_OF_impp
 | corability_OF_basic_setting
 | corability_OF_coq_prop
 | GEN_iffp_FROM_andp_impp
 | GEN_truep_FROM_falsep_impp
-| GEN_negpp_FROM_falsep_impp
+| GEN_negp_FROM_falsep_impp
 | GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -589,11 +591,13 @@ match rc1, rc2 with
 | derivitive1_OF_emp, derivitive1_OF_emp
 | derivitive1_OF_sepcon_orp_rule, derivitive1_OF_sepcon_orp_rule
 | derivitive1_OF_sepcon_falsep_rule, derivitive1_OF_sepcon_falsep_rule
+| equivalence_OF_basic_setting, equivalence_OF_basic_setting
+| equivalence_OF_impp, equivalence_OF_impp
 | corability_OF_basic_setting, corability_OF_basic_setting
 | corability_OF_coq_prop, corability_OF_coq_prop
 | GEN_iffp_FROM_andp_impp, GEN_iffp_FROM_andp_impp
 | GEN_truep_FROM_falsep_impp, GEN_truep_FROM_falsep_impp
-| GEN_negpp_FROM_falsep_impp, GEN_negpp_FROM_falsep_impp
+| GEN_negp_FROM_falsep_impp, GEN_negp_FROM_falsep_impp
 | GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon

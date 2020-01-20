@@ -6,6 +6,7 @@ Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
@@ -133,6 +134,8 @@ Context {L: Language}
         {empD : EmpDeduction L GammaD1}
         {sepcon_orp_D : SepconOrDeduction L GammaD1}
         {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
+        {bE: BasicLogicEquiv L GammaE}
+        {minE: MinimumEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .
@@ -346,6 +349,7 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.MinimumLogic.Syntax.";
   idtac "Require Import Logic.MinimumLogic.ProofTheory.Minimum.";
   idtac "Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.";
+  idtac "Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.";
   idtac "Require Import Logic.PropositionalLogic.Syntax.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.";

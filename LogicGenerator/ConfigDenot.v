@@ -5,6 +5,7 @@ Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
+Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.
 Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
@@ -164,8 +165,13 @@ Definition rule_classes :=
   ; derivitive1_OF_emp
   ; derivitive1_OF_sepcon_orp_rule
   ; derivitive1_OF_sepcon_falsep_rule
+  ; equivalence_OF_basic_setting
+  ; equivalence_OF_impp
   ; corability_OF_basic_setting
   ; corability_OF_coq_prop
+  ; GEN_iffp_FROM_andp_impp
+  ; GEN_truep_FROM_falsep_impp
+  ; GEN_negp_FROM_falsep_impp
   ; GEN_iter_andp_FROM_fold_left_andp
   ; GEN_iter_andp_FROM_fold_right_andp
   ; GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -188,7 +194,7 @@ Definition classes :=
 Definition refl_classes :=
   [ RC GEN_iffp_FROM_andp_impp
   ; RC GEN_truep_FROM_falsep_impp
-  ; RC GEN_negpp_FROM_falsep_impp
+  ; RC GEN_negp_FROM_falsep_impp
   ; RC GEN_iter_andp_FROM_fold_left_andp
   ; RC GEN_iter_sepcon_FROM_fold_left_sepcon
   ; RC GEN_derivable_FROM_provable
@@ -219,6 +225,9 @@ Definition Build_Derivable := Build_Derivable.
 Definition Build_Derivable1 := Build_Derivable1.
 Definition Build_LogicEquiv := Build_LogicEquiv.
 Definition Build_Corable := Build_Corable.
+Definition Build_IffDefinition_And_Imp := Build_IffDefinition_And_Imp.
+Definition Build_TrueDefinition_False_Imp := Build_TrueDefinition_False_Imp.
+Definition Build_NegDefinition_False_Imp := Build_NegDefinition_False_Imp.
 Definition Build_IterAndDefinition_left := Build_IterAndDefinition_left.
 Definition Build_IterAndDefinition_right := Build_IterAndDefinition_right.
 Definition Build_IterSepconDefinition_left := Build_IterSepconDefinition_left.
@@ -275,6 +284,8 @@ Definition Build_WandDeduction := Build_WandDeduction.
 Definition Build_EmpDeduction := Build_EmpDeduction.
 Definition Build_SepconOrDeduction := Build_SepconOrDeduction.
 Definition Build_SepconFalseDeduction := Build_SepconFalseDeduction.
+Definition Build_BasicLogicEquiv := Build_BasicLogicEquiv.
+Definition Build_MinimumEquiv := Build_MinimumEquiv.
 Definition Build_Corable_withAxiomatization := Build_Corable_withAxiomatization.
 Definition Build_CoqPropCorable := Build_CoqPropCorable.
 
@@ -365,6 +376,8 @@ Context {L: Language}
         {empD : EmpDeduction L GammaD1}
         {sepcon_orp_D : SepconOrDeduction L GammaD1}
         {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
+        {bE: BasicLogicEquiv L GammaE}
+        {minE: MinimumEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .
@@ -499,8 +512,13 @@ Definition rule_instances_build :=
   ; (empD, Build_EmpDeduction L sepconL empL GammaD1 sepcon_emp_left sepcon_emp_right)
   ; (sepcon_orp_D, Build_SepconOrDeduction L orpL sepconL GammaD1 orp_sepcon_left)
   ; (sepcon_falsep_D, Build_SepconFalseDeduction L falsepL sepconL GammaD1 falsep_sepcon_left)
+  ; (bE, Build_BasicLogicEquiv L GammaE equiv_refl equiv_symm equiv_trans)
+  ; (minE, Build_MinimumEquiv L minL GammaE equiv_impp)
   ; (CorAX, Build_Corable_withAxiomatization L andpL iffpL sepconL GammaP Cor corable_preserved' corable_andp_sepcon1)
   ; (coq_prop_Cor, Build_CoqPropCorable L coq_prop_L Cor corable_coq_prop)
+  ; (iffpDef, Build_IffDefinition_And_Imp L minL andpL iffpL andp_impp2iffp)
+  ; (truepDef, Build_TrueDefinition_False_Imp L minL falsepL truepL falsep_impp2truep)
+  ; (negpDef, Build_NegDefinition_False_Imp L minL falsepL negpL falsep_impp2negp)
   ; (iter_andp_DL, Build_IterAndDefinition_left L andpL truepL iter_andp_L iter_andp_def_l)
   ; (iter_andp_DR, Build_IterAndDefinition_right L andpL truepL iter_andp_L iter_andp_def_r)
   ; (iter_sepcon_DL, Build_IterSepconDefinition_left L sepconL empL iter_sepcon_L iter_sepcon_def_l)
@@ -539,7 +557,10 @@ Definition refl_instances :=
   ].
 
 Definition instance_transitions :=
-  [ (iter_andp_AXL, IterAndFromDefToAX_L2L)
+  [ (iffpAX, IffFromDefToAX_And_Imp)
+  ; (truepAX, TrueFromDefToAX_False_Imp)
+  ; (inegpAX, NegFromDefToAX_False_Imp)
+  ; (iter_andp_AXL, IterAndFromDefToAX_L2L)
   ; (iter_sepcon_AXL, IterSepconFromDefToAX_L2L)
   ; (SC, Axiomatization2SequentCalculus_SC)
   ; (bSC, Axiomatization2SequentCalculus_bSC)
@@ -567,6 +588,10 @@ Definition instance_transitions :=
   ; (empAX, EmpAxiomatizationIff2EmpAxiomatization)
   ; (sepcon_coq_prop_AX, CoqPropCorable2SepconCoqPropAX)
   ; (sepcon_coq_prop_AX, Adj2SepconCoqProp)
+  ; (bE, Axiomatization2BasicLogicEquiv_bE)
+  ; (NE2, NormalDeductionAndEquivToNormalEquiv2_NE2)
+  ; (minE, Axiomatization2LogicEquiv_minE)
+  ; (sepconD, Axiomatization2Deduction_sepconD)
   ].
 
 Definition type_instances: list Name :=
@@ -649,6 +674,7 @@ Definition primary_rules_with_dup: list Name :=
 
 Definition derived_rules :=
   [ provable_impp_refl
+  ; provable_impp_refl'
   ; provable_impp_arg_switch
   ; provable_impp_trans
   ; provable_multi_imp_shrink
@@ -746,17 +772,25 @@ Definition derived_rules :=
   ; sepcon_proper_iffp
   ; wand_proper_iffp
 
+
+  ; impp_proper_equiv
+  ; sepcon_proper_logic_equiv
+  ; provable_proper_equiv
+  ; logic_equiv_refl
+
+  ; sepcon_assoc_equiv
+  ; sepcon_emp_equiv
+
+
 (*
   ; derivable1_sepcon_assoc2
   ; orp_sepcon_right
   ; falsep_sepcon_right
 (*  ; sepcon_comm_equiv
-  ; sepcon_assoc_equiv
   ; sepcon_orp_distr_r_equiv
   ; sepcon_orp_distr_l_equiv
   ; falsep_sepcon_equiv
-  ; sepcon_falsep_equiv
-  ; sepcon_emp_equiv*)
+  ; sepcon_falsep_equiv*)
   ; derivable1_wand_sepcon_modus_ponens1
   ; derivable1_wand_sepcon_modus_ponens2
   ; derivable1_wand_mono

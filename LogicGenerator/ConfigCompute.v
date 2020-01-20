@@ -151,9 +151,9 @@ Definition how_connective_class (hc: how_connective): option rule_class :=
 match hc with
 | primitive_connective c => None
 | ___predicate_over_states _ _ => None
-| FROM_andp_impp_TO_iffp => None
-| FROM_falsep_impp_TO_negp => None
-| FROM_falsep_impp_TO_truep => None
+| FROM_andp_impp_TO_iffp => Some (GEN_iffp_FROM_andp_impp)
+| FROM_falsep_impp_TO_truep => Some (GEN_truep_FROM_falsep_impp)
+| FROM_falsep_impp_TO_negp => Some (GEN_negp_FROM_falsep_impp)
 | FROM_impp_TO_multi_imp => None
 | FROM_andp_TO_iter_andp => Some (GEN_iter_andp_FROM_fold_left_andp)
 | FROM_sepcon_TO_iter_sepcon => Some (GEN_iter_sepcon_FROM_fold_left_sepcon)

@@ -83,3 +83,17 @@ Import T.
 Import Solver.
 
 
+Require Import ExportSolvers.SepApply.
+Module SepApply := ExportTactic T.
+Import SepApply.
+
+Local Declare Scope syntax.
+Local Open Scope syntax.
+Notation "|--  x" := (provable x) (at level 71, no associativity) : syntax.
+Notation "x --> y" := (impp x y) (at level 55, right associativity) : syntax.
+Notation "x * y" := (sepcon x y) (at level 40, left associativity) : syntax.
+
+Goal forall (PP: Prop) (P Q R S T: (nat -> option Z) -> Prop), (PP -> |-- P * Q --> R) -> PP -> |-- P * S * Q * T --> T * S * R.
+  intros.
+  sep_apply H.
+Abort.

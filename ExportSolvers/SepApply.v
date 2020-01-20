@@ -202,26 +202,3 @@ Goal forall (PP: Prop) (P Q R S T: expr), (PP -> |-- P * Q --> R) -> PP -> |-- P
 Abort.
 
 *)
-(*
-
-Check @impp_proper_equiv.
-Check @sepcon_proper_logic_equiv.
-Check @provable_proper_equiv.
-Check @BasicLogicEquiv.logic_equiv_refl.
-
-Assume:
-  NormalEquiv.
-  NormalDeduction.
-
-Axiomatization2BasicLogicEquiv_bE.
-NormalDeductionAndEquivToNormalEquiv2_NE2
-Axiomatization2LogicEquiv_minE
-  
-bE: BasicLogicEquiv L GammaE
-minE: MinimumEquiv L GammaE
-NE2: NormalEquiv2 L GammaD1 GammaE
-(assumed): NormalEquiv L GammaP GammaE
-(assumed): MinimumAxiomatization L GammaP
-SepconDeduction L GammaD1
-
-*)

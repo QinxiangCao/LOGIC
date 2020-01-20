@@ -95,7 +95,7 @@ Notation "m  |=  x" := (satisfies m x) (at level 70, no associativity) : logic_b
 Notation "|--  x" := (provable x) (at level 71, no associativity) : logic_base.
 Notation "Phi  |--  x" := (derivable Phi x) (at level 70, no associativity) : logic_base.
 Notation "Phi ;; x" := (Union _ Phi (Singleton _ x)) (at level 69, left associativity) : logic_base.
-Notation "x --||-- y" := (logic_equiv x  y) (at level 71, no associativity).
+Notation "x --||-- y" := (logic_equiv x  y) (at level 71, no associativity): logic_base.
 
 Module Derivable1.
 Notation "x |-- y" := (derivable1 x y) (at level 70, no associativity) :Derivable1.
