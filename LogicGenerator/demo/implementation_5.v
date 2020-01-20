@@ -104,7 +104,7 @@ Notation "x <--> y" := (iffp x y) (at level 60, no associativity) : syntax.
 Notation "x --> y" := (impp x y) (at level 55, right associativity) : syntax.
 Notation "x * y" := (sepcon x y) (at level 40, left associativity) : syntax.
 
-Module Normalize := TacTest T.
+Module Normalize := ExportTactic T.
 Import Normalize.
 Local Open Scope syntax.
 Goal forall x y z (P: Prop), |-- (!! P && x) * y * z --> (!! P && x) * (!! P && y) * (!! P && z).
