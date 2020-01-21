@@ -134,10 +134,12 @@ Context {L: Language}
         {empD : EmpDeduction L GammaD1}
         {sepcon_orp_D : SepconOrDeduction L GammaD1}
         {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
+        {bE: BasicLogicEquiv L GammaE}
+        {minE: MinimumEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .
-        
+
 Import NameListNotations.
 
 Definition foo :=
@@ -235,7 +237,33 @@ Definition derived_rules_as_instance :=
 
 Import ListNotations.
 
-Inductive PrintType := IPar (Inline_list: list Name) | Axm | Der | Def | BetaDef | AIns | DIns.
+Ltac print_notation name :=
+  match name with
+  | expr => idtac "  ""'expr'"""
+  | Base.context => idtac "  ""'context'"""
+  | impp => idtac "  ""'impp'"""
+  | andp => idtac "  ""'andp'"""
+  | orp => idtac "  ""'orp'"""
+  | falsep => idtac "  ""'falsep'"""
+  | truep => idtac "  ""'truep'"""
+  | iffp => idtac "  ""'iffp'"""
+  | negp => idtac "  ""'negp'"""
+  | coq_prop => idtac "  ""'coq_prop'"""
+  | sepcon => idtac "  ""'sepcon'"""
+  | wand => idtac "  ""'wand'"""
+  | emp => idtac "  ""'emp'"""
+  | multi_imp => idtac "  ""'multi_imp'"""
+  | iter_andp => idtac "  ""'iter_andp'"""
+  | iter_sepcon => idtac "  ""'iter_sepcon'"""
+  | empty_context => idtac "  ""'empty_context'"""
+  | provable => idtac "  ""'provable'"""
+  | derivable => idtac "  ""'derivable'"""
+  | derivable1 => idtac "  ""'derivable1'"""
+  | logic_equiv => idtac "  ""'logic_equiv'"""
+  | corable => idtac "  ""'corable'"""
+  end.
+
+Inductive PrintType := NT_IPar (Inline_list: list Name) | IPar (Inline_list: list Name) | Prt | Der | Der2 | Def | Def2 | DIns | NT.
 
 Ltac print prt name :=
   match name with
@@ -243,37 +271,34 @@ Ltac print prt name :=
     match type of n with
     | ?T =>
       match prt with
+      | NT_IPar ?l =>
+        let l := eval hnf in l in
+        let should_inline := in_name_list n l in
+        match should_inline with
+        | true => idtac "  Definition" n ":" T ":= ltac:(let x0 := eval unfold" n "in" n "in exact x0)."
+        | false => idtac "  Definition" n ":" T ":=" n "."
+        end
       | IPar ?l =>
         let l := eval hnf in l in
         let should_inline := in_name_list n l in
-        match n with
-        | expr =>
-            unify instance_para_open true;
-            match should_inline with
-            | true => def_inline_expr_tac
-            | false => def_expr_tac
-            end;
-            idtac "  Section LanguageSig.";
-            context_expr_tac
-        | _ =>
-            match should_inline with
-            | true => idtac "  Parameter Inline" n ":" T "."
-            | false => idtac "  Parameter" n ":" T "."
-            end
+        match should_inline with
+        | true => idtac "  Definition" n ": UNFOLD" T ":= ltac:(let x0 := eval unfold" n "in" n "in exact x0)."
+        | false => idtac "  Definition" n ": UNFOLD" T ":=" n "."
         end
-      | Axm => idtac "  Axiom" n ":" T "."
+      | Prt => idtac "      " n
       | Der => match n with
-               | (?n0, ?n1) => idtac "  Definition" n0 ":=" n1 "."
-               end
-      | Def => idtac "  Definition" n ":" T ":=" n "."
-      | BetaDef => idtac "  Definition" n ":= BETA" n "."
-      | AIns => match n with
-                | (?n0, ?n1) =>
-                  match type of n0 with
-                  | ?T0 => idtac "  Instance" n0 ":" T0 ":=" n1 "."
+                  | (?n0, ?n1) => idtac "  Definition" n0 ":= UNFOLD" n1 "."
                   end
-                end
+      | Der2 => match n with
+                  | (?n0, ?n1) => idtac "  Definition" n0 ":= UNFOLD2" n1 "."
+                  end
+      | Def => idtac "  Definition" n ": UNFOLD" T ":=" n "."
+      | Def2 => idtac "  Definition" n ": UNFOLD2" T ":=" n "."
       | DIns => idtac "  Existing Instance" n "."
+      | NT => idtac "Notation";
+              print_notation n;
+              idtac "    := (ltac:(let x0 := eval unfold" n "in" n "in exact x0)) (only parsing, at level 99): expo_transparent_scope."
+
       end
     end
   end.
@@ -292,28 +317,57 @@ Ltac beta_print :=
   newline;
 
   set_up_module_name_tac;
-  idtac "Module BETA.";
+  idtac "Module EXPO.";
   idtac "Import ___LogicTheorem___.";
-  idtac "  Section BETA_SECTION.";
+  idtac "  Section EXPO_SECTION.";
   context_expr_tac;
   newline;
-  idtac "  Ltac beta_tac x :=";
-  idtac "    match type of x with";
-  idtac "    | ?tx => let tx0 := eval cbv beta in tx in";
-  idtac "               exact (x: tx0)";
-  idtac "    end.";
-  idtac "  Declare Scope BETA_scope.";
-  idtac "  Local Notation ""'BETA' x"" := ltac:(beta_tac x) (at level 99): BETA_scope.";
-  idtac "  Local Open Scope BETA_scope.";
+
+  idtac "  Declare Scope EXPO_scope.";
+  idtac "  Local Open Scope EXPO_scope.";
 
   newline;
 
-  dolist (print BetaDef) primary_rules;
-  dolist (print BetaDef) derived_rules;
+  dolist (print (NT_IPar transparent_types)) primitive_types;
+
+  idtac "  Ltac unfold_tac x :=";
+  idtac "    let x0 :=";
+  idtac "    eval cbv beta delta [";
+  dolist (print Prt) transparent_types;
+  idtac "      ] in x";
+  idtac "      in exact x0.";
+  newline;
+  idtac "  Local Notation ""'UNFOLD' x"" := ltac:(unfold_tac x) (only parsing, at level 99): EXPO_scope.";
 
   newline;
 
-  idtac "  End BETA_SECTION.";
+  dolist (print Der) derived_types;
+  dolist (print (IPar transparent_judgements)) primitive_judgements;
+  dolist (print (IPar transparent_connectives)) primitive_connectives;
+
+  newline;
+
+  idtac "  Ltac unfold2_tac x :=";
+  idtac "    let x0 :=";
+  idtac "    eval cbv beta delta [";
+  dolist (print Prt) transparent_types;
+  dolist (print Prt) transparent_judgements;
+  dolist (print Prt) transparent_connectives;
+  idtac "    ] in x";
+  idtac "    in exact x0.";
+  
+  idtac "  Local Notation ""'UNFOLD2' x"" := ltac:(unfold2_tac x) (only parsing, at level 99): EXPO_scope.";
+  
+  newline;
+
+  dolist (print Der2) derived_judgements;
+  dolist (print Der2) derived_connectives;
+  dolist (print Def2) primary_rules;
+  dolist (print Def2) derived_rules;
+
+  newline;
+
+  idtac "  End EXPO_SECTION.";
 
   newline;
 
@@ -321,8 +375,17 @@ Ltac beta_print :=
 
   newline;
 
-  idtac "End BETA.";
+  idtac "End EXPO.";
 
+  newline;
+
+  idtac "Module EXPO_TRANSPARENTS.";
+  idtac "Import EXPO.";
+  idtac "Declare Scope expo_transparent_scope.";
+  dolist (print NT) transparent_types;
+  dolist (print NT) transparent_judgements;
+  dolist (print NT) transparent_connectives;
+  idtac "End EXPO_TRANSPARENTS.";
   idtac.
 
   
