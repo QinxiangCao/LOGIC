@@ -47,11 +47,11 @@ Ltac cancel_tac EVAR :=
   rewrite <- !sepcon_assoc_equiv;
   apply cancel_ready;
   repeat
-    match goal with
+    lazymatch goal with
     | |- |-- (?u1 * _) * _ --> ?u2 * _ =>
-      unify u1 u2;
+      (unify u1 u2;
       apply cancel_one_succeed;
-      repeat apply cancel_rev
+      repeat apply cancel_rev) + simple apply cancel_one_giveup
     | _ =>
       simple apply cancel_one_giveup
     end;
@@ -69,7 +69,7 @@ Ltac head_of_type_of H :=
 
 Ltac sep_apply_aux2 H' := 
      match head_of_type_of H' with provable (impp ?C ?D) =>
-      let frame := fresh "frame" in evar (frame: expr);
+      let frame := fresh "frame" in evar (frame: (expr));
        apply solve_impp_trans with (C * frame);
              [ solve [cancel_tac frame]
              | eapply solve_impp_trans;

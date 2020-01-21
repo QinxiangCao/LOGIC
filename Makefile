@@ -350,6 +350,20 @@ lgen_demo_6:
 	@echo COQC LogicGenerator/demo6/test.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test.v
 
+lgen_demo_bedrock2:
+	./logic_gen.sh LogicGenerator/demo/configuration_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/interface.v ../bedrock2/bedrock2/src/exportLogic/export_lib.v
+	@echo COQC interface.v [in-bedrock2-folder]
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/interface.v
+	@echo COQC implementation.v [in-bedrock2-folder]
+	@cp LogicGenerator/demo/implementation_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/implementation.v
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/implementation.v
+	@echo COQC export_lib.v [in-bedrock2-folder]
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/export_lib.v
+	@cp ExportSolvers/SepApply/SepApply.v ../bedrock2/bedrock2/src/exportLogic/
+	@echo COQC SepApply.v [in-bedrock2-folder]
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
+#	@echo COQC LogicGenerator/demo6/test.v
+#	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
