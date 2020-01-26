@@ -18,7 +18,6 @@ then
     dst=LogicGenerator/Generated.v
 else
     dst=$2
-    echo "cp LogicGenerator/demo/Generated.v ${dst}"
     cp LogicGenerator/Generated.v ${dst}
 fi
 if [ $# -eq 3 ]

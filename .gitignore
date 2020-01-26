@@ -10,3 +10,6 @@ LogicGenerator/Generated2.v
 LogicGenerator/GeneratedGenerate.v
 LogicGenerator/demo/interface*.v
 LogicGenerator/demo/export_lib*.v
+LogicGenerator/demo6/export_lib.v
+LogicGenerator/demo6/interface.v
+LogicGenerator/demo6/SepApply.v

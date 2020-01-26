@@ -23,82 +23,35 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Require Import Setoid.
 Require Import Morphisms.
 Require Import RelationClasses.
-
-Module Type ASSUM.
-
-Parameter __PARA__: Type.
-  
-Parameter expr: forall `{__PARA__}, Type.
-
-Section ASSUM.
-
-Context {p: __PARA__}.
-
-Local Notation "'expr'" := (@expr p).
-
-Parameter provable: expr -> Prop.
-Parameter logic_equiv: expr -> expr -> Prop.
-Parameter emp: expr.
-Parameter impp: expr -> expr -> expr.
-Parameter sepcon: expr -> expr -> expr.
-
+Require Import export_lib.
+Import EXPO.
+Import EXPO_TRANSPARENTS.
+Local Open Scope expo_transparent_scope.
 Local Declare Scope syntax.
 Local Open Scope syntax.
-Notation "x --||-- y" := (logic_equiv x y) (at level 71, no associativity).
-Notation "|--  x" := (provable x) (at level 71, no associativity) : syntax.
-Notation "x --> y" := (impp x y) (at level 55, right associativity) : syntax.
-Notation "x * y" := (sepcon x y) (at level 40, left associativity) : syntax.
 
-Axiom impp_proper_equiv:
-  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
-Axiom sepcon_proper_logic_equiv:
-  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) sepcon.
-Axiom provable_proper_equiv : Proper (logic_equiv ==> iff) provable.
-Axiom logic_equiv_refl: Reflexive logic_equiv.
-
-Axiom provable_impp_refl : forall x, |-- x --> x.
-Axiom provable_impp_refl' : forall x y, x = y -> |-- x --> y.
-Axiom solve_impp_trans: forall (x y z: expr), |-- (x --> y) -> |-- (y --> z) -> |-- (x --> z).
-Axiom sepcon_mono: forall x1 x2 y1 y2, |-- x1 --> x2 -> |-- y1 --> y2 -> |-- (x1 * y1) --> (x2 * y2).
-Axiom sepcon_assoc_equiv: forall x y z, x * (y * z) --||-- (x * y) * z.
-Axiom sepcon_emp_equiv: forall x, x * emp --||-- x.
-
-Axiom cancel_ready: forall x y, |-- x * emp --> y -> |-- x --> y.
-Axiom cancel_one_succeed: forall u x y z, |-- x * y --> z -> |-- (u * x) * y --> u * z.
-Axiom cancel_one_giveup: forall x y z w v, |-- x * (y * z) --> w * v-> |-- (y * x) * z --> w * v.
-Axiom cancel_rev: forall x y z w,  |-- (y * x) * z --> w -> |-- x * (y * z) --> w.
-Axiom cancel_finish: forall x, |-- x * emp --> x.
-
-End ASSUM.
-End ASSUM.
-
-Module ExportTactic (T: ASSUM).
-
-Import T.
-
-Local Declare Scope syntax.
-Local Open Scope syntax.
-Notation "x --||-- y" := (logic_equiv x y) (at level 71, no associativity).
-Notation "|--  x" := (provable x) (at level 71, no associativity) : syntax.
-Notation "x --> y" := (impp x y) (at level 55, right associativity) : syntax.
-Notation "x * y" := (sepcon x y) (at level 40, left associativity) : syntax.
+Module SepApplyNotation.
+Notation "|--  x" := ((provable) x) (only parsing, at level 71, no associativity) : syntax.
+Notation "x --> y" := ((impp) x y) (only parsing, at level 55, right associativity) : syntax.
+Notation "x * y" := ((sepcon) x y) (only parsing, at level 40, left associativity) : syntax.
+End SepApplyNotation.
+Import SepApplyNotation.
 
 Existing Instances impp_proper_equiv
                    sepcon_proper_logic_equiv
                    provable_proper_equiv
                    logic_equiv_refl.
 
-
 Ltac cancel_tac EVAR :=
   apply cancel_ready;
   rewrite <- !sepcon_assoc_equiv;
   apply cancel_ready;
   repeat
-    match goal with
+    lazymatch goal with
     | |- |-- (?u1 * _) * _ --> ?u2 * _ =>
-      unify u1 u2;
+      (unify u1 u2;
       apply cancel_one_succeed;
-      repeat apply cancel_rev
+      repeat apply cancel_rev) + simple apply cancel_one_giveup
     | _ =>
       simple apply cancel_one_giveup
     end;
@@ -108,7 +61,7 @@ Ltac apply_find_core X :=
  match X with
  | ?U -> ?V => match type of U with Prop => apply_find_core V end
  | provable (impp _ _) => constr:(X)
- | @eq expr ?A ?B => constr:(provable (impp A B))
+ | @eq (expr) ?A ?B => constr:(provable (impp A B))
  end.
 
 Ltac head_of_type_of H :=
@@ -116,7 +69,7 @@ Ltac head_of_type_of H :=
 
 Ltac sep_apply_aux2 H' := 
      match head_of_type_of H' with provable (impp ?C ?D) =>
-      let frame := fresh "frame" in evar (frame: expr);
+      let frame := fresh "frame" in evar (frame: (expr));
        apply solve_impp_trans with (C * frame);
              [ solve [cancel_tac frame]
              | eapply solve_impp_trans;
@@ -137,7 +90,7 @@ Ltac sep_apply_aux0 H := sep_apply_aux1 H.
    Thus it is a simplified version here. *)
 Ltac adjust_sep_apply H :=
  match type of H with
- | @eq expr _ _ => constr:(provable_impp_refl' _ _ H)
+ | @eq (expr) _ _ => constr:(provable_impp_refl' _ _ H)
  | _ => H
  end.
 
@@ -196,6 +149,4 @@ Ltac sep_apply_prop_tac := default_sep_apply_prop_tac.
 
 Ltac sep_apply H :=
   HO_sep_apply_in_entailment H sep_apply_evar_tac sep_apply_prop_tac.
-
-End ExportTactic.
 
