@@ -39,15 +39,15 @@ Context {L: Language}
         {negpL: NegLanguage L}
         {iffpL: IffLanguage L}
         {truepL: TrueLanguage L}
-        {Gamma: Derivable L}
-        {bSC: BasicSequentCalculus L Gamma}
-        {minSC: MinimumSequentCalculus L Gamma}
-        {andpSC: AndSequentCalculus L Gamma}
-        {orpSC: OrSequentCalculus L Gamma}
-        {falsepSC: FalseSequentCalculus L Gamma}
-        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
-        {iffpSC: IffSequentCalculus L Gamma}
-        {truepSC: TrueSequentCalculus L Gamma}
+        {GammaD: Derivable L}
+        {bSC: BasicSequentCalculus L GammaD}
+        {minSC: MinimumSequentCalculus L GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}
@@ -67,7 +67,7 @@ Context (cP: context -> Prop)
 Hypothesis H_R: forall m n Phi Psi, rel m Phi -> rel n Psi -> (m <= n <-> Included _ (proj1_sig Phi) (proj1_sig Psi)).
 
 Lemma classical_canonical_ident
-      {cpSC: ClassicalSequentCalculus L Gamma}
+      {cpSC: ClassicalSequentCalculus L GammaD}
       (AL_DC: at_least derivable_closed cP)
       (AL_OW: at_least orp_witnessed cP)
       (AL_CONSI: at_least consistent cP):
@@ -100,7 +100,7 @@ Qed.
 
 Lemma GodelDummett_canonical_no_branch
       {GammaP: Provable L}
-      {SC: NormalSequentCalculus L GammaP Gamma}
+      {GammaPD: ProvableDerivable L GammaP GammaD}
       {minAX: MinimumAxiomatization L GammaP}
       {andpAX: AndAxiomatization L GammaP}
       {orpAX: OrAxiomatization L GammaP}
@@ -151,8 +151,8 @@ Qed.
 
 Lemma DeMorgan_canonical_branch_join
       {GammaP: Provable L}
-      {AX: NormalAxiomatization L GammaP Gamma}
-      {SC: NormalSequentCalculus L GammaP Gamma}
+      {GammaDP: DerivableProvable L GammaP GammaD}
+      {GammaPD: ProvableDerivable L GammaP GammaD}
       {minAX: MinimumAxiomatization L GammaP}
       {andpAX: AndAxiomatization L GammaP}
       {orpAX: OrAxiomatization L GammaP}

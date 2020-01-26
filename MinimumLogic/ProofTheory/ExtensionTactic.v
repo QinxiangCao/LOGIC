@@ -10,7 +10,6 @@ Require Import Logic.MinimumLogic.ProofTheory.TheoryOfSequentCalculus.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.TheoryOfJudgement.
 
-
 Inductive P2D_reg: Type :=.
 Inductive D2P_reg: Type :=.
 Inductive P2D1_reg: Type :=.
@@ -71,8 +70,8 @@ Ltac AddAxiomatizationFromSequentCalculus :=
 Ltac AddAxiomatizationFromDeduction :=
   let D1P :=fresh "D2P" in
   let GammaP := fresh "GammaP" in
-  pose proof Derivable1ToProvable_trick as D1P;
-  set (GammaP := Derivable1ToProvable) in D1P;
+  pose proof Derivable12Provable_Normal as D1P;
+  set (GammaP := Derivable12Provable) in D1P;
   clearbody GammaP;
   rec_from_n (0%nat) pose_proof_Ax1_instance.
 
@@ -98,8 +97,8 @@ Ltac AddEquiv :=
   clearbody GammaL;
   rec_from_n (0%nat) pose_proof_NE_instance.
 
-Instance reg_Axiomatization2SequentCalculus_SC:
-  RegisterClass P2D_reg (fun SC: unit => @Axiomatization2SequentCalculus_SC) 0.
+Instance reg_Axiomatization2SequentCalculus_GammaPD:
+  RegisterClass P2D_reg (fun SC: unit => @Axiomatization2SequentCalculus_GammaPD) 0.
 Qed.
 
 Instance reg_Axiomatization2SequentCalculus_bSC:
@@ -114,8 +113,8 @@ Instance reg_Axiomatization2SequentCalculus_minSC:
   RegisterClass P2D_reg (fun minSC: unit => @Axiomatization2SequentCalculus_minSC) 3.
 Qed.
 
-Instance reg_SequentCalculus2Axiomatization_AX:
-  RegisterClass D2P_reg (fun AX: unit => @SequentCalculus2Axiomatization_AX) 0.
+Instance reg_SequentCalculus2Axiomatization_GammaDP:
+  RegisterClass D2P_reg (fun AX: unit => @SequentCalculus2Axiomatization_GammaDP) 0.
 Qed.
 
 Instance reg_SequentCalculus2Axiomatization_minAX:
@@ -126,12 +125,12 @@ Instance reg_Axiomatization2Deduction_minD:
   RegisterClass P2D1_reg (fun minD: unit => @Axiomatization2Deduction_minD) 0.
 Qed.
 
-Instance reg_Axiomatization2BasicDeduction:
-  RegisterClass P2D1_reg (fun BD: unit => @Axiomatization2BasicDeduction_BD) 1.
+Instance reg_Axiomatization2Deduction_bD:
+  RegisterClass P2D1_reg (fun BD: unit => @Axiomatization2Deduction_bD) 1.
 Qed.
 
-Instance reg_Axiomatization2PD:
-  RegisterClass P2D1_reg (fun PD: unit => @ND2PD) 2.
+Instance reg_Axiomatization2Deduction_GammaPD1:
+  RegisterClass P2D1_reg (fun PD: unit => @Axiomatization2Deduction_GammaPD1) 2.
 Qed.
 
 Instance reg_Axiomatization2LogicEquiv_minE:
@@ -147,7 +146,7 @@ Instance reg_Derivable1ToAxiomatization_minAX:
 Qed.
 
 Instance reg_PD2ND:
-  RegisterClass D1ToP_reg (fun ND: unit => @PD2ND) 1.
+  RegisterClass D1ToP_reg (fun ND: unit => @Deduction2Axiomatization_GammaD1P) 1.
 Qed.
 
 Section Test_AddD.

@@ -23,7 +23,7 @@ Instance GP: Provable L := Build_Provable L provable.
 
 Instance GD: Derivable L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization L GP GD := Provable2Derivable_Normal.
+Instance GDP: DerivableProvable L GP GD := Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization L GP.
 Proof.
@@ -33,7 +33,7 @@ Proof.
   + apply axiom2.
 Qed.
 
-Instance SC: NormalSequentCalculus L GP GD := Axiomatization2SequentCalculus_SC.
+Instance GPD: ProvableDerivable L GP GD := Axiomatization2SequentCalculus_GammaPD.
 
 Instance bSC: BasicSequentCalculus L GD := Axiomatization2SequentCalculus_bSC.
 

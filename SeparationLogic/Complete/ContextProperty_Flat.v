@@ -51,7 +51,7 @@ Context {andpL: AndLanguage L}
         {iffpL: IffLanguage L}
         {truepL: TrueLanguage L}
         {wandL: WandLanguage L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
@@ -61,7 +61,7 @@ Context {andpL: AndLanguage L}
         {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
         {iffpSC: IffSequentCalculus L GammaD}
         {truepSC: TrueSequentCalculus L GammaD}
-        {AX: NormalAxiomatization L GammaP GammaD}
+        {GammaDP: DerivableProvable L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}

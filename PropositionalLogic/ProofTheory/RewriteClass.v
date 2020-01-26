@@ -224,7 +224,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -320,7 +320,7 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaE: LogicEquiv L}
         {minE: MinimumEquiv L GammaE}
-        {BE: BasicLogicEquiv L GammaE}.
+        {bE: BasicLogicEquiv L GammaE}.
 
 Section andp.
 
@@ -368,7 +368,7 @@ Section iffp.
 Context {iffpL: IffLanguage L}
         {andpL: AndLanguage L}
         {andpE: EquivAndp L GammaE}
-        {iffE: EquivIffp L GammaE}.
+        {iffpE: EquivIffp L GammaE}.
 
 Instance iffp_proper_equiv: Proper (logic_equiv  ==> logic_equiv ==> logic_equiv) iffp.
 Proof.
@@ -376,18 +376,18 @@ Proof.
   hnf;intros.
   pose proof equiv_iffp_intros x x0.
   pose proof equiv_iffp_intros y y0.
-  apply equiv_trans with ((x --> x0) && (x0 --> x)).
-  apply equiv_symm;auto.
-  apply equiv_symm.
-  apply equiv_trans with ((y --> y0) && (y0 --> y)).
-  apply equiv_symm;auto.
+  apply logic_equiv_trans with ((x --> x0) && (x0 --> x)).
+  apply logic_equiv_symm;auto.
+  apply logic_equiv_symm.
+  apply logic_equiv_trans with ((y --> y0) && (y0 --> y)).
+  apply logic_equiv_symm;auto.
   apply equiv_andp_congr.
   -apply equiv_impp.
-   apply equiv_symm;auto.
-   apply equiv_symm;auto.
+   apply logic_equiv_symm;auto.
+   apply logic_equiv_symm;auto.
   -apply equiv_impp.
-   apply equiv_symm;auto.
-   apply equiv_symm;auto.
+   apply logic_equiv_symm;auto.
+   apply logic_equiv_symm;auto.
   Qed.
 
 End iffp.

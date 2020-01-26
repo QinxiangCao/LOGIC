@@ -28,7 +28,7 @@ Context {L: Language}
         {falsepL: FalseLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
@@ -73,7 +73,7 @@ Proof.
 Qed.
 
 Lemma Lindenbaum_cannot_derive_ensures_orp_witnessed
-      {AX: NormalAxiomatization L GammaP GammaD}:
+      {GammaDP: DerivableProvable L GammaP GammaD}:
   forall x, Lindenbaum_ensures (cannot_derive x) orp_witnessed.
 Proof.
   intros.
@@ -96,7 +96,7 @@ Proof.
 Qed.
 
 Lemma Lindenbaum_cannot_derive_ensures_consistent
-      {AX: NormalAxiomatization L GammaP GammaD}:
+      {GammaDP: DerivableProvable L GammaP GammaD}:
   forall x, Lindenbaum_ensures (cannot_derive x) consistent.
 Proof.
   intros.
@@ -108,3 +108,4 @@ Proof.
 Qed.
 
 End Lindenbaum_Kripke.
+

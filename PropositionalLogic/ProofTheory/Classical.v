@@ -127,7 +127,7 @@ Context {L: Language}
         {iffpAX: IffAxiomatization L GammaP}
         {truepAX: TrueAxiomatization L GammaP}
         {cpAX: ClassicalAxiomatization L GammaP}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -165,7 +165,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}

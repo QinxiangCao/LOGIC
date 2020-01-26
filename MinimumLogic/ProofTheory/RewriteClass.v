@@ -71,8 +71,8 @@ End Derivable1.
 Section Derivable1_provable.
 
 Context {GammaD: Derivable1 L}
-        {MD:MinimumDeduction L GammaD}
-        {ND:NormalDeduction L GammaP GammaD}.
+        {minD:MinimumDeduction L GammaD}
+        {GammaD1P: Derivable1Provable L GammaP GammaD}.
 
 Instance provable_proper_derivable1:
   Proper (derivable1 ==> Basics.impl) provable.
@@ -92,7 +92,7 @@ End Provable.
 Section Derivable.
 
 Context {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}.
 
@@ -108,8 +108,8 @@ Qed.
 
 Section Derivable1.
 
-Context {GammaD1:Derivable1 L}
-        {ND:NormalDeduction L GammaP GammaD1}.
+Context {GammaD1: Derivable1 L}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}.
 
 Instance derivable_proper_derivable1:
   Proper (eq ==> derivable1 ==> Basics.impl) derivable.
@@ -131,8 +131,8 @@ Section Logic_equiv.
 
 Existing Instance derivable_proper_impp.
 
-Context {GammaE:LogicEquiv L}
-        {ME:MinimumEquiv L GammaE}.
+Context {GammaE: LogicEquiv L}
+        {minE: MinimumEquiv L GammaE}.
 
 Instance impp_proper_equiv:
   Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
@@ -144,13 +144,13 @@ Proof.
   auto.
   Qed.
 
-Context {NE:NormalEquiv L GammaP GammaE}
+Context {GammaEP: EquivProvable L GammaP GammaE}
         {minAX: MinimumAxiomatization L GammaP}.
 
 Instance provable_proper_equiv : Proper (logic_equiv ==> iff) provable.
 Proof.
   hnf;intros.
-  pose proof equiv_provable x y.
+  pose proof logic_equiv_provable x y.
   rewrite H0 in H.
   destruct H.
   split.
@@ -159,7 +159,7 @@ Proof.
   Qed.
 
 Context {GammaD:Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}.
 
@@ -168,7 +168,7 @@ Instance derivable_proper_equiv:
 Proof.
   hnf;intros;subst y.
   hnf;intros.
-  pose proof equiv_provable x0 y. rewrite H0 in H.
+  pose proof logic_equiv_provable x0 y. rewrite H0 in H.
   destruct H.
   split.
   -intros. rewrite H in H2. auto.
@@ -191,11 +191,11 @@ Section TestInAxiomatization.
 
 (* Here, "Section" is used to avoid leaking "Existing Instances". *)
 
-Existing Instances Axiomatization2SequentCalculus_SC
+Existing Instances Axiomatization2SequentCalculus_GammaPD
                    Axiomatization2SequentCalculus_bSC
                    Axiomatization2SequentCalculus_minSC.
 
-Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {AX: NormalAxiomatization L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) y1 y2,
+Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaDP: DerivableProvable L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) y1 y2,
   |-- y1 --> y2 ->
   Phi |-- y1 ->
   Phi |-- y2.
@@ -205,7 +205,7 @@ Proof.
   auto.
 Qed.
 
-Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {AX: NormalAxiomatization L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) x1 y1 x2 y2,
+Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaDP: DerivableProvable L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) x1 y1 x2 y2,
   |-- x2 --> x1 ->
   |-- y1 --> y2 ->
   Phi |-- x1 --> y1 ->
@@ -217,7 +217,7 @@ Proof.
   auto.
 Qed.
 
-Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {AX: NormalAxiomatization L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) x1 y1 x2 y2,
+Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaDP: DerivableProvable L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) x1 y1 x2 y2,
   |-- x2 --> x1 ->
   |-- y1 --> y2 ->
   |-- (x1 --> y1) --> (x2 --> y2).
@@ -239,7 +239,7 @@ Section TestInSequentCalculus.
 
 Existing Instances SequentCalculus2Axiomatization_minAX.
 
-Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {SC: NormalSequentCalculus L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) y1 y2,
+Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaPD: ProvableDerivable L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) y1 y2,
   |-- y1 --> y2 ->
   Phi |-- y1 ->
   Phi |-- y2.
@@ -249,7 +249,7 @@ Proof.
   auto.
 Qed.
 
-Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {SC: NormalSequentCalculus L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) x1 y1 x2 y2,
+Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaPD: ProvableDerivable L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) x1 y1 x2 y2,
   |-- x2 --> x1 ->
   |-- y1 --> y2 ->
   Phi |-- x1 --> y1 ->
@@ -261,7 +261,7 @@ Proof.
   auto.
 Qed.
 
-Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {SC: NormalSequentCalculus L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) x1 y1 x2 y2,
+Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaPD: ProvableDerivable L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) x1 y1 x2 y2,
   |-- x2 --> x1 ->
   |-- y1 --> y2 ->
   |-- (x1 --> y1) --> (x2 --> y2).

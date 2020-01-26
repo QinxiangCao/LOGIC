@@ -232,11 +232,11 @@ Definition Build_IterAndDefinition_left := Build_IterAndDefinition_left.
 Definition Build_IterAndDefinition_right := Build_IterAndDefinition_right.
 Definition Build_IterSepconDefinition_left := Build_IterSepconDefinition_left.
 Definition Build_IterSepconDefinition_right := Build_IterSepconDefinition_right.
-Definition Build_NormalAxiomatization := Build_NormalAxiomatization.
-Definition Build_NormalSequentCalculus := Build_NormalSequentCalculus.
-Definition Build_NormalDeduction := Build_NormalDeduction.
-Definition Build_NormalEquiv := Build_NormalEquiv.
-Definition Build_NormalEquiv2 := Build_NormalEquiv2.
+Definition Build_DerivableProvable := Build_DerivableProvable.
+Definition Build_ProvableDerivable := Build_ProvableDerivable.
+Definition Build_Derivable1Provable := Build_Derivable1Provable.
+Definition Build_EquivProvable := Build_EquivProvable.
+Definition Build_EquivDerivable1 := Build_EquivDerivable1.
 Definition Build_MinimumAxiomatization := Build_MinimumAxiomatization.
 Definition Build_AndAxiomatization := Build_AndAxiomatization.
 Definition Build_OrAxiomatization := Build_OrAxiomatization.
@@ -319,11 +319,11 @@ Context {L: Language}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}
         {iter_sepcon_DR: IterSepconDefinition_right L}
-        {AX: NormalAxiomatization L GammaP GammaD}
-        {SC : NormalSequentCalculus L GammaP GammaD}
-        {ND: NormalDeduction L GammaP GammaD1}
-        {NE: NormalEquiv L GammaP GammaE}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}
+        {GammaDP: DerivableProvable L GammaP GammaD}
+        {GammaPD : ProvableDerivable L GammaP GammaD}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
+        {GammaEP: EquivProvable L GammaP GammaE}
+        {GammaED1: EquivDerivable1 L GammaD1 GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
@@ -512,7 +512,7 @@ Definition rule_instances_build :=
   ; (empD, Build_EmpDeduction L sepconL empL GammaD1 sepcon_emp_left sepcon_emp_right)
   ; (sepcon_orp_D, Build_SepconOrDeduction L orpL sepconL GammaD1 orp_sepcon_left)
   ; (sepcon_falsep_D, Build_SepconFalseDeduction L falsepL sepconL GammaD1 falsep_sepcon_left)
-  ; (bE, Build_BasicLogicEquiv L GammaE equiv_refl equiv_symm equiv_trans)
+  ; (bE, Build_BasicLogicEquiv L GammaE logic_equiv_refl logic_equiv_symm logic_equiv_trans)
   ; (minE, Build_MinimumEquiv L minL GammaE equiv_impp)
   ; (CorAX, Build_Corable_withAxiomatization L andpL iffpL sepconL GammaP Cor corable_preserved' corable_andp_sepcon1)
   ; (coq_prop_Cor, Build_CoqPropCorable L coq_prop_L Cor corable_coq_prop)
@@ -523,11 +523,11 @@ Definition rule_instances_build :=
   ; (iter_andp_DR, Build_IterAndDefinition_right L andpL truepL iter_andp_L iter_andp_def_r)
   ; (iter_sepcon_DL, Build_IterSepconDefinition_left L sepconL empL iter_sepcon_L iter_sepcon_def_l)
   ; (iter_sepcon_DR, Build_IterSepconDefinition_right L sepconL empL iter_sepcon_L iter_sepcon_def_r)
-  ; (AX, Build_NormalAxiomatization L minL GammaP GammaD derivable_provable)
-  ; (SC, Build_NormalSequentCalculus L GammaP GammaD provable_derivable)
-  ; (ND, Build_NormalDeduction L minL GammaP GammaD1 derivable1_provable)
-  ; (NE, Build_NormalEquiv L minL GammaP GammaE equiv_provable)
-  ; (NE2, Build_NormalEquiv2 L GammaD1 GammaE equiv_derivable1)
+  ; (GammaDP, Build_DerivableProvable L minL GammaP GammaD derivable_provable)
+  ; (GammaPD, Build_ProvableDerivable L GammaP GammaD provable_derivable)
+  ; (GammaD1P, Build_Derivable1Provable L minL GammaP GammaD1 derivable1_provable)
+  ; (GammaEP, Build_EquivProvable L minL GammaP GammaE logic_equiv_provable)
+  ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
   ].
 
 Definition instances_build :=
@@ -549,11 +549,11 @@ Definition refl_instances :=
   ; (negpDef, FalseImp2Neg_Normal)
   ; (iter_andp_DL, FoldLeftAnd2IterAnd_Normal)
   ; (iter_sepcon_DL, FoldLeftSepcon2IterSepcon_Normal)
-  ; (AX, Provable2Derivable_Normal)
-  ; (SC, Derivable2Provable_Normal)
-  ; (ND, Provable2Derivable1_Normal)
-  ; (NE, Provable2Equiv_Normal)
-  ; (NE2, Derivable12Equiv_Normal)
+  ; (GammaDP, Provable2Derivable_Normal)
+  ; (GammaPD, Derivable2Provable_Normal)
+  ; (GammaD1P, Provable2Derivable1_Normal)
+  ; (GammaEP, Provable2Equiv_Normal)
+  ; (GammaED1, Derivable12Equiv_Normal)
   ].
 
 Definition instance_transitions :=
@@ -562,7 +562,7 @@ Definition instance_transitions :=
   ; (inegpAX, NegFromDefToAX_False_Imp)
   ; (iter_andp_AXL, IterAndFromDefToAX_L2L)
   ; (iter_sepcon_AXL, IterSepconFromDefToAX_L2L)
-  ; (SC, Axiomatization2SequentCalculus_SC)
+  ; (GammaPD, Axiomatization2SequentCalculus_GammaPD)
   ; (bSC, Axiomatization2SequentCalculus_bSC)
   ; (fwSC, Axiomatization2SequentCalculus_fwSC)
   ; (minSC, Axiomatization2SequentCalculus_minSC)
@@ -572,7 +572,7 @@ Definition instance_transitions :=
   ; (truepSC, Axiomatization2SequentCalculus_truepSC)
   ; (iffpSC, Axiomatization2SequentCalculus_iffpSC)
   ; (inegpSC, Axiomatization2SequentCalculus_inegpSC)
-  ; (AX, SequentCalculus2Axiomatization_AX)
+  ; (GammaDP, SequentCalculus2Axiomatization_GammaDP)
   ; (minAX, SequentCalculus2Axiomatization_minAX)
   ; (andpAX, SequentCalculus2Axiomatization_andpAX)
   ; (orpAX, SequentCalculus2Axiomatization_orpAX)
@@ -589,7 +589,7 @@ Definition instance_transitions :=
   ; (sepcon_coq_prop_AX, CoqPropCorable2SepconCoqPropAX)
   ; (sepcon_coq_prop_AX, Adj2SepconCoqProp)
   ; (bE, Axiomatization2BasicLogicEquiv_bE)
-  ; (NE2, NormalDeductionAndEquivToNormalEquiv2_NE2)
+  ; (GammaED1, Axiomatization2Deduction_GammaED1)
   ; (minE, Axiomatization2LogicEquiv_minE)
   ; (sepconD, Axiomatization2Deduction_sepconD)
   ].
@@ -776,7 +776,9 @@ Definition derived_rules :=
   ; impp_proper_equiv
   ; sepcon_proper_logic_equiv
   ; provable_proper_equiv
-  ; logic_equiv_refl
+  ; logic_equiv_refl_instance
+  ; logic_equiv_symm_instance
+  ; logic_equiv_trans_instance
 
   ; sepcon_assoc_equiv
   ; sepcon_emp_equiv

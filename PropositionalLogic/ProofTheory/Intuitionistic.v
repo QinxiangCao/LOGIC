@@ -394,7 +394,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -486,7 +486,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {AX: NormalAxiomatization L GammaP GammaD}
+        {GammaDP: DerivableProvable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
@@ -500,7 +500,7 @@ Context {L: Language}
 Lemma Axiomatization2SequentCalculus_andpSC:
   AndSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -519,7 +519,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_orpSC:
   OrSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -539,7 +539,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_falsepSC:
   FalseSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -551,7 +551,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_inegpSC:
   IntuitionisticNegSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -568,7 +568,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_iffpSC:
   IffSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -590,7 +590,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_truepSC:
   TrueSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -1289,7 +1289,7 @@ Context {L: Language}
         {iffpL: IffLanguage L}
         {GammaE: LogicEquiv L}
         {GammaP: Provable L}
-        {NE:NormalEquiv L GammaP GammaE}
+        {GammaEP: EquivProvable L GammaP GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
         {iffpAX: IffAxiomatization L GammaP}.
@@ -1299,13 +1299,13 @@ Lemma equiv_iffp : forall x y,
 Proof.
   intros.
   split.
-  -intros. apply equiv_provable in H. destruct H.
+  -intros. apply logic_equiv_provable in H. destruct H.
    pose proof iffp_intros x y.
    pose proof modus_ponens _ _ H1 H.
    pose proof modus_ponens _ _ H2 H0.
    auto.
   -intros.
-   apply equiv_provable.
+   apply logic_equiv_provable.
    split.
      *pose proof iffp_elim1 x y.
       pose proof modus_ponens _ _ H0 H;auto.
@@ -1324,8 +1324,8 @@ Lemma provable_derivable1_true
        {minAX: MinimumAxiomatization L GammaP}
        {trueD: TrueDeduction L GammaD1}
        {bD: BasicDeduction L GammaD1}
-       {D12P: NormalDeduction L GammaP GammaD1}
-       {P2D1: Provable_Derivable1 L GammaP GammaD1}
+       {GammaD1P: Derivable1Provable L GammaP GammaD1}
+       {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
       :forall x,
   provable x <-> derivable1 TT x.
 Proof.
@@ -1398,9 +1398,9 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaP: Provable L}
         {GammaD1: Derivable1 L}
-        {ND: NormalDeduction L GammaP GammaD1}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
         {minD: MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Section Deduction2Axiomatization1.
 
@@ -1466,7 +1466,7 @@ Section Deduction2Axiomatization_truepAX.
 
 Context {truepL: TrueLanguage L}
         {truepD: TrueDeduction L GammaD1}
-        {PD: Provable_Derivable1 L GammaP GammaD1}.
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}.
 
 Lemma Deduction2Axiomatization_truepAX: TrueAxiomatization L GammaP.
 Proof.

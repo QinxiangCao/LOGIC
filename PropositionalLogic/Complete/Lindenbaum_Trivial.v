@@ -38,7 +38,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
@@ -69,7 +69,7 @@ Proof.
 Qed.
 
 Lemma Lindenbaum_cannot_derive_ensures_max_consistent
-      {AX: NormalAxiomatization L GammaP GammaD}:
+      {GammaDP: DerivableProvable L GammaP GammaD}:
   forall x, Lindenbaum_ensures (cannot_derive x) (maximal consistent).
 Proof.
   intros.

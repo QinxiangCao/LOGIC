@@ -17,7 +17,7 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD:Derivable L}
         {GammaD1: Derivable1 L}
-        {ND: NormalDeduction L GammaP GammaD1}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
         {minAX: MinimumAxiomatization L GammaP}.
 
 Lemma Axiomatization2Deduction_minD: MinimumDeduction L GammaD1.
@@ -40,9 +40,9 @@ Proof.
    pose proof provable_impp_refl x.
    pose proof modus_ponens _ _ H H0.
    auto.
-  Qed.
+Qed.
 
-Lemma Axiomatization2BasicDeduction_BD: BasicDeduction L GammaD1.
+Lemma Axiomatization2Deduction_bD: BasicDeduction L GammaD1.
 Proof.
   constructor.
   -intros. 
@@ -51,7 +51,7 @@ Proof.
    apply derivable1_provable. apply derivable1_provable in H. 
    apply derivable1_provable in H0.
    pose proof aux_minimun_rule02 _ _ _ H H0. auto.
-  Qed.
+Qed.
 
 End Axiomatization2Deduction.
 
@@ -62,14 +62,14 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {GammaL: LogicEquiv L}
-        {NE:NormalEquiv L GammaP GammaL}
+        {GammaEP: EquivProvable L GammaP GammaL}
         {minAX: MinimumAxiomatization L GammaP}.
 
 Lemma Axiomatization2LogicEquiv_minE :MinimumEquiv L GammaL.
 Proof.
   constructor.
   intros.
-  apply equiv_provable. apply equiv_provable in H. apply equiv_provable in H0.
+  apply logic_equiv_provable. apply logic_equiv_provable in H. apply logic_equiv_provable in H0.
   destruct H,H0.
   split.
   -rewrite H0. rewrite H1.
@@ -82,15 +82,15 @@ Lemma Axiomatization2BasicLogicEquiv_bE: BasicLogicEquiv L GammaL.
 Proof.
   constructor.
   -intros.
-   apply equiv_provable.
+   apply logic_equiv_provable.
    pose proof provable_impp_refl x.
    split;[auto|auto].
   -intros.
-   apply equiv_provable. apply equiv_provable in H.
+   apply logic_equiv_provable. apply logic_equiv_provable in H.
    destruct H.
    split;[auto|auto].
-  -intros. apply equiv_provable. apply equiv_provable in H. 
-   apply equiv_provable in H0.
+  -intros. apply logic_equiv_provable. apply logic_equiv_provable in H. 
+   apply logic_equiv_provable in H0.
    destruct H,H0.
    pose proof aux_minimun_rule02 _ _ _ H H0.
    pose proof aux_minimun_rule02 _ _ _ H2 H1.
@@ -129,7 +129,7 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaP: Provable L}
         {GammaD1: Derivable1 L}
-        {D2P: Provable_Derivable1 L GammaP GammaD1}
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
         {minD: MinimumDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
@@ -174,10 +174,10 @@ Context {L: Language}
 
 Section provable2derivable1.
 
-Context {ND: NormalDeduction L GammaP GammaD1}
+Context {GammaD1P: Derivable1Provable L GammaP GammaD1}
         {minAX: MinimumAxiomatization L GammaP}.
 
-Lemma ND2PD : Provable_Derivable1 L GammaP GammaD1.
+Lemma Axiomatization2Deduction_GammaPD1 : ProvableDerivable1 L GammaP GammaD1.
 Proof.
   constructor.
   intros. split.
@@ -194,14 +194,14 @@ End provable2derivable1.
 
 Section derivable12provable.
 
-Context {PD:Provable_Derivable1 L GammaP GammaD1}
-        {MD: MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+Context {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
+        {minD: MinimumDeduction L GammaD1}
+        {bD: BasicDeduction L GammaD1}.
 
 Import Derivable1.
 Local Open Scope Derivable1.
 
-Lemma PD2ND: NormalDeduction L GammaP GammaD1.
+Lemma Deduction2Axiomatization_GammaD1P: Derivable1Provable L GammaP GammaD1.
 Proof.
   constructor.
   intros. split.

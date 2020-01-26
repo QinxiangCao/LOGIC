@@ -65,7 +65,7 @@ Existing Instances TrivialSemantics.MD
 
 Existing Instances ProofTheories.ClassicalPropositionalLogic.GP
                    ProofTheories.ClassicalPropositionalLogic.GD
-                   ProofTheories.ClassicalPropositionalLogic.AX
+                   ProofTheories.ClassicalPropositionalLogic.GammaDP
                    ProofTheories.ClassicalPropositionalLogic.minAX
                    ProofTheories.ClassicalPropositionalLogic.andpAX
                    ProofTheories.ClassicalPropositionalLogic.orpAX
@@ -75,7 +75,7 @@ Existing Instances ProofTheories.ClassicalPropositionalLogic.GP
                    ProofTheories.ClassicalPropositionalLogic.dmpAX
                    ProofTheories.ClassicalPropositionalLogic.cpAX.
 
-Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC Axiomatization2SequentCalculus_cpSC.
+Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_GammaPD Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC Axiomatization2SequentCalculus_cpSC.
 
 Definition cP: context -> Prop := maximal consistent.
 

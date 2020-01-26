@@ -5,11 +5,6 @@ Require Import Logic.GeneralLogic.ProofTheory.TheoryOfSequentCalculus.
 
 Local Open Scope logic_base.
 
-Class NormalSequentCalculus
-      (L: Language) (GammaP: Provable L) (GammaD: Derivable L): Type := {
-  provable_derivable: forall x, provable x <-> derivable empty_context x
-}.
-
 Class BasicSequentCalculus (L: Language) (Gamma: Derivable L) := {
   deduction_weaken: forall Phi Psi x, Included _ Phi Psi -> Phi |-- x -> Psi |-- x;
   derivable_assum: forall Phi x, Ensembles.In _ Phi x -> Phi |-- x;
@@ -64,16 +59,6 @@ Proof.
   apply DeductionWeaken_DerivableFiniteWitnessed_2_ContextualDerivableFiniteWitnessed.
   + hnf; intros; eapply deduction_weaken; eauto.
   + hnf; intros; eapply derivable_finite_witnessed; eauto.
-Qed.
-
-Lemma deduction_weaken0 {GammaP: Provable L} {SC: NormalSequentCalculus L GammaP Gamma}: forall Phi y,
-  |-- y ->
-  Phi |-- y.
-Proof.
-  intros.
-  rewrite provable_derivable in H.
-  eapply deduction_weaken; eauto.
-  intros ? [].
 Qed.
 
 End DerivableRulesFromSequentCalculus.
