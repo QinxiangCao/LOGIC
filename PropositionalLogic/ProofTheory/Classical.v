@@ -36,20 +36,12 @@ Section DerivableRulesFromAxiomatization0.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
         {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpAX: AndAxiomatization L Gamma}
         {orpAX: OrAxiomatization L Gamma}
-        {falsepAX: FalseAxiomatization L Gamma}
         {inegpAX: IntuitionisticNegAxiomatization L Gamma}
-        {iffpAX: IffAxiomatization L Gamma}
-        {truepAX: TrueAxiomatization L Gamma}
         {cpAX: ClassicalAxiomatization L Gamma}.
 
 Lemma by_contradiction: forall x y, |-- (~~ x --> y) --> (~~ x --> ~~ y) --> x.
@@ -67,23 +59,23 @@ Proof.
   apply __double_negp_elim.
 Qed.
 
-Lemma excluded_middle: forall x, |-- x || ~~ x.
-Proof.
-  pose proof Build_PeirceLaw _ _ _ peirce_law.
-  pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ExcludedMiddle.
-  apply __excluded_middle.
-Qed.
-
 Lemma classic_analysis: forall x y, |-- (x --> y) --> (~~ x --> y) --> y.
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
   pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ExcludedMiddle.
-  pose proof ExcludedMiddle2ClassicAnalysis.
+  pose proof DoubleNegativeElimination2ClassicAnalysis.
   apply __classic_analysis.
+Qed.
+
+Lemma excluded_middle: forall x, |-- x || ~~ x.
+Proof.
+  pose proof Build_PeirceLaw _ _ _ peirce_law.
+  pose proof Peirce2ByContradiction.
+  pose proof ByContradiction2DoubleNegativeElimination.
+  pose proof DoubleNegativeElimination2ClassicAnalysis.
+  pose proof ClassicAnalysis2ExcludedMiddle.
+  apply __excluded_middle.
 Qed.
 
 Lemma impp2orp1: forall x y, |-- (x --> y) --> (~~ x || y).
@@ -91,13 +83,13 @@ Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
   pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ExcludedMiddle.
-  pose proof ExcludedMiddle2ClassicAnalysis.
+  pose proof DoubleNegativeElimination2ClassicAnalysis.
   pose proof ClassicAnalysis2ImplyToOr.
   apply __impp2orp1.
 Qed.
 
-Lemma impp2orp: forall x y, |-- (x --> y) <--> (~~ x || y).
+Lemma impp2orp {iffpL: IffLanguage L} {iffpAX: IffAxiomatization L Gamma}:
+  forall x y, |-- (x --> y) <--> (~~ x || y).
 Proof.
   intros.
   apply solve_iffp_intros.
@@ -194,8 +186,7 @@ Proof.
   }
   pose proof Build_ExcludedMiddle _ _ _ _ H.
   pose proof ExcludedMiddle2ClassicAnalysis.
-  pose proof ClassicAnalysis2ImplyToOr.
-  pose proof ImplyToOr2PeirceLaw.
+  pose proof ClassicAnalysis2PeirceLaw.
   apply __peirce_law.
 Qed.
 

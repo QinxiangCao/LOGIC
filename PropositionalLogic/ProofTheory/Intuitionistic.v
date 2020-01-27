@@ -778,6 +778,16 @@ Proof.
   apply contradiction_elim1.
 Qed.
 
+Lemma negp_aux_rule: forall x y, |-- y -> |-- (x --> ~~ y) --> (~~x).
+Proof.
+  intros.
+  rewrite (contrapositivePP (~~ y) x).
+  eapply modus_ponens.
+  + apply aux_minimun_theorem02.
+  + rewrite <- double_negp_intros.
+    auto.
+Qed.
+
 Lemma negp_fold: forall x, |-- (x --> FF) --> (~~x).
 Proof.
   intros.
@@ -795,9 +805,8 @@ Lemma contrapositivePN: forall (x y: expr),
   |-- (y --> ~~ x) --> (x --> ~~ y).
 Proof.
   intros.
-  pose proof negp_unfold x. rewrite H.
-  pose proof negp_fold y. rewrite <- H0.
-  apply provable_impp_arg_switch.
+  rewrite (double_negp_intros x) at 2.
+  apply contrapositivePP.
 Qed.
 
 End DerivableRulesFromAxiomatization1.
@@ -806,21 +815,11 @@ Section DerivableRulesFromSequentCalculus2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {andpSC: AndSequentCalculus L Gamma}
-        {orpSC: OrSequentCalculus L Gamma}
-        {falsepSC: FalseSequentCalculus L Gamma}
-        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
-        {iffpSC: IffSequentCalculus L Gamma}
-        {truepSC: TrueSequentCalculus L Gamma}.
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}.
 
 Lemma deduction_contrapositivePP': forall Phi (x y: expr),
   Phi |-- y --> x ->
@@ -840,6 +839,15 @@ Proof.
   eapply deduction_modus_ponens; eauto.
   apply deduction_weaken0.
   apply contrapositivePN.
+Qed.
+
+Lemma deduction_contrapositivePN: forall Phi (x y: expr),
+  Phi;; y |-- ~~ x ->
+  Phi;; x |-- ~~ y.
+Proof.
+  intros.
+  rewrite deduction_theorem in H |- *.
+  apply deduction_contrapositivePN'; auto.
 Qed.
 
 End DerivableRulesFromSequentCalculus2.
@@ -1278,9 +1286,7 @@ Lemma impp2orp2: forall x y, |-- ~~ x || y --> (x --> y).
 Proof.
   intros.
   apply solve_orp_impp.
-  + rewrite negp_unfold.
-    apply aux_minimun_rule01.
-    apply falsep_elim.
+  + apply contradiction_elim1.
   + apply axiom1.
 Qed.
 
