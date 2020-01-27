@@ -226,16 +226,13 @@ Proof.
   + apply aux_minimun_theorem02.
 Qed.
 
-(* (* TODO: resume this proof after reorganizing classic theory. *)
 Lemma OrFromDefToAX_Imp_Neg
       {L: Language}
       {minL: MinimumLanguage L}
       {orpL: OrLanguage L}
-      {falsepL: FalseLanguage L}
       {negpL: NegLanguage L}
       {GammaP: Provable L}
       {minAX: MinimumAxiomatization L GammaP}
-      {falsepAx: FalseAxiomatization L GammaP}
       {inegpAx: IntuitionisticNegAxiomatization L GammaP}
       {cpAX: ClassicalAxiomatization L GammaP}
       {orp_Def_impp_negp: OrDefinition_Imp_Neg L}:
@@ -244,7 +241,7 @@ Proof.
   AddSequentCalculus.
   intros.
   constructor; intros; rewrite impp_negp2orp.
-  + rewrite provable_derivable. apply derivable_contradiction_elim.
+  + rewrite provable_derivable. apply derivable_contradiction_elim2.
   + rewrite provable_derivable. rewrite <- !deduction_theorem.
     solve_assum.
   + pose proof (aux_minimun_theorem00 (~~ x) y z).
@@ -257,7 +254,7 @@ Proof.
     rewrite H0 in H.
     apply H.
 Qed.
-*)
+
 Ltac AddConnective_iffp :=
   let iffpL := fresh "iffpL" in
   let iffpDef := fresh "iffpDef" in

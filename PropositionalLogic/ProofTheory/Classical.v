@@ -55,7 +55,7 @@ Lemma double_negp_elim: forall x, |-- ~~ (~~ x) --> x.
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
+  pose proof ByContradiction2DoubleNegElimination.
   apply __double_negp_elim.
 Qed.
 
@@ -63,8 +63,8 @@ Lemma classic_analysis: forall x y, |-- (x --> y) --> (~~ x --> y) --> y.
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ClassicAnalysis.
+  pose proof ByContradiction2DoubleNegElimination.
+  pose proof DoubleNegElimination2ClassicAnalysis.
   apply __classic_analysis.
 Qed.
 
@@ -72,8 +72,8 @@ Lemma excluded_middle: forall x, |-- x || ~~ x.
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ClassicAnalysis.
+  pose proof ByContradiction2DoubleNegElimination.
+  pose proof DoubleNegElimination2ClassicAnalysis.
   pose proof ClassicAnalysis2ExcludedMiddle.
   apply __excluded_middle.
 Qed.
@@ -82,8 +82,8 @@ Lemma impp2orp1: forall x y, |-- (x --> y) --> (~~ x || y).
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ClassicAnalysis.
+  pose proof ByContradiction2DoubleNegElimination.
+  pose proof DoubleNegElimination2ClassicAnalysis.
   pose proof ClassicAnalysis2ImplyToOr.
   apply __impp2orp1.
 Qed.
@@ -95,6 +95,12 @@ Proof.
   apply solve_iffp_intros.
   + apply impp2orp1.
   + apply impp2orp2.
+Qed.
+
+Lemma Peirce2cpAX {plAX: PeirceLaw L Gamma}: ClassicalAxiomatization L Gamma.
+Proof.
+  constructor.
+  apply __peirce_law.
 Qed.
 
 End DerivableRulesFromAxiomatization0.

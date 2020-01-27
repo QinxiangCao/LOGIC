@@ -353,17 +353,11 @@ Qed.
 Lemma derivable_contradiction_elim2: forall (Phi: context) (x y: expr),
   Phi |-- x --> ~~ x --> y.
 Proof.
+  clear - bSC minSC inegpSC.
+  AddAxiomatization.
   intros.
-  pose proof derivable_double_negp_intros Phi x.
-  pose proof derivable_falsep_elim Phi y.
-  rewrite <- !deduction_theorem in H.
-  rewrite <- !deduction_theorem.
-  pose proof deduction_negp_unfold (Phi;;x) (~~x).
-  apply H1 in H.
-  apply (deduction_weaken1 _ x) in H0.
-  apply (deduction_weaken1 _ (~~ x)) in H0.
-  pose proof deduction_modus_ponens _ _ _ H H0.
-  auto.
+  rewrite <- provable_impp_arg_switch.
+  apply derivable_contradiction_elim1.
 Qed.
 
 Lemma derivable_iffp_refl: forall (Phi: context) (x: expr),

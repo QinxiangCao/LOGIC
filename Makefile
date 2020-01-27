@@ -94,6 +94,7 @@ PropositionalLogic_DeepEmbedded_FILES = \
   PropositionalLanguage.v ProofTheories.v \
   KripkeSemantics.v TrivialSemantics.v \
   Soundness.v Complete_Kripke.v Complete_Classical_Trivial.v \
+  configuration_Mendelson.v interface_Mendelson.v \
   Deep.v Solver.v
 
 PropositionalLogic_ShallowEmbedded_FILES = \
@@ -294,6 +295,9 @@ LogicGenerator: \
 
 all: \
   $(FILES:%.v=%.vo)
+
+PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo
+	./logic_gen.sh PropositionalLogic/DeepEmbedded/configuration_Mendelson.v PropositionalLogic/DeepEmbedded/interface_Mendelson.v
 
 lgen_demo_1:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v

@@ -22,7 +22,7 @@ Class ByContradiction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguag
   __by_contradiction: forall x y, |-- (~~ x --> y) --> (~~ x --> ~~ y) --> x
 }.
 
-Class DoubleNegativeElimination (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
+Class DoubleNegElimination (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
   __double_negp_elim: forall x, |-- ~~ (~~ x) --> x
 }.
 
@@ -186,7 +186,7 @@ Qed.
 
 End PeirceLaw2ByContradiction.
 
-Section ByContradiction2DoubleNegativeElimination.
+Section ByContradiction2DoubleNegElimination.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
@@ -196,8 +196,8 @@ Context {L: Language}
         {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
         {bcAX: ByContradiction L Gamma}.
 
-Lemma ByContradiction2DoubleNegativeElimination:
-  DoubleNegativeElimination L Gamma.
+Lemma ByContradiction2DoubleNegElimination:
+  DoubleNegElimination L Gamma.
 Proof.
   constructor.
   intros.
@@ -209,9 +209,9 @@ Proof.
   rewrite H in H0. apply H0.
 Qed.
 
-End ByContradiction2DoubleNegativeElimination.
+End ByContradiction2DoubleNegElimination.
 
-Section DoubleNegativeElimination2ClassicAnalysis.
+Section DoubleNegElimination2ClassicAnalysis.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
@@ -219,9 +219,9 @@ Context {L: Language}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
         {inegpAX: IntuitionisticNegAxiomatization L Gamma}
-        {dneAX: DoubleNegativeElimination L Gamma}.
+        {dneAX: DoubleNegElimination L Gamma}.
 
-Lemma DoubleNegativeElimination2ClassicAnalysis: ClassicAnalysis L Gamma.
+Lemma DoubleNegElimination2ClassicAnalysis: ClassicAnalysis L Gamma.
 Proof.
   constructor.
   intros.
@@ -246,7 +246,7 @@ Proof.
   + solve_assum.
 Qed.
 
-End DoubleNegativeElimination2ClassicAnalysis.
+End DoubleNegElimination2ClassicAnalysis.
 
 Section ClassicAnalysis2PeirceLaw.
 
@@ -258,7 +258,7 @@ Context {L: Language}
         {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
         {cAX: ClassicAnalysis L Gamma}.
 
-Lemma ClassicAnalysis2DoubleNegativeElimination: DoubleNegativeElimination L Gamma.
+Lemma ClassicAnalysis2DoubleNegElimination: DoubleNegElimination L Gamma.
 Proof.
   constructor.
   intros.
@@ -270,7 +270,7 @@ Qed.
 
 Lemma ClassicAnalysis2PeirceLaw: PeirceLaw L Gamma.
 Proof.
-  pose proof ClassicAnalysis2DoubleNegativeElimination.
+  pose proof ClassicAnalysis2DoubleNegElimination.
   constructor.
   intros.
   rewrite <- (__double_negp_elim x) at 3.

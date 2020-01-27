@@ -13,6 +13,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfClassicalAxioms.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
 Require Import Logic.MetaLogicInj.Syntax.
@@ -72,6 +73,7 @@ Definition how_connectives: list how_connective :=
   [ FROM_andp_impp_TO_iffp
   ; FROM_falsep_impp_TO_negp
   ; FROM_falsep_impp_TO_truep
+  ; FROM_impp_negp_TO_orp
   ; FROM_impp_TO_multi_imp
   ; FROM_andp_TO_iter_andp
   ; FROM_sepcon_TO_iter_sepcon
@@ -125,7 +127,13 @@ Definition rule_classes :=
   ; provability_OF_iter_andp
   ; provability_OF_de_morgan
   ; provability_OF_godel_dummett
-  ; provability_OF_classical_logic
+  ; provability_OF_classical
+  ; provability_OF_classical_logic_peirce
+  ; provability_OF_classical_logic_by_contra
+  ; provability_OF_classical_logic_double_negp
+  ; provability_OF_classical_logic_canalysis
+  ; provability_OF_classical_logic_EM
+  ; provability_OF_classical_logic_impp_orp
   ; provability_OF_coq_prop
   ; provability_OF_coq_prop_impp
   ; provability_OF_sepcon_rule
@@ -173,6 +181,7 @@ Definition rule_classes :=
   ; GEN_iffp_FROM_andp_impp
   ; GEN_truep_FROM_falsep_impp
   ; GEN_negp_FROM_falsep_impp
+  ; GEN_orp_FROM_impp_negp
   ; GEN_iter_andp_FROM_fold_left_andp
   ; GEN_iter_andp_FROM_fold_right_andp
   ; GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -196,6 +205,7 @@ Definition refl_classes :=
   [ RC GEN_iffp_FROM_andp_impp
   ; RC GEN_truep_FROM_falsep_impp
   ; RC GEN_negp_FROM_falsep_impp
+  ; RC GEN_orp_FROM_impp_negp
   ; RC GEN_iter_andp_FROM_fold_left_andp
   ; RC GEN_iter_sepcon_FROM_fold_left_sepcon
   ; RC GEN_derivable_FROM_provable
@@ -229,6 +239,7 @@ Definition Build_Corable := Build_Corable.
 Definition Build_IffDefinition_And_Imp := Build_IffDefinition_And_Imp.
 Definition Build_TrueDefinition_False_Imp := Build_TrueDefinition_False_Imp.
 Definition Build_NegDefinition_False_Imp := Build_NegDefinition_False_Imp.
+Definition Build_OrDefinition_Imp_Neg := Build_OrDefinition_Imp_Neg.
 Definition Build_IterAndDefinition_left := Build_IterAndDefinition_left.
 Definition Build_IterAndDefinition_right := Build_IterAndDefinition_right.
 Definition Build_IterSepconDefinition_left := Build_IterSepconDefinition_left.
@@ -248,6 +259,12 @@ Definition Build_IntuitionisticNegAxiomatization := Build_IntuitionisticNegAxiom
 Definition Build_IterAndAxiomatization_left := Build_IterAndAxiomatization_left.
 Definition Build_DeMorganAxiomatization := Build_DeMorganAxiomatization.
 Definition Build_ClassicalAxiomatization := Build_ClassicalAxiomatization.
+Definition Build_PeirceLaw := Build_PeirceLaw.
+Definition Build_ByContradiction := Build_ByContradiction.
+Definition Build_DoubleNegElimination := Build_DoubleNegElimination.
+Definition Build_ClassicAnalysis := Build_ClassicAnalysis.
+Definition Build_ExcludedMiddle := Build_ExcludedMiddle.
+Definition Build_ImplyToOr := Build_ImplyToOr.
 Definition Build_CoqPropAxiomatization := Build_CoqPropAxiomatization.
 Definition Build_CoqPropImpAxiomatization := Build_CoqPropImpAxiomatization.
 Definition Build_SepconAxiomatization := Build_SepconAxiomatization.
@@ -317,6 +334,7 @@ Context {L: Language}
         {iffpDef: IffDefinition_And_Imp L}
         {truepDef: TrueDefinition_False_Imp L}
         {negpDef: NegDefinition_False_Imp L}
+        {orpDef_impp_negp: OrDefinition_Imp_Neg L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}
@@ -337,6 +355,12 @@ Context {L: Language}
         {cpAX: ClassicalAxiomatization L GammaP}
         {dmpAX: DeMorganAxiomatization L GammaP}
         {gdpAX: GodelDummettAxiomatization L GammaP}
+        {plAX: PeirceLaw L GammaP}
+        {bcAX: ByContradiction L GammaP}
+        {double_negp_elim_AX: DoubleNegElimination L GammaP}
+        {caAX: ClassicAnalysis L GammaP}
+        {emAX: ExcludedMiddle L GammaP}
+        {impp2orpAX: ImplyToOr L GammaP}
         {coq_prop_AX: CoqPropAxiomatization L GammaP}
         {coq_prop_impp_AX: CoqPropImpAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
@@ -424,6 +448,7 @@ Definition how_connectives: list Name :=
   [ (iffp, fun x y => andp (impp x y) (impp y x))
   ; (negp, fun x => impp x falsep)
   ; (truep, impp falsep falsep)
+  ; (orp, fun x y => impp (negp x) y)
   ; (multi_imp, fun xs y => fold_right impp y xs)
   ; (iter_andp, fun xs => fold_left andp xs truep)
   ; (iter_sepcon, fun xs => fold_left sepcon xs emp)
@@ -478,6 +503,12 @@ Definition rule_instances_build :=
   ; (dmpAX, Build_DeMorganAxiomatization L minL orpL falsepL negpL GammaP weak_excluded_middle)
   ; (gdpAX, Build_GodelDummettAxiomatization L minL orpL GammaP impp_choice)
   ; (cpAX, Build_ClassicalAxiomatization L minL GammaP peirce_law)
+  ; (plAX, Build_PeirceLaw L minL GammaP peirce_law)
+  ; (bcAX, Build_ByContradiction L minL negpL GammaP by_contradiction)
+  ; (double_negp_elim_AX, Build_DoubleNegElimination L minL negpL GammaP double_negp_elim)
+  ; (caAX, Build_ClassicAnalysis L minL negpL GammaP classic_analysis)
+  ; (emAX, Build_ExcludedMiddle L orpL negpL GammaP excluded_middle)
+  ; (impp2orpAX, Build_ImplyToOr L minL orpL negpL GammaP impp2orp1)
   ; (coq_prop_AX, Build_CoqPropAxiomatization L minL coq_prop_L GammaP coq_prop_intros coq_prop_elim)
   ; (coq_prop_impp_AX, Build_CoqPropImpAxiomatization L minL coq_prop_L GammaP coq_prop_impp)
   ; (sepconAX, Build_SepconAxiomatization L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1 sepcon_mono)
@@ -523,6 +554,7 @@ Definition rule_instances_build :=
   ; (iffpDef, Build_IffDefinition_And_Imp L minL andpL iffpL andp_impp2iffp)
   ; (truepDef, Build_TrueDefinition_False_Imp L minL falsepL truepL falsep_impp2truep)
   ; (negpDef, Build_NegDefinition_False_Imp L minL falsepL negpL falsep_impp2negp)
+  ; (orpDef_impp_negp, Build_OrDefinition_Imp_Neg L minL negpL orpL impp_negp2orp)
   ; (iter_andp_DL, Build_IterAndDefinition_left L andpL truepL iter_andp_L iter_andp_def_l)
   ; (iter_andp_DR, Build_IterAndDefinition_right L andpL truepL iter_andp_L iter_andp_def_r)
   ; (iter_sepcon_DL, Build_IterSepconDefinition_left L sepconL empL iter_sepcon_L iter_sepcon_def_l)
@@ -551,6 +583,7 @@ Definition refl_instances :=
   [ (iffpDef, AndImp2Iff_Normal)
   ; (truepDef, FalseImp2True_Normal)
   ; (negpDef, FalseImp2Neg_Normal)
+  ; (orpDef_impp_negp, ImpNeg2Or_Normal)
   ; (iter_andp_DL, FoldLeftAnd2IterAnd_Normal)
   ; (iter_sepcon_DL, FoldLeftSepcon2IterSepcon_Normal)
   ; (GammaDP, Provable2Derivable_Normal)
@@ -564,6 +597,7 @@ Definition instance_transitions :=
   [ (iffpAX, IffFromDefToAX_And_Imp)
   ; (truepAX, TrueFromDefToAX_False_Imp)
   ; (inegpAX, NegFromDefToAX_False_Imp)
+  ; (orpAX, OrFromDefToAX_Imp_Neg)
   ; (iter_andp_AXL, IterAndFromDefToAX_L2L)
   ; (iter_sepcon_AXL, IterSepconFromDefToAX_L2L)
   ; (GammaPD, Axiomatization2SequentCalculus_GammaPD)
@@ -584,6 +618,14 @@ Definition instance_transitions :=
   ; (truepAX, SequentCalculus2Axiomatization_truepAX)
   ; (iffpAX, SequentCalculus2Axiomatization_iffpAX)
   ; (inegpAX, SequentCalculus2Axiomatization_inegpAX)
+  ; (cpAX, Peirce2cpAX)
+  ; (bcAX, Peirce2ByContradiction)
+  ; (double_negp_elim_AX, ByContradiction2DoubleNegElimination)
+  ; (caAX, DoubleNegElimination2ClassicAnalysis)
+  ; (plAX, ClassicAnalysis2PeirceLaw)
+  ; (impp2orpAX, ClassicAnalysis2ImplyToOr)
+  ; (emAX, ImplyToOr2ExcludedMiddle)
+  ; (caAX, ExcludedMiddle2ClassicAnalysis)
   ; (sepconAX, SepconAxiomatizationWeak2SepconAxiomatization)
   ; (sepconAX_weak, SepconAxiomatizationWeakIff2SepconAxiomatizationWeak)
   ; (sepcon_mono_AX, Adj2SepconMono)
@@ -677,10 +719,12 @@ Definition primary_rules_with_dup: list Name :=
   map_snd primary_rule_dependency_via_ins.
 
 Definition derived_rules :=
-  [ provable_impp_refl
+  [ (* provable * impp *)
+    provable_impp_refl
   ; provable_impp_refl'
   ; provable_impp_arg_switch
   ; provable_impp_trans
+    (* provable * multi_imp *)
   ; provable_multi_imp_shrink
   ; provable_multi_imp_arg_switch1
   ; provable_multi_imp_arg_switch2
@@ -689,7 +733,7 @@ Definition derived_rules :=
   ; provable_multi_imp_modus_ponens
   ; provable_multi_imp_weaken
   ; provable_impp_refl_instance
-  ; negp_fold_unfold
+    (* derivable * impp *)
   ; deduction_impp_elim
   ; deduction_theorem
   ; deduction_theorem_multi_imp
@@ -698,9 +742,12 @@ Definition derived_rules :=
   ; derivable_modus_ponens
   ; deduction_impp_trans
   ; deduction_impp_arg_switch
+    (* rewrite classes OF impp *)
   ; provable_proper_impp
   ; impp_proper_impp
   ; derivable_proper_impp
+
+  ; negp_fold_unfold
   ; deduction_negp_fold
   ; deduction_negp_unfold
 
@@ -721,7 +768,6 @@ Definition derived_rules :=
   ; solve_andp_elim2
   ; negp_fold
   ; negp_unfold
-  ; double_negp_elim
   ; double_negp
   ; contrapositiveNN
   ; contrapositiveNP
