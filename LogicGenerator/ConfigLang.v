@@ -128,6 +128,7 @@ Inductive rule_class :=
 | derivitive1_OF_truep
 | derivitive1_OF_iffp
 | derivitive1_OF_negp
+| derivitive1_OF_impp_negp
 | derivitive1_OF_sepcon
 | derivitive1_OF_wand
 | derivitive1_OF_emp
@@ -586,6 +587,7 @@ match rc1, rc2 with
 | derivitive1_OF_truep, derivitive1_OF_truep
 | derivitive1_OF_iffp, derivitive1_OF_iffp
 | derivitive1_OF_negp, derivitive1_OF_negp
+| derivitive1_OF_impp_negp, derivitive1_OF_impp_negp
 | derivitive1_OF_sepcon, derivitive1_OF_sepcon
 | derivitive1_OF_wand, derivitive1_OF_wand
 | derivitive1_OF_emp, derivitive1_OF_emp

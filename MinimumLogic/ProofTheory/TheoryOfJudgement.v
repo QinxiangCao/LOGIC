@@ -121,8 +121,7 @@ End Derivable1Rules.
 
 Section Derivable1ToProvable.
 
-Existing Instances derivable1_refl
-                   derivable1_proper_derivable1
+Existing Instances derivable1_proper_derivable1
                    impp_proper_derivable1.
 
 Context {L: Language}
@@ -144,22 +143,22 @@ Proof.
    pose proof derivable1_base y x.
    pose proof deduction_exchange _ _ _ H;clear H.
    pose proof deduction_mid (x --> y) y.
-   pose proof deduction1_trans _ _ _ H2 H.
-   pose proof deduction1_trans _ _ _ H1 H3.
+   pose proof derivable1_trans _ _ _ H2 H.
+   pose proof derivable1_trans _ _ _ H1 H3.
    auto.
   -intros.
    apply provable_derivable1.
    apply deduction_exchange.
    pose proof deduction1_axiom1 x y.
    pose proof deduction1_axiom1 (y --> x) ((x --> y --> x) --> x --> y --> x).
-   pose proof deduction1_trans _ _ _ H H0.
+   pose proof derivable1_trans _ _ _ H H0.
    auto.
   -intros.
    apply provable_derivable1.
    apply deduction_exchange.
    pose proof deduction_md x y z.
    pose proof deduction1_axiom1 ((x --> y) --> (x --> z)) (((x --> y --> z) --> (x --> y) --> x --> z) --> (x --> y --> z) --> (x --> y) --> x --> z).
-   pose proof deduction1_trans _ _ _ H H0.
+   pose proof derivable1_trans _ _ _ H H0.
    auto.
    Qed.
 
@@ -209,12 +208,12 @@ Proof.
    apply provable_derivable1.
    apply deduction_exchange.
    pose proof deduction1_axiom1 y ((x --> y) --> x --> y).
-   pose proof deduction1_trans _ _ _ H H0. auto.
+   pose proof derivable1_trans _ _ _ H H0. auto.
   -intros.
    apply provable_derivable1 in H.
    apply deduction_exchange in H.
    pose proof deduction_mid (x --> y) y.
-   pose proof deduction1_trans _ _ _ H H0. auto.
+   pose proof derivable1_trans _ _ _ H H0. auto.
   Qed.
 
 End derivable12provable.

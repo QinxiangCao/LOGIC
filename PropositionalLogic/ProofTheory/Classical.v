@@ -257,7 +257,7 @@ Proof.
     apply deduction_orp_intros1.
     rewrite deduction_theorem.
     apply deduction_impp_arg_switch.
-    apply derivable_contradiction_elim.
+    apply derivable_contradiction_elim2.
 Qed.
 
 Lemma contrapositiveNN: forall (x y: expr),
@@ -268,7 +268,7 @@ Proof.
   rewrite <- (double_negp_elim y) at 2.
   rewrite provable_derivable.
   rewrite <- deduction_theorem.
-  apply deduction_contrapositivePN.
+  apply deduction_contrapositivePN'.
   solve_assum.
 Qed.
 

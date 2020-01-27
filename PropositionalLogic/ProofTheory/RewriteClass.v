@@ -267,9 +267,9 @@ Proof.
   hnf;intros.
   apply derivable1_andp_intros.
   -pose proof derivable1_andp_elim1 x x0.
-   pose proof deduction1_trans _ _ _ H1 H. auto.
+   pose proof derivable1_trans _ _ _ H1 H. auto.
   -pose proof derivable1_andp_elim2 x x0.
-   pose proof deduction1_trans _ _ _ H1 H0. auto.
+   pose proof derivable1_trans _ _ _ H1 H0. auto.
   Qed.
 
 End andp.
@@ -285,9 +285,9 @@ Proof.
   hnf;intros.
   apply derivable1_orp_elim.
   -pose proof derivable1_orp_intros1 y y0.
-   pose proof deduction1_trans _ _ _ H H1;auto.
+   pose proof derivable1_trans _ _ _ H H1;auto.
   -pose proof derivable1_orp_intros2 y y0.
-   pose proof deduction1_trans _ _ _ H0 H1;auto.
+   pose proof derivable1_trans _ _ _ H0 H1;auto.
 Qed.
 
 End orp.
@@ -301,14 +301,9 @@ Instance negp_proper_derivable1: Proper (derivable1 --> derivable1) negp.
 Proof.
   hnf;intros.
   unfold Basics.flip in H.
-  pose proof derivable1_negp_unfold x.
-  pose proof derivable1_negp_fold y.
-  pose proof deduction1_refl FF.
-  pose proof deduction1_intros _ _ _ _ H H2.
-  pose proof deduction1_trans _ _ _ H0 H3.
-  pose proof deduction1_trans _ _ _ H4 H1.
+  apply derivable1_contrapositivePP'.
   auto.
-  Qed.
+Qed.
 
 End negp.
 

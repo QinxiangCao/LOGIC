@@ -14,18 +14,6 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 
-Class ExcludedMiddle (L: Language) {orpL: OrLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
-  __excluded_middle: forall x, |-- x || ~~ x
-}.
-
-Class ClassicAnalysis (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
-  __classic_analysis: forall x y, |-- (x --> y) --> (~~ x --> y) --> y
-}.
-
-Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) := {
-  __impp2orp1: forall x y, |-- (x --> y) --> (~~ x || y)
-}.
-
 Class PeirceLaw (L: Language) {minL: MinimumLanguage L} (Gamma: Provable L) := {
   __peirce_law: forall x y, |-- ((x --> y) --> x) --> x
 }.
@@ -38,6 +26,29 @@ Class DoubleNegativeElimination (L: Language) {minL: MinimumLanguage L} {negpL: 
   __double_negp_elim: forall x, |-- ~~ (~~ x) --> x
 }.
 
+Class ClassicAnalysis (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
+  __classic_analysis: forall x y, |-- (x --> y) --> (~~ x --> y) --> y
+}.
+
+Class ExcludedMiddle (L: Language) {orpL: OrLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
+  __excluded_middle: forall x, |-- x || ~~ x
+}.
+
+Class ImplyToOr (L: Language) {minL: MinimumLanguage L} {orpL: OrLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) := {
+  __impp2orp1: forall x y, |-- (x --> y) --> (~~ x || y)
+}.
+
+(************************************************)
+(*                                              *)
+(*                  PeirceLaw                   *)
+(*                /                             *)
+(*              |/_                             *)
+(*  ByContradiction                             *)
+(*                                              *)
+(*              DoubleNegativeElimination       *)
+(*                                              *)
+(************************************************)
+              
 Section ExcludedMiddle2ClassicAnalysis.
 
 Context {L: Language}

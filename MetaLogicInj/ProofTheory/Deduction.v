@@ -107,6 +107,7 @@ Context {L: Language}
         {orpD: OrDeduction L GammaD1}
         {falsepD: FalseDeduction L GammaD1}
         {inegpD: IntuitionisticNegDeduction L GammaD1}
+        {impp_negp_D: ImpNegDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
         {truepD: TrueDeduction L GammaD1}
         {coq_prop_D: CoqPropDeduction L GammaD1}

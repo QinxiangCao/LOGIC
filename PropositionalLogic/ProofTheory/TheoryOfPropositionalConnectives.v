@@ -165,7 +165,7 @@ Proof.
     apply deduction_orp_elim.
     - rewrite deduction_theorem.
       apply deduction_impp_arg_switch.
-      apply derivable_contradiction_elim.
+      apply derivable_contradiction_elim2.
     - rewrite <- deduction_theorem. solve_assum.
   + rewrite <- (double_negp_elim x) at 2. rewrite <- contrapositivePP.
     apply orp_intros1.
@@ -219,7 +219,11 @@ Lemma NegFromDefToAX_False_Imp
       IntuitionisticNegAxiomatization L GammaP.
 Proof.
   intros.
-  constructor; intros; rewrite falsep_impp2negp; apply(provable_impp_refl (x --> FF)).
+  constructor; intros; rewrite !falsep_impp2negp.
+  + apply provable_impp_trans.
+  + apply aux_minimun_rule01.
+    apply falsep_elim.
+  + apply aux_minimun_theorem02.
 Qed.
 
 (* (* TODO: resume this proof after reorganizing classic theory. *)

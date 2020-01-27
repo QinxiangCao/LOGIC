@@ -160,6 +160,7 @@ Definition rule_classes :=
   ; derivitive1_OF_truep
   ; derivitive1_OF_iffp
   ; derivitive1_OF_negp
+  ; derivitive1_OF_impp_negp
   ; derivitive1_OF_sepcon
   ; derivitive1_OF_wand
   ; derivitive1_OF_emp
@@ -279,6 +280,7 @@ Definition Build_FalseDeduction := Build_FalseDeduction.
 Definition Build_TrueDeduction := Build_TrueDeduction.
 Definition Build_IffDeduction := Build_IffDeduction.
 Definition Build_IntuitionisticNegDeduction := Build_IntuitionisticNegDeduction.
+Definition Build_ImpNegDeduction := Build_ImpNegDeduction.
 Definition Build_SepconDeduction := Build_SepconDeduction.
 Definition Build_WandDeduction := Build_WandDeduction.
 Definition Build_EmpDeduction := Build_EmpDeduction.
@@ -371,6 +373,7 @@ Context {L: Language}
         {truepD : TrueDeduction L GammaD1}
         {iffpD : IffDeduction L GammaD1}
         {inegpD : IntuitionisticNegDeduction L GammaD1}
+        {impp_negp_D: ImpNegDeduction L GammaD1}
         {sepconD : SepconDeduction L GammaD1}
         {wandD : WandDeduction L GammaD1}
         {empD : EmpDeduction L GammaD1}
@@ -468,9 +471,9 @@ Definition rule_instances_build :=
   ; (andpAX, Build_AndAxiomatization L minL andpL GammaP andp_intros andp_elim1 andp_elim2)
   ; (orpAX, Build_OrAxiomatization L minL orpL GammaP orp_intros1 orp_intros2 orp_elim)
   ; (falsepAX, Build_FalseAxiomatization L minL falsepL GammaP falsep_elim)
-  ; (truepAX, Build_TrueAxiomatization L minL truepL GammaP truep_intros)
+  ; (truepAX, Build_TrueAxiomatization L truepL GammaP truep_intros)
   ; (iffpAX, Build_IffAxiomatization L minL iffpL GammaP iffp_intros iffp_elim1 iffp_elim2)
-  ; (inegpAX, Build_IntuitionisticNegAxiomatization L minL falsepL negpL GammaP negp_unfold negp_fold)
+  ; (inegpAX, Build_IntuitionisticNegAxiomatization L minL negpL GammaP contrapositivePP contradiction_elim1 double_negp_intros)
   ; (iter_andp_AXL, Build_IterAndAxiomatization_left L truepL andpL iffpL iter_andp_L GammaP iter_andp_spec_left)
   ; (dmpAX, Build_DeMorganAxiomatization L minL orpL falsepL negpL GammaP weak_excluded_middle)
   ; (gdpAX, Build_GodelDummettAxiomatization L minL orpL GammaP impp_choice)
@@ -497,16 +500,17 @@ Definition rule_instances_build :=
   ; (falsepSC, Build_FalseSequentCalculus L falsepL GammaD deduction_falsep_elim)
   ; (truepSC, Build_TrueSequentCalculus L truepL GammaD deduction_truep_intros)
   ; (iffpSC, Build_IffSequentCalculus L iffpL GammaD deduction_iffp_intros deduction_iffp_elim1 deduction_iffp_elim2)
-  ; (inegpSC, Build_IntuitionisticNegSequentCalculus L falsepL negpL GammaD deduction_negp_unfold deduction_negp_fold)
+  ; (inegpSC, Build_IntuitionisticNegSequentCalculus L negpL GammaD deduction_contrapositivePP deduction_contradiction_elim deduction_double_negp_intros)
   ; (cpSC, Build_ClassicalSequentCalculus L orpL negpL GammaD derivable_excluded_middle)
-  ; (bD, Build_BasicDeduction L GammaD1 deduction1_refl deduction1_trans)
+  ; (bD, Build_BasicDeduction L GammaD1 derivable1_refl derivable1_trans)
   ; (adjD, Build_ImpAndAdjointDeduction L minL andpL GammaD1 derivable1_impp_andp_adjoint)
   ; (andpD, Build_AndDeduction L andpL GammaD1 derivable1_andp_intros derivable1_andp_elim1 derivable1_andp_elim2)
   ; (orpD, Build_OrDeduction L orpL GammaD1 derivable1_orp_intros1 derivable1_orp_intros2 derivable1_orp_elim)
   ; (falsepD, Build_FalseDeduction L falsepL GammaD1 derivable1_falsep_elim)
   ; (truepD, Build_TrueDeduction L truepL GammaD1 derivable1_truep_intros)
   ; (iffpD, Build_IffDeduction L minL iffpL GammaD1 derivable1_iffp_intros derivable1_iffp_elim1 derivable1_iffp_elim2)
-  ; (inegpD, Build_IntuitionisticNegDeduction L minL negpL falsepL GammaD1 derivable1_negp_unfold derivable1_negp_fold)
+  ; (inegpD, Build_IntuitionisticNegDeduction L negpL GammaD1 derivable1_contrapositivePP' derivable1_contradiction_elim derivable1_double_negp_intros)
+  ; (impp_negp_D, Build_ImpNegDeduction L minL negpL GammaD1 derivable1_contrapositivePP derivable1_contradiction_elim')
   ; (sepconD, Build_SepconDeduction L sepconL GammaD1 derivable1_sepcon_comm derivable1_sepcon_assoc1 derivable1_sepcon_mono)
   ; (wandD, Build_WandDeduction L sepconL wandL GammaD1 derivable1_wand_sepcon_adjoint)
   ; (empD, Build_EmpDeduction L sepconL empL GammaD1 sepcon_emp_left sepcon_emp_right)
@@ -685,6 +689,7 @@ Definition derived_rules :=
   ; provable_multi_imp_modus_ponens
   ; provable_multi_imp_weaken
   ; provable_impp_refl_instance
+  ; negp_fold_unfold
   ; deduction_impp_elim
   ; deduction_theorem
   ; deduction_theorem_multi_imp
@@ -696,6 +701,8 @@ Definition derived_rules :=
   ; provable_proper_impp
   ; impp_proper_impp
   ; derivable_proper_impp
+  ; deduction_negp_fold
+  ; deduction_negp_unfold
 
   ; demorgan_orp_negp
   ; demorgan_negp_orp
@@ -712,6 +719,8 @@ Definition derived_rules :=
   ; solve_andp_intros
   ; solve_andp_elim1
   ; solve_andp_elim2
+  ; negp_fold
+  ; negp_unfold
   ; double_negp_elim
   ; double_negp
   ; contrapositiveNN
