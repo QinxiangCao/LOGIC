@@ -74,6 +74,8 @@ Definition how_connectives: list how_connective :=
   ; FROM_falsep_impp_TO_negp
   ; FROM_falsep_impp_TO_truep
   ; FROM_impp_negp_TO_orp
+  ; FROM_negp_falsep_TO_truep
+  ; FROM_negp_truep_TO_falsep
   ; FROM_impp_TO_multi_imp
   ; FROM_andp_TO_iter_andp
   ; FROM_sepcon_TO_iter_sepcon
@@ -182,6 +184,9 @@ Definition rule_classes :=
   ; GEN_truep_FROM_falsep_impp
   ; GEN_negp_FROM_falsep_impp
   ; GEN_orp_FROM_impp_negp
+  ; GEN_truep_FROM_impp_self
+  ; GEN_truep_FROM_negp_falsep
+  ; GEN_falsep_FROM_negp_truep
   ; GEN_iter_andp_FROM_fold_left_andp
   ; GEN_iter_andp_FROM_fold_right_andp
   ; GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -206,6 +211,8 @@ Definition refl_classes :=
   ; RC GEN_truep_FROM_falsep_impp
   ; RC GEN_negp_FROM_falsep_impp
   ; RC GEN_orp_FROM_impp_negp
+  ; RC GEN_truep_FROM_negp_falsep
+  ; RC GEN_falsep_FROM_negp_truep
   ; RC GEN_iter_andp_FROM_fold_left_andp
   ; RC GEN_iter_sepcon_FROM_fold_left_sepcon
   ; RC GEN_derivable_FROM_provable
@@ -240,6 +247,9 @@ Definition Build_IffDefinition_And_Imp := Build_IffDefinition_And_Imp.
 Definition Build_TrueDefinition_False_Imp := Build_TrueDefinition_False_Imp.
 Definition Build_NegDefinition_False_Imp := Build_NegDefinition_False_Imp.
 Definition Build_OrDefinition_Imp_Neg := Build_OrDefinition_Imp_Neg.
+Definition Build_TrueDefinition_Imp_Self := Build_TrueDefinition_Imp_Self.
+Definition Build_TrueDefinition_Neg_False := Build_TrueDefinition_Neg_False.
+Definition Build_FalseDefinition_Neg_True := Build_FalseDefinition_Neg_True.
 Definition Build_IterAndDefinition_left := Build_IterAndDefinition_left.
 Definition Build_IterAndDefinition_right := Build_IterAndDefinition_right.
 Definition Build_IterSepconDefinition_left := Build_IterSepconDefinition_left.
@@ -335,6 +345,9 @@ Context {L: Language}
         {truepDef: TrueDefinition_False_Imp L}
         {negpDef: NegDefinition_False_Imp L}
         {orpDef_impp_negp: OrDefinition_Imp_Neg L}
+        {truepDef_impp_self: TrueDefinition_Imp_Self L}
+        {truepDef_negp_falsep: TrueDefinition_Neg_False L}
+        {falsepDef_negp_truep: FalseDefinition_Neg_True L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}
@@ -449,6 +462,8 @@ Definition how_connectives: list Name :=
   ; (negp, fun x => impp x falsep)
   ; (truep, impp falsep falsep)
   ; (orp, fun x y => impp (negp x) y)
+  ; (truep, negp falsep)
+  ; (falsep, negp truep)
   ; (multi_imp, fun xs y => fold_right impp y xs)
   ; (iter_andp, fun xs => fold_left andp xs truep)
   ; (iter_sepcon, fun xs => fold_left sepcon xs emp)
@@ -555,6 +570,9 @@ Definition rule_instances_build :=
   ; (truepDef, Build_TrueDefinition_False_Imp L minL falsepL truepL falsep_impp2truep)
   ; (negpDef, Build_NegDefinition_False_Imp L minL falsepL negpL falsep_impp2negp)
   ; (orpDef_impp_negp, Build_OrDefinition_Imp_Neg L minL negpL orpL impp_negp2orp)
+  ; (truepDef_impp_self, Build_TrueDefinition_Imp_Self L minL truepL impp_self2truep)
+  ; (truepDef_negp_falsep, Build_TrueDefinition_Neg_False L falsepL negpL truepL negp_falsep2truep)
+  ; (falsepDef_negp_truep, Build_FalseDefinition_Neg_True L truepL negpL falsepL negp_truep2falsep)
   ; (iter_andp_DL, Build_IterAndDefinition_left L andpL truepL iter_andp_L iter_andp_def_l)
   ; (iter_andp_DR, Build_IterAndDefinition_right L andpL truepL iter_andp_L iter_andp_def_r)
   ; (iter_sepcon_DL, Build_IterSepconDefinition_left L sepconL empL iter_sepcon_L iter_sepcon_def_l)
@@ -584,6 +602,8 @@ Definition refl_instances :=
   ; (truepDef, FalseImp2True_Normal)
   ; (negpDef, FalseImp2Neg_Normal)
   ; (orpDef_impp_negp, ImpNeg2Or_Normal)
+  ; (truepDef_negp_falsep, NegFalse2True_Normal)
+  ; (falsepDef_negp_truep, NegTrue2False_Normal)
   ; (iter_andp_DL, FoldLeftAnd2IterAnd_Normal)
   ; (iter_sepcon_DL, FoldLeftSepcon2IterSepcon_Normal)
   ; (GammaDP, Provable2Derivable_Normal)
@@ -598,6 +618,9 @@ Definition instance_transitions :=
   ; (truepAX, TrueFromDefToAX_False_Imp)
   ; (inegpAX, NegFromDefToAX_False_Imp)
   ; (orpAX, OrFromDefToAX_Imp_Neg)
+  ; (truepAX, TrueFromDefToAX_Imp_Self)
+  ; (truepAX, TrueFromDefToAX_Neg_False)
+  ; (falsepAX, FalseFromDefToAX_Neg_True)
   ; (iter_andp_AXL, IterAndFromDefToAX_L2L)
   ; (iter_sepcon_AXL, IterSepconFromDefToAX_L2L)
   ; (GammaPD, Axiomatization2SequentCalculus_GammaPD)
@@ -610,6 +633,7 @@ Definition instance_transitions :=
   ; (truepSC, Axiomatization2SequentCalculus_truepSC)
   ; (iffpSC, Axiomatization2SequentCalculus_iffpSC)
   ; (inegpSC, Axiomatization2SequentCalculus_inegpSC)
+  ; (cpSC, Axiomatization2SequentCalculus_cpSC)
   ; (GammaDP, SequentCalculus2Axiomatization_GammaDP)
   ; (minAX, SequentCalculus2Axiomatization_minAX)
   ; (andpAX, SequentCalculus2Axiomatization_andpAX)
@@ -626,6 +650,7 @@ Definition instance_transitions :=
   ; (impp2orpAX, ClassicAnalysis2ImplyToOr)
   ; (emAX, ImplyToOr2ExcludedMiddle)
   ; (caAX, ExcludedMiddle2ClassicAnalysis)
+  ; (inegpAX, ByContradiction2IntuitionisticNegAxiomatization)
   ; (sepconAX, SepconAxiomatizationWeak2SepconAxiomatization)
   ; (sepconAX_weak, SepconAxiomatizationWeakIff2SepconAxiomatizationWeak)
   ; (sepcon_mono_AX, Adj2SepconMono)

@@ -366,8 +366,6 @@ lgen_demo_bedrock2:
 	@cp ExportSolvers/SepApply/SepApply.v ../bedrock2/bedrock2/src/exportLogic/
 	@echo COQC SepApply.v [in-bedrock2-folder]
 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
-#	@echo COQC LogicGenerator/demo6/test.v
-#	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
@@ -376,7 +374,7 @@ depend:
 	@$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
 
 clean:
-	@rm */*.vo */*.glob */*/*.vo */*/*.glob
+	@rm */*.vo */*.glob */*/*.vo */*/*.glob PropositionalLogic/DeepEmbedded/interface_Mendelson.v
 
 .DEFAULT_GOAL := all
 

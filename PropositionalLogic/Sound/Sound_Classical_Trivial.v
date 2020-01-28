@@ -105,6 +105,15 @@ Proof.
   tauto.
 Qed.
 
+Lemma sound_by_contradiction:
+  forall x y m,
+    m |= (~~ x --> y) --> (~~ x --> ~~ y) --> x.
+Proof.
+  intros.
+  rewrite ! sat_impp, ! sat_negp.
+  tauto.
+Qed.
+
 Lemma sound_peirce_law:
   forall x y m,
     m |= ((x --> y) --> x) --> x.

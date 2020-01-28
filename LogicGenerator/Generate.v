@@ -75,6 +75,9 @@ Context {L: Language}
         {truepDef: TrueDefinition_False_Imp L}
         {negpDef: NegDefinition_False_Imp L}
         {orpDef_impp_negp: OrDefinition_Imp_Neg L}
+        {truepDef_impp_self: TrueDefinition_Imp_Self L}
+        {truepDef_negp_falsep: TrueDefinition_Neg_False L}
+        {falsepDef_negp_truep: FalseDefinition_Neg_True L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}

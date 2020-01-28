@@ -133,8 +133,8 @@ Proof.
     apply H0; auto.
     hnf; auto.
   }
-  apply (@general_completeness PropositionalLanguage.L _ _ _ _ _ _ _ ProofTheories.ClassicalPropositionalLogic.GD _ _ _ _
-           _ _ _ _ _ _ _ _ TrivialSemantics.SM _ _ _ rel LIN_CONSI TRUTH); auto.
+  apply (@general_completeness PropositionalLanguage.L _ _ _ ProofTheories.ClassicalPropositionalLogic.GD _ _ _ _
+           _ _ _ _ TrivialSemantics.SM _ _ _ rel LIN_CONSI TRUTH); auto.
 Qed.
 
 End Complete.

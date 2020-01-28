@@ -193,7 +193,6 @@ Context {L: Language}
         {negpL: NegLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
         {bcAX: ByContradiction L Gamma}.
 
 Lemma ByContradiction2DoubleNegElimination:
@@ -201,12 +200,10 @@ Lemma ByContradiction2DoubleNegElimination:
 Proof.
   constructor.
   intros.
-  pose proof __by_contradiction x (~~ (~~ x)).
-  pose proof double_negp_intros (~~ x).
-  pose proof axiom1 (~~ (~~ x)) (~~ x).
-  rewrite <- H1 in H.
-  rewrite -> (provable_impp_arg_switch (~~ (~~ x)) (~~ x --> ~~ (~~ (~~ x))) x) in H.
-  rewrite H in H0. apply H0.
+  pose proof __by_contradiction x (~~ x).
+  pose proof modus_ponens _ _ H (provable_impp_refl _).
+  rewrite <- H0 at 2.
+  apply axiom1.
 Qed.
 
 End ByContradiction2DoubleNegElimination.
@@ -287,3 +284,43 @@ Proof.
 Qed.
 
 End ClassicAnalysis2PeirceLaw.
+
+(***************************************)
+(*   Resuming Axioms of Negation       *)
+(***************************************)
+
+Section ByContradiction2IntuitionisticNegAxiomatization.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {negpL: NegLanguage L}
+        {Gamma: Provable L}
+        {minAX: MinimumAxiomatization L Gamma}
+        {bcAX: ByContradiction L Gamma}.
+
+Lemma ByContradiction2IntuitionisticNegAxiomatization:
+  IntuitionisticNegAxiomatization L Gamma.
+Proof.
+  pose proof ByContradiction2DoubleNegElimination as double_negp_elim_AX.
+  constructor.
+  + intros.
+    pose proof __by_contradiction (~~ y) x.
+    rewrite <- (axiom1 (~~ x) (~~ (~~ y))) in H.
+    rewrite <- H.
+    rewrite <- provable_impp_trans.
+    apply __double_negp_elim.
+  + intros.
+    rewrite (axiom1 x (~~ y)) at 2.
+    rewrite (axiom1 (~~ x) (~~ y)).
+    rewrite <- provable_impp_arg_switch.
+    apply __by_contradiction.
+  + intros.
+    pose proof __by_contradiction (~~ (~~ x)) x.
+    rewrite <- (axiom1 x (~~ (~~ (~~ x)))) in H.
+    rewrite provable_impp_arg_switch in H.
+    eapply modus_ponens; [exact H |].
+    apply __double_negp_elim.
+Qed.
+
+End ByContradiction2IntuitionisticNegAxiomatization.
+
