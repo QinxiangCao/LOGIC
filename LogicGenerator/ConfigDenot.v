@@ -129,7 +129,7 @@ Definition rule_classes :=
   ; provability_OF_iter_andp
   ; provability_OF_de_morgan
   ; provability_OF_godel_dummett
-  ; provability_OF_classical
+  ; provability_OF_classical_logic
   ; provability_OF_classical_logic_peirce
   ; provability_OF_classical_logic_by_contra
   ; provability_OF_classical_logic_double_negp

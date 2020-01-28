@@ -320,13 +320,13 @@ Context {L: Language}
 Section andp.
 
 Context {andpL: AndLanguage L}
-        {andpE: EquivAndp L GammaE}.
+        {andpE: AndLogicEquiv L GammaE}.
 
 Instance andp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) andp.
 Proof.
   hnf;intros.
   hnf;intros.
-  apply equiv_andp_congr;[auto|auto].
+  apply logic_equiv_andp_congr;[auto|auto].
   Qed.
 
 End andp.
@@ -334,13 +334,13 @@ End andp.
 Section orp.
 
 Context {orpL: OrLanguage L}
-        {orpE: EquivOrp L GammaE}.
+        {orpE: OrLogicEquiv L GammaE}.
 
 Instance orp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) orp.
 Proof.
   hnf;intros.
   hnf;intros.
-  apply equiv_orp_congr;[auto|auto].
+  apply logic_equiv_orp_congr;[auto|auto].
   Qed.
 
 End orp.
@@ -348,12 +348,12 @@ End orp.
 Section negp.
 
 Context {negpL: NegLanguage L}
-        {negpE: EquivNegp L GammaE}.
+        {negpE: NegLogicEquiv L GammaE}.
 
 Instance negp_proper_equiv: Proper (logic_equiv  ==> logic_equiv ) negp.
 Proof.
   hnf;intros.
-  apply equiv_negp_intros;auto.
+  apply logic_equiv_negp_intros;auto.
   Qed.
 
 End negp.
@@ -362,21 +362,21 @@ Section iffp.
 
 Context {iffpL: IffLanguage L}
         {andpL: AndLanguage L}
-        {andpE: EquivAndp L GammaE}
-        {iffpE: EquivIffp L GammaE}.
+        {andpE: AndLogicEquiv L GammaE}
+        {iffpE: IffLogicEquiv L GammaE}.
 
 Instance iffp_proper_equiv: Proper (logic_equiv  ==> logic_equiv ==> logic_equiv) iffp.
 Proof.
   hnf;intros.
   hnf;intros.
-  pose proof equiv_iffp_intros x x0.
-  pose proof equiv_iffp_intros y y0.
+  pose proof logic_equiv_iffp_intros x x0.
+  pose proof logic_equiv_iffp_intros y y0.
   apply logic_equiv_trans with ((x --> x0) && (x0 --> x)).
   apply logic_equiv_symm;auto.
   apply logic_equiv_symm.
   apply logic_equiv_trans with ((y --> y0) && (y0 --> y)).
   apply logic_equiv_symm;auto.
-  apply equiv_andp_congr.
+  apply logic_equiv_andp_congr.
   -apply equiv_impp.
    apply logic_equiv_symm;auto.
    apply logic_equiv_symm;auto.

@@ -129,51 +129,51 @@ Class IffDeduction (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L
   derivable1_iffp_elim2: forall x y, derivable1 (x <--> y) (y --> x)
 }.
 
-Class EquivAndp (L:Language) {andpL: AndLanguage L} (GammaE:LogicEquiv L) := {
-  equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
+Class AndLogicEquiv (L:Language) {andpL: AndLanguage L} (GammaE:LogicEquiv L) := {
+  logic_equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 && y1) --||-- (x2 && y2);
-  equiv_andp_comm:forall x y,x && y --||-- y && x;
-  equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z)
+  logic_equiv_andp_comm:forall x y,x && y --||-- y && x;
+  logic_equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z)
 }.
 
-Class EquivOrp (L:Language) {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
+Class OrLogicEquiv (L:Language) {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
   (x1 || y1) --||-- (x2 || y2);
-  equiv_orp_comm:forall x y,x || y --||-- y || x;
-  equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z)
+  logic_equiv_orp_comm:forall x y,x || y --||-- y || x;
+  logic_equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z)
 }.
 
-Class EquivDistr (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
-  equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z)
+Class DistrLogicEquiv (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
+  logic_equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z)
 }.
 
-Class EquivDeMorgen (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} {negp: NegLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_DeMorgen: forall x y,~~ (x || y) --||-- (~~ x) && (~~y)
+Class DeMorgenLogicEquiv (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} {negp: NegLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_DeMorgen: forall x y,~~ (x || y) --||-- (~~ x) && (~~y)
 }.
 
-Class EquivFalsepAndp (L:Language) {andpL: AndLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
-  equiv_false_andp:forall x,x && FF --||-- FF
+Class FalseAndLogicEquiv (L:Language) {andpL: AndLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
+  logic_equiv_false_andp:forall x,x && FF --||-- FF
 }.
 
-Class EquivFalsepOrp (L:Language) {orpL: OrLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
-  equiv_falsep_orp:forall x,x || FF --||-- x
+Class FalseOrLogicEquiv (L:Language) {orpL: OrLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
+  logic_equiv_falsep_orp:forall x,x || FF --||-- x
 }.
 
-Class EquiveTruepAndp (L:Language) {andpL: AndLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_truep_andp:forall x, x && TT --||-- x
+Class TrueAndLogicEquiv (L:Language) {andpL: AndLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_truep_andp:forall x, x && TT --||-- x
 }.
 
-Class EquiveTruepOrp (L:Language) {orpL: OrLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_truep_orp:forall x, x || TT --||-- TT
+Class TrueOrEquiv (L:Language) {orpL: OrLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_truep_orp:forall x, x || TT --||-- TT
 }.
 
-Class EquivIffp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {iffpL: IffLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_iffp_intros: forall x y, (x --> y) && (y --> x) --||-- (x <--> y);
+Class IffLogicEquiv (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {iffpL: IffLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_iffp_intros: forall x y, (x --> y) && (y --> x) --||-- (x <--> y);
 }.
 
-Class EquivNegp (L:Language) {negpL: NegLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_negp_intros:forall x y, x --||-- y -> ~~ x --||-- ~~ y
+Class NegLogicEquiv (L:Language) {negpL: NegLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_negp_intros:forall x y, x --||-- y -> ~~ x --||-- ~~ y
 }.
 
 Section DerivableRulesFromSequentCalculus1.
