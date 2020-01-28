@@ -36,20 +36,12 @@ Section DerivableRulesFromAxiomatization0.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
         {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpAX: AndAxiomatization L Gamma}
         {orpAX: OrAxiomatization L Gamma}
-        {falsepAX: FalseAxiomatization L Gamma}
         {inegpAX: IntuitionisticNegAxiomatization L Gamma}
-        {iffpAX: IffAxiomatization L Gamma}
-        {truepAX: TrueAxiomatization L Gamma}
         {cpAX: ClassicalAxiomatization L Gamma}.
 
 Lemma by_contradiction: forall x y, |-- (~~ x --> y) --> (~~ x --> ~~ y) --> x.
@@ -63,46 +55,52 @@ Lemma double_negp_elim: forall x, |-- ~~ (~~ x) --> x.
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
+  pose proof ByContradiction2DoubleNegElimination.
   apply __double_negp_elim.
-Qed.
-
-Lemma excluded_middle: forall x, |-- x || ~~ x.
-Proof.
-  pose proof Build_PeirceLaw _ _ _ peirce_law.
-  pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ExcludedMiddle.
-  apply __excluded_middle.
 Qed.
 
 Lemma classic_analysis: forall x y, |-- (x --> y) --> (~~ x --> y) --> y.
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ExcludedMiddle.
-  pose proof ExcludedMiddle2ClassicAnalysis.
+  pose proof ByContradiction2DoubleNegElimination.
+  pose proof DoubleNegElimination2ClassicAnalysis.
   apply __classic_analysis.
+Qed.
+
+Lemma excluded_middle: forall x, |-- x || ~~ x.
+Proof.
+  pose proof Build_PeirceLaw _ _ _ peirce_law.
+  pose proof Peirce2ByContradiction.
+  pose proof ByContradiction2DoubleNegElimination.
+  pose proof DoubleNegElimination2ClassicAnalysis.
+  pose proof ClassicAnalysis2ExcludedMiddle.
+  apply __excluded_middle.
 Qed.
 
 Lemma impp2orp1: forall x y, |-- (x --> y) --> (~~ x || y).
 Proof.
   pose proof Build_PeirceLaw _ _ _ peirce_law.
   pose proof Peirce2ByContradiction.
-  pose proof ByContradiction2DoubleNegativeElimination.
-  pose proof DoubleNegativeElimination2ExcludedMiddle.
-  pose proof ExcludedMiddle2ClassicAnalysis.
+  pose proof ByContradiction2DoubleNegElimination.
+  pose proof DoubleNegElimination2ClassicAnalysis.
   pose proof ClassicAnalysis2ImplyToOr.
   apply __impp2orp1.
 Qed.
 
-Lemma impp2orp: forall x y, |-- (x --> y) <--> (~~ x || y).
+Lemma impp2orp {iffpL: IffLanguage L} {iffpAX: IffAxiomatization L Gamma}:
+  forall x y, |-- (x --> y) <--> (~~ x || y).
 Proof.
   intros.
   apply solve_iffp_intros.
   + apply impp2orp1.
   + apply impp2orp2.
+Qed.
+
+Lemma Peirce2cpAX {plAX: PeirceLaw L Gamma}: ClassicalAxiomatization L Gamma.
+Proof.
+  constructor.
+  apply __peirce_law.
 Qed.
 
 End DerivableRulesFromAxiomatization0.
@@ -127,7 +125,7 @@ Context {L: Language}
         {iffpAX: IffAxiomatization L GammaP}
         {truepAX: TrueAxiomatization L GammaP}
         {cpAX: ClassicalAxiomatization L GammaP}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -165,7 +163,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -194,8 +192,7 @@ Proof.
   }
   pose proof Build_ExcludedMiddle _ _ _ _ H.
   pose proof ExcludedMiddle2ClassicAnalysis.
-  pose proof ClassicAnalysis2ImplyToOr.
-  pose proof ImplyToOr2PeirceLaw.
+  pose proof ClassicAnalysis2PeirceLaw.
   apply __peirce_law.
 Qed.
 
@@ -209,24 +206,16 @@ Section DerivableRulesFromAxiomatization1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
         {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {andpAX: AndAxiomatization L Gamma}
         {orpAX: OrAxiomatization L Gamma}
-        {falsepAX: FalseAxiomatization L Gamma}
         {inegpAX: IntuitionisticNegAxiomatization L Gamma}
-        {iffpAX: IffAxiomatization L Gamma}
-        {truepAX: TrueAxiomatization L Gamma}
         {cpAX: ClassicalAxiomatization L Gamma}.
 
-Lemma double_negp: forall (x: expr),
-  |-- ~~ (~~ x) <--> x.
+Lemma double_negp {iffpL: IffLanguage L} {iffpAX: IffAxiomatization L Gamma}:
+  forall (x: expr), |-- ~~ (~~ x) <--> x.
 Proof.
   AddSequentCalculus.
   intros.
@@ -239,7 +228,7 @@ Qed.
 Instance Classical2GodelDummett: GodelDummettAxiomatization L Gamma.
 Proof.
   constructor.
-  clear - orpAX inegpAX cpAX minAX falsepAX.
+  clear - orpAX inegpAX cpAX minAX.
   AddSequentCalculus.
   intros.
   rewrite provable_derivable.
@@ -257,7 +246,7 @@ Proof.
     apply deduction_orp_intros1.
     rewrite deduction_theorem.
     apply deduction_impp_arg_switch.
-    apply derivable_contradiction_elim.
+    apply derivable_contradiction_elim2.
 Qed.
 
 Lemma contrapositiveNN: forall (x y: expr),
@@ -268,7 +257,7 @@ Proof.
   rewrite <- (double_negp_elim y) at 2.
   rewrite provable_derivable.
   rewrite <- deduction_theorem.
-  apply deduction_contrapositivePN.
+  apply deduction_contrapositivePN'.
   solve_assum.
 Qed.
 
@@ -282,27 +271,39 @@ Proof.
   apply provable_impp_refl.
 Qed.
 
+Lemma solve_classic: forall x y: expr,
+  |-- x --> y ->
+  |-- ~~ x --> y ->
+  |-- y.
+Proof.
+  intros.
+  eapply modus_ponens; [| apply (excluded_middle x)].
+  apply solve_orp_impp; auto.
+Qed.
+
+Lemma provable_impp_negp: forall x,
+  |-- (x --> ~~ x) --> ~~x.
+Proof.
+  intros.
+  pose proof aux_minimun_theorem02 (~~ x --> ~~ x) (~~ x).
+  pose proof modus_ponens _ _ H (provable_impp_refl (~~ x)).
+  rewrite <- H0 at 2; clear H H0.
+  apply classic_analysis.
+Qed.
+
 End DerivableRulesFromAxiomatization1.
 
 Section DerivableRulesFromSequentCalculus.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
         {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {andpSC: AndSequentCalculus L Gamma}
         {orpSC: OrSequentCalculus L Gamma}
-        {falsepSC: FalseSequentCalculus L Gamma}
         {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
-        {iffpSC: IffSequentCalculus L Gamma}
-        {truepSC: TrueSequentCalculus L Gamma}
         {cpSC: ClassicalSequentCalculus L Gamma}.
 
 Lemma deduction_contrapositiveNN: forall Phi (x y: expr),
@@ -325,37 +326,15 @@ Proof.
   auto.
 Qed.
 
-End DerivableRulesFromSequentCalculus.
-
-Section DerivableRulesFromAxiomatization2.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
-        {andpAX: AndAxiomatization L Gamma}
-        {orpAX: OrAxiomatization L Gamma}
-        {falsepAX: FalseAxiomatization L Gamma}
-        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
-        {iffpAX: IffAxiomatization L Gamma}
-        {truepAX: TrueAxiomatization L Gamma}
-        {cpAX: ClassicalAxiomatization L Gamma}.
-
-Lemma solve_classic: forall x y: expr,
-  |-- x --> y ->
-  |-- ~~ x --> y ->
-  |-- y.
+Lemma deduction_negp_right: forall Phi x,
+  Phi;; x |-- ~~ x ->
+  Phi |-- ~~ x.
 Proof.
+  AddAxiomatization.
   intros.
-  eapply modus_ponens; [| apply (excluded_middle x)].
-  apply solve_orp_impp; auto.
+  rewrite <- provable_impp_negp.
+  rewrite deduction_theorem in H.
+  auto.
 Qed.
 
-End DerivableRulesFromAxiomatization2.
-
+End DerivableRulesFromSequentCalculus.

@@ -30,6 +30,7 @@ Context {L: Language}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
         {orpGamma: OrAxiomatization L Gamma}
+        {falsepGamma: FalseAxiomatization L Gamma}
         {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
         {gdpAX: GodelDummettAxiomatization L Gamma}.
 (* TODO: delete it *)

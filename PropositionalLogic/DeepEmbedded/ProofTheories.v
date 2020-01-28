@@ -42,7 +42,7 @@ Instance GP: Provable PropositionalLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable PropositionalLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization PropositionalLanguage.L GP GD :=
+Instance GammaDP: DerivableProvable PropositionalLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization PropositionalLanguage.L GP.
@@ -111,7 +111,7 @@ Instance GP: Provable  PropositionalLanguage.L :=
 
 Instance GD: Derivable PropositionalLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization PropositionalLanguage.L GP GD :=
+Instance GammaDP: DerivableProvable PropositionalLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization PropositionalLanguage.L GP.
@@ -189,7 +189,7 @@ Instance GP: Provable PropositionalLanguage.L :=
 
 Instance GD: Derivable PropositionalLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization PropositionalLanguage.L GP GD :=
+Instance GammaDP: DerivableProvable PropositionalLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization PropositionalLanguage.L GP.
@@ -269,7 +269,7 @@ Instance GP: Provable PropositionalLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable PropositionalLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization PropositionalLanguage.L GP GD :=
+Instance GammaDP: DerivableProvable PropositionalLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization PropositionalLanguage.L GP.

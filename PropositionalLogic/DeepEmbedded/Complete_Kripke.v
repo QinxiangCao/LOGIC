@@ -86,14 +86,14 @@ Proof. solve_at_least. Qed.
 Lemma AL_CONSI: at_least consistent cP.
 Proof. solve_at_least. Qed.
 
-Context {SC: NormalSequentCalculus _ GammaP GammaD}
+Context {GammaPD: ProvableDerivable _ GammaP GammaD}
         {bSC: BasicSequentCalculus _ GammaD}
         {fwSC: FiniteWitnessedSequentCalculus _ GammaD}
         {minSC: MinimumSequentCalculus _ GammaD}
         {andpSC: AndSequentCalculus _ GammaD}
         {orpSC: OrSequentCalculus _ GammaD}
         {falsepSC: FalseSequentCalculus _ GammaD}
-        {AX: NormalAxiomatization _ GammaP GammaD}
+        {GammaDP: DerivableProvable _ GammaP GammaD}
         {minAX: MinimumAxiomatization _ GammaP}
         {andpAX: AndAxiomatization _ GammaP}
         {orpAX: OrAxiomatization _ GammaP}
@@ -151,13 +151,13 @@ Section Intuitionistic_Completeness.
 
 Existing Instances ProofTheories.IntuitionisticPropositionalLogic.GP
                    ProofTheories.IntuitionisticPropositionalLogic.GD
-                   ProofTheories.IntuitionisticPropositionalLogic.AX
+                   ProofTheories.IntuitionisticPropositionalLogic.GammaDP
                    ProofTheories.IntuitionisticPropositionalLogic.minAX
                    ProofTheories.IntuitionisticPropositionalLogic.andpAX
                    ProofTheories.IntuitionisticPropositionalLogic.orpAX
                    ProofTheories.IntuitionisticPropositionalLogic.falsepAX.
 
-Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC.
+Existing Instances Axiomatization2SequentCalculus_GammaPD Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC.
 
 Import Logic.PropositionalLogic.DeepEmbedded.KripkeSemantics.
 
@@ -180,7 +180,7 @@ Section DeMorgan_Completeness.
 
 Existing Instances ProofTheories.DeMorganPropositionalLogic.GP
                    ProofTheories.DeMorganPropositionalLogic.GD
-                   ProofTheories.DeMorganPropositionalLogic.AX
+                   ProofTheories.DeMorganPropositionalLogic.GammaDP
                    ProofTheories.DeMorganPropositionalLogic.minAX
                    ProofTheories.DeMorganPropositionalLogic.andpAX
                    ProofTheories.DeMorganPropositionalLogic.orpAX
@@ -188,7 +188,7 @@ Existing Instances ProofTheories.DeMorganPropositionalLogic.GP
                    ProofTheories.DeMorganPropositionalLogic.inegpAX
                    ProofTheories.DeMorganPropositionalLogic.dmpAX.
 
-Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC.
+Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_GammaPD Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC.
 
 Import Logic.PropositionalLogic.DeepEmbedded.KripkeSemantics.
 
@@ -212,7 +212,7 @@ Section GodelDummett_Completeness.
 
 Existing Instances ProofTheories.GodelDummettPropositionalLogic.GP
                    ProofTheories.GodelDummettPropositionalLogic.GD
-                   ProofTheories.GodelDummettPropositionalLogic.AX
+                   ProofTheories.GodelDummettPropositionalLogic.GammaDP
                    ProofTheories.GodelDummettPropositionalLogic.minAX
                    ProofTheories.GodelDummettPropositionalLogic.andpAX
                    ProofTheories.GodelDummettPropositionalLogic.orpAX
@@ -221,7 +221,7 @@ Existing Instances ProofTheories.GodelDummettPropositionalLogic.GP
                    ProofTheories.GodelDummettPropositionalLogic.gdpAX
                    ProofTheories.GodelDummettPropositionalLogic.dmpAX.
 
-Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC.
+Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_GammaPD Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC.
 
 Import Logic.PropositionalLogic.DeepEmbedded.KripkeSemantics.
 
@@ -247,7 +247,7 @@ Import Logic.PropositionalLogic.DeepEmbedded.KripkeSemantics.
 
 Existing Instances ProofTheories.ClassicalPropositionalLogic.GP
                    ProofTheories.ClassicalPropositionalLogic.GD
-                   ProofTheories.ClassicalPropositionalLogic.AX
+                   ProofTheories.ClassicalPropositionalLogic.GammaDP
                    ProofTheories.ClassicalPropositionalLogic.minAX
                    ProofTheories.ClassicalPropositionalLogic.andpAX
                    ProofTheories.ClassicalPropositionalLogic.orpAX
@@ -257,7 +257,7 @@ Existing Instances ProofTheories.ClassicalPropositionalLogic.GP
                    ProofTheories.ClassicalPropositionalLogic.dmpAX
                    ProofTheories.ClassicalPropositionalLogic.cpAX.
 
-Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC Axiomatization2SequentCalculus_cpSC.
+Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_GammaPD Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC Axiomatization2SequentCalculus_cpSC.
 
 Theorem complete_Classical_Kripke_identity:
   strongly_complete ProofTheories.ClassicalPropositionalLogic.GD KripkeSemantics.SM

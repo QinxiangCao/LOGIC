@@ -94,6 +94,7 @@ PropositionalLogic_DeepEmbedded_FILES = \
   PropositionalLanguage.v ProofTheories.v \
   KripkeSemantics.v TrivialSemantics.v \
   Soundness.v Complete_Kripke.v Complete_Classical_Trivial.v \
+  configuration_Mendelson.v interface_Mendelson.v \
   Deep.v Solver.v
 
 PropositionalLogic_ShallowEmbedded_FILES = \
@@ -295,6 +296,9 @@ LogicGenerator: \
 all: \
   $(FILES:%.v=%.vo)
 
+PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo
+	./logic_gen.sh PropositionalLogic/DeepEmbedded/configuration_Mendelson.v PropositionalLogic/DeepEmbedded/interface_Mendelson.v
+
 lgen_demo_1:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
 	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v LogicGenerator/demo/export_lib_1.v
@@ -362,8 +366,6 @@ lgen_demo_bedrock2:
 	@cp ExportSolvers/SepApply/SepApply.v ../bedrock2/bedrock2/src/exportLogic/
 	@echo COQC SepApply.v [in-bedrock2-folder]
 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
-#	@echo COQC LogicGenerator/demo6/test.v
-#	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test.v
 
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
@@ -372,7 +374,7 @@ depend:
 	@$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
 
 clean:
-	@rm */*.vo */*.glob */*/*.vo */*/*.glob
+	@rm */*.vo */*.glob */*/*.vo */*/*.glob PropositionalLogic/DeepEmbedded/interface_Mendelson.v
 
 .DEFAULT_GOAL := all
 

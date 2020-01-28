@@ -115,7 +115,7 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {GammaP: Provable L}
         {sepconL: SepconLanguage L}
-        {ND: NormalDeduction L GammaP GammaD1}.
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}.
 
 Lemma SepconDeduction2SepconAxiomatization_sepconAX
       {sepconD: SepconDeduction L GammaD1}:
@@ -189,7 +189,7 @@ Context {L: Language}
         {empL: EmpLanguage L}
         {GammaD1: Derivable1 L}
         {GammaP: Provable L}
-        {ND: NormalDeduction L GammaP GammaD1}.
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}.
 
 Lemma EmpDeduction2EmpAxiomatization_empAX:
 EmpDeduction L GammaD1 -> EmpAxiomatization L GammaP.
@@ -240,7 +240,7 @@ Context {L: Language}
         {wandL: WandLanguage L}
         {GammaD1: Derivable1 L}
         {GammaP: Provable L}
-        {ND: NormalDeduction L GammaP GammaD1}.
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}.
 
 Lemma WandDeduction2WandAxiomatization_wandAX
       {wandD: WandDeduction L GammaD1}:
@@ -271,7 +271,7 @@ Context {L: Language}
         {sepconL: SepconLanguage L}
         {GammaD1: Derivable1 L}
         {GammaP: Provable L}
-        {ND: NormalDeduction L GammaP GammaD1}.
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}.
 
 Lemma Axiomatization2Deduction_sepconD
       {sepconAX: SepconAxiomatization L GammaP}:
@@ -343,7 +343,7 @@ Context {L: Language}
         {sepconL: SepconLanguage L}
         {GammaP: Provable L}
         {GammaE: LogicEquiv L}
-        {NE: NormalEquiv L GammaP GammaE}
+        {GammEP: EquivProvable L GammaP GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}.
 
@@ -351,7 +351,7 @@ Lemma sepcon_assoc_equiv:
   forall x y z, x * (y * z) --||-- (x * y) * z.
 Proof.
   intros.
-  apply equiv_provable. split.
+  apply logic_equiv_provable. split.
   + apply sepcon_assoc1.
   + apply sepcon_assoc2.
 Qed.
@@ -362,7 +362,7 @@ Context {empL: EmpLanguage L}
 Lemma sepcon_emp_equiv: forall x, x * emp --||-- x.
 Proof.
   intros.
-  apply equiv_provable. split.
+  apply logic_equiv_provable. split.
   + apply sepcon_emp1.
   + apply sepcon_emp2.
 Qed.
@@ -377,7 +377,7 @@ Context {L: Language}
         {sepconL: SepconLanguage L}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}
         {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
@@ -388,7 +388,7 @@ Lemma sepcon_comm_equiv:
   forall (x y: expr), x * y --||-- y * x.
 Proof.
   intros.
-  apply equiv_derivable1. split.
+  apply logic_equiv_derivable1. split.
   -apply derivable1_sepcon_comm.
   -apply derivable1_sepcon_comm.
   Qed.
@@ -415,7 +415,7 @@ Proof.
   AddAxiomatization.
   AddConnective_iffp.
   intros.
-  apply equiv_derivable1.
+  apply logic_equiv_derivable1.
   pose proof sepcon_orp_distr_r x y z.
   unfold iffp in H.
   pose proof solve_iffp_elim1 _ _ H.
@@ -434,7 +434,7 @@ Proof.
   unfold iffp in H.
   pose proof solve_iffp_elim1 _ _ H.
   pose proof solve_iffp_elim2 _ _ H.
-  apply equiv_derivable1. rewrite !derivable1_provable.
+  apply logic_equiv_derivable1. rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
 
@@ -448,7 +448,7 @@ Proof.
   unfold iffp in H.
   pose proof solve_iffp_elim1 _ _ H.
   pose proof solve_iffp_elim2 _ _ H.
-  apply equiv_derivable1;rewrite !derivable1_provable.
+  apply logic_equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
 
@@ -462,7 +462,7 @@ Proof.
   unfold iffp in H.
   pose proof solve_iffp_elim1 _ _ H.
   pose proof solve_iffp_elim2 _ _ H.
-  apply equiv_derivable1;rewrite !derivable1_provable.
+  apply logic_equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
 (*
@@ -565,7 +565,7 @@ Proof.
   Qed.
 
 Context {GammaE: LogicEquiv L}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}.
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
 
 Lemma wand_andp_equiv: forall x y z: expr,
   x -* y && z --||-- (x -* y) && (x -* z).
@@ -577,7 +577,7 @@ Proof.
   unfold iffp in H.
   pose proof solve_iffp_elim1 _ _ H.
   pose proof solve_iffp_elim2 _ _ H.
-  apply equiv_derivable1;rewrite !derivable1_provable.
+  apply logic_equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
 
@@ -590,7 +590,7 @@ Proof.
   pose proof orp_wand x y z.
   pose proof solve_iffp_elim1 _ _ H.
   pose proof solve_iffp_elim2 _ _ H.
-  apply equiv_derivable1;rewrite !derivable1_provable.
+  apply logic_equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
   Qed.
 
@@ -653,7 +653,7 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {GammaP: Provable L}
         {sepconDw: SepconDeduction_weak L GammaD1}
-        {ND: NormalDeduction L GammaP GammaD1}.
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}.
 
 Lemma SepconDeduction_weak2SepconAxiomatization_weak: SepconAxiomatization_weak L GammaP.
 Proof.
@@ -681,13 +681,13 @@ Context {L: Language}
         {GammaE: LogicEquiv L}
         {GammaP: Provable L}
         {GammaD1: Derivable1 L}
-        {D2P: Provable_Derivable1 L GammaP GammaD1}
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
         {iffpD: IffDeduction L GammaD1}
         {sepconE: SepconLogicEquiv_weak_iffp L GammaE}
         {minD:MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}
-        {ND: NormalDeduction L GammaP GammaD1}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}.
+        {bD: BasicDeduction L GammaD1}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
 
 Lemma SepconLogicEquiv_weak_iffp2SepconAxiomatization_weak_iffp:
   SepconAxiomatization_weak_iffp L GammaP.
@@ -697,12 +697,12 @@ Proof.
   constructor.
   - intros.
     pose proof __sepcon_comm x y.
-    apply equiv_derivable1 in H; destruct H.
+    apply logic_equiv_derivable1 in H; destruct H.
     rewrite derivable1_provable in H, H0.
     apply solve_iffp_intros; auto.
   - intros.
     pose proof __sepcon_assoc x y z.
-    apply equiv_derivable1 in H; destruct H.
+    apply logic_equiv_derivable1 in H; destruct H.
     rewrite derivable1_provable in H, H0.
     apply solve_iffp_intros; auto.
 Qed.
@@ -723,13 +723,13 @@ Context {L: Language}
         {GammaE: LogicEquiv L}
         {GammaP: Provable L}
         {GammaD1: Derivable1 L}
-        {D2P: Provable_Derivable1 L GammaP GammaD1}
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
         {empE: EmpLogicEquiv_iffp L GammaE}
         {minD:MinimumDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}
-        {ND: NormalDeduction L GammaP GammaD1}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}.
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
 
 Lemma EmpLogicEquiv_iffp2EmpAxiomatization_iffp:
 EmpAxiomatization_iffp L GammaP.
@@ -739,7 +739,7 @@ Proof.
   constructor.
   intros.
   pose proof __sepcon_emp x.
-  apply equiv_derivable1 in H; destruct H.
+  apply logic_equiv_derivable1 in H; destruct H.
   rewrite derivable1_provable in H, H0.
   apply solve_iffp_intros; auto.
 Qed.
@@ -792,7 +792,7 @@ Context {L: Language}
         {iffpD: IffDeduction L GammaD1}
         {sepconE: SepconLogicEquiv_weak_iffp L GammaE}
         {bD: BasicDeduction L GammaD1}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}.
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
 
 Lemma SepconLogicEquivWeakIff2SepconDeductionWeak:
   SepconDeduction_weak L GammaD1.
@@ -864,7 +864,7 @@ Context {L: Language}
         {sepconD: SepconDeduction L GammaD1}
         {empD: EmpLogicEquiv_iffp L GammaE}
         {bD: BasicDeduction L GammaD1}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}.
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
 
 Lemma EmpLogicEquivIff2EmpDeduction:
   EmpDeduction L GammaD1.

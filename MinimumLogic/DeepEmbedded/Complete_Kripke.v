@@ -39,9 +39,9 @@ Instance minL: MinimumLanguage L := MinimumLanguage.minL Var.
 
 Instance GP: Provable L := MinimumLogic.GP Var.
 Instance GD: Derivable L := MinimumLogic.GD Var.
-Instance AX: NormalAxiomatization L GP GD := MinimumLogic.AX Var.
+Instance GDP: DerivableProvable L GP GD := MinimumLogic.GDP Var.
 Instance minAX: MinimumAxiomatization L GP := MinimumLogic.minAX Var.
-Instance SC: NormalSequentCalculus L GP GD := MinimumLogic.SC Var.
+Instance SC: ProvableDerivable L GP GD := MinimumLogic.GPD Var.
 Instance bSC: BasicSequentCalculus L GD := MinimumLogic.bSC Var.
 Instance fwSC: FiniteWitnessedSequentCalculus L GD := MinimumLogic.fwSC Var.
 Instance minSC: MinimumSequentCalculus L GD := MinimumLogic.minSC Var.

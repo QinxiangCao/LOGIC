@@ -7,7 +7,7 @@ else
     echo "cp ${src} LogicGenerator/Config.v"
     cp ${src} LogicGenerator/Config.v
 fi
-make -j7; cd LogicGenerator; rm Config.vo; make Generated.v
+make -j7 LogicGenerator/ConfigCompute.vo; cd LogicGenerator; rm Config.vo; make Generated.v
 if [ $# -eq 3 ]
 then
     make Generated2.v

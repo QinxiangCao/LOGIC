@@ -48,6 +48,9 @@ Inductive how_connective :=
 | FROM_andp_impp_TO_iffp
 | FROM_falsep_impp_TO_negp
 | FROM_falsep_impp_TO_truep
+| FROM_impp_negp_TO_orp
+| FROM_negp_falsep_TO_truep
+| FROM_negp_truep_TO_falsep
 | FROM_impp_TO_multi_imp
 | FROM_andp_TO_iter_andp
 | FROM_sepcon_TO_iter_sepcon
@@ -81,7 +84,7 @@ Definition USE_fin_conseq_FOR_derivable :=
 Definition USE_mono_fin_conseq_FOR_derivable :=
   ___USE_consequence_FOR_derivable true true.
 
-(* TODO: Add coq_prop for derivitive1; improve classical logic's choices; *)
+(* TODO: Add coq_prop for derivitive1 *)
 Inductive rule_class :=
 | provability_OF_impp
 | provability_OF_andp
@@ -94,6 +97,12 @@ Inductive rule_class :=
 | provability_OF_de_morgan
 | provability_OF_godel_dummett
 | provability_OF_classical_logic
+| provability_OF_classical_logic_peirce
+| provability_OF_classical_logic_by_contra
+| provability_OF_classical_logic_double_negp
+| provability_OF_classical_logic_canalysis
+| provability_OF_classical_logic_EM
+| provability_OF_classical_logic_impp_orp
 | provability_OF_coq_prop
 | provability_OF_coq_prop_impp
 | provability_OF_sepcon_rule
@@ -128,6 +137,7 @@ Inductive rule_class :=
 | derivitive1_OF_truep
 | derivitive1_OF_iffp
 | derivitive1_OF_negp
+| derivitive1_OF_impp_negp
 | derivitive1_OF_sepcon
 | derivitive1_OF_wand
 | derivitive1_OF_emp
@@ -140,6 +150,10 @@ Inductive rule_class :=
 | GEN_iffp_FROM_andp_impp
 | GEN_truep_FROM_falsep_impp
 | GEN_negp_FROM_falsep_impp
+| GEN_orp_FROM_impp_negp
+| GEN_truep_FROM_impp_self
+| GEN_truep_FROM_negp_falsep
+| GEN_falsep_FROM_negp_truep
 | GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_fold_left_sepcon
@@ -552,6 +566,12 @@ match rc1, rc2 with
 | provability_OF_de_morgan, provability_OF_de_morgan
 | provability_OF_godel_dummett, provability_OF_godel_dummett
 | provability_OF_classical_logic, provability_OF_classical_logic
+| provability_OF_classical_logic_peirce, provability_OF_classical_logic_peirce
+| provability_OF_classical_logic_by_contra, provability_OF_classical_logic_by_contra
+| provability_OF_classical_logic_double_negp, provability_OF_classical_logic_double_negp
+| provability_OF_classical_logic_canalysis, provability_OF_classical_logic_canalysis
+| provability_OF_classical_logic_EM, provability_OF_classical_logic_EM
+| provability_OF_classical_logic_impp_orp, provability_OF_classical_logic_impp_orp
 | provability_OF_coq_prop, provability_OF_coq_prop
 | provability_OF_coq_prop_impp, provability_OF_coq_prop_impp
 | provability_OF_sepcon_rule, provability_OF_sepcon_rule
@@ -586,6 +606,7 @@ match rc1, rc2 with
 | derivitive1_OF_truep, derivitive1_OF_truep
 | derivitive1_OF_iffp, derivitive1_OF_iffp
 | derivitive1_OF_negp, derivitive1_OF_negp
+| derivitive1_OF_impp_negp, derivitive1_OF_impp_negp
 | derivitive1_OF_sepcon, derivitive1_OF_sepcon
 | derivitive1_OF_wand, derivitive1_OF_wand
 | derivitive1_OF_emp, derivitive1_OF_emp
@@ -598,6 +619,10 @@ match rc1, rc2 with
 | GEN_iffp_FROM_andp_impp, GEN_iffp_FROM_andp_impp
 | GEN_truep_FROM_falsep_impp, GEN_truep_FROM_falsep_impp
 | GEN_negp_FROM_falsep_impp, GEN_negp_FROM_falsep_impp
+| GEN_orp_FROM_impp_negp, GEN_orp_FROM_impp_negp
+| GEN_truep_FROM_impp_self, GEN_truep_FROM_impp_self
+| GEN_truep_FROM_negp_falsep, GEN_truep_FROM_negp_falsep
+| GEN_falsep_FROM_negp_truep, GEN_falsep_FROM_negp_truep
 | GEN_iter_andp_FROM_fold_left_andp, GEN_iter_andp_FROM_fold_left_andp
 | GEN_iter_andp_FROM_fold_right_andp, GEN_iter_andp_FROM_fold_right_andp
 | GEN_iter_sepcon_FROM_fold_left_sepcon, GEN_iter_sepcon_FROM_fold_left_sepcon

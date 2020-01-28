@@ -53,9 +53,9 @@ Context {L: Language}
         {coq_prop_D: CoqPropDeduction L GammaD1}
         {minAX: MinimumAxiomatization L GammaP}
         {bD: BasicDeduction L GammaD1}
-        {trupD: TrueDeduction L GammaD1}
-        {D12P: NormalDeduction L GammaP GammaD1}
-        {P2D: Provable_Derivable1 L GammaP GammaD1}.
+        {truepD: TrueDeduction L GammaD1}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}.
 
 Lemma Deduction2Axiomatization_coq_prop_AX:
   CoqPropAxiomatization L GammaP.
@@ -107,6 +107,7 @@ Context {L: Language}
         {orpD: OrDeduction L GammaD1}
         {falsepD: FalseDeduction L GammaD1}
         {inegpD: IntuitionisticNegDeduction L GammaD1}
+        {impp_negp_D: ImpNegDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
         {truepD: TrueDeduction L GammaD1}
         {coq_prop_D: CoqPropDeduction L GammaD1}
@@ -135,13 +136,13 @@ Proof.
 Section LogicEquiv.
 
 Context {GammaE: LogicEquiv L}
-        {NE2: NormalEquiv2 L GammaD1 GammaE}.
+        {GammaED1: EquivDerivable1 L GammaD1 GammaE}.
 
 Lemma coq_prop_truep_equiv: forall (P: Prop), P -> !! P --||-- truep.
 Proof.
   AddAxiomatization.
   intros.
-  apply equiv_derivable1.
+  apply logic_equiv_derivable1.
   pose proof coq_prop_truep P.
   pose proof iffp_elim1 (!! P) TT.
   pose proof iffp_elim2 (!! P) TT.
@@ -158,7 +159,7 @@ Lemma coq_prop_andp_equiv: forall (P: Prop) Q, P -> !! P && Q --||-- Q.
 Proof.
   AddAxiomatization.
   intros.
-  apply equiv_derivable1.
+  apply logic_equiv_derivable1.
   split.
   -apply derivable1_andp_elim2.
   -pose proof ProofRules.coq_prop_intros P.
@@ -173,7 +174,7 @@ Lemma andp_coq_prop_equiv: forall (P: Prop) Q, P -> Q && !! P --||-- Q.
 Proof.
   AddAxiomatization.
   intros.
-  apply equiv_derivable1.
+  apply logic_equiv_derivable1.
   split.
   -apply derivable1_andp_elim1.
   -pose proof ProofRules.coq_prop_intros P.
@@ -192,7 +193,7 @@ Proof.
   AddAxiomatization.
   intros.
   pose proof coq_prop_and P Q.
-  apply equiv_derivable1.
+  apply logic_equiv_derivable1.
   split.
   -apply derivable1_provable.
    pose proof iffp_elim1 (!! (P /\ Q)) (!! P && !! Q).
@@ -207,7 +208,7 @@ Proof.
   AddAxiomatization.
   intros.
   pose proof coq_prop_or P Q.
-  apply equiv_derivable1.
+  apply logic_equiv_derivable1.
   split.
   -apply derivable1_provable.
    pose proof iffp_elim1 (!! (P \/ Q)) (!! P || !! Q).
@@ -223,7 +224,7 @@ Proof.
   AddAxiomatization.
   intros.
   pose proof coq_prop_impl P Q.
-  apply equiv_derivable1.
+  apply logic_equiv_derivable1.
   split.
   -apply derivable1_provable.
    pose proof iffp_elim1 (!! (P -> Q)) (!! P --> !! Q).

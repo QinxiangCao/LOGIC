@@ -117,6 +117,19 @@ Proof.
   apply Morphisms_Prop.iff_iff_iff_impl_morphism; auto.
 Qed.
 
+Lemma truth_lemma_negp
+      (x: expr)
+      (IHx: forall m Phi, rel m Phi -> (KRIPKE: M, m |= x <-> proj1_sig Phi x)):
+  forall m Phi, rel m Phi -> (KRIPKE: M, m |= ~~ x <-> proj1_sig Phi (~~ x)).
+Proof.
+  intros.
+  rewrite sat_negp.
+  rewrite IHx by eassumption.
+  pose proof MCS_negp_iff.
+  rewrite MCS_negp_iff by (apply AL_MC, (proj2_sig Phi)).
+  tauto.
+Qed.
+
 End TruthLemma.
 
 

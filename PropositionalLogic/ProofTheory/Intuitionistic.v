@@ -28,9 +28,10 @@ Class FalseAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: Fals
   falsep_elim: forall x, |-- FF --> x
 }.
 
-Class IntuitionisticNegAxiomatization (L: Language) {minL: MinimumLanguage L} {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
-  negp_unfold: forall x, |-- (~~x) --> (x --> FF);
-  negp_fold: forall x, |-- (x --> FF) --> (~~x)
+Class IntuitionisticNegAxiomatization (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (Gamma: Provable L) := {
+  contrapositivePP: forall x y, |-- (y --> x) --> ~~ x --> ~~ y;
+  contradiction_elim1: forall x y, |-- ~~ x --> x --> y;
+  double_negp_intros: forall x, |-- x --> ~~ (~~ x);
 }.
 
 Class IffAxiomatization (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L} (Gamma: Provable L) := {
@@ -39,7 +40,7 @@ Class IffAxiomatization (L: Language) {minL: MinimumLanguage L} {iffpL: IffLangu
   iffp_elim2: forall x y, |-- (x <--> y) --> (y --> x)
 }.
 
-Class TrueAxiomatization (L: Language) {minL: MinimumLanguage L} {truepL: TrueLanguage L} (Gamma: Provable L) := {
+Class TrueAxiomatization (L: Language) {truepL: TrueLanguage L} (Gamma: Provable L) := {
   truep_intros: |-- TT
 }.
 
@@ -60,9 +61,10 @@ Class FalseSequentCalculus (L: Language) {falsepL: FalseLanguage L} (Gamma: Deri
 }.
 
 
-Class IntuitionisticNegSequentCalculus (L: Language) {falsepL: FalseLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) := {
-  deduction_negp_unfold: forall Phi x, Phi |-- (~~x) -> Phi ;; x |-- FF;
-  deduction_negp_fold: forall Phi x, Phi ;; x |-- FF -> Phi |-- (~~x)
+Class IntuitionisticNegSequentCalculus (L: Language) {negpL: NegLanguage L} (Gamma: Derivable L) := {
+  deduction_contrapositivePP: forall Phi x y, Phi;; y |-- x -> Phi;; ~~x |-- ~~ y;
+  deduction_contradiction_elim: forall Phi x y, Phi |-- x -> Phi |-- ~~ x -> Phi |-- y;
+  deduction_double_negp_intros: forall Phi x, Phi |-- x -> Phi |-- ~~ (~~ x)
 }.
 
 Class IffSequentCalculus (L: Language) {iffpL: IffLanguage L} (Gamma: Derivable L) := {
@@ -106,9 +108,15 @@ Class FalseDeduction (L: Language) {falsepL: FalseLanguage L} (GammaD1: Derivabl
   derivable1_falsep_elim: forall x, derivable1 FF x
 }.
 
-Class IntuitionisticNegDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} {falsepL: FalseLanguage L} (GammaD1: Derivable1 L) := {
-  derivable1_negp_unfold: forall x, derivable1 (~~x) (x --> FF);
-  derivable1_negp_fold: forall x, derivable1 (x --> FF) (~~x)
+Class IntuitionisticNegDeduction (L: Language) {negpL: NegLanguage L} (GammaD1: Derivable1 L) := {
+  derivable1_contrapositivePP': forall x y, derivable1 y x -> derivable1 (~~x) (~~ y);
+  derivable1_contradiction_elim: forall x y z, derivable1 z x -> derivable1 z (~~ x) -> derivable1 z y;
+  derivable1_double_negp_intros: forall x, derivable1 x (~~ (~~ x))
+}.
+
+Class ImpNegDeduction (L: Language) {minL: MinimumLanguage L} {negpL: NegLanguage L} (GammaD1: Derivable1 L) := {
+  derivable1_contrapositivePP: forall x y, derivable1 (y --> x) (~~x --> ~~ y);
+  derivable1_contradiction_elim': forall x y, derivable1 (~~ x) (x --> y)
 }.
 
 Class TrueDeduction (L: Language) {truepL: TrueLanguage L} (GammaD1: Derivable1 L) := {
@@ -121,51 +129,51 @@ Class IffDeduction (L: Language) {minL: MinimumLanguage L} {iffpL: IffLanguage L
   derivable1_iffp_elim2: forall x y, derivable1 (x <--> y) (y --> x)
 }.
 
-Class EquivAndp (L:Language) {andpL: AndLanguage L} (GammaE:LogicEquiv L) := {
-  equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
+Class AndLogicEquiv (L:Language) {andpL: AndLanguage L} (GammaE:LogicEquiv L) := {
+  logic_equiv_andp_congr:forall x1 x2 y1 y2,x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 && y1) --||-- (x2 && y2);
-  equiv_andp_comm:forall x y,x && y --||-- y && x;
-  equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z)
+  logic_equiv_andp_comm:forall x y,x && y --||-- y && x;
+  logic_equiv_andp_assoc:forall x y z,x && y && z --||-- x && (y && z)
 }.
 
-Class EquivOrp (L:Language) {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
+Class OrLogicEquiv (L:Language) {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_orp_congr:forall x1 x2 y1 y2,  x1 --||-- x2 -> y1 --||-- y2 ->
   (x1 || y1) --||-- (x2 || y2);
-  equiv_orp_comm:forall x y,x || y --||-- y || x;
-  equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z)
+  logic_equiv_orp_comm:forall x y,x || y --||-- y || x;
+  logic_equiv_orp_assoc:forall x y z, x || y || z --||-- x || (y || z)
 }.
 
-Class EquivDistr (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
-  equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z)
+Class DistrLogicEquiv (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_andp_distr:forall x y z,x && (y || z) --||-- (x && y) || (x && z);
+  logic_equiv_orp_distr:forall x y z,x || (y && z) --||-- (x || y) && (x || z)
 }.
 
-Class EquivDeMorgen (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} {negp: NegLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_DeMorgen: forall x y,~~ (x || y) --||-- (~~ x) && (~~y)
+Class DeMorgenLogicEquiv (L:Language) {andpL: AndLanguage L} {orpL: OrLanguage L} {negp: NegLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_DeMorgen: forall x y,~~ (x || y) --||-- (~~ x) && (~~y)
 }.
 
-Class EquivFalsepAndp (L:Language) {andpL: AndLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
-  equiv_false_andp:forall x,x && FF --||-- FF
+Class FalseAndLogicEquiv (L:Language) {andpL: AndLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
+  logic_equiv_false_andp:forall x,x && FF --||-- FF
 }.
 
-Class EquivFalsepOrp (L:Language) {orpL: OrLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
-  equiv_falsep_orp:forall x,x || FF --||-- x
+Class FalseOrLogicEquiv (L:Language) {orpL: OrLanguage L} {falsepL: FalseLanguage L} (GammaE:LogicEquiv L) := {
+  logic_equiv_falsep_orp:forall x,x || FF --||-- x
 }.
 
-Class EquiveTruepAndp (L:Language) {andpL: AndLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_truep_andp:forall x, x && TT --||-- x
+Class TrueAndLogicEquiv (L:Language) {andpL: AndLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_truep_andp:forall x, x && TT --||-- x
 }.
 
-Class EquiveTruepOrp (L:Language) {orpL: OrLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_truep_orp:forall x, x || TT --||-- TT
+Class TrueOrEquiv (L:Language) {orpL: OrLanguage L} {truepL: TrueLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_truep_orp:forall x, x || TT --||-- TT
 }.
 
-Class EquivIffp (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {iffpL: IffLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_iffp_intros: forall x y, (x --> y) && (y --> x) --||-- (x <--> y);
+Class IffLogicEquiv (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {iffpL: IffLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_iffp_intros: forall x y, (x --> y) && (y --> x) --||-- (x <--> y);
 }.
 
-Class EquivNegp (L:Language) {negpL: NegLanguage L} (GammaE:LogicEquiv L):= {
-  equiv_negp_intros:forall x y, x --||-- y -> ~~ x --||-- ~~ y
+Class NegLogicEquiv (L:Language) {negpL: NegLanguage L} (GammaE:LogicEquiv L):= {
+  logic_equiv_negp_intros:forall x y, x --||-- y -> ~~ x --||-- ~~ y
 }.
 
 Section DerivableRulesFromSequentCalculus1.
@@ -246,30 +254,29 @@ Proof.
   apply deduction_falsep_elim; solve_assum.
 Qed.
 
-Lemma derivable_negp_unfold: forall (Phi: context) (x: expr),
-  Phi |-- (~~x) --> x --> FF.
+Lemma derivable_contrapositivePP: forall (Phi: context) (x y: expr),
+  Phi |-- (y --> x) --> ~~ x --> ~~ y.
 Proof.
   intros.
   rewrite <- !deduction_theorem.
-  apply deduction_negp_unfold; solve_assum.
+  apply deduction_contrapositivePP.
+  rewrite deduction_theorem; solve_assum.
 Qed.
 
-Lemma derivable_negp_fold: forall (Phi: context) (x: expr),
-  Phi |-- (x --> FF) --> (~~ x).
+Lemma derivable_contradiction_elim1: forall (Phi: context) (x y: expr),
+  Phi |-- ~~ x --> x --> y.
 Proof.
   intros.
   rewrite <- !deduction_theorem.
-  apply deduction_negp_fold.
-  apply deduction_modus_ponens with x; solve_assum.
+  apply deduction_contradiction_elim with x; solve_assum.
 Qed.
 
-Lemma deduction_negp_fold_unfold: forall (Phi: context) (x: expr),
-  Phi |-- (~~ x) <-> Phi;;x |-- FF.
+Lemma derivable_double_negp_intros: forall (Phi: context) (x: expr),
+  Phi |-- x --> ~~ ~~ x.
 Proof.
   intros.
-  split.
-  apply deduction_negp_unfold.
-  apply deduction_negp_fold.
+  rewrite <- deduction_theorem.
+  apply deduction_double_negp_intros; solve_assum.
 Qed.
 
 Lemma derivable_iffp_intros: forall (Phi: context) (x y: expr),
@@ -305,6 +312,34 @@ Proof.
   apply deduction_truep_intros; solve_assum.
 Qed.
 
+Lemma deduction_negp_unfold: forall Phi x, Phi |-- (~~x) -> Phi ;; x |-- FF.
+Proof.
+  intros.
+  apply deduction_contradiction_elim with x; solve_assum.
+Qed.
+
+Lemma deduction_negp_fold: forall Phi x, Phi ;; x |-- FF -> Phi |-- (~~x).
+Proof.
+  clear - falsepSC inegpSC minSC bSC.
+  intros.
+  apply deduction_contrapositivePP in H.
+  eapply deduction_subst1; [| exact H].
+  apply deduction_subst1 with (~~ (~~ (FF --> FF))).
+  + apply deduction_double_negp_intros.
+    rewrite <- deduction_theorem; solve_assum.
+  + apply deduction_contrapositivePP.
+    apply deduction_falsep_elim; solve_assum.
+Qed.
+
+Lemma deduction_negp_fold_unfold: forall (Phi: context) (x: expr),
+  Phi |-- (~~ x) <-> Phi;;x |-- FF.
+Proof.
+  intros.
+  split.
+  apply deduction_negp_unfold.
+  apply deduction_negp_fold.
+Qed.
+
 Lemma deduction_orp_elim': forall (Phi: context) (x y z: expr),
   Phi |-- x --> z ->
   Phi |-- y --> z ->
@@ -315,58 +350,14 @@ Proof.
   apply deduction_orp_elim; auto.
 Qed.
 
-Lemma derivable_double_negp_intros: forall (Phi: context) (x: expr),
-  Phi |-- x --> ~~ ~~ x.
-Proof.
-  intros.
-  rewrite <- !deduction_theorem.
-  pose proof deduction_negp_fold (Phi;;x) (~~x).
-  apply H.
-  pose proof deduction_negp_unfold (Phi;;~~x) x.
-  pose proof derivable_impp_refl Phi (~~x).
-  rewrite <- !deduction_theorem in H1.
-  pose proof deduction_impp_arg_switch Phi (~~ x) x FF.
-  rewrite <- !deduction_theorem in H2.
-  apply H2.
-  apply H0.
-  apply H1.
-Qed.
-
-Lemma deduction_double_negp_intros: forall (Phi: context) (x: expr),
-  Phi |-- x ->
-  Phi |-- ~~ ~~ x.
-Proof.
-  intros.
-  eapply deduction_modus_ponens; eauto.
-  apply derivable_double_negp_intros.
-Qed.
-
-Lemma derivable_contradiction_elim: forall (Phi: context) (x y: expr),
+Lemma derivable_contradiction_elim2: forall (Phi: context) (x y: expr),
   Phi |-- x --> ~~ x --> y.
 Proof.
+  clear - bSC minSC inegpSC.
+  AddAxiomatization.
   intros.
-  pose proof derivable_double_negp_intros Phi x.
-  pose proof derivable_falsep_elim Phi y.
-  rewrite <- !deduction_theorem in H.
-  rewrite <- !deduction_theorem.
-  pose proof deduction_negp_unfold (Phi;;x) (~~x).
-  apply H1 in H.
-  apply (deduction_weaken1 _ x) in H0.
-  apply (deduction_weaken1 _ (~~ x)) in H0.
-  pose proof deduction_modus_ponens _ _ _ H H0.
-  auto.
-Qed.
-
-Lemma deduction_contradiction_elim: forall (Phi: context) (x y: expr),
-  Phi |-- x ->
-  Phi |-- ~~ x ->
-  Phi |-- y.
-Proof.
-  intros.
-  pose proof derivable_contradiction_elim Phi x y.
-  pose proof deduction_modus_ponens _ _ _ H H1.
-  pose proof deduction_modus_ponens _ _ _ H0 H2.
-  auto.
+  rewrite <- provable_impp_arg_switch.
+  apply derivable_contradiction_elim1.
 Qed.
 
 Lemma derivable_iffp_refl: forall (Phi: context) (x: expr),
@@ -394,7 +385,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -430,8 +421,9 @@ Qed.
 Lemma SequentCalculus2Axiomatization_inegpAX: IntuitionisticNegAxiomatization L GammaP.
 Proof.
   constructor; intros; rewrite provable_derivable.
-  + apply derivable_negp_unfold.
-  + apply derivable_negp_fold.
+  + apply derivable_contrapositivePP.
+  + apply derivable_contradiction_elim1.
+  + apply derivable_double_negp_intros.
 Qed.
 
 Lemma SequentCalculus2Axiomatization_iffpAX: IffAxiomatization L GammaP.
@@ -486,7 +478,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {AX: NormalAxiomatization L GammaP GammaD}
+        {GammaDP: DerivableProvable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
@@ -500,7 +492,7 @@ Context {L: Language}
 Lemma Axiomatization2SequentCalculus_andpSC:
   AndSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -519,7 +511,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_orpSC:
   OrSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -539,7 +531,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_falsepSC:
   FalseSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -551,24 +543,27 @@ Qed.
 Lemma Axiomatization2SequentCalculus_inegpSC:
   IntuitionisticNegSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
-  + rewrite deduction_theorem.
-    apply deduction_modus_ponens with (~~ x); auto.
+  + rewrite deduction_theorem in H2 |- *.
+    eapply deduction_modus_ponens; [exact H2 |].
     apply deduction_weaken0.
-    apply negp_unfold.
-  + rewrite deduction_theorem in H2.
-    apply deduction_modus_ponens with (x --> FF); auto.
+    apply contrapositivePP.
+  + eapply deduction_modus_ponens; [exact H2 |].
+    eapply deduction_modus_ponens; [exact H3 |].
     apply deduction_weaken0.
-    apply negp_fold.
+    apply contradiction_elim1.
+  + eapply deduction_modus_ponens; [exact H2 |].
+    apply deduction_weaken0.
+    apply double_negp_intros.
 Qed.
 
 Lemma Axiomatization2SequentCalculus_iffpSC:
   IffSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -590,7 +585,7 @@ Qed.
 Lemma Axiomatization2SequentCalculus_truepSC:
   TrueSequentCalculus L GammaD.
 Proof.
-  pose proof Axiomatization2SequentCalculus_SC.
+  pose proof Axiomatization2SequentCalculus_GammaPD.
   pose proof Axiomatization2SequentCalculus_bSC.
   pose proof Axiomatization2SequentCalculus_minSC.
   constructor; intros.
@@ -756,16 +751,6 @@ Proof.
   apply deduction_andp_intros; rewrite deduction_theorem; solve_assum.
 Qed.
 
-Lemma double_negp_intros: forall (x: expr),
-  |-- x --> ~~ ~~ x.
-Proof.
-  clear - minAX inegpAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  apply derivable_double_negp_intros.
-Qed.
-
 Lemma provable_iffp_refl: forall (x: expr),
   |-- x <--> x.
 Proof.
@@ -774,23 +759,48 @@ Proof.
   apply provable_impp_refl.
 Qed.
 
-Lemma contrapositivePP: forall (x y: expr),
-  |-- (y --> x) --> ~~ x --> ~~ y.
+Lemma contradiction_elim2: forall x y, |-- x --> ~~ x --> y.
 Proof.
   intros.
-  eapply modus_ponens; [apply provable_impp_arg_switch |].
-  pose proof negp_unfold x. rewrite H.
-  pose proof negp_fold y. rewrite <- H0.
-  apply aux_minimun_theorem00.
+  rewrite <- provable_impp_arg_switch.
+  apply contradiction_elim1.
+Qed.
+
+Lemma negp_unfold: forall x, |-- (~~x) --> (x --> FF).
+Proof.
+  intros.
+  apply contradiction_elim1.
+Qed.
+
+Lemma negp_aux_rule: forall x y, |-- y -> |-- (x --> ~~ y) --> (~~x).
+Proof.
+  intros.
+  rewrite (contrapositivePP (~~ y) x).
+  eapply modus_ponens.
+  + apply aux_minimun_theorem02.
+  + rewrite <- double_negp_intros.
+    auto.
+Qed.
+
+Lemma negp_fold: forall x, |-- (x --> FF) --> (~~x).
+Proof.
+  intros.
+  rewrite (contrapositivePP FF x).
+  eapply modus_ponens.
+  + apply aux_minimun_theorem02.
+  + apply modus_ponens with (~~ (~~ (FF --> FF))).
+    - rewrite <- contrapositivePP.
+      apply falsep_elim.
+    - rewrite <- double_negp_intros.
+      apply provable_impp_refl.
 Qed.
 
 Lemma contrapositivePN: forall (x y: expr),
   |-- (y --> ~~ x) --> (x --> ~~ y).
 Proof.
   intros.
-  pose proof negp_unfold x. rewrite H.
-  pose proof negp_fold y. rewrite <- H0.
-  apply provable_impp_arg_switch.
+  rewrite (double_negp_intros x) at 2.
+  apply contrapositivePP.
 Qed.
 
 End DerivableRulesFromAxiomatization1.
@@ -799,34 +809,22 @@ Section DerivableRulesFromSequentCalculus2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {andpSC: AndSequentCalculus L Gamma}
-        {orpSC: OrSequentCalculus L Gamma}
-        {falsepSC: FalseSequentCalculus L Gamma}
-        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
-        {iffpSC: IffSequentCalculus L Gamma}
-        {truepSC: TrueSequentCalculus L Gamma}.
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}.
 
-Lemma deduction_contrapositivePP: forall Phi (x y: expr),
+Lemma deduction_contrapositivePP': forall Phi (x y: expr),
   Phi |-- y --> x ->
   Phi |-- ~~ x --> ~~ y.
 Proof.
-  AddAxiomatization.
   intros.
-  eapply deduction_modus_ponens; eauto.
-  apply deduction_weaken0.
-  apply contrapositivePP.
+  rewrite <- deduction_theorem in H |- *.
+  apply deduction_contrapositivePP; auto.
 Qed.
 
-Lemma deduction_contrapositivePN: forall Phi (x y: expr),
+Lemma deduction_contrapositivePN': forall Phi (x y: expr),
   Phi |-- y --> ~~ x ->
   Phi |-- x --> ~~ y.
 Proof.
@@ -835,6 +833,15 @@ Proof.
   eapply deduction_modus_ponens; eauto.
   apply deduction_weaken0.
   apply contrapositivePN.
+Qed.
+
+Lemma deduction_contrapositivePN: forall Phi (x y: expr),
+  Phi;; y |-- ~~ x ->
+  Phi;; x |-- ~~ y.
+Proof.
+  intros.
+  rewrite deduction_theorem in H |- *.
+  apply deduction_contrapositivePN'; auto.
 Qed.
 
 End DerivableRulesFromSequentCalculus2.
@@ -898,11 +905,11 @@ Proof.
   apply deduction_iffp_intros.
   + apply deduction_andp_intros. 
     - rewrite deduction_theorem.
-      apply deduction_contrapositivePP.
+      apply deduction_contrapositivePP'.
       rewrite <- provable_derivable.
       apply orp_intros1.
     - rewrite deduction_theorem.
-      apply deduction_contrapositivePP.
+      apply deduction_contrapositivePP'.
       rewrite <- provable_derivable.
       apply orp_intros2.
   +pose proof negp_fold (x || y). rewrite <- H.
@@ -1247,7 +1254,7 @@ Qed.
 Lemma negp_fold_unfold: forall (x: expr),
   |-- (~~x) <--> (x --> FF).
 Proof.
-  clear - minAX inegpAX iffpAX.
+  clear - minAX inegpAX iffpAX falsepAX.
   AddSequentCalculus.
   intros.
   apply solve_iffp_intros.
@@ -1273,9 +1280,7 @@ Lemma impp2orp2: forall x y, |-- ~~ x || y --> (x --> y).
 Proof.
   intros.
   apply solve_orp_impp.
-  + rewrite negp_unfold.
-    apply aux_minimun_rule01.
-    apply falsep_elim.
+  + apply contradiction_elim1.
   + apply axiom1.
 Qed.
 
@@ -1289,7 +1294,7 @@ Context {L: Language}
         {iffpL: IffLanguage L}
         {GammaE: LogicEquiv L}
         {GammaP: Provable L}
-        {NE:NormalEquiv L GammaP GammaE}
+        {GammaEP: EquivProvable L GammaP GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
         {iffpAX: IffAxiomatization L GammaP}.
@@ -1299,13 +1304,13 @@ Lemma equiv_iffp : forall x y,
 Proof.
   intros.
   split.
-  -intros. apply equiv_provable in H. destruct H.
+  -intros. apply logic_equiv_provable in H. destruct H.
    pose proof iffp_intros x y.
    pose proof modus_ponens _ _ H1 H.
    pose proof modus_ponens _ _ H2 H0.
    auto.
   -intros.
-   apply equiv_provable.
+   apply logic_equiv_provable.
    split.
      *pose proof iffp_elim1 x y.
       pose proof modus_ponens _ _ H0 H;auto.
@@ -1324,8 +1329,8 @@ Lemma provable_derivable1_true
        {minAX: MinimumAxiomatization L GammaP}
        {trueD: TrueDeduction L GammaD1}
        {bD: BasicDeduction L GammaD1}
-       {D12P: NormalDeduction L GammaP GammaD1}
-       {P2D1: Provable_Derivable1 L GammaP GammaD1}
+       {GammaD1P: Derivable1Provable L GammaP GammaD1}
+       {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
       :forall x,
   provable x <-> derivable1 TT x.
 Proof.
@@ -1337,6 +1342,8 @@ Proof.
     apply derivable1_truep_intros.
 Qed.
 
+Section DerivableRulesFromDeduction.
+
 Lemma derivable1_distr
        {L: Language}
        {minL: MinimumLanguage L}
@@ -1347,7 +1354,7 @@ Lemma derivable1_distr
        {andpD: AndDeduction L GammaD1}
        {orpD: OrDeduction L GammaD1}
        {adjD: ImpAndAdjointDeduction L GammaD1}
-       {BD: BasicDeduction L GammaD1}
+       {bD: BasicDeduction L GammaD1}
       :forall P x y z,
   derivable1 (P && (x || y)) z <-> derivable1 ((P && x) || (P && y)) z.
 Proof.
@@ -1358,8 +1365,8 @@ Proof.
       pose proof derivable1_andp_elim1 P x.
       pose proof derivable1_andp_elim2 P x.
       pose proof derivable1_orp_intros1 x y.
-      pose proof deduction1_trans _ _ _ H1 H2;clear H1 H2.
-      pose proof deduction1_trans _ _ _ H0 H;clear H0 H.
+      pose proof derivable1_trans _ _ _ H1 H2;clear H1 H2.
+      pose proof derivable1_trans _ _ _ H0 H;clear H0 H.
       AddAxiomatization.
       rewrite derivable1_provable in H3, H1 |- *.
       pose proof axiom2 (P && x) (x || y) z.
@@ -1369,8 +1376,8 @@ Proof.
       pose proof derivable1_andp_elim1 P y.
       pose proof derivable1_andp_elim2 P y.
       pose proof derivable1_orp_intros2 x y.
-      pose proof deduction1_trans _ _ _ H1 H2;clear H1 H2.
-      pose proof deduction1_trans _ _ _ H0 H;clear H0 H.
+      pose proof derivable1_trans _ _ _ H1 H2;clear H1 H2.
+      pose proof derivable1_trans _ _ _ H0 H;clear H0 H.
       AddAxiomatization.
       rewrite derivable1_provable in H3, H1 |- *.
       pose proof axiom2 (P && y) (x || y) z.
@@ -1380,14 +1387,65 @@ Proof.
     apply derivable1_impp_andp_adjoint.
     pose proof derivable1_orp_intros1 (P && x) (P && y).
     pose proof derivable1_orp_intros2 (P && x) (P && y).
-    pose proof deduction1_trans _ _ _ H0 H.
-    pose proof deduction1_trans _ _ _ H1 H.
+    pose proof derivable1_trans _ _ _ H0 H.
+    pose proof derivable1_trans _ _ _ H1 H.
     apply derivable1_impp_andp_adjoint in H2.
     apply derivable1_impp_andp_adjoint in H3.
     apply deduction_exchange. apply deduction_exchange in H2. 
     apply deduction_exchange in H3.
     pose proof derivable1_orp_elim _ _ _ H2 H3;auto.
   Qed.
+
+Lemma derivable1_negp_unfold
+      {L: Language}
+      {minL: MinimumLanguage L}
+      {andpL: AndLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {GammaD1: Derivable1 L}
+      {andpD: AndDeduction L GammaD1}
+      {falsepD: FalseDeduction L GammaD1}
+      {inegpD: IntuitionisticNegDeduction L GammaD1}
+      {adjD: ImpAndAdjointDeduction L GammaD1}
+      {bD: BasicDeduction L GammaD1}:
+  forall x, derivable1 (~~x) (x --> FF).
+Proof.
+  intros.
+  apply derivable1_impp_andp_adjoint.
+  apply derivable1_contradiction_elim with x.
+  + apply derivable1_andp_elim2.
+  + apply derivable1_andp_elim1.
+Qed.
+
+Lemma derivable1_negp_fold
+      {L: Language}
+      {minL: MinimumLanguage L}
+      {andpL: AndLanguage L}
+      {falsepL: FalseLanguage L}
+      {negpL: NegLanguage L}
+      {GammaD1: Derivable1 L}
+      {andpD: AndDeduction L GammaD1}
+      {falsepD: FalseDeduction L GammaD1}
+      {inegpD: IntuitionisticNegDeduction L GammaD1}
+      {impp_negp_D: ImpNegDeduction L GammaD1}
+      {adjD: ImpAndAdjointDeduction L GammaD1}
+      {bD: BasicDeduction L GammaD1}:
+  forall x, derivable1 (x --> FF) (~~x).
+Proof.
+  intros.
+  rewrite (derivable1_contrapositivePP FF x).
+  assert (derivable1 (~~ FF --> ~~ x) ((~~ FF --> ~~ x) && ~~ FF)).
+  + apply derivable1_andp_intros.
+    - apply derivable1_refl.
+    - rewrite derivable1_double_negp_intros.
+      apply derivable1_contrapositivePP'.
+      apply derivable1_falsep_elim.
+  + rewrite H.
+    apply derivable1_impp_andp_adjoint.
+    apply derivable1_refl.
+Qed.
+
+End DerivableRulesFromDeduction.
 
 Section Derivabel1ToAxiomatization.
 
@@ -1398,9 +1456,9 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaP: Provable L}
         {GammaD1: Derivable1 L}
-        {ND: NormalDeduction L GammaP GammaD1}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
         {minD: MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Section Deduction2Axiomatization1.
 
@@ -1413,7 +1471,7 @@ Proof.
   constructor.
   -intros.
    apply derivable1_provable.
-   apply derivable1_impp_andp_adjoint. apply deduction1_refl.
+   apply derivable1_impp_andp_adjoint. apply derivable1_refl.
   -intros.
    apply derivable1_provable.
    apply derivable1_andp_elim1.
@@ -1466,7 +1524,7 @@ Section Deduction2Axiomatization_truepAX.
 
 Context {truepL: TrueLanguage L}
         {truepD: TrueDeduction L GammaD1}
-        {PD: Provable_Derivable1 L GammaP GammaD1}.
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}.
 
 Lemma Deduction2Axiomatization_truepAX: TrueAxiomatization L GammaP.
 Proof.
@@ -1481,18 +1539,22 @@ Section Deduction2Axiomatization_negpAX.
 
 Context {negpL: NegLanguage L}
         {falsepL: FalseLanguage L}
-        {inegpD: IntuitionisticNegDeduction L GammaD1}.
+        {inegpD: IntuitionisticNegDeduction L GammaD1}
+        {impp_negp_D: ImpNegDeduction L GammaD1}.
 
-Lemma Deduction2Axiomatization_negpAX: IntuitionisticNegAxiomatization L GammaP.
+Lemma Deduction2Axiomatization_inegpAX: IntuitionisticNegAxiomatization L GammaP.
 Proof.
   constructor.
-  -intros.
-   apply derivable1_provable.
-   apply derivable1_negp_unfold.
-  -intros.
-   apply derivable1_provable.
-   apply derivable1_negp_fold.
-   Qed.
+  + intros.
+    apply derivable1_provable.
+    apply derivable1_contrapositivePP.
+  + intros.
+    apply derivable1_provable.
+    apply derivable1_contradiction_elim'.
+  + intros.
+    apply derivable1_provable.
+    apply derivable1_double_negp_intros.
+Qed.
 
 End Deduction2Axiomatization_negpAX.
 
@@ -1536,7 +1598,7 @@ Instance reg_Deduction2Axiomatization_truepAX:
 Qed.
 
 Instance reg_Deduction2Axiomatization_negpAX:
-  RegisterClass D1ToP_reg (fun negpAX:unit => @Deduction2Axiomatization_negpAX) 6.
+  RegisterClass D1ToP_reg (fun negpAX:unit => @Deduction2Axiomatization_inegpAX) 6.
 Qed.
 
 Instance reg_Deduction2Axiomatization_iffpAX:

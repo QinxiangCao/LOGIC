@@ -9,8 +9,9 @@ Import Derivable1.
 Local Open Scope Derivable1.
 
 Class BasicDeduction (L:Language) (Gamma:Derivable1 L) := {
-  deduction1_refl: forall x, x |-- x;
-  deduction1_trans: forall x y z, x |-- y -> y |-- z -> x |-- z}.
+  derivable1_refl: forall x, x |-- x;
+  derivable1_trans: forall x y z, x |-- y -> y |-- z -> x |-- z
+}.
 
 Section BDRewriteClass.
 
@@ -21,10 +22,16 @@ Context {L:Language}
 Instance Derivable_impp_rewrite: RewriteRelation derivable1.
 Qed.
 
-Instance derivable1_refl: Reflexive derivable1.
+Instance derivable1_refl_instance: Reflexive derivable1.
 Proof.
   hnf; intros.
-  apply deduction1_refl.
+  apply derivable1_refl.
+Qed.
+
+Instance derivable1_trans_instance: Transitive derivable1.
+Proof.
+  hnf; intros.
+  eapply derivable1_trans; eauto.
 Qed.
 
 Instance derivable1_proper_derivable1:
@@ -34,14 +41,15 @@ Proof.
   hnf;intros.
   unfold Basics.flip in H.
   intro.
-  pose proof deduction1_trans _ _ _ H1 H0.
-  pose proof deduction1_trans _ _ _ H H2;tauto.
+  pose proof derivable1_trans _ _ _ H1 H0.
+  pose proof derivable1_trans _ _ _ H H2;tauto.
   Qed.
 
 End BDRewriteClass.
 
 Existing Instances Derivable_impp_rewrite
-                   derivable1_refl
+                   derivable1_refl_instance
+                   derivable1_trans_instance
                    derivable1_proper_derivable1.
 
 Module TestRewriteClass.

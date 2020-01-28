@@ -88,7 +88,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.

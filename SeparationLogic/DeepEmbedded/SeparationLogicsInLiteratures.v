@@ -59,7 +59,7 @@ Instance GP: Provable SeparationLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationLanguage.L GP.
@@ -168,7 +168,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
@@ -287,7 +287,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
@@ -404,7 +404,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.

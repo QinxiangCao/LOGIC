@@ -224,7 +224,7 @@ Context {L: Language}
         {truepL: TrueLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -267,9 +267,9 @@ Proof.
   hnf;intros.
   apply derivable1_andp_intros.
   -pose proof derivable1_andp_elim1 x x0.
-   pose proof deduction1_trans _ _ _ H1 H. auto.
+   pose proof derivable1_trans _ _ _ H1 H. auto.
   -pose proof derivable1_andp_elim2 x x0.
-   pose proof deduction1_trans _ _ _ H1 H0. auto.
+   pose proof derivable1_trans _ _ _ H1 H0. auto.
   Qed.
 
 End andp.
@@ -285,9 +285,9 @@ Proof.
   hnf;intros.
   apply derivable1_orp_elim.
   -pose proof derivable1_orp_intros1 y y0.
-   pose proof deduction1_trans _ _ _ H H1;auto.
+   pose proof derivable1_trans _ _ _ H H1;auto.
   -pose proof derivable1_orp_intros2 y y0.
-   pose proof deduction1_trans _ _ _ H0 H1;auto.
+   pose proof derivable1_trans _ _ _ H0 H1;auto.
 Qed.
 
 End orp.
@@ -301,14 +301,9 @@ Instance negp_proper_derivable1: Proper (derivable1 --> derivable1) negp.
 Proof.
   hnf;intros.
   unfold Basics.flip in H.
-  pose proof derivable1_negp_unfold x.
-  pose proof derivable1_negp_fold y.
-  pose proof deduction1_refl FF.
-  pose proof deduction1_intros _ _ _ _ H H2.
-  pose proof deduction1_trans _ _ _ H0 H3.
-  pose proof deduction1_trans _ _ _ H4 H1.
+  apply derivable1_contrapositivePP'.
   auto.
-  Qed.
+Qed.
 
 End negp.
 
@@ -320,18 +315,18 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaE: LogicEquiv L}
         {minE: MinimumEquiv L GammaE}
-        {BE: BasicLogicEquiv L GammaE}.
+        {bE: BasicLogicEquiv L GammaE}.
 
 Section andp.
 
 Context {andpL: AndLanguage L}
-        {andpE: EquivAndp L GammaE}.
+        {andpE: AndLogicEquiv L GammaE}.
 
 Instance andp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) andp.
 Proof.
   hnf;intros.
   hnf;intros.
-  apply equiv_andp_congr;[auto|auto].
+  apply logic_equiv_andp_congr;[auto|auto].
   Qed.
 
 End andp.
@@ -339,13 +334,13 @@ End andp.
 Section orp.
 
 Context {orpL: OrLanguage L}
-        {orpE: EquivOrp L GammaE}.
+        {orpE: OrLogicEquiv L GammaE}.
 
 Instance orp_proper_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) orp.
 Proof.
   hnf;intros.
   hnf;intros.
-  apply equiv_orp_congr;[auto|auto].
+  apply logic_equiv_orp_congr;[auto|auto].
   Qed.
 
 End orp.
@@ -353,12 +348,12 @@ End orp.
 Section negp.
 
 Context {negpL: NegLanguage L}
-        {negpE: EquivNegp L GammaE}.
+        {negpE: NegLogicEquiv L GammaE}.
 
 Instance negp_proper_equiv: Proper (logic_equiv  ==> logic_equiv ) negp.
 Proof.
   hnf;intros.
-  apply equiv_negp_intros;auto.
+  apply logic_equiv_negp_intros;auto.
   Qed.
 
 End negp.
@@ -367,27 +362,27 @@ Section iffp.
 
 Context {iffpL: IffLanguage L}
         {andpL: AndLanguage L}
-        {andpE: EquivAndp L GammaE}
-        {iffE: EquivIffp L GammaE}.
+        {andpE: AndLogicEquiv L GammaE}
+        {iffpE: IffLogicEquiv L GammaE}.
 
 Instance iffp_proper_equiv: Proper (logic_equiv  ==> logic_equiv ==> logic_equiv) iffp.
 Proof.
   hnf;intros.
   hnf;intros.
-  pose proof equiv_iffp_intros x x0.
-  pose proof equiv_iffp_intros y y0.
-  apply equiv_trans with ((x --> x0) && (x0 --> x)).
-  apply equiv_symm;auto.
-  apply equiv_symm.
-  apply equiv_trans with ((y --> y0) && (y0 --> y)).
-  apply equiv_symm;auto.
-  apply equiv_andp_congr.
+  pose proof logic_equiv_iffp_intros x x0.
+  pose proof logic_equiv_iffp_intros y y0.
+  apply logic_equiv_trans with ((x --> x0) && (x0 --> x)).
+  apply logic_equiv_symm;auto.
+  apply logic_equiv_symm.
+  apply logic_equiv_trans with ((y --> y0) && (y0 --> y)).
+  apply logic_equiv_symm;auto.
+  apply logic_equiv_andp_congr.
   -apply equiv_impp.
-   apply equiv_symm;auto.
-   apply equiv_symm;auto.
+   apply logic_equiv_symm;auto.
+   apply logic_equiv_symm;auto.
   -apply equiv_impp.
-   apply equiv_symm;auto.
-   apply equiv_symm;auto.
+   apply logic_equiv_symm;auto.
+   apply logic_equiv_symm;auto.
   Qed.
 
 End iffp.

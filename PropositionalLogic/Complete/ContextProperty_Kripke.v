@@ -41,7 +41,7 @@ Definition context_orp (Phi Psi: context): context :=
 Definition context_orp_captured (P: context -> Prop): Prop :=
   forall Phi Psi, P (context_orp Phi Psi) -> P Phi \/ P Psi.
 
-Context {SC: NormalSequentCalculus L GammaP GammaD}
+Context {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
         {andpSC: AndSequentCalculus L GammaD}
@@ -175,7 +175,7 @@ Proof.
     - pose proof deduction_orp_intros2 Phi x y H; auto.
 Qed.
 
-Lemma derivable_closed_union_derivable {AX: NormalAxiomatization L GammaP GammaD}: forall (Phi Psi: context) (x: expr),
+Lemma derivable_closed_union_derivable {GammaDP: DerivableProvable L GammaP GammaD}: forall (Phi Psi: context) (x: expr),
   derivable_closed Psi ->
   Union _ Phi Psi |-- x ->
   exists y, Psi y /\ Phi |-- y --> x.

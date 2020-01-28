@@ -40,7 +40,7 @@ Import SepApplyNotation.
 Existing Instances impp_proper_equiv
                    sepcon_proper_logic_equiv
                    provable_proper_equiv
-                   logic_equiv_refl.
+                   logic_equiv_refl_instance.
 
 Ltac cancel_tac EVAR :=
   apply cancel_ready;

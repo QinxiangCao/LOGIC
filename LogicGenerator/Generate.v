@@ -15,6 +15,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfClassicalAxioms.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.MetaLogicInj.Syntax.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
@@ -73,15 +74,19 @@ Context {L: Language}
         {iffpDef: IffDefinition_And_Imp L}
         {truepDef: TrueDefinition_False_Imp L}
         {negpDef: NegDefinition_False_Imp L}
+        {orpDef_impp_negp: OrDefinition_Imp_Neg L}
+        {truepDef_impp_self: TrueDefinition_Imp_Self L}
+        {truepDef_negp_falsep: TrueDefinition_Neg_False L}
+        {falsepDef_negp_truep: FalseDefinition_Neg_True L}
         {iter_andp_DL: IterAndDefinition_left L}
         {iter_andp_DR: IterAndDefinition_right L}
         {iter_sepcon_DL: IterSepconDefinition_left L}
         {iter_sepcon_DR: IterSepconDefinition_right L}
-        {AX: NormalAxiomatization L GammaP GammaD}
-        {SC : NormalSequentCalculus L GammaP GammaD}
-        {ND : NormalDeduction L GammaP GammaD1}
-        {NE : NormalEquiv L GammaP GammaE}
-        {NE2 : NormalEquiv2 L GammaD1 GammaE}
+        {GammaDP: DerivableProvable L GammaP GammaD}
+        {GammaPD : ProvableDerivable L GammaP GammaD}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
+        {GammaEP: EquivProvable L GammaP GammaE}
+        {GammaED1: EquivDerivable1 L GammaD1 GammaE}
         {minAX: MinimumAxiomatization L GammaP}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
@@ -93,6 +98,12 @@ Context {L: Language}
         {cpAX: ClassicalAxiomatization L GammaP}
         {dmpAX: DeMorganAxiomatization L GammaP}
         {gdpAX: GodelDummettAxiomatization L GammaP}
+        {plAX: PeirceLaw L GammaP}
+        {bcAX: ByContradiction L GammaP}
+        {double_negp_elim_AX: DoubleNegElimination L GammaP}
+        {caAX: ClassicAnalysis L GammaP}
+        {emAX: ExcludedMiddle L GammaP}
+        {impp2orpAX: ImplyToOr L GammaP}
         {coq_prop_AX: CoqPropAxiomatization L GammaP}
         {coq_prop_impp_AX: CoqPropImpAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
@@ -129,6 +140,7 @@ Context {L: Language}
         {truepD : TrueDeduction L GammaD1}
         {iffpD : IffDeduction L GammaD1}
         {inegpD : IntuitionisticNegDeduction L GammaD1}
+        {impp_negp_D : ImpNegDeduction L GammaD1}
         {sepconD : SepconDeduction L GammaD1}
         {wandD : WandDeduction L GammaD1}
         {empD : EmpDeduction L GammaD1}
@@ -358,6 +370,7 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.";
+  idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfClassicalAxioms.";
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.";
   idtac "Require Import Logic.MetaLogicInj.Syntax.";
   idtac "Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.";

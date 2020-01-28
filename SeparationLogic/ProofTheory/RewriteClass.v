@@ -128,7 +128,7 @@ Context {L: Language}
         {sepconL: SepconLanguage L}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
-        {NE: NormalEquiv2 L GammaD1 GammaE}
+        {GammaED1: EquivDerivable1 L GammaD1 GammaE}
         {minD: MinimumDeduction L GammaD1}
         {sepconD: SepconDeduction L GammaD1}.
 
@@ -136,23 +136,23 @@ Instance sepcon_proper_logic_equiv: Proper (logic_equiv ==> logic_equiv ==> logi
 Proof.
   hnf;intros.
   hnf;intros.
-  apply equiv_derivable1 in H;
-  apply equiv_derivable1 in H0.
-  apply equiv_derivable1; split;
+  apply logic_equiv_derivable1 in H;
+  apply logic_equiv_derivable1 in H0.
+  apply logic_equiv_derivable1; split;
   apply derivable1_sepcon_mono; tauto.
   Qed.
 
 Context {wandL: WandLanguage L}
         {wandD: WandDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Instance wand_proper_logic_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) wand.
 Proof.
   hnf;intros.
   hnf;intros.
-  apply equiv_derivable1 in H;
-  apply equiv_derivable1 in H0.
-  apply equiv_derivable1; split;
+  apply logic_equiv_derivable1 in H;
+  apply logic_equiv_derivable1 in H0.
+  apply logic_equiv_derivable1; split;
   apply derivable1_wand_mono; tauto.
   Qed.
 End RewriteClass3.
