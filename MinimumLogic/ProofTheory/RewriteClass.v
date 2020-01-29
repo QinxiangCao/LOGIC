@@ -51,27 +51,9 @@ Proof.
   apply aux_minimun_rule01, H0.
 Qed.
 
-Section Derivable1.
-
-Context {GammaD: Derivable1 L}
-        {MD:MinimumDeduction L GammaD}.
-
-Instance impp_proper_derivable1:
-  Proper (derivable1 --> derivable1 ==> derivable1) impp.
-Proof.
-  hnf;intros.
-  hnf;intros.
-  unfold Basics.flip in H.
-  pose proof deduction1_intros _ _ _ _ H H0.
-  tauto.
-  Qed.
-
-End Derivable1.
-
 Section Derivable1_provable.
 
 Context {GammaD: Derivable1 L}
-        {minD:MinimumDeduction L GammaD}
         {GammaD1P: Derivable1Provable L GammaP GammaD}.
 
 Instance provable_proper_derivable1:
@@ -131,18 +113,7 @@ Section Logic_equiv.
 
 Existing Instance derivable_proper_impp.
 
-Context {GammaE: LogicEquiv L}
-        {minE: MinimumEquiv L GammaE}.
-
-Instance impp_proper_equiv:
-  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
-Proof.
-  hnf;intros.
-  hnf;intros.
-  unfold Basics.flip in H.
-  pose proof equiv_impp _ _ _ _ H H0.
-  auto.
-  Qed.
+Context {GammaE: LogicEquiv L}.
 
 Context {GammaEP: EquivProvable L GammaP GammaE}
         {minAX: MinimumAxiomatization L GammaP}.

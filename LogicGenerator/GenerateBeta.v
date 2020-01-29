@@ -147,7 +147,7 @@ Context {L: Language}
         {sepcon_orp_D : SepconOrDeduction L GammaD1}
         {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
         {bE: BasicLogicEquiv L GammaE}
-        {minE: MinimumEquiv L GammaE}
+        {imppE: ImpLogicEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .

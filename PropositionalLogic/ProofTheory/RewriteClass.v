@@ -314,7 +314,7 @@ Section RewriteClass4.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaE: LogicEquiv L}
-        {minE: MinimumEquiv L GammaE}
+        {imppE: ImpLogicEquiv L GammaE}
         {bE: BasicLogicEquiv L GammaE}.
 
 Section andp.
@@ -377,10 +377,10 @@ Proof.
   apply logic_equiv_trans with ((y --> y0) && (y0 --> y)).
   apply logic_equiv_symm;auto.
   apply logic_equiv_andp_congr.
-  -apply equiv_impp.
+  -apply logic_equiv_impp.
    apply logic_equiv_symm;auto.
    apply logic_equiv_symm;auto.
-  -apply equiv_impp.
+  -apply logic_equiv_impp.
    apply logic_equiv_symm;auto.
    apply logic_equiv_symm;auto.
   Qed.

@@ -82,11 +82,11 @@ Qed.
 End CoqPropDeduction2CoqPropAxiomatization.
 
 Instance reg_Deduction2Axiomatization_coq_prop_AX:
-  RegisterClass D1ToP_reg (fun coq_prop_AX:unit => @Deduction2Axiomatization_coq_prop_AX) 8.
+  RegisterClass D12P_reg (fun coq_prop_AX:unit => @Deduction2Axiomatization_coq_prop_AX) 8.
 Qed.
 
 Instance reg_Deduction2Axiomatization_coq_prop_impp_AX:
-  RegisterClass D1ToP_reg (fun coq_prop_impp_AX:unit => @Deduction2Axiomatization_coq_prop_impp_AX) 9.
+  RegisterClass D12P_reg (fun coq_prop_impp_AX:unit => @Deduction2Axiomatization_coq_prop_impp_AX) 9.
 Qed.
 
 Section DeductionRules.

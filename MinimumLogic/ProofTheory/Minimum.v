@@ -38,16 +38,6 @@ Class ProvableDerivable
   provable_derivable: forall x, provable x <-> derivable empty_context x
 }.
 
-(* TODO: rename it to ImpDeduction *)
-Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L) := {
-  deduction1_intros:forall x1 x2 y1 y2, derivable1 x2 x1 -> derivable1 y1 y2 
-  -> derivable1 (x1 --> y1) (x2 --> y2);
-  deduction1_axiom1:forall x y, derivable1 x (y --> x);
-  deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z);
-  deduction_md:forall x y z,derivable1 (x --> y --> z) ((x --> y) --> (x --> z));
-  deduction_mid:forall x y, derivable1 ((x --> x) --> y) y;
-}.
-
 Class EquivProvable (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaL:LogicEquiv L): Type := {
   logic_equiv_provable:forall x y, x --||-- y <->
                         provable (impp x y) /\ provable (impp y x)
@@ -58,16 +48,8 @@ Class EquivDerivable1 (L:Language) (GammaD:Derivable1 L) (GammaL:LogicEquiv L): 
                         derivable1 x y /\ derivable1 y x
 }.
 
-(* TODO: rename it to ImpEquiv *)
-Class MinimumEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:LogicEquiv L) := {
-  equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
-  (x1 --> y1) --||-- (x2 --> y2)
-}.
-
-(* TODO: use truep instead of "impp x x"? *)
 Class ProvableDerivable1 (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable1 L): Type := {
-  provable_derivable1: forall x, derivable1 (impp x x) x <->
-                        provable x
+  provable_derivable1: forall x, provable x <-> derivable1 (impp x x) x
 }.
 
 Section DerivableRulesFromAxiomatization.
