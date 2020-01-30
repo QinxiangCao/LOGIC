@@ -860,7 +860,8 @@ Definition derived_rules :=
   ; logic_equiv_symm_instance
   ; logic_equiv_trans_instance
 
-  ; sepcon_assoc_equiv
+  ; sepcon_comm_logic_equiv
+  ; sepcon_assoc_logic_equiv
   ; sepcon_emp_equiv
 
 

@@ -253,8 +253,7 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {falsepL: FalseLanguage L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Section andp.
 

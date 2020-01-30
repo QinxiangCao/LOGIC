@@ -101,7 +101,6 @@ Context {L: Language}
         {iffpL: IffLanguage L}
         {truepL: TrueLanguage L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {orpD: OrDeduction L GammaD1}
@@ -176,17 +175,13 @@ Proof.
   intros.
   apply logic_equiv_derivable1.
   split.
-  -apply derivable1_andp_elim1.
-  -pose proof ProofRules.coq_prop_intros P.
-   apply H0 in H.
-   apply derivable1_provable.
-   pose proof andp_intros Q (!! P).
-   apply derivable1_provable in H1.
-   apply deduction_exchange in H1.
-   apply derivable1_provable in H1.
-   pose proof modus_ponens _ _ H1 H.
-   auto.
-   Qed.
+  + apply derivable1_andp_elim1.
+  + pose proof ProofRules.coq_prop_intros P.
+    apply derivable1_andp_intros; [reflexivity |].
+    rewrite derivable1_provable.
+    rewrite <- axiom1.
+    auto.
+Qed.
 
 Lemma coq_prop_and_equiv: forall P Q: Prop, !! (P /\ Q) --||-- !! P && !! Q.
 Proof.

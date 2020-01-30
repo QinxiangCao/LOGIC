@@ -296,7 +296,6 @@ Context {L: Language}
         {andpL: AndLanguage L}
         {sepconL: SepconLanguage L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {sepconD: SepconDeduction L GammaD1}
@@ -378,30 +377,29 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
         {GammED1: EquivDerivable1 L GammaD1 GammaE}
-        {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {sepconD: SepconDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
 
-Lemma sepcon_comm_equiv:
+Lemma sepcon_comm_logic_equiv:
   forall (x y: expr), x * y --||-- y * x.
 Proof.
   intros.
   apply logic_equiv_derivable1. split.
-  -apply derivable1_sepcon_comm.
-  -apply derivable1_sepcon_comm.
-  Qed.
-(*
-Lemma sepcon_assoc_equiv:
+  + apply derivable1_sepcon_comm.
+  + apply derivable1_sepcon_comm.
+Qed.
+
+Lemma sepcon_assoc_logic_equiv:
   forall x y z, x * (y * z) --||-- (x * y) * z.
 Proof.
   intros.
-  apply equiv_derivable1. split.
-  -apply derivable1_sepcon_assoc1.
-  -apply derivable1_sepcon_assoc2.
-  Qed.
-*)
+  apply logic_equiv_derivable1. split.
+  + apply derivable1_sepcon_assoc1.
+  + apply derivable1_sepcon_assoc2.
+Qed.
+
 Context {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}
         {orpD: OrDeduction L GammaD1}
@@ -635,7 +633,6 @@ Lemma SepconDeductionWeak2SepconDeduction
       {minL: MinimumLanguage L}
       {sepconL: SepconLanguage L}
       {GammaD1: Derivable1 L}
-      {minAX: MinimumDeduction L GammaD1}
       {sepconAX: SepconDeduction_weak L GammaD1}
       {sepcon_mono_AX: SepconMonoDeduction L GammaD1}:
   SepconDeduction L GammaD1.
@@ -686,7 +683,6 @@ Context {L: Language}
         {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
         {iffpD: IffDeduction L GammaD1}
         {sepconE: SepconLogicEquiv_weak_iffp L GammaE}
-        {minD:MinimumDeduction L GammaD1}
         {bD: BasicDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
@@ -730,7 +726,6 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
         {empE: EmpLogicEquiv_iffp L GammaE}
-        {minD:MinimumDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
         {bD: BasicDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
@@ -765,7 +760,6 @@ Context {L: Language}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {wandD: WandDeduction L GammaD1}
@@ -793,7 +787,6 @@ Context {L: Language}
         {sepconL: SepconLanguage L}
         {GammaE: LogicEquiv L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
@@ -824,7 +817,6 @@ Context {L: Language}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
@@ -864,7 +856,6 @@ Context {L: Language}
         {empL: EmpLanguage L}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
-        {minD: MinimumDeduction L GammaD1}
         {andpD: AndDeduction L GammaD1}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}

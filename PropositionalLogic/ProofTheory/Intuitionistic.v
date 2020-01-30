@@ -90,16 +90,6 @@ Class IterAndAxiomatization_left
     |-- iter_andp xs <--> fold_left andp xs TT
 }.
 
-(* TODO: Eventually remove and reorganize the following *)
-Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L) := {
-  deduction1_intros:forall x1 x2 y1 y2, derivable1 x2 x1 -> derivable1 y1 y2 
-  -> derivable1 (x1 --> y1) (x2 --> y2);
-  deduction1_axiom1:forall x y, derivable1 x (y --> x);
-  deduction_exchange:forall x y z,derivable1 x (y --> z) -> derivable1 y (x --> z);
-  deduction_md:forall x y z,derivable1 (x --> y --> z) ((x --> y) --> (x --> z));
-  deduction_mid:forall x y, derivable1 ((x --> x) --> y) y;
-}.
-
 Class ImpLogicEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:LogicEquiv L) := {
   logic_equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 --> y1) --||-- (x2 --> y2)
@@ -236,40 +226,21 @@ Proof.
   reflexivity.
 Qed.
 
-End DerivableRulesFromDeduction1.
-
-Section ToReorganize.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaP: Provable L}
-        {GammaD1: Derivable1 L}
-        {GammaD1P: Derivable1Provable L GammaP GammaD1}
-        {minAX: MinimumAxiomatization L GammaP}.
-
-Lemma Axiomatization2Deduction_minD: MinimumDeduction L GammaD1.
+Lemma derivable1_impp_mono {adjD: ImpAndAdjointDeduction L GammaD1}:
+  forall (x1 y1 x2 y2: expr), derivable1 y1 x1 -> derivable1 x2 y2 -> derivable1 (x1 --> x2) (y1 --> y2).
 Proof.
-  constructor.
-  -intros.
-   apply derivable1_provable in H.
-   apply derivable1_provable in H0. apply derivable1_provable.
-   rewrite H. rewrite H0.
-   apply provable_impp_refl.
-  -intros.
-   apply derivable1_provable. apply axiom1.
-  -intros. apply  derivable1_provable. apply derivable1_provable in H.
-   pose proof provable_impp_arg_switch x y z.
-   pose proof modus_ponens _ _  H0 H. auto.
-  -intros. apply derivable1_provable.
-   apply axiom2.
-  -intros. apply derivable1_provable.
-   pose proof aux_minimun_theorem02 (x --> x) y.
-   pose proof provable_impp_refl x.
-   pose proof modus_ponens _ _ H H0.
-   auto.
+  intros.
+  rewrite derivable1_impp_andp_adjoint.
+  rewrite <- H0.
+  rewrite derivable1_andp_comm.
+  rewrite <- derivable1_impp_andp_adjoint.
+  rewrite H.
+  rewrite derivable1_impp_andp_adjoint.
+  rewrite derivable1_andp_comm.
+  apply derivable1_modus_ponens.
 Qed.
 
-End ToReorganize.
+End DerivableRulesFromDeduction1.
 
 Section ToReorganize2.
 
@@ -320,18 +291,19 @@ Section Derivable1.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {GammaD: Derivable1 L}
-        {minD: MinimumDeduction L GammaD}.
+        {andpL: AndLanguage L}
+        {GammaD1: Derivable1 L}
+        {bD: BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}.
 
 Instance impp_proper_derivable1:
   Proper (derivable1 --> derivable1 ==> derivable1) impp.
 Proof.
   hnf;intros.
   hnf;intros.
-  unfold Basics.flip in H.
-  pose proof deduction1_intros _ _ _ _ H H0.
-  tauto.
-  Qed.
+  apply derivable1_impp_mono; auto.
+Qed.
 
 End Derivable1.
 
@@ -1589,11 +1561,12 @@ Proof.
     apply derivable1_truep_intros.
 Qed.
 
-Instance reg_Axiomatization2Deduction_minD:
-  RegisterClass P2D1_reg (fun minD: unit => @Axiomatization2Deduction_minD) 1.
+Instance reg_Axiomatization2Deduction_GammaPD1:
+  RegisterClass P2D1_reg (fun PD: unit => @Axiomatization2Deduction_GammaPD1) 1.
 Qed.
 
-Instance reg_Axiomatization2Deduction_GammaPD1:
+(* TODO: temporarily put a redundant instance here *)
+Instance reg_Axiomatization2Deduction_GammaPD1':
   RegisterClass P2D1_reg (fun PD: unit => @Axiomatization2Deduction_GammaPD1) 2.
 Qed.
 
@@ -1699,7 +1672,6 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD1: Derivable1 L}
         {GammaD1P: Derivable1Provable L GammaP GammaD1}
-        {minD: MinimumDeduction L GammaD1}
         {bD: BasicDeduction L GammaD1}.
 
 Section Deduction2Axiomatization1.
@@ -1727,7 +1699,6 @@ Context {orpL: OrLanguage L}
 
 Lemma Deduction2Axiomatization_orpAX: OrAxiomatization L GammaP.
 Proof.
-  clear minD.
   constructor.
   -intros.
    apply derivable1_provable.
