@@ -100,210 +100,10 @@ Class MinimumDeduction (L:Language) {minL:MinimumLanguage L} (Gamma:Derivable1 L
   deduction_mid:forall x y, derivable1 ((x --> x) --> y) y;
 }.
 
-Section ToReorganize.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaP: Provable L}
-        {GammaD:Derivable L}
-        {GammaD1: Derivable1 L}
-        {GammaD1P: Derivable1Provable L GammaP GammaD1}
-        {minAX: MinimumAxiomatization L GammaP}.
-
-Lemma Axiomatization2Deduction_minD: MinimumDeduction L GammaD1.
-Proof.
-  constructor.
-  -intros.
-   apply derivable1_provable in H.
-   apply derivable1_provable in H0. apply derivable1_provable.
-   rewrite H. rewrite H0.
-   apply provable_impp_refl.
-  -intros.
-   apply derivable1_provable. apply axiom1.
-  -intros. apply  derivable1_provable. apply derivable1_provable in H.
-   pose proof provable_impp_arg_switch x y z.
-   pose proof modus_ponens _ _  H0 H. auto.
-  -intros. apply derivable1_provable.
-   apply axiom2.
-  -intros. apply derivable1_provable.
-   pose proof aux_minimun_theorem02 (x --> x) y.
-   pose proof provable_impp_refl x.
-   pose proof modus_ponens _ _ H H0.
-   auto.
-Qed.
-
-End ToReorganize.
-
 Class ImpLogicEquiv (L:Language) {minL:MinimumLanguage L} (Gamma:LogicEquiv L) := {
   logic_equiv_impp:forall x1 x2 y1 y2, x1 --||-- x2 -> y1 --||-- y2 -> 
   (x1 --> y1) --||-- (x2 --> y2)
 }.
-
-Section ToReorganize2.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaP: Provable L}
-        {GammaD: Derivable L}
-        {GammaE: LogicEquiv L}
-        {GammaEP: EquivProvable L GammaP GammaE}
-        {minAX: MinimumAxiomatization L GammaP}.
-
-Lemma Axiomatization2LogicEquiv_imppE : ImpLogicEquiv L GammaE.
-Proof.
-  constructor.
-  intros.
-  apply logic_equiv_provable. apply logic_equiv_provable in H. apply logic_equiv_provable in H0.
-  destruct H,H0.
-  split.
-  -rewrite H0. rewrite H1.
-   apply provable_impp_refl.
-  -rewrite H. rewrite H2.
-   apply provable_impp_refl.
-  Qed.
-
-End ToReorganize2.
-
-Section Derivable1Rules.
-
-Import Derivable1.
-Local Open Scope Derivable1.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}.
-
-Lemma derivable1_base:forall x y,
-  (x --> x) |-- (y --> y).
-Proof.
-  intros.
-  apply deduction_exchange.
-  apply deduction1_axiom1.
-  Qed.
-
-End Derivable1Rules.
-
-Section ToReorganize3.
-
-  Require Import Morphisms.
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaE: LogicEquiv L}
-        {bE: BasicLogicEquiv L GammaE}
-        {imppE: ImpLogicEquiv L GammaE}.
-
-Instance impp_proper_equiv:
-  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
-Proof.
-  hnf;intros.
-  hnf;intros.
-  unfold Basics.flip in H.
-  pose proof logic_equiv_impp _ _ _ _ H H0.
-  auto.
-Qed.
-
-End ToReorganize3.
-
-
-Section Derivable1.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaD: Derivable1 L}
-        {minD: MinimumDeduction L GammaD}.
-
-Instance impp_proper_derivable1:
-  Proper (derivable1 --> derivable1 ==> derivable1) impp.
-Proof.
-  hnf;intros.
-  hnf;intros.
-  unfold Basics.flip in H.
-  pose proof deduction1_intros _ _ _ _ H H0.
-  tauto.
-  Qed.
-
-End Derivable1.
-
-Existing Instances impp_proper_derivable1 impp_proper_equiv.
-
-Section Derivable1ToProvable.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaP: Provable L}
-        {GammaD1: Derivable1 L}
-        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
-        {minD: MinimumDeduction L GammaD1}
-        {bD: BasicDeduction L GammaD1}.
-
-Lemma Deduction2Axiomatization_minAX : MinimumAxiomatization L GammaP.
-Proof.
-  constructor.
-  -intros.
-   apply provable_derivable1.
-   apply provable_derivable1 in H.
-   apply provable_derivable1 in H0.
-   rewrite <- H0 in H at 3.
-   pose proof derivable1_base y x.
-   pose proof deduction_exchange _ _ _ H;clear H.
-   pose proof deduction_mid (x --> y) y.
-   pose proof derivable1_trans _ _ _ H2 H.
-   pose proof derivable1_trans _ _ _ H1 H3.
-   auto.
-  -intros.
-   apply provable_derivable1.
-   apply deduction_exchange.
-   pose proof deduction1_axiom1 x y.
-   pose proof deduction1_axiom1 (y --> x) ((x --> y --> x) --> x --> y --> x).
-   pose proof derivable1_trans _ _ _ H H0.
-   auto.
-  -intros.
-   apply provable_derivable1.
-   apply deduction_exchange.
-   pose proof deduction_md x y z.
-   pose proof deduction1_axiom1 ((x --> y) --> (x --> z)) (((x --> y --> z) --> (x --> y) --> x --> z) --> (x --> y --> z) --> (x --> y) --> x --> z).
-   pose proof derivable1_trans _ _ _ H H0.
-   auto.
-   Qed.
-
-End Derivable1ToProvable.
-
-Section Derivable1_Provable.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {GammaP: Provable L}
-        {GammaD1: Derivable1 L}.
-
-Context {GammaD1P: Derivable1Provable L GammaP GammaD1}
-        {minAX: MinimumAxiomatization L GammaP}.
-
-Context {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
-        {minD: MinimumDeduction L GammaD1}
-        {bD: BasicDeduction L GammaD1}.
-
-Import Derivable1.
-Local Open Scope Derivable1.
-
-Lemma Deduction2Axiomatization_GammaD1P: Derivable1Provable L GammaP GammaD1.
-Proof.
-  constructor.
-  intros. split.
-  -intros.
-   apply provable_derivable1.
-   apply deduction_exchange.
-   pose proof deduction1_axiom1 y ((x --> y) --> x --> y).
-   pose proof derivable1_trans _ _ _ H H0. auto.
-  -intros.
-   apply provable_derivable1 in H.
-   apply deduction_exchange in H.
-   pose proof deduction_mid (x --> y) y.
-   pose proof derivable1_trans _ _ _ H H0. auto.
-  Qed.
-
-End Derivable1_Provable.
-
 
 Class AndDeduction (L: Language) {andpL: AndLanguage L} (GammaD1: Derivable1 L) := {
   derivable1_andp_intros:forall x y z,derivable1 x y -> derivable1 x z -> derivable1 x (y && z);
@@ -392,6 +192,236 @@ Class IffLogicEquiv (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L
 Class NegLogicEquiv (L:Language) {negpL: NegLanguage L} (GammaE:LogicEquiv L):= {
   logic_equiv_negp_intros:forall x y, x --||-- y -> ~~ x --||-- ~~ y
 }.
+
+Section DerivableRulesFromDeduction1.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
+        {GammaD1: Derivable1 L}
+        {bD: BasicDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}.
+
+Lemma derivable1_andp_comm: forall (x y: expr),
+  derivable1 (x && y) (y && x).
+Proof.
+  intros.
+  apply derivable1_andp_intros.
+  + apply derivable1_andp_elim2.
+  + apply derivable1_andp_elim1.
+Qed.
+
+Lemma derivable1_andp_assoc: forall (x y z: expr),
+  derivable1 (x && y && z) (x && (y && z)).
+Proof.
+  intros.
+  repeat apply derivable1_andp_intros.
+  + rewrite derivable1_andp_elim1.
+    apply derivable1_andp_elim1.
+  + rewrite derivable1_andp_elim1.
+    apply derivable1_andp_elim2.
+  + apply derivable1_andp_elim2.
+Qed.
+
+Lemma derivable1_modus_ponens {adjD: ImpAndAdjointDeduction L GammaD1}:
+  forall (x y: expr), derivable1 ((x --> y) && x) y.
+Proof.
+  intros.
+  rewrite <- derivable1_impp_andp_adjoint.
+  reflexivity.
+Qed.
+
+End DerivableRulesFromDeduction1.
+
+Section ToReorganize.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD1: Derivable1 L}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
+        {minAX: MinimumAxiomatization L GammaP}.
+
+Lemma Axiomatization2Deduction_minD: MinimumDeduction L GammaD1.
+Proof.
+  constructor.
+  -intros.
+   apply derivable1_provable in H.
+   apply derivable1_provable in H0. apply derivable1_provable.
+   rewrite H. rewrite H0.
+   apply provable_impp_refl.
+  -intros.
+   apply derivable1_provable. apply axiom1.
+  -intros. apply  derivable1_provable. apply derivable1_provable in H.
+   pose proof provable_impp_arg_switch x y z.
+   pose proof modus_ponens _ _  H0 H. auto.
+  -intros. apply derivable1_provable.
+   apply axiom2.
+  -intros. apply derivable1_provable.
+   pose proof aux_minimun_theorem02 (x --> x) y.
+   pose proof provable_impp_refl x.
+   pose proof modus_ponens _ _ H H0.
+   auto.
+Qed.
+
+End ToReorganize.
+
+Section ToReorganize2.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaE: LogicEquiv L}
+        {GammaEP: EquivProvable L GammaP GammaE}
+        {minAX: MinimumAxiomatization L GammaP}.
+
+Lemma Axiomatization2LogicEquiv_imppE : ImpLogicEquiv L GammaE.
+Proof.
+  constructor.
+  intros.
+  apply logic_equiv_provable. apply logic_equiv_provable in H. apply logic_equiv_provable in H0.
+  destruct H,H0.
+  split.
+  -rewrite H0. rewrite H1.
+   apply provable_impp_refl.
+  -rewrite H. rewrite H2.
+   apply provable_impp_refl.
+  Qed.
+
+End ToReorganize2.
+
+Section ToReorganize3.
+
+Require Import Morphisms.
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaE: LogicEquiv L}
+        {bE: BasicLogicEquiv L GammaE}
+        {imppE: ImpLogicEquiv L GammaE}.
+
+Instance impp_proper_equiv:
+  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  unfold Basics.flip in H.
+  pose proof logic_equiv_impp _ _ _ _ H H0.
+  auto.
+Qed.
+
+End ToReorganize3.
+
+Section Derivable1.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaD: Derivable1 L}
+        {minD: MinimumDeduction L GammaD}.
+
+Instance impp_proper_derivable1:
+  Proper (derivable1 --> derivable1 ==> derivable1) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  unfold Basics.flip in H.
+  pose proof deduction1_intros _ _ _ _ H H0.
+  tauto.
+  Qed.
+
+End Derivable1.
+
+Existing Instances impp_proper_derivable1 impp_proper_equiv.
+
+Section Derivable1ToProvable.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
+        {GammaP: Provable L}
+        {GammaD1: Derivable1 L}
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
+        {bD: BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}.
+
+Lemma derivable1_base:forall x y,
+  derivable1 x (y --> y).
+Proof.
+  intros.
+  rewrite derivable1_impp_andp_adjoint.
+  apply derivable1_andp_elim2.
+Qed.
+
+Lemma Deduction2Axiomatization_minAX : MinimumAxiomatization L GammaP.
+Proof.
+  constructor.
+  + intros.
+    rewrite provable_derivable1 in H, H0 |- *.
+    rewrite derivable1_impp_andp_adjoint in H.
+    rewrite <- H at 3.
+    apply derivable1_andp_intros.
+    - apply derivable1_base.
+    - rewrite <- H0.
+      apply derivable1_base.
+  + intros.
+    rewrite provable_derivable1.
+    rewrite ! derivable1_impp_andp_adjoint.
+    rewrite derivable1_andp_elim1.
+    apply derivable1_andp_elim2.
+  + intros.
+    rewrite provable_derivable1.
+    rewrite derivable1_impp_andp_adjoint.
+    rewrite derivable1_andp_elim2.
+    rewrite ! derivable1_impp_andp_adjoint.
+    rewrite <- (derivable1_modus_ponens y z) at 2.
+    apply derivable1_andp_intros.
+    - rewrite <- derivable1_impp_andp_adjoint.
+      apply derivable1_andp_elim1.
+    - rewrite <- derivable1_impp_andp_adjoint.
+      apply derivable1_andp_elim2.
+Qed.
+
+End Derivable1ToProvable.
+
+Section Derivable1_Provable.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
+        {GammaP: Provable L}
+        {GammaD1: Derivable1 L}
+        {GammaPD1: ProvableDerivable1 L GammaP GammaD1}
+        {bD: BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}.
+
+Import Derivable1.
+Local Open Scope Derivable1.
+
+Lemma Deduction2Axiomatization_GammaD1P: Derivable1Provable L GammaP GammaD1.
+Proof.
+  constructor.
+  intros. split.
+  + intros.
+    apply provable_derivable1.
+    apply derivable1_impp_andp_adjoint.
+    rewrite derivable1_andp_elim2.
+    apply H.
+  + intros.
+    apply provable_derivable1 in H.
+    apply derivable1_impp_andp_adjoint in H.
+    rewrite <- H.
+    apply derivable1_andp_intros.
+    - apply derivable1_base.
+    - reflexivity.
+Qed.
+
+End Derivable1_Provable.
 
 Section DerivableRulesFromSequentCalculus1.
 
@@ -1581,57 +1611,32 @@ Qed.
 
 Section DerivableRulesFromDeduction.
 
-Lemma derivable1_distr
+Lemma derivable1_orp_elim'
        {L: Language}
        {minL: MinimumLanguage L}
        {andpL: AndLanguage L}
        {orpL: OrLanguage L}
        {GammaD1: Derivable1 L}
-       {minD: MinimumDeduction L GammaD1}
        {andpD: AndDeduction L GammaD1}
        {orpD: OrDeduction L GammaD1}
        {adjD: ImpAndAdjointDeduction L GammaD1}
-       {bD: BasicDeduction L GammaD1}
-      :forall P x y z,
-  derivable1 (P && (x || y)) z <-> derivable1 ((P && x) || (P && y)) z.
+       {bD: BasicDeduction L GammaD1}:
+  forall x y z, derivable1 ((x --> z) && (y --> z)) (x || y --> z).
 Proof.
-   split.
-   -intros.
-    apply derivable1_orp_elim.
-     *apply derivable1_impp_andp_adjoint in H.
-      pose proof derivable1_andp_elim1 P x.
-      pose proof derivable1_andp_elim2 P x.
-      pose proof derivable1_orp_intros1 x y.
-      pose proof derivable1_trans _ _ _ H1 H2;clear H1 H2.
-      pose proof derivable1_trans _ _ _ H0 H;clear H0 H.
-      AddAxiomatization.
-      rewrite derivable1_provable in H3, H1 |- *.
-      pose proof axiom2 (P && x) (x || y) z.
-      pose proof modus_ponens _ _ H H1.
-      pose proof modus_ponens _ _ H0 H3;auto.
-     *apply derivable1_impp_andp_adjoint in H.
-      pose proof derivable1_andp_elim1 P y.
-      pose proof derivable1_andp_elim2 P y.
-      pose proof derivable1_orp_intros2 x y.
-      pose proof derivable1_trans _ _ _ H1 H2;clear H1 H2.
-      pose proof derivable1_trans _ _ _ H0 H;clear H0 H.
-      AddAxiomatization.
-      rewrite derivable1_provable in H3, H1 |- *.
-      pose proof axiom2 (P && y) (x || y) z.
-      pose proof modus_ponens _ _ H H1.
-      pose proof modus_ponens _ _ H0 H3;auto.
-   -intros.
+  intros.
+  apply derivable1_impp_andp_adjoint.
+  rewrite derivable1_andp_comm.
+  apply derivable1_impp_andp_adjoint.
+  apply derivable1_orp_elim.
+  + apply derivable1_impp_andp_adjoint.
+    rewrite derivable1_andp_comm.
     apply derivable1_impp_andp_adjoint.
-    pose proof derivable1_orp_intros1 (P && x) (P && y).
-    pose proof derivable1_orp_intros2 (P && x) (P && y).
-    pose proof derivable1_trans _ _ _ H0 H.
-    pose proof derivable1_trans _ _ _ H1 H.
-    apply derivable1_impp_andp_adjoint in H2.
-    apply derivable1_impp_andp_adjoint in H3.
-    apply deduction_exchange. apply deduction_exchange in H2. 
-    apply deduction_exchange in H3.
-    pose proof derivable1_orp_elim _ _ _ H2 H3;auto.
-  Qed.
+    apply derivable1_andp_elim1.
+  + apply derivable1_impp_andp_adjoint.
+    rewrite derivable1_andp_comm.
+    apply derivable1_impp_andp_adjoint.
+    apply derivable1_andp_elim2.
+Qed.
 
 Lemma derivable1_negp_unfold
       {L: Language}
@@ -1722,6 +1727,7 @@ Context {orpL: OrLanguage L}
 
 Lemma Deduction2Axiomatization_orpAX: OrAxiomatization L GammaP.
 Proof.
+  clear minD.
   constructor.
   -intros.
    apply derivable1_provable.
@@ -1732,14 +1738,8 @@ Proof.
   -intros.
    apply derivable1_provable.
    apply derivable1_impp_andp_adjoint.
-   apply derivable1_impp_andp_adjoint.
-   apply derivable1_distr.
-   apply derivable1_orp_elim.
-     *apply derivable1_impp_andp_adjoint.
-      apply derivable1_andp_elim1.
-     *apply derivable1_impp_andp_adjoint.
-      apply derivable1_andp_elim2.
-    Qed.
+   apply derivable1_orp_elim'.
+Qed.
 
 End Deduction2Axiomatization1.
 

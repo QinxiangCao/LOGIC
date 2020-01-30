@@ -45,7 +45,7 @@ Ltac pose_proof_P2E_instance n :=
     try pose_proof_instance_as T x
   end.
 
-Ltac pose_proof_Ax1_instance n :=
+Ltac pose_proof_D12P_instance n :=
   let a := get_nth D12P_reg n in
   match a with
   | fun x: unit => ?T => 
@@ -69,12 +69,12 @@ Ltac AddAxiomatizationFromSequentCalculus :=
   rec_from_n (0%nat) pose_proof_D2P_instance.
 
 Ltac AddAxiomatizationFromDeduction :=
-  let D1P :=fresh "D2P" in
+  let GammaPD1 :=fresh "GammaPD1" in
   let GammaP := fresh "GammaP" in
-  pose proof Derivable12Provable_Normal as D1P;
-  set (GammaP := Derivable12Provable) in D1P;
+  pose proof Derivable12Provable_Normal as GammaPD1;
+  set (GammaP := Derivable12Provable) in GammaPD1;
   clearbody GammaP;
-  rec_from_n (0%nat) pose_proof_Ax1_instance.
+  rec_from_n (0%nat) pose_proof_D12P_instance.
 
 Ltac AddAxiomatization :=
   match goal with
@@ -91,11 +91,11 @@ Ltac AddDeduction :=
   rec_from_n (0%nat) pose_proof_P2D1_instance.
 
 Ltac AddEquiv :=
-  let NEL :=fresh "NE" in
-  let GammaL :=fresh "GammaE" in
-  pose proof Provable2Equiv_Normal as NEL;
-  set (GammaL := Provable2Equiv) in NEL;
-  clearbody GammaL;
+  let GammaEP :=fresh "GammaEP" in
+  let GammaE :=fresh "GammaE" in
+  pose proof Provable2Equiv_Normal as GammaEP;
+  set (GammaE := Provable2Equiv) in GammaEP;
+  clearbody GammaE;
   rec_from_n (0%nat) pose_proof_P2E_instance.
 
 Instance reg_Axiomatization2SequentCalculus_GammaPD:

@@ -487,45 +487,46 @@ End SepconRulesFromLogicEquiv.
 Section WandRules.
 
 Context {L: Language}
-        {minL: MinimumLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
         {wandD: WandDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Lemma derivable1_wand_sepcon_modus_ponens1: forall (x y: expr),
   (x -* y) * x |-- y.
 Proof.
-  AddAxiomatization.
   intros.
-  pose proof provable_wand_sepcon_modus_ponens1 x y.
-  apply derivable1_provable;auto.
-  Qed.
+  apply derivable1_wand_sepcon_adjoint.
+  reflexivity.
+Qed.
 
 Context {sepconD: SepconDeduction L GammaD1}.
 
 Lemma derivable1_wand_sepcon_modus_ponens2: forall (x y: expr),
   x * (x -* y) |-- y.
 Proof.
-  AddAxiomatization.
   intros.
-  pose proof provable_wand_sepcon_modus_ponens2 x y.
-  apply derivable1_provable;auto.
-  Qed.
+  rewrite derivable1_sepcon_comm.
+  apply derivable1_wand_sepcon_adjoint.
+  reflexivity.
+Qed.
 
 Lemma derivable1_wand_mono: forall x1 x2 y1 y2,
   x2 |-- x1 -> y1 |-- y2 -> (x1 -* y1) |-- (x2 -* y2).
 Proof.
-  AddAxiomatization.
   intros.
-  pose proof wand_mono x1 x2 y1 y2.
-  rewrite derivable1_provable in H, H0 |- *.
-  apply H1 in H;[auto|auto].
-  Qed.
+  apply derivable1_wand_sepcon_adjoint.
+  rewrite <- H0.
+  rewrite derivable1_sepcon_comm.
+  apply derivable1_wand_sepcon_adjoint.
+  rewrite H.
+  apply derivable1_wand_sepcon_adjoint.
+  apply derivable1_wand_sepcon_modus_ponens2.
+Qed.
 
-Context {andpL: AndLanguage L}
+Context {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
         {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}
         {andpD: AndDeduction L GammaD1}
@@ -543,7 +544,7 @@ Proof.
   AddConnective_iffp.
   pose proof sepcon_elim2 x y.
   apply derivable1_provable;auto.
-  Qed.
+Qed.
 
 Lemma derivable1_emp_sepcon_elim1: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicD L GammaD1}  x y,
   x * y && emp |-- x.
@@ -592,7 +593,7 @@ Proof.
   pose proof solve_iffp_elim2 _ _ H.
   apply logic_equiv_derivable1;rewrite !derivable1_provable.
   split;[auto|auto].
-  Qed.
+Qed.
 
 End WandRules.
 
@@ -676,6 +677,7 @@ Section SepconLogicEquiv_weak_iffpToSepconAxiomatization_weak_iffp.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
         {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {GammaE: LogicEquiv L}
@@ -686,6 +688,8 @@ Context {L: Language}
         {sepconE: SepconLogicEquiv_weak_iffp L GammaE}
         {minD:MinimumDeduction L GammaD1}
         {bD: BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
         {GammaD1P: Derivable1Provable L GammaP GammaD1}
         {GammED1: EquivDerivable1 L GammaD1 GammaE}.
 
@@ -717,6 +721,7 @@ Section EmpLogicEquiv_iffp2EmpAxiomatization_iffp.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
         {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {empL: EmpLanguage L}
@@ -727,7 +732,9 @@ Context {L: Language}
         {empE: EmpLogicEquiv_iffp L GammaE}
         {minD:MinimumDeduction L GammaD1}
         {iffpD: IffDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}
+        {bD: BasicDeduction L GammaD1}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}
         {GammaD1P: Derivable1Provable L GammaP GammaD1}
         {GammED1: EquivDerivable1 L GammaD1 GammaE}.
 
