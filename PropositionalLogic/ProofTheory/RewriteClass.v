@@ -250,10 +250,25 @@ End RewriteClass2.
 Section RewriteClass3.
 
 Context {L: Language}
-        {minL: MinimumLanguage L}
-        {falsepL: FalseLanguage L}
         {GammaD1: Derivable1 L}
         {bD: BasicDeduction L GammaD1}.
+
+Section impp.
+
+Context {minL: MinimumLanguage L}
+        {andpL: AndLanguage L}
+        {adjD: ImpAndAdjointDeduction L GammaD1}
+        {andpD: AndDeduction L GammaD1}.
+
+Instance impp_proper_derivable1:
+  Proper (derivable1 --> derivable1 ==> derivable1) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  apply derivable1_impp_mono; auto.
+Qed.
+
+End impp.
 
 Section andp.
 
@@ -311,10 +326,25 @@ End RewriteClass3.
 Section RewriteClass4.
 
 Context {L: Language}
-        {minL: MinimumLanguage L}
         {GammaE: LogicEquiv L}
-        {imppE: ImpLogicEquiv L GammaE}
         {bE: BasicLogicEquiv L GammaE}.
+
+Section impp.
+
+Context {minL: MinimumLanguage L}
+        {imppE: ImpLogicEquiv L GammaE}.
+
+Instance impp_proper_equiv:
+  Proper (logic_equiv ==> logic_equiv ==> logic_equiv) impp.
+Proof.
+  hnf;intros.
+  hnf;intros.
+  unfold Basics.flip in H.
+  pose proof logic_equiv_impp _ _ _ _ H H0.
+  auto.
+Qed.
+
+End impp.
 
 Section andp.
 
@@ -359,8 +389,10 @@ End negp.
 
 Section iffp.
 
-Context {iffpL: IffLanguage L}
+Context {minL: MinimumLanguage L}
         {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
+        {imppL: ImpLogicEquiv L GammaE}
         {andpE: AndLogicEquiv L GammaE}
         {iffpE: IffLogicEquiv L GammaE}.
 
@@ -391,5 +423,7 @@ End RewriteClass4.
 Existing Instances andp_proper_impp orp_proper_impp negp_proper_impp
                    provable_iffp_rewrite provable_iffp_equiv
                    provable_proper_iffp derivable_proper_iffp
-                   impp_proper_iffp andp_proper_iffp orp_proper_iffp iffp_proper_iffp negp_proper_iffp.
+                   impp_proper_iffp andp_proper_iffp orp_proper_iffp
+                   iffp_proper_iffp negp_proper_iffp
+                   impp_proper_equiv impp_proper_derivable1.
 
