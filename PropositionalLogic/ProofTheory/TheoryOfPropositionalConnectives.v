@@ -131,6 +131,12 @@ Definition ImpNeg2Or
            {negpL: NegLanguage L}: OrLanguage L :=
   Build_OrLanguage _ (fun x y => ((~~ x) --> y)).
 
+Definition ImpSelf2True
+           {L: Language}
+           {minL: MinimumLanguage L}
+           (x: expr): TrueLanguage L :=
+  Build_TrueLanguage _ (impp x x).
+
 Definition NegFalse2True
            {L: Language}
            {falsepL: FalseLanguage L}
@@ -177,6 +183,13 @@ Lemma ImpNeg2Or_Normal
       {negpL: NegLanguage L}:
   @OrDefinition_Imp_Neg L _ _ ImpNeg2Or.
 Proof. constructor. reflexivity. Qed.
+
+Lemma ImpSelf2True_Normal
+      {L: Language}
+      {minL: MinimumLanguage L}
+      (x: expr):
+  @TrueDefinition_Imp_Self L _ (ImpSelf2True x).
+Proof. constructor. eexists. reflexivity. Qed.
 
 Lemma NegFalse2True_Normal
       {L: Language}
@@ -393,4 +406,34 @@ Ltac AddConnective_negp :=
   clearbody negpAX;
   clear negpDef;
   clearbody negpL.
+
+Ltac AddConnective_truep_impp_self_tac1 x :=
+  let truepL := fresh "truepL" in
+  let truepDef := fresh "truepDef" in
+  let truepAX := fresh "truepAX" in
+  set (truepL := ImpSelf2True x);
+  set (truepDef := ImpSelf2True_Normal x);
+  set (truepAX := TrueFromDefToAX_Imp_Self);
+  clearbody truepAX;
+  clear truepDef;
+  clearbody truepL.
+
+Ltac AddConnective_truep_impp_self_tac0 :=
+  match goal with
+  | x: expr |- _ =>
+          AddConnective_truep_impp_self_tac1 x
+  | |- ?P =>
+          let x := fresh "x" in
+          ( (intro x; match type of x with | ?T => unify T expr end)
+            || fail 1 "cannot find an expr");
+          AddConnective_truep_impp_self_tac1 x;
+          revert x;
+          change P
+  end.
+
+Tactic Notation "AddConnective_truep_impp_self" :=
+  AddConnective_truep_impp_self_tac0.
+
+Tactic Notation "AddConnective_truep_impp_self" constr(x) :=
+  AddConnective_truep_impp_self_tac1 x.
 

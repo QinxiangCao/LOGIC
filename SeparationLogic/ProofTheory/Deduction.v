@@ -17,7 +17,6 @@ Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.MetaLogicInj.Syntax.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
-Require Import Logic.MetaLogicInj.ProofTheory.Deduction.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
