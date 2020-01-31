@@ -195,7 +195,7 @@ Context {L: Language}
 Local Open Scope logic_base.
 Local Open Scope syntax.
 
-Lemma derivable_axiom2': forall Phi (x y z: expr), Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
+Lemma derivable_axiom2': forall Phi (x y z: expr), Phi |--- (x --> y --> z) --> (x --> y) --> (x --> z).
 Proof.
   AddAxiomatizationFromSequentCalculus.
 Abort.
@@ -234,7 +234,7 @@ Context {GammaD: Derivable L}
         {minSC: MinimumSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}.
 
-Lemma test_1: forall Phi (x y z: expr), Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
+Lemma test_1: forall Phi (x y z: expr), Phi |--- (x --> y --> z) --> (x --> y) --> (x --> z).
 Proof.
   AddAxiomatization.
   Abort.
@@ -242,9 +242,6 @@ Proof.
 End test_SequentCalculus.
 
 Section test_Deduction.
-
-Import Derivable1.
-Local Open Scope Derivable1.
 
 Context {GammaD1 :Derivable1 L}
         {bD: BasicDeduction L GammaD1}.

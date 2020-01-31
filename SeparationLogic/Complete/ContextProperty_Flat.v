@@ -36,7 +36,7 @@ Context {L: Language}
         {GammaD: Derivable L}.
 
 Definition context_sepcon (Phi Psi: context): context :=
-  fun z => exists x y, z = x * y /\ Phi |-- x /\ Psi |-- y.
+  fun z => exists x y, z = x * y /\ Phi |--- x /\ Psi |--- y.
 
 Definition context_sepcon_included_l (Phi2 Psi: context): context -> Prop :=
   fun Phi1 => Included _ (context_sepcon Phi1 Phi2) Psi.
@@ -76,8 +76,8 @@ Context {andpL: AndLanguage L}
 
 Lemma context_sepcon_derivable:
   forall (Phi Psi: context) z,
-    context_sepcon Phi Psi |-- z ->
-    exists x y, |-- x * y --> z /\ Phi |-- x /\ Psi |-- y.
+    context_sepcon Phi Psi |--- z ->
+    exists x y, |-- x * y --> z /\ Phi |--- x /\ Psi |--- y.
 Proof.
   intros.
   rewrite derivable_provable in H.
@@ -188,7 +188,7 @@ Proof.
   subst z1 z2.
   assert (context_orp Phi1 Phi1' (x1 || x2));
   [| assert (context_sepcon (context_orp Phi1 Phi1') Phi2 ((x1 || x2) * (y1 && y2)));
-     [| assert (Psi |-- (x1 * y1) || (x2 * y2))]].
+     [| assert (Psi |--- (x1 * y1) || (x2 * y2))]].
   + exists x1, x2.
     split; [| split]; auto.
   + exists (x1 || x2), (y1 && y2).
@@ -208,8 +208,8 @@ Qed.
 
 Lemma wand_deduction_theorem:
   forall (Phi: context) x y,
-    context_sepcon Phi (Union _ empty_context (Singleton _ x)) |-- y <->
-    Phi |-- x -* y.
+    context_sepcon Phi (Union _ empty_context (Singleton _ x)) |--- y <->
+    Phi |--- x -* y.
 Proof.
   intros.
   split; intros.

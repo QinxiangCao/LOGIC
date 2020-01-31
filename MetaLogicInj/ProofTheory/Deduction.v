@@ -21,8 +21,6 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 Import CoqPropInLogicNotation.
-Import Derivable1.
-Local Open Scope Derivable1.
 
 Class CoqPropDeduction
       (L: Language)

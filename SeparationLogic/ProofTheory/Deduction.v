@@ -26,8 +26,6 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 Import SeparationLogicNotation.
-Import Derivable1.
-Local Open Scope Derivable1.
 
 Class SepconDeduction
         (L: Language)

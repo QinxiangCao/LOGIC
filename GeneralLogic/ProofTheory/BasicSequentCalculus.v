@@ -6,13 +6,13 @@ Require Import Logic.GeneralLogic.ProofTheory.TheoryOfSequentCalculus.
 Local Open Scope logic_base.
 
 Class BasicSequentCalculus (L: Language) (Gamma: Derivable L) := {
-  deduction_weaken: forall Phi Psi x, Included _ Phi Psi -> Phi |-- x -> Psi |-- x;
-  derivable_assum: forall Phi x, Ensembles.In _ Phi x -> Phi |-- x;
-  deduction_subst: forall (Phi Psi: context) y, (forall x, Psi x -> Phi |-- x) -> Union _ Phi Psi |-- y -> Phi |-- y
+  deduction_weaken: forall Phi Psi x, Included _ Phi Psi -> Phi |--- x -> Psi |--- x;
+  derivable_assum: forall Phi x, Ensembles.In _ Phi x -> Phi |--- x;
+  deduction_subst: forall (Phi Psi: context) y, (forall x, Psi x -> Phi |--- x) -> Union _ Phi Psi |--- y -> Phi |--- y
 }.
 
 Class FiniteWitnessedSequentCalculus (L: Language) (Gamma: Derivable L) := {
-  derivable_finite_witnessed: forall (Phi: context) (y: expr), Phi |-- y -> exists xs, Forall Phi xs /\ (fun x => In x xs) |-- y
+  derivable_finite_witnessed: forall (Phi: context) (y: expr), Phi |--- y -> exists xs, Forall Phi xs /\ (fun x => In x xs) |--- y
 }.
 
 Section DerivableRulesFromSequentCalculus.
@@ -21,7 +21,7 @@ Context {L: Language}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}.
 
-Lemma deduction_subst1: forall Phi x y, Phi |-- x -> Phi;; x |-- y -> Phi |-- y.
+Lemma deduction_subst1: forall Phi x y, Phi |--- x -> Phi;; x |--- y -> Phi |--- y.
 Proof.
   intros.
   apply deduction_subst with (Singleton _ x); auto.
@@ -30,7 +30,7 @@ Proof.
   auto.
 Qed.
 
-Lemma derivable_trans: forall (Phi Psi: context) y, (forall x, Psi x -> Phi |-- x) -> Psi |-- y -> Phi |-- y.
+Lemma derivable_trans: forall (Phi Psi: context) y, (forall x, Psi x -> Phi |--- x) -> Psi |--- y -> Phi |--- y.
 Proof.
   intros.
   eapply deduction_subst; eauto.
@@ -39,22 +39,22 @@ Proof.
 Qed.
 
 Lemma deduction_weaken1: forall Phi x y,
-  Phi |-- y ->
-  Phi;; x |-- y.
+  Phi |--- y ->
+  Phi;; x |--- y.
 Proof.
   intros.
   eapply deduction_weaken; eauto.
   intros ? ?; left; auto.
 Qed.
 
-Lemma derivable_assum1: forall (Phi: context) (x: expr), Phi;; x |-- x.
+Lemma derivable_assum1: forall (Phi: context) (x: expr), Phi;; x |--- x.
 Proof.
   intros.
   apply derivable_assum.
   right; constructor.
 Qed.
 
-Lemma contextual_derivable_finite_witnessed {fwSC: FiniteWitnessedSequentCalculus L Gamma}: forall (Phi Psi: context) (y: expr), Union _ Phi Psi |-- y -> exists xs, Forall Psi xs /\ Union _ Phi (fun x => In x xs) |-- y.
+Lemma contextual_derivable_finite_witnessed {fwSC: FiniteWitnessedSequentCalculus L Gamma}: forall (Phi Psi: context) (y: expr), Union _ Phi Psi |--- y -> exists xs, Forall Psi xs /\ Union _ Phi (fun x => In x xs) |--- y.
 Proof.
   apply DeductionWeaken_DerivableFiniteWitnessed_2_ContextualDerivableFiniteWitnessed.
   + hnf; intros; eapply deduction_weaken; eauto.

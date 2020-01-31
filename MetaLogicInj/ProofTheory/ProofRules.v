@@ -40,9 +40,9 @@ Class CoqPropSequentCalculus
       {minL: MinimumLanguage L}
       {coq_prop_L: CoqPropLanguage L}
       (Gamma: Derivable L): Prop := {
-  derivable_coq_prop_intros: forall (P: Prop) Phi, P -> Phi |-- !! P;
-  derivable_coq_prop_elim: forall (P: Prop) Phi x, (P -> Phi |-- x) -> Phi;; !! P |-- x;
-  derivable_coq_prop_impp_left: forall (P Q: Prop) Phi, Phi;; !! P --> !! Q |-- !! (P -> Q)
+  derivable_coq_prop_intros: forall (P: Prop) Phi, P -> Phi |--- !! P;
+  derivable_coq_prop_elim: forall (P: Prop) Phi x, (P -> Phi |--- x) -> Phi;; !! P |--- x;
+  derivable_coq_prop_impp_left: forall (P Q: Prop) Phi, Phi;; !! P --> !! Q |--- !! (P -> Q)
 }.
 
 Section DerivedRules.

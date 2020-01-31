@@ -5,8 +5,6 @@ Require Import Coq.Classes.RelationClasses.
 Require Import Logic.GeneralLogic.Base.
 
 Local Open Scope logic_base.
-Import Derivable1.
-Local Open Scope Derivable1.
 
 Class BasicDeduction (L:Language) (Gamma:Derivable1 L) := {
   derivable1_refl: forall x, x |-- x;

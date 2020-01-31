@@ -91,9 +91,6 @@ End RewriteClass1.
 
 Section RewriteClass2.
 
-Import Derivable1.
-Local Open Scope Derivable1.
-
 Context {L: Language}
         {minL: MinimumLanguage L}
         {sepconL: SepconLanguage L}

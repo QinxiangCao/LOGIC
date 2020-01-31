@@ -43,7 +43,7 @@ Context {L: Language}
         {cpSC: ClassicalSequentCalculus L Gamma}.
 
 Lemma classical_derivable_spec: forall (Phi: context) (x: expr),
-  Phi |-- x <-> ~ consistent (Union _ Phi (Singleton _ (~~ x))).
+  Phi |--- x <-> ~ consistent (Union _ Phi (Singleton _ (~~ x))).
 Proof.
   clear dependent andpL.
   clear dependent falsepL.
@@ -68,7 +68,7 @@ Qed.
 
 Lemma MCS_nonelement_inconsistent: forall (Phi: context),
   maximal consistent Phi ->
-  (forall x: expr, ~ Phi x <-> Phi |-- x --> FF).
+  (forall x: expr, ~ Phi x <-> Phi |--- x --> FF).
 Proof.
   clear dependent andpL.
   intros.

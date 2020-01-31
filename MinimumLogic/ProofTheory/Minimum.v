@@ -24,8 +24,8 @@ Class MinimumAxiomatization (L: Language) {minL: MinimumLanguage L} (Gamma: Prov
 }.
 
 Class MinimumSequentCalculus (L: Language) {minL: MinimumLanguage L} (Gamma: Derivable L) := {
-  deduction_modus_ponens: forall Phi x y, Phi |-- x -> Phi |-- x --> y -> Phi |-- y;
-  deduction_impp_intros: forall Phi x y, Phi;; x |-- y -> Phi |-- x --> y
+  deduction_modus_ponens: forall Phi x y, Phi |--- x -> Phi |--- x --> y -> Phi |--- y;
+  deduction_impp_intros: forall Phi x y, Phi;; x |--- y -> Phi |--- x --> y
 }.
 
 Class Derivable1Provable (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaD:Derivable1 L): Type := {
@@ -403,7 +403,7 @@ Context {L: Language}
 
 Lemma deduction_weaken0 {GammaP: Provable L} {GammaPD: ProvableDerivable L GammaP GammaD}: forall Phi y,
   |-- y ->
-  Phi |-- y.
+  Phi |--- y.
 Proof.
   intros.
   rewrite provable_derivable in H.
@@ -415,8 +415,8 @@ Context {minL: MinimumLanguage L}
         {minSC: MinimumSequentCalculus L GammaD}.
 
 Lemma deduction_impp_elim: forall Phi x y,
-  Phi |-- impp x y ->
-  Union _ Phi (Singleton _ x) |-- y.
+  Phi |--- impp x y ->
+  Union _ Phi (Singleton _ x) |--- y.
 Proof.
   intros.
   eapply deduction_modus_ponens; solve_assum.
@@ -424,8 +424,8 @@ Qed.
 
 Theorem deduction_theorem:
   forall (Phi: context) (x y: expr),
-    Union _ Phi (Singleton _ x) |-- y <->
-    Phi |-- x --> y.
+    Union _ Phi (Singleton _ x) |--- y <->
+    Phi |--- x --> y.
 Proof.
   intros; split.
   + apply deduction_impp_intros; auto.
@@ -434,8 +434,8 @@ Qed.
 
 Theorem deduction_theorem_multi_imp:
   forall (Phi: context) (xs: list expr) (y: expr),
-    Union _ Phi (fun x => In x xs) |-- y <->
-    Phi |-- multi_imp xs y.
+    Union _ Phi (fun x => In x xs) |--- y <->
+    Phi |--- multi_imp xs y.
 Proof.
   intros.
   revert Phi; induction xs; intros.
@@ -458,7 +458,7 @@ Proof.
       tauto.
 Qed.
 
-Lemma derivable_impp_refl: forall (Phi: context) (x: expr), Phi |-- x --> x.
+Lemma derivable_impp_refl: forall (Phi: context) (x: expr), Phi |--- x --> x.
 Proof.
   intros.
   apply deduction_theorem.
@@ -466,8 +466,8 @@ Proof.
 Qed.
 
 Lemma deduction_left_impp_intros: forall (Phi: context) (x y: expr),
-  Phi |-- x ->
-  Phi |-- y --> x.
+  Phi |--- x ->
+  Phi |--- y --> x.
 Proof.
   intros.
   apply deduction_theorem.
@@ -475,7 +475,7 @@ Proof.
 Qed.
 
 Lemma derivable_axiom1: forall (Phi: context) (x y: expr),
-  Phi |-- x --> y --> x.
+  Phi |--- x --> y --> x.
 Proof.
   intros.
   rewrite <- !deduction_theorem.
@@ -483,7 +483,7 @@ Proof.
 Qed.
 
 Lemma derivable_axiom2: forall (Phi: context) (x y z: expr),
-  Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
+  Phi |--- (x --> y --> z) --> (x --> y) --> (x --> z).
 Proof.
   intros.
   rewrite <- !deduction_theorem.
@@ -493,7 +493,7 @@ Proof.
 Qed.
 
 Lemma derivable_modus_ponens: forall (Phi: context) (x y: expr),
-  Phi |-- x --> (x --> y) --> y.
+  Phi |--- x --> (x --> y) --> y.
 Proof.
   intros.
   rewrite <- !deduction_theorem.
@@ -501,9 +501,9 @@ Proof.
 Qed.
 
 Lemma deduction_impp_trans: forall (Phi: context) (x y z: expr),
-  Phi |-- x --> y ->
-  Phi |-- y --> z ->
-  Phi |-- x --> z.
+  Phi |--- x --> y ->
+  Phi |--- y --> z ->
+  Phi |--- x --> z.
 Proof.
   intros.
   rewrite <- deduction_theorem in H |- *.
@@ -511,8 +511,8 @@ Proof.
 Qed.
 
 Lemma deduction_impp_arg_switch: forall (Phi: context) (x y z: expr),
-  Phi |-- x --> y --> z ->
-  Phi |-- y --> x --> z.
+  Phi |--- x --> y --> z ->
+  Phi |--- y --> x --> z.
 Proof.
   intros.
   rewrite <- !deduction_theorem in *.
@@ -533,7 +533,7 @@ Lemma provable_right
       {GammaD1: Derivable1 L}
       {GammaD1P: Derivable1Provable L GammaP GammaD1}
       {minAX: MinimumAxiomatization L GammaP}:
-  forall x y, |-- x -> derivable1 y x.
+  forall x y, |-- x -> y |-- x.
 Proof.
   intros.
   rewrite derivable1_provable.
@@ -655,7 +655,7 @@ Definition Provable2Derivable_Normal {GammaP: Provable L}:
     L minL GammaP Provable2Derivable (fun _ _ => iff_refl _).
 
 Definition Derivable2Provable {GammaD: Derivable L}: Provable L :=
-  Build_Provable L (fun x => (Empty_set _) |-- x).
+  Build_Provable L (fun x => (Empty_set _) |--- x).
 
 Definition Derivable2Provable_Normal {GammaD: Derivable L}:
   ProvableDerivable L Derivable2Provable GammaD :=

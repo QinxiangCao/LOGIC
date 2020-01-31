@@ -33,16 +33,7 @@ Context {L: Language}
         {falsepGamma: FalseAxiomatization L Gamma}
         {inegpGamma: IntuitionisticNegAxiomatization L Gamma}
         {gdpAX: GodelDummettAxiomatization L Gamma}.
-(* TODO: delete it *)
-(*
-Lemma derivable_impp_choice: forall (Phi: context) (x y: expr),
-  Phi |-- (x --> y) || (y --> x).
-Proof.
-  intros.
-  pose proof impp_choice x.
-  apply deduction_weaken0; auto.
-Qed.
-*)
+
 Instance GodelDummett2DeMorgan: DeMorganAxiomatization L Gamma.
 Proof.
   constructor.
@@ -55,7 +46,7 @@ Proof.
   pose proof impp_choice x (~~ x).
   apply deduction_weaken0 with (Phi0 := Phi) in H.
 
-  assert (Phi |-- (x --> ~~ x) --> (x --> FF)).
+  assert (Phi |--- (x --> ~~ x) --> (x --> FF)).
   {
     rewrite <- deduction_theorem.
     rewrite <- deduction_theorem.
@@ -69,7 +60,7 @@ Proof.
       pose proof negp_unfold x. rewrite <- H0.
       apply derivable_assum1.
   }
-  assert (Phi |-- (~~ x --> x) --> (~~ x --> FF)).
+  assert (Phi |--- (~~ x --> x) --> (~~ x --> FF)).
   {
     rewrite <- deduction_theorem.
     pose proof derivable_assum1 Phi (~~ x --> x).

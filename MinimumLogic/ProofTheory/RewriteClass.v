@@ -168,8 +168,8 @@ Existing Instances Axiomatization2SequentCalculus_GammaPD
 
 Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaDP: DerivableProvable L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) y1 y2,
   |-- y1 --> y2 ->
-  Phi |-- y1 ->
-  Phi |-- y2.
+  Phi |--- y1 ->
+  Phi |--- y2.
 Proof.
   intros.
   rewrite <- H.
@@ -179,8 +179,8 @@ Qed.
 Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaDP: DerivableProvable L GammaP GammaD} {minAX: MinimumAxiomatization L GammaP} (Phi: context) x1 y1 x2 y2,
   |-- x2 --> x1 ->
   |-- y1 --> y2 ->
-  Phi |-- x1 --> y1 ->
-  Phi |-- x2 --> y2.
+  Phi |--- x1 --> y1 ->
+  Phi |--- x2 --> y2.
 Proof.
   intros.
   rewrite H0 in H1.
@@ -212,8 +212,8 @@ Existing Instances SequentCalculus2Axiomatization_minAX.
 
 Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaPD: ProvableDerivable L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) y1 y2,
   |-- y1 --> y2 ->
-  Phi |-- y1 ->
-  Phi |-- y2.
+  Phi |--- y1 ->
+  Phi |--- y2.
 Proof.
   intros.
   rewrite <- H.
@@ -223,8 +223,8 @@ Qed.
 Goal forall {L: Language} {minL: MinimumLanguage L} {GammaP: Provable L} {GammaD: Derivable L} {GammaPD: ProvableDerivable L GammaP GammaD} {bSC: BasicSequentCalculus L GammaD} {minSC: MinimumSequentCalculus L GammaD} (Phi: context) x1 y1 x2 y2,
   |-- x2 --> x1 ->
   |-- y1 --> y2 ->
-  Phi |-- x1 --> y1 ->
-  Phi |-- x2 --> y2.
+  Phi |--- x1 --> y1 ->
+  Phi |--- x2 --> y2.
 Proof.
   intros.
   rewrite H0 in H1.
