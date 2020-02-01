@@ -368,11 +368,45 @@ lgen_demo_bedrock2:
 	@echo COQC SepApply.v [in-bedrock2-folder]
 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
 
+DF=PropositionalLogic/DeepEmbedded/interface_Mendelson.v
+
 depend:
+	@for name in $(DF); do \
+	  if [ -f $$name ]; then \
+	    mv $$name $$name"_BACKUP"; \
+	  fi \
+	done
+	@for name in $(DF); do \
+	  echo "" >> $$name; \
+	done
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
+	@for name in $(DF); do \
+	  rm $$name; \
+	done
+	@for name in $(DF); do \
+	  if [ -f $$name"_BACKUP" ]; then \
+	    mv $$name"_BACKUP" $$name; \
+	  fi \
+	done
 
 .depend:
-	@$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
+	@for name in $(DF); do \
+	  if [ -f $$name ]; then \
+	    mv $$name $$name"_BACKUP"; \
+	  fi \
+	done
+	@for name in $(DF); do \
+	  echo "" >> $$name; \
+	done
+	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
+	@for name in $(DF); do \
+	  rm $$name; \
+	done
+	@for name in $(DF); do \
+	  if [ -f $$name"_BACKUP" ]; then \
+	    mv $$name"_BACKUP" $$name; \
+	  fi \
+	done
 
 clean:
 	@rm */*.vo */*.glob */*/*.vo */*/*.glob PropositionalLogic/DeepEmbedded/interface_Mendelson.v
