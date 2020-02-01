@@ -301,19 +301,8 @@ Qed.
 End emp.
 
 Context {GammaE: LogicEquiv L}
-        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
-(*        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {negpL: NegLanguage L}
-        {iffpL: IffLanguage L}
-        {truepL: TrueLanguage L}
-        {andpAX: AndAxiomatization L Gamma}
-        {orpAX: OrAxiomatization L Gamma}
-        {falsepAX: FalseAxiomatization L Gamma}
-        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
-        {iffpAX: IffAxiomatization L Gamma}
-        {truepAX: TrueAxiomatization L Gamma}.*)
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}
+        {bE: BasicLogicEquiv L GammaE}.
 
 Lemma sepcon_comm_logic_equiv:
   forall (x y: expr), x * y --||-- y * x.
@@ -334,10 +323,10 @@ Section emp.
 Context {empL: EmpLanguage L}
         {empD: EmpDeduction L GammaD1}.
 
-Lemma sepcon_emp_equiv: forall x, x * emp --||-- x.
+Lemma sepcon_emp_logic_equiv: forall x, x * emp --||-- x.
 Proof. apply (@D1.right_unit _ _ _ _ _ _ derivable1_sepcon_RU). Qed.
 
-Lemma emp_sepcon_equiv: forall x, emp * x --||-- x.
+Lemma emp_sepcon_logic_equiv: forall x, emp * x --||-- x.
 Proof. apply (@D1.left_unit _ _ _ _ _ _ derivable1_sepcon_LU). Qed.
 
 End emp.
@@ -364,35 +353,236 @@ Proof.
   + apply derivable1_sepcon_orp_RDistr.
 Qed.
 
+Lemma sepcon_orp_distr_r: forall (x y z: expr),
+  (x || y) * z --||-- x * z || y * z.
+Proof.
+  intros.
+  apply (@D1.prodp_sump_distr_r _ _ _ _ _ _ derivable1_sepcon_orp_RDistr).
+Qed.
+
+Lemma sepcon_orp_distr_l: forall (x y z: expr),
+  x * (y || z) --||-- x * y || x * z.
+Proof.
+  intros.
+  apply (@D1.prodp_sump_distr_l _ _ _ _ _ _ derivable1_sepcon_orp_LDistr).
+Qed.
+
+Lemma falsep_sepcon_logic_equiv: forall (x: expr),
+  FF * x --||-- FF.
+Proof.
+  intros.
+  apply logic_equiv_derivable1; split.
+  + apply falsep_sepcon_left.
+  + apply falsep_sepcon_right.
+Qed.
+
+Lemma sepcon_falsep_logic_equiv: forall (x: expr),
+  x * FF --||-- FF.
+Proof.
+  intros.
+  rewrite sepcon_comm_logic_equiv.
+  apply falsep_sepcon_logic_equiv.
+Qed.
+
 End SepconRules.
 
+(*
+(** Proof rules for cancel. **)
 
+Lemma cancel_ready: forall x y, |-- x * emp --> y -> |-- x --> y.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite <- sepcon_emp2 in H.
+  auto.
+Qed.
 
+Lemma cancel_one_succeed: forall u x y z,
+  |-- x * y --> z -> |-- (u * x) * y --> u * z.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite sepcon_assoc2.
+  apply sepcon_mono; auto.
+  apply provable_impp_refl.
+Qed.
 
+Lemma cancel_one_giveup: forall x y z w v,
+  |-- x * (y * z) --> w * v-> |-- (y * x) * z --> w * v.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite <- H.
+  pose proof sepcon_comm_impp y x.
+  pose proof sepcon_mono _ _ _ _ H0 (provable_impp_refl z).
+  rewrite H1.
+  apply sepcon_assoc2.
+Qed.
 
+Lemma cancel_rev: forall x y z w,  |-- (y * x) * z --> w -> |-- x * (y * z) --> w.
+Proof.
+  clear - minAX sepconAX empAX.
+  intros.
+  rewrite <- H.
+  pose proof sepcon_comm_impp x y.
+  pose proof sepcon_mono _ _ _ _ H0 (provable_impp_refl z).
+  rewrite <- H1.
+  apply sepcon_assoc1.
+Qed.
 
+Lemma cancel_finish: forall x, |-- x * emp --> x.
+Proof.
+  apply sepcon_emp1.
+Qed.
 
+End SepconRules.
+*)
+Section WandRules.
 
+Context {L: Language}
+        {sepconL: SepconLanguage L}
+        {wandL: WandLanguage L}
+        {GammaD1: Derivable1 L}
+        {bD: BasicDeduction L GammaD1}
+        {wandD: WandDeduction L GammaD1}.
 
+Lemma derivable1_wand_sepcon_Adj: D1.Adjointness L GammaD1 sepcon wand.
+Proof.
+  constructor.
+  intros.
+  apply derivable1_wand_sepcon_adjoint.
+Qed.
 
+Lemma derivable1_wand_sepcon_modus_ponens1: forall (x y: expr),
+  (x -* y) * x |-- y.
+Proof.
+  intros.
+  apply (@D1.adjoint_modus_ponens _ _ _ _ _ derivable1_wand_sepcon_Adj).
+Qed.
 
+Context {sepconD: SepconDeduction L GammaD1}.
 
+Lemma derivable1_wand_sepcon_modus_ponens2: forall (x y: expr),
+  x * (x -* y) |-- y.
+Proof.
+  intros.
+  rewrite (derivable1_sepcon_comm x (x -* y)).
+  apply derivable1_wand_sepcon_modus_ponens1.
+Qed.
 
+Lemma derivable1_wand_mono: forall x1 x2 y1 y2,
+  x2 |-- x1 -> y1 |-- y2 -> x1 -* y1 |-- x2 -* y2.
+Proof.
+  intros.
+  apply (@D1.funcp_mono _ _ _ _ _ derivable1_wand_sepcon_Adj derivable1_sepcon_Mono); auto.
+Qed.
 
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {GammaE: LogicEquiv L}
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}
+        {bE: BasicLogicEquiv L GammaE}
+        {andpD: AndDeduction L GammaD1}
+        {orpD: OrDeduction L GammaD1}
+        {sepcon_orp_D: SepconOrDeduction L GammaD1}.
 
+Lemma wand_andp_logic_equiv: forall x y z: expr,
+  x -* y && z --||-- (x -* y) && (x -* z).
+Proof.
+  intros.
+  apply (@D1.funcp_andp_distr_r _ _ _ _ _ _ _ derivable1_wand_sepcon_Adj); auto.
+Qed.
 
+Lemma orp_wand_logic_equiv: forall x y z: expr,
+  (x || y) -* z --||-- (x -* z) && (y -* z).
+Proof.
+  intros.
+  apply (@D1.orp_funcp _ _ _ _ _ _ _ _ _ _ derivable1_wand_sepcon_Adj _ _ derivable1_sepcon_Comm); auto.
+Qed.
 
+Lemma derivable1_sepcon_elim2: forall {gcsD: GarbageCollectSeparationLogicDeduction L GammaD1} (x y: expr),
+  x * y |-- y.
+Proof.
+  intros.
+  rewrite (derivable1_sepcon_comm x y).
+  apply derivable1_sepcon_elim1.
+Qed.
 
+Lemma derivable1_emp_sepcon_elim1
+      {truepL: TrueLanguage L}
+      {empL: EmpLanguage L}
+      {truepD: TrueDeduction L GammaD1}
+      {empD: EmpDeduction L GammaD1}
+      {nssD: NonsplitEmpSeparationLogicDeduction L GammaD1}:
+  forall x y, x * y && emp |-- x.
+Proof.
+  intros.
+  rewrite <- (derivable1_emp_sepcon_truep_elim x) at 2.
+  apply andp_proper_derivable1; [| reflexivity].
+  apply derivable1_sepcon_mono; [reflexivity |].
+  apply derivable1_truep_intros.
+Qed.
 
+Lemma derivable1_emp_sepcon_elim2
+      {truepL: TrueLanguage L}
+      {empL: EmpLanguage L}
+      {truepD: TrueDeduction L GammaD1}
+      {empD: EmpDeduction L GammaD1}
+      {nssD: NonsplitEmpSeparationLogicDeduction L GammaD1}:
+  forall x y, x * y && emp |-- y.
+Proof.
+  intros.
+  rewrite derivable1_sepcon_comm.
+  apply derivable1_emp_sepcon_elim1.
+Qed.
 
+End WandRules.
 
+Section Axiomatization2Deduction.
 
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {GammaP: Provable L}
+        {GammaD1: Derivable1 L}
+        {GammaD1P: Derivable1Provable L GammaP GammaD1}
+        {minAX: MinimumAxiomatization L GammaP}
+        {sepconAX: SepconAxiomatization L GammaP}.
 
+Lemma Axiomatization2Deduction_sepconD: SepconDeduction L GammaD1.
+Proof.
+  constructor; intros.
+  + apply derivable1_provable.
+    apply sepcon_comm_impp.
+  + apply derivable1_provable.
+    apply sepcon_assoc1.
+  + rewrite derivable1_provable in H, H0 |- *.
+    apply sepcon_mono; auto.
+Qed.
 
+Lemma Axiomatization2Deduction_wandD
+      {wandL: WandLanguage L}
+      {wandAX: WandAxiomatization L GammaP}:
+  WandDeduction L GammaD1.
+Proof.
+  constructor; intros.
+  rewrite !derivable1_provable.
+  apply wand_sepcon_adjoint.
+Qed.
 
+Lemma Axiomatization2Deduction_empD
+      {empL: EmpLanguage L}
+      {empAX: EmpAxiomatization L GammaP}:
+  EmpDeduction L GammaD1.
+Proof.
+  constructor; intros.
+  + rewrite derivable1_provable.
+    apply sepcon_emp1.
+  + rewrite derivable1_provable.
+    apply sepcon_emp2.
+Qed.
 
-
-
+End Axiomatization2Deduction.
 
 Section SepconRules.
 
@@ -495,14 +685,14 @@ Proof.
   + apply sepcon_orp_RDistr.
 Qed.
 
-Lemma sepcon_orp_distr_r: forall (x y z: expr),
+Lemma sepcon_orp_distr_r_iffp: forall (x y z: expr),
   |-- (x || y) * z <--> x * z || y * z.
 Proof.
   intros.
   apply (@P.prodp_sump_distr_r _ _ _ _ _ _ _ _ sepcon_orp_RDistr).
 Qed.
 
-Lemma sepcon_orp_distr_l: forall (x y z: expr),
+Lemma sepcon_orp_distr_l_iffp: forall (x y z: expr),
   |-- x * (y || z) <--> x * y || x * z.
 Proof.
   intros.
@@ -612,7 +802,7 @@ Context {L: Language}
         {wandL: WandLanguage L}
         {Gamma: Provable L}
         {minAX: MinimumAxiomatization L Gamma}
-        {wandX: WandAxiomatization L Gamma}.
+        {wandAX: WandAxiomatization L Gamma}.
 
 Lemma wand_sepcon_Adj: P.Adjointness L Gamma sepcon wand.
 Proof.

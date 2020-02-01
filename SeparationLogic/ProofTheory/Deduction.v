@@ -51,7 +51,7 @@ Context {orpL: OrLanguage L}
         {truepL: TrueLanguage L}
         {falsepL: FalseLanguage L}.
 
-Lemma SepconOrDeduction2SepconOrAxiomatization_sepcon_orp_AX
+Lemma Deduction2Axiomatization_sepcon_orp_AX
       {sepcon_orp_D: SepconOrDeduction L GammaD1}:
   SepconOrAxiomatization L GammaP.
 Proof.
@@ -59,7 +59,7 @@ Proof.
   intros. apply derivable1_provable. apply orp_sepcon_left.
   Qed.
 
-Lemma SepconFalseDeduction2SepconFalseAxiomatization_sepcon_false_AX
+Lemma Deduction2Axiomatization_sepcon_falsep_AX
       {sepcon_falsep_D: SepconFalseDeduction L GammaD1}:
   SepconFalseAxiomatization L GammaP.
 Proof.
@@ -67,7 +67,7 @@ Proof.
   intros. apply derivable1_provable. apply falsep_sepcon_left.
   Qed.
 
-Lemma ExtSeparationLogicD2ExtSeparationLogic_esGamma
+Lemma Deduction2Axiomatization_esGamma
       {esD: ExtSeparationLogicDeduction L GammaD1}:
   ExtSeparationLogic L GammaP.
 Proof.
@@ -75,7 +75,7 @@ Proof.
   intros. apply derivable1_provable. apply derivable1_sepcon_ext.
   Qed.
 
-Lemma GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma
+Lemma Deduction2Axiomatization_gcsAX
       {gcs: GarbageCollectSeparationLogicDeduction L GammaD1}:
   GarbageCollectSeparationLogic L GammaP.
 Proof.
@@ -85,16 +85,16 @@ Proof.
 
 End SLFromDeduction2SLFromAxiomatization1.
 
-Instance reg_SepconOrDeduction2SepconOrAxiomatization:
-  RegisterClass D12P_reg (fun sepcon_orp_AX:unit => @SepconOrDeduction2SepconOrAxiomatization_sepcon_orp_AX) 10.
+Instance reg_Deduction2Axiomatization_sepcon_orpAX:
+  RegisterClass D12P_reg (fun sepcon_orp_AX:unit => @Deduction2Axiomatization_sepcon_orp_AX) 10.
 Qed.
 
-Instance reg_SepconFalseDeduction2SepconFalseAxiomatization:
-  RegisterClass D12P_reg (fun sepcon_false_AX:unit => @SepconFalseDeduction2SepconFalseAxiomatization_sepcon_false_AX) 11.
+Instance reg_Deduction2Axiomatization_sepcon_falsep_AX:
+  RegisterClass D12P_reg (fun sepcon_false_AX:unit => @Deduction2Axiomatization_sepcon_falsep_AX) 11.
 Qed.
 
-Instance reg_GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic:
-  RegisterClass D12P_reg (fun gcsGamma:unit => @GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma) 12.
+Instance reg_Deduction2Axiomatization_gcsAX:
+  RegisterClass D12P_reg (fun gcsGamma:unit => @Deduction2Axiomatization_gcsAX) 12.
 Qed.
 
 (*Rules from SeparationLogic*)
@@ -109,8 +109,9 @@ Context {L: Language}
         {GammaP: Provable L}
         {GammaD1P: Derivable1Provable L GammaP GammaD1}.
 
-Lemma EmpDeduction2EmpAxiomatization_empAX:
-EmpDeduction L GammaD1 -> EmpAxiomatization L GammaP.
+Lemma Deduction2Axiomatization_empAX
+      {empD: EmpDeduction L GammaD1}:
+  EmpAxiomatization L GammaP.
 Proof.
   constructor.
   -intros. apply derivable1_provable. apply sepcon_emp_left.
@@ -124,15 +125,17 @@ Context {orpL: OrLanguage L}
         {truepL: TrueLanguage L}
         {falsepL: FalseLanguage L}.
 
-Lemma DupEmpSeparationLogicD2DupEmpSeparationLogic_desGamma:
-DupEmpSeparationLogicDeduction L GammaD1 -> DupEmpSeparationLogic L GammaP.
+Lemma Deduction2Axiomatization_desGamma
+      {desD: DupEmpSeparationLogicDeduction L GammaD1}:
+  DupEmpSeparationLogic L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply derivable1_emp_dup.
   Qed.
 
-Lemma NonsplitEmpSeparationLogicD2NonsplitEmpSeparationLogic_nssGamma:
-NonsplitEmpSeparationLogicDeduction L GammaD1 -> NonsplitEmpSeparationLogic L GammaP.
+Lemma Deduction2Axiomatization_nssGamma
+      {nssD: NonsplitEmpSeparationLogicDeduction L GammaD1}:
+  NonsplitEmpSeparationLogic L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply derivable1_emp_sepcon_truep_elim.
@@ -142,12 +145,12 @@ End SLFromDeduction2SLFromAxiomatization3.
 
 End SLFromDeduction2SLFromAxiomatization2.
 
-Instance reg_NonsplitEmpSeparationLogicD2NonsplitEmpSeparationLogic:
-  RegisterClass D12P_reg (fun nssGamma:unit => @NonsplitEmpSeparationLogicD2NonsplitEmpSeparationLogic_nssGamma) 13.
+Instance reg_Deduction2Axiomatization_nssGamma:
+  RegisterClass D12P_reg (fun nssGamma:unit => @Deduction2Axiomatization_nssGamma) 13.
 Qed.
 
-Instance reg_EmpDeduction2EmpAxiomatization:
-  RegisterClass D12P_reg (fun empAx:unit => @EmpDeduction2EmpAxiomatization_empAX) 14.
+Instance reg_Deduction2Axiomatization_empAX:
+  RegisterClass D12P_reg (fun empAx:unit => @Deduction2Axiomatization_empAX) 14.
 Qed.
 
 Section SLFromDeduction2SLFromAxiomatization4.
@@ -206,215 +209,6 @@ Proof.
 Qed.
 
 End FromAxiomatizationToDeduction.
-
-Section SepconRulesFromLogicEquiv.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {sepconL: SepconLanguage L}
-        {GammaD1: Derivable1 L}
-        {GammaE: LogicEquiv L}
-        {GammED1: EquivDerivable1 L GammaD1 GammaE}
-        {andpD: AndDeduction L GammaD1}
-        {adjD: ImpAndAdjointDeduction L GammaD1}
-        {sepconD: SepconDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
-
-Context {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {orpD: OrDeduction L GammaD1}
-        {falsepD: FalseDeduction L GammaD1}
-        {sepcon_orp_D: SepconOrDeduction L GammaD1}
-        {sepcon_false_D: SepconFalseDeduction L GammaD1}.
-
-Lemma sepcon_orp_distr_r_equiv: forall (x y z: expr),
-  (x || y) * z --||-- x * z || y * z.
-Proof.
-  AddAxiomatization.
-  AddConnective_iffp.
-  intros.
-  apply logic_equiv_derivable1.
-  pose proof sepcon_orp_distr_r x y z.
-  unfold iffp in H.
-  pose proof solve_iffp_elim1 _ _ H.
-  pose proof solve_iffp_elim2 _ _ H.
-  rewrite !derivable1_provable.
-  split;[auto|auto].
-  Qed.
-
-Lemma sepcon_orp_distr_l_equiv: forall (x y z: expr),
-  x * (y || z) --||-- x * y || x * z.
-Proof.
-  AddAxiomatization.
-  AddConnective_iffp.
-  intros.
-  pose proof sepcon_orp_distr_l x y z.
-  unfold iffp in H.
-  pose proof solve_iffp_elim1 _ _ H.
-  pose proof solve_iffp_elim2 _ _ H.
-  apply logic_equiv_derivable1. rewrite !derivable1_provable.
-  split;[auto|auto].
-  Qed.
-
-Lemma falsep_sepcon_equiv: forall (x: expr),
-  FF * x --||-- FF.
-Proof.
-  AddAxiomatization.
-  AddConnective_iffp.
-  intros.
-  pose proof falsep_sepcon x.
-  unfold iffp in H.
-  pose proof solve_iffp_elim1 _ _ H.
-  pose proof solve_iffp_elim2 _ _ H.
-  apply logic_equiv_derivable1;rewrite !derivable1_provable.
-  split;[auto|auto].
-  Qed.
-
-Lemma sepcon_falsep_equiv: forall (x: expr),
-  x * FF --||-- FF.
-Proof.
-  AddAxiomatization.
-  AddConnective_iffp.
-  intros.
-  pose proof sepcon_falsep x.
-  unfold iffp in H.
-  pose proof solve_iffp_elim1 _ _ H.
-  pose proof solve_iffp_elim2 _ _ H.
-  apply logic_equiv_derivable1;rewrite !derivable1_provable.
-  split;[auto|auto].
-  Qed.
-(*
-Context {empL: EmpLanguage L}
-        {empD: EmpDeduction L GammaD1}.
-
-Lemma sepcon_emp_equiv: forall x, x * emp --||-- x.
-Proof.
-  AddAxiomatization.
-  AddConnective_iffp.
-  intros.
-  pose proof sepcon_emp x.
-  unfold iffp in H.
-  pose proof solve_iffp_elim1 _ _ H.
-  pose proof solve_iffp_elim2 _ _ H.
-  apply equiv_derivable1;rewrite !derivable1_provable.
-  split;[auto|auto].
-  Qed.
-*)
-End SepconRulesFromLogicEquiv.
-
-Section WandRules.
-
-Context {L: Language}
-        {sepconL: SepconLanguage L}
-        {wandL: WandLanguage L}
-        {GammaD1: Derivable1 L}
-        {wandD: WandDeduction L GammaD1}
-        {bD: BasicDeduction L GammaD1}.
-
-Lemma derivable1_wand_sepcon_modus_ponens1: forall (x y: expr),
-  (x -* y) * x |-- y.
-Proof.
-  intros.
-  apply derivable1_wand_sepcon_adjoint.
-  reflexivity.
-Qed.
-
-Context {sepconD: SepconDeduction L GammaD1}.
-
-Lemma derivable1_wand_sepcon_modus_ponens2: forall (x y: expr),
-  x * (x -* y) |-- y.
-Proof.
-  intros.
-  rewrite derivable1_sepcon_comm.
-  apply derivable1_wand_sepcon_adjoint.
-  reflexivity.
-Qed.
-
-Lemma derivable1_wand_mono: forall x1 x2 y1 y2,
-  x2 |-- x1 -> y1 |-- y2 -> (x1 -* y1) |-- (x2 -* y2).
-Proof.
-  intros.
-  apply derivable1_wand_sepcon_adjoint.
-  rewrite <- H0.
-  rewrite derivable1_sepcon_comm.
-  apply derivable1_wand_sepcon_adjoint.
-  rewrite H.
-  apply derivable1_wand_sepcon_adjoint.
-  apply derivable1_wand_sepcon_modus_ponens2.
-Qed.
-
-Context {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {orpL: OrLanguage L}
-        {falsepL: FalseLanguage L}
-        {andpD: AndDeduction L GammaD1}
-        {adjD: ImpAndAdjointDeduction L GammaD1}
-        {orpD: OrDeduction L GammaD1}
-        {falsepD: FalseDeduction L GammaD1}
-        {sepcon_orp_D: SepconOrDeduction L GammaD1}
-        {sepcon_false_D: SepconFalseDeduction L GammaD1}.
-
-Lemma derivable1_sepcon_elim2: forall {gcsD: GarbageCollectSeparationLogicDeduction L GammaD1} (x y: expr),
-  x * y |-- y.
-Proof.
-  intros.
-  AddAxiomatization.
-  AddConnective_iffp.
-  pose proof sepcon_elim2 x y.
-  apply derivable1_provable;auto.
-Qed.
-
-Lemma derivable1_emp_sepcon_elim1: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicDeduction L GammaD1}  x y,
-  x * y && emp |-- x.
-Proof.
-  intros.
-  AddAxiomatization.
-  pose proof emp_sepcon_elim1 x y.
-  apply derivable1_provable;auto.
-  Qed.
-
-Lemma derivable1_emp_sepcon_elim2: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicDeduction L GammaD1} x y,
-  x * y && emp |-- y.
-Proof.
-  intros.
-  AddAxiomatization.
-  AddConnective_iffp.
-  pose proof emp_sepcon_elim2.
-  apply derivable1_provable;auto.
-  Qed.
-
-Context {GammaE: LogicEquiv L}
-        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
-
-Lemma wand_andp_equiv: forall x y z: expr,
-  x -* y && z --||-- (x -* y) && (x -* z).
-Proof.
-  AddAxiomatization.
-  AddConnective_iffp.
-  intros.
-  pose proof wand_andp x y z.
-  unfold iffp in H.
-  pose proof solve_iffp_elim1 _ _ H.
-  pose proof solve_iffp_elim2 _ _ H.
-  apply logic_equiv_derivable1;rewrite !derivable1_provable.
-  split;[auto|auto].
-  Qed.
-
-Lemma orp_wand_equiv: forall x y z: expr,
-  (x || y) -* z --||-- (x -* z) && (y -* z).
-Proof.
-  AddAxiomatization.
-  AddConnective_iffp.
-  intros.
-  pose proof orp_wand x y z.
-  pose proof solve_iffp_elim1 _ _ H.
-  pose proof solve_iffp_elim2 _ _ H.
-  apply logic_equiv_derivable1;rewrite !derivable1_provable.
-  split;[auto|auto].
-Qed.
-
-End WandRules.
 
 (*Rules from TheoryOfSeparationAxioms*)
 
@@ -698,4 +492,5 @@ Proof.
 Qed.
 
 End FromEmpEIffToEmpD.
+
 

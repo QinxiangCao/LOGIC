@@ -418,5 +418,9 @@ Existing Instances andp_proper_impp orp_proper_impp negp_proper_impp
                    provable_proper_iffp derivable_proper_iffp
                    impp_proper_iffp andp_proper_iffp orp_proper_iffp
                    iffp_proper_iffp negp_proper_iffp
-                   impp_proper_equiv impp_proper_derivable1.
+                   impp_proper_equiv
+                   andp_proper_equiv orp_proper_equiv
+                   negp_proper_equiv iffp_proper_equiv
+                   andp_proper_derivable1 orp_proper_derivable1
+                   negp_proper_derivable1 impp_proper_derivable1.
 

@@ -659,6 +659,10 @@ Definition instance_transitions :=
   ; (empAX, EmpAxiomatizationIff2EmpAxiomatization)
   ; (sepcon_coq_prop_AX, CoqPropCorable2SepconCoqPropAX)
   ; (sepcon_coq_prop_AX, Adj2SepconCoqProp)
+  ; (bD, Axiomatization2Deduction_bD)
+  ; (sepconD, Axiomatization2Deduction_sepconD)
+  ; (wandD, Axiomatization2Deduction_wandD)
+  ; (empD, Axiomatization2Deduction_empD)
   ; (bE, Axiomatization2Equiv_bE)
   ; (GammaED1, Axiomatization2Deduction_GammaED1)
   ; (imppE, Axiomatization2LogicEquiv_imppE)
@@ -862,8 +866,7 @@ Definition derived_rules :=
 
   ; sepcon_comm_logic_equiv
   ; sepcon_assoc_logic_equiv
-  ; sepcon_emp_equiv
-
+  ; sepcon_emp_logic_equiv
 
 (*
   ; derivable1_sepcon_assoc2

@@ -197,7 +197,7 @@ Proof.
     - apply deduction_andp_intros; auto.
   + apply H in H2.
     apply derivable_assum in H2.
-    rewrite sepcon_orp_distr_r in H2.
+    rewrite sepcon_orp_distr_r_iffp in H2.
     rewrite (andp_elim1 y1 y2) in H2 at 1.
     rewrite (andp_elim2 y1 y2) in H2 at 1.
     auto.

@@ -657,9 +657,7 @@ Proof.
 Qed.
 
 Lemma orp_funcp
-      {minL: MinimumLanguage L}
       {andpL: AndLanguage L}
-      {adjD: ImpAndAdjointDeduction L GammaD1}
       {andpD: AndDeduction L GammaD1}
       {Comm: Commutativity L GammaD1 prodp}:
   forall x y z: expr, funcp (x || y) z --||-- (funcp x z && funcp y z).
