@@ -145,23 +145,23 @@ Context {L: Language}
         {minAX: MinimumAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization L Gamma}.
 
-Lemma sepcon_Comm: Commutativity L Gamma sepcon.
+Lemma sepcon_Comm: P.Commutativity L Gamma sepcon.
 Proof.
   constructor.
   intros.
   apply sepcon_comm_impp.
 Qed.
 
-Lemma sepcon_Mono: Monotonicity L Gamma sepcon.
+Lemma sepcon_Mono: P.Monotonicity L Gamma sepcon.
 Proof.
   constructor.
   intros.
   apply sepcon_mono; auto.
 Qed.
 
-Lemma sepcon_Assoc: Associativity L Gamma sepcon.
+Lemma sepcon_Assoc: P.Associativity L Gamma sepcon.
 Proof.
-  apply @Build_Associativity1; auto.
+  apply @P.Build_Associativity1; auto.
   + apply sepcon_Comm.
   + apply sepcon_Mono.
   + intros.
@@ -171,7 +171,7 @@ Qed.
 Lemma sepcon_assoc2: forall x y z, |-- (x * y) * z --> x * (y * z).
 Proof.
   intros.
-  apply (@prodp_assoc2 _ _ _ _ sepcon_Assoc).
+  apply (@P.prodp_assoc2 _ _ _ _ sepcon_Assoc).
 Qed.
 
 Context {andpL: AndLanguage L}
@@ -191,14 +191,14 @@ Lemma sepcon_comm:
   forall (x y: expr), |-- x * y <--> y * x.
 Proof.
   intros.
-  apply (@prodp_comm _ _ _ _ _ _ _ sepcon_Comm).
+  apply (@P.prodp_comm _ _ _ _ _ _ _ sepcon_Comm).
 Qed.
 
 Lemma sepcon_assoc:
   forall x y z, |-- x * (y * z) <--> (x * y) * z.
 Proof.
   intros.
-  apply (@prodp_assoc _ _ _ _ _ _ _ sepcon_Assoc).
+  apply (@P.prodp_assoc _ _ _ _ _ _ _ sepcon_Assoc).
 Qed.
 
 Lemma impp_orp_sepcon:
@@ -222,16 +222,16 @@ Qed.
 Context {sepcon_orp_AX: SepconOrAxiomatization L Gamma}
         {sepcon_false_AX: SepconFalseAxiomatization L Gamma}.
 
-Lemma sepcon_orp_RDistr: RightDistr L Gamma sepcon orp.
+Lemma sepcon_orp_RDistr: P.RightDistr L Gamma sepcon orp.
 Proof.
   constructor; intros.
   + apply orp_sepcon_impp.
   + apply impp_orp_sepcon.
 Qed.
 
-Lemma sepcon_orp_LDistr: LeftDistr L Gamma sepcon orp.
+Lemma sepcon_orp_LDistr: P.LeftDistr L Gamma sepcon orp.
 Proof.
-  apply @RightDistr2LeftDistr; auto.
+  apply @P.RightDistr2LeftDistr; auto.
   + apply sepcon_Comm.
   + apply orp_Mono.
   + apply sepcon_orp_RDistr.
@@ -241,14 +241,14 @@ Lemma sepcon_orp_distr_r: forall (x y z: expr),
   |-- (x || y) * z <--> x * z || y * z.
 Proof.
   intros.
-  apply (@prodp_sump_distr_r _ _ _ _ _ _ _ _ sepcon_orp_RDistr).
+  apply (@P.prodp_sump_distr_r _ _ _ _ _ _ _ _ sepcon_orp_RDistr).
 Qed.
 
 Lemma sepcon_orp_distr_l: forall (x y z: expr),
   |-- x * (y || z) <--> x * y || x * z.
 Proof.
   intros.
-  apply (@prodp_sump_distr_l _ _ _ _ _ _ _ _ sepcon_orp_LDistr).
+  apply (@P.prodp_sump_distr_l _ _ _ _ _ _ _ _ sepcon_orp_LDistr).
 Qed.
 
 Lemma falsep_sepcon: forall (x: expr),
@@ -279,18 +279,18 @@ Proof.
   + apply sepcon_emp2.
 Qed.
 
-Lemma sepcon_LU: LeftUnit L Gamma emp sepcon.
+Lemma sepcon_LU: P.LeftUnit L Gamma emp sepcon.
 Proof.
-  apply Build_LeftUnit; intros.
+  apply P.Build_LeftUnit; intros.
   + rewrite sepcon_comm_impp.
     apply sepcon_emp1.
   + rewrite <- sepcon_comm_impp.
     apply sepcon_emp2.
 Qed.
 
-Lemma sepcon_RU: RightUnit L Gamma emp sepcon.
+Lemma sepcon_RU: P.RightUnit L Gamma emp sepcon.
 Proof.
-  apply Build_RightUnit.
+  apply P.Build_RightUnit.
   intros.
   + apply sepcon_emp1.
   + apply sepcon_emp2.
@@ -356,7 +356,7 @@ Context {L: Language}
         {minAX: MinimumAxiomatization L Gamma}
         {wandX: WandAxiomatization L Gamma}.
 
-Lemma wand_sepcon_Adj: Adjointness L Gamma sepcon wand.
+Lemma wand_sepcon_Adj: P.Adjointness L Gamma sepcon wand.
 Proof.
   constructor.
   intros.
@@ -367,7 +367,7 @@ Lemma provable_wand_sepcon_modus_ponens1: forall (x y: expr),
   |-- (x -* y) * x --> y.
 Proof.
   intros.
-  apply (@adjoint_modus_ponens _ _ _ _ _ _ wand_sepcon_Adj).
+  apply (@P.adjoint_modus_ponens _ _ _ _ _ _ wand_sepcon_Adj).
 Qed.
 
 Context {sepconAX: SepconAxiomatization L Gamma}.
@@ -384,7 +384,7 @@ Lemma wand_mono: forall x1 x2 y1 y2,
   |-- x2 --> x1 -> |-- y1 --> y2 -> |-- (x1 -* y1) --> (x2 -* y2).
 Proof.
   intros.
-  apply (@funcp_mono _ _ _ _ _ _ wand_sepcon_Adj sepcon_Mono); auto.
+  apply (@P.funcp_mono _ _ _ _ _ _ wand_sepcon_Adj sepcon_Mono); auto.
 Qed.
 
 Context {andpL: AndLanguage L}
@@ -406,14 +406,14 @@ Lemma wand_andp: forall x y z: expr,
   |-- x -* y && z <--> (x -* y) && (x -* z).
 Proof.
   intros.
-  apply (@funcp_andp_distr_r _ _ _ _ _ _ wand_sepcon_Adj); auto.
+  apply (@P.funcp_andp_distr_r _ _ _ _ _ _ wand_sepcon_Adj); auto.
 Qed.
 
 Lemma orp_wand: forall x y z: expr,
   |-- (x || y) -* z <--> (x -* z) && (y -* z).
 Proof.
   intros.
-  apply (@orp_funcp _ _ _ _ _ _ _ _ wand_sepcon_Adj _ _ _ _ sepcon_Comm); auto.
+  apply (@P.orp_funcp _ _ _ _ _ _ _ _ wand_sepcon_Adj _ _ _ _ sepcon_Comm); auto.
 Qed.
 
 Lemma sepcon_elim2: forall {gcsGamma: GarbageCollectSeparationLogic L Gamma} (x y: expr),

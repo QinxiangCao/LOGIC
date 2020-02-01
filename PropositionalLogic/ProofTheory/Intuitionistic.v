@@ -1181,14 +1181,263 @@ Section DerivableRulesFromAxiomatization2.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
+        {Gamma: Provable L}
+        {minAX: MinimumAxiomatization L Gamma}.
+
+Section andp.
+
+Context {andpL: AndLanguage L}
+        {andpAX: AndAxiomatization L Gamma}.
+
+Lemma impp_curry: forall (x y z: expr),
+  |-- (x --> y --> z) --> (x && y --> z).
+Proof.
+  clear - minAX andpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- !deduction_theorem.
+  apply deduction_modus_ponens with y.
+  + apply deduction_andp_elim2 with x.
+    solve_assum.
+  + apply deduction_modus_ponens with x.
+    - apply deduction_andp_elim1 with y.
+      solve_assum.
+    - solve_assum.
+Qed.
+
+Lemma impp_uncurry: forall (x y z: expr),
+  |-- (x && y --> z) --> (x --> y --> z).
+Proof.
+  clear - minAX andpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- !deduction_theorem.
+  apply deduction_modus_ponens with (x && y).
+  + apply deduction_andp_intros;
+    solve_assum.
+  + solve_assum.
+Qed.
+
+Lemma impp_curry_uncurry
+      {iffpL: IffLanguage L}
+      {iffpAX: IffAxiomatization L Gamma}:
+  forall (x y z: expr), |-- (x --> y --> z) <--> (x && y --> z).
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply impp_curry.
+  + apply impp_uncurry.
+Qed.
+
+Lemma andp_comm_impp: forall (x y: expr),
+  |-- x && y --> y && x.
+Proof.
+  clear - minAX andpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + eapply deduction_andp_elim2.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim1.
+    apply derivable_assum1.
+Qed.
+
+Lemma andp_comm
+      {iffpL: IffLanguage L}
+      {iffpAX: IffAxiomatization L Gamma}:
+  forall (x y: expr), |-- x && y <--> y && x.
+Proof.
+  intros.
+  apply solve_iffp_intros;
+  apply andp_comm_impp.
+Qed.
+
+Lemma andp_assoc_impp1: forall (x y z: expr),
+  |-- x && y && z --> x && (y && z).
+Proof.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros; [| apply deduction_andp_intros].
+  + eapply deduction_andp_elim1.
+    eapply deduction_andp_elim1.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim2.
+    eapply deduction_andp_elim1.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim2.
+    apply derivable_assum1.
+Qed.
+
+Lemma andp_assoc_impp2: forall (x y z: expr),
+  |-- x && (y && z) --> x && y && z.
+Proof.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros; [apply deduction_andp_intros |].
+  + eapply deduction_andp_elim1.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim1.
+    eapply deduction_andp_elim2.
+    apply derivable_assum1.
+  + eapply deduction_andp_elim2.
+    eapply deduction_andp_elim2.
+    apply derivable_assum1.
+Qed.
+
+Lemma andp_assoc
+      {iffpL: IffLanguage L}
+      {iffpAX: IffAxiomatization L Gamma}:
+  forall (x y z: expr), |-- x && y && z <--> x && (y && z).
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply andp_assoc_impp1.
+  + apply andp_assoc_impp2.
+Qed.
+
+Lemma andp_truep1
+      {truepL: TrueLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}:
+  forall (x: expr), |-- x && TT --> x.
+Proof.
+  intros.
+  apply andp_elim1.
+Qed.
+
+Lemma andp_truep2
+      {truepL: TrueLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}:
+  forall (x: expr), |-- x --> x && TT.
+Proof.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + apply derivable_assum1.
+  + apply derivable_truep_intros.
+Qed.
+
+Lemma andp_truep
+      {truepL: TrueLanguage L}
+      {iffpL: IffLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}
+      {iffpAX: IffAxiomatization L Gamma}:
+  forall (x: expr), |-- x && TT <--> x.
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply andp_truep1.
+  + apply andp_truep2.
+Qed.
+
+Lemma truep_andp1
+      {truepL: TrueLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}:
+  forall (x: expr), |-- TT && x --> x.
+Proof.
+  intros.
+  apply andp_elim2.
+Qed.
+
+Lemma truep_andp2
+      {truepL: TrueLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}:
+  forall (x: expr), |-- x --> TT && x.
+Proof.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable.
+  rewrite <- deduction_theorem.
+  apply deduction_andp_intros.
+  + apply derivable_truep_intros.
+  + apply derivable_assum1.
+Qed.
+
+Lemma truep_andp
+      {truepL: TrueLanguage L}
+      {iffpL: IffLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}
+      {iffpAX: IffAxiomatization L Gamma}:
+  forall (x: expr), |-- TT && x <--> x.
+Proof.
+  intros.
+  apply solve_iffp_intros.
+  + apply truep_andp1.
+  + apply truep_andp2.
+Qed.
+
+Lemma impp_andp_Adjoint: P.Adjointness L Gamma andp impp.
+Proof.
+  constructor; AddSequentCalculus.
+  intros; split; intros.
+  + eapply modus_ponens; [| exact H].
+    apply impp_uncurry.
+  + eapply modus_ponens; [| exact H].
+    apply impp_curry.
+Qed.
+
+Lemma andp_Comm: P.Commutativity L Gamma andp.
+Proof.
+  constructor.
+  intros.
+  apply andp_comm_impp.
+Qed.
+
+Lemma andp_Mono: P.Monotonicity L Gamma andp.
+Proof.
+  eapply @P.Adjoint2Mono.
+  + auto.
+  + apply impp_andp_Adjoint.
+  + apply andp_Comm.
+Qed.
+
+Lemma andp_LU
+      {truepL: TrueLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}:
+  P.LeftUnit L Gamma TT andp.
+Proof.
+  intros.
+  constructor.
+  + apply truep_andp1.
+  + apply truep_andp2.
+Qed.
+
+Lemma andp_RU
+      {truepL: TrueLanguage L}
+      {truepAX: TrueAxiomatization L Gamma}:
+  P.RightUnit L Gamma TT andp.
+Proof.
+  intros.
+  constructor.
+  + apply andp_truep1.
+  + apply andp_truep2.
+Qed.
+
+Lemma andp_Assoc: P.Associativity L Gamma andp.
+Proof.
+  intros.
+  constructor; intros.
+  + apply andp_assoc_impp2.
+  + apply andp_assoc_impp1.
+Qed.
+
+End andp.
+
+Context {andpL: AndLanguage L}
         {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}
         {negpL: NegLanguage L}
         {iffpL: IffLanguage L}
         {truepL: TrueLanguage L}
-        {Gamma: Provable L}
-        {minAX: MinimumAxiomatization L Gamma}
         {andpAX: AndAxiomatization L Gamma}
         {orpAX: OrAxiomatization L Gamma}
         {falsepAX: FalseAxiomatization L Gamma}
@@ -1258,78 +1507,6 @@ Proof.
   apply truep_intros.
 Qed.
 
-Lemma andp_comm_impp: forall (x y: expr),
-  |-- x && y --> y && x.
-Proof.
-  clear - minAX andpAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  rewrite <- deduction_theorem.
-  apply deduction_andp_intros.
-  + eapply deduction_andp_elim2.
-    apply derivable_assum1.
-  + eapply deduction_andp_elim1.
-    apply derivable_assum1.
-Qed.
-
-Lemma andp_comm: forall (x y: expr),
-  |-- x && y <--> y && x.
-Proof.
-  intros.
-  apply solve_iffp_intros;
-  apply andp_comm_impp.
-Qed.
-
-Lemma andp_assoc_impp1: forall (x y z: expr),
-  |-- x && y && z --> x && (y && z).
-Proof.
-  clear - minAX andpAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  rewrite <- deduction_theorem.
-  apply deduction_andp_intros; [| apply deduction_andp_intros].
-  + eapply deduction_andp_elim1.
-    eapply deduction_andp_elim1.
-    apply derivable_assum1.
-  + eapply deduction_andp_elim2.
-    eapply deduction_andp_elim1.
-    apply derivable_assum1.
-  + eapply deduction_andp_elim2.
-    apply derivable_assum1.
-Qed.
-
-Lemma andp_assoc_impp2: forall (x y z: expr),
-  |-- x && (y && z) --> x && y && z.
-Proof.
-  clear - minAX andpAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  rewrite <- deduction_theorem.
-  apply deduction_andp_intros; [apply deduction_andp_intros |].
-  + eapply deduction_andp_elim1.
-    apply derivable_assum1.
-  + eapply deduction_andp_elim1.
-    eapply deduction_andp_elim2.
-    apply derivable_assum1.
-  + eapply deduction_andp_elim2.
-    eapply deduction_andp_elim2.
-    apply derivable_assum1.
-Qed.
-
-Lemma andp_assoc: forall (x y z: expr),
-  |-- x && y && z <--> x && (y && z).
-Proof.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  apply deduction_iffp_intros; rewrite deduction_theorem; rewrite <- provable_derivable.
-  + apply andp_assoc_impp1.
-  + apply andp_assoc_impp2.
-Qed.
-
 Lemma orp_comm_impp: forall (x y: expr),
   |-- x || y --> y || x.
 Proof.
@@ -1343,6 +1520,22 @@ Proof.
     apply derivable_assum1.
   + apply deduction_orp_intros1.
     apply derivable_assum1.
+Qed.
+
+Lemma orp_mono: forall x1 x2 y1 y2,
+  |-- x1 --> x2 ->
+  |-- y1 --> y2 ->
+  |-- x1 || y1 --> x2 || y2.
+Proof.
+  clear - minAX orpAX.
+  AddSequentCalculus.
+  intros.
+  rewrite provable_derivable in H, H0 |- *.
+  apply deduction_orp_elim'.
+  + eapply deduction_impp_trans; [exact H |].
+    apply derivable_orp_intros1.
+  + eapply deduction_impp_trans; [exact H0 |].
+    apply derivable_orp_intros2.
 Qed.
 
 Lemma orp_comm: forall (x y: expr),
@@ -1380,63 +1573,20 @@ Proof.
       apply derivable_assum1.
 Qed.
 
-Lemma andp_truep1: forall (x: expr),
-  |-- x && TT --> x.
+Lemma or_Comm: P.Commutativity L Gamma orp.
 Proof.
+  constructor.
   intros.
-  apply andp_elim1.
+  apply orp_comm_impp.
 Qed.
 
-Lemma andp_truep2: forall (x: expr),
-  |-- x --> x && TT.
+Lemma orp_Mono: P.Monotonicity L Gamma orp.
 Proof.
-  clear - minAX andpAX truepAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  rewrite <- deduction_theorem.
-  apply deduction_andp_intros.
-  + apply derivable_assum1.
-  + apply derivable_truep_intros.
+  constructor; intros.
+  apply orp_mono; auto.
 Qed.
 
-Lemma andp_truep: forall (x: expr),
-  |-- x && TT <--> x.
-Proof.
-  intros.
-  apply solve_iffp_intros.
-  + apply andp_truep1.
-  + apply andp_truep2.
-Qed.
 
-Lemma truep_andp1: forall (x: expr),
-  |-- TT && x --> x.
-Proof.
-  intros.
-  apply andp_elim2.
-Qed.
-
-Lemma truep_andp2: forall (x: expr),
-  |-- x --> TT && x.
-Proof.
-  clear - minAX andpAX truepAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  rewrite <- deduction_theorem.
-  apply deduction_andp_intros.
-  + apply derivable_truep_intros.
-  + apply derivable_assum1.
-Qed.
-
-Lemma truep_andp: forall (x: expr),
-  |-- TT && x <--> x.
-Proof.
-  intros.
-  apply solve_iffp_intros.
-  + apply truep_andp1.
-  + apply truep_andp2.
-Qed.
 
 Lemma falsep_orp_impp1: forall (x: expr),
   |-- FF || x --> x.
@@ -1542,46 +1692,6 @@ Proof.
   + apply orp_dup2.
 Qed.
 
-Lemma impp_curry: forall (x y z: expr),
-  |-- (x --> y --> z) --> (x && y --> z).
-Proof.
-  clear - minAX andpAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  rewrite <- !deduction_theorem.
-  apply deduction_modus_ponens with y.
-  + apply deduction_andp_elim2 with x.
-    solve_assum.
-  + apply deduction_modus_ponens with x.
-    - apply deduction_andp_elim1 with y.
-      solve_assum.
-    - solve_assum.
-Qed.
-
-Lemma impp_uncurry: forall (x y z: expr),
-  |-- (x && y --> z) --> (x --> y --> z).
-Proof.
-  clear - minAX andpAX.
-  AddSequentCalculus.
-  intros.
-  rewrite provable_derivable.
-  rewrite <- !deduction_theorem.
-  apply deduction_modus_ponens with (x && y).
-  + apply deduction_andp_intros;
-    solve_assum.
-  + solve_assum.
-Qed.
-
-Lemma impp_curry_uncurry: forall (x y z: expr),
-  |-- (x --> y --> z) <--> (x && y --> z).
-Proof.
-  intros.
-  apply solve_iffp_intros.
-  + apply impp_curry.
-  + apply impp_uncurry.
-Qed.
-
 Lemma negp_fold_unfold: forall (x: expr),
   |-- (~~x) <--> (x --> FF).
 Proof.
@@ -1616,6 +1726,67 @@ Proof.
 Qed.
 
 End DerivableRulesFromAxiomatization2.
+
+Section DerivableRulesFromDeduction.
+
+Context {L: Language}
+        {GammaD1: Derivable1 L}
+        {bD: BasicDeduction L GammaD1}.
+
+Section orp.
+
+Context {orpL: OrLanguage L}
+        {orpD: OrDeduction L GammaD1}.
+
+Lemma derivable1_orp_comm: forall x y,
+  x || y |-- y || x.
+Proof.
+  intros.
+  apply derivable1_orp_elim.
+  + apply derivable1_orp_intros2.
+  + apply derivable1_orp_intros1.
+Qed.
+
+Lemma derivable1_orp_assoc1: forall x y z,
+  x || y || z |-- x || (y || z).
+Proof.
+  intros.
+  repeat apply derivable1_orp_elim.
+  + apply derivable1_orp_intros1.
+  + rewrite <- derivable1_orp_intros2.
+    apply derivable1_orp_intros1.
+  + rewrite <- derivable1_orp_intros2.
+    apply derivable1_orp_intros2.
+Qed.
+
+Lemma derivable1_orp_mono: forall x1 x2 y1 y2,
+  x1 |-- x2 ->  
+  y1 |-- y2 ->
+  x1 || y1 |-- x2 || y2.
+Proof.
+  intros.
+  apply derivable1_orp_elim.
+  + rewrite H.
+    apply derivable1_orp_intros1.
+  + rewrite H0.
+    apply derivable1_orp_intros2.
+Qed.
+
+Lemma derivable1_orp_Comm: D1.Commutativity L GammaD1 orp.
+Proof.
+  constructor.
+  intros; apply derivable1_orp_comm; auto.
+Qed.
+
+Lemma derivable1_orp_Mono: D1.Monotonicity L GammaD1 orp.
+Proof.
+  constructor.
+  intros; apply derivable1_orp_mono; auto.
+Qed.
+
+End orp.
+
+End DerivableRulesFromDeduction.
 
 Section DerivableRulesFromLogicEquiv.
 

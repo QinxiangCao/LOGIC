@@ -117,7 +117,7 @@ Proof.
   constructor.
   intros.
   rewrite iter_andp_def_r.
-  pose proof @assoc_fold_left_fold_right_equiv _ _ _ _ andp _ _ TT andp_Mono andp_Assoc andp_LU andp_RU xs.
+  pose proof @P.assoc_fold_left_fold_right_equiv _ _ _ _ andp _ _ TT andp_Mono andp_Assoc andp_LU andp_RU xs.
   rewrite H.
   apply provable_iffp_refl.
 Qed.

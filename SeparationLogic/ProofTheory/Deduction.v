@@ -71,7 +71,7 @@ Class WandDeduction
   derivable1_wand_sepcon_adjoint: forall x y z, x * y  |-- z <-> x |-- (y -* z)
 }.
 
-Class ExtSeparationLogicD
+Class ExtSeparationLogicDeduction
         (L: Language)
         {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
@@ -79,7 +79,7 @@ Class ExtSeparationLogicD
   derivable1_sepcon_ext: forall x, x |-- x * TT
 }.
 
-Class NonsplitEmpSeparationLogicD
+Class NonsplitEmpSeparationLogicDeduction
         (L: Language)
         {andpL: AndLanguage L}
         {truepL: TrueLanguage L}
@@ -89,7 +89,7 @@ Class NonsplitEmpSeparationLogicD
   derivable1_emp_sepcon_truep_elim: forall x, (x * TT) && emp |-- x
 }.
 
-Class DupEmpSeparationLogicD
+Class DupEmpSeparationLogicDeduction
         (L: Language)
         {andpL: AndLanguage L}
         {sepconL: SepconLanguage L}
@@ -98,7 +98,7 @@ Class DupEmpSeparationLogicD
   derivable1_emp_dup: forall x, x && emp |-- x * x
 }.
 
-Class GarbageCollectSeparationLogicD
+Class GarbageCollectSeparationLogicDeduction
         (L: Language)
         {sepconL: SepconLanguage L}
         (GammaD1: Derivable1 L) := {
@@ -147,7 +147,7 @@ Proof.
   Qed.
 
 Lemma ExtSeparationLogicD2ExtSeparationLogic_esGamma
-      {esD: ExtSeparationLogicD L GammaD1}:
+      {esD: ExtSeparationLogicDeduction L GammaD1}:
   ExtSeparationLogic L GammaP.
 Proof.
   constructor.
@@ -155,7 +155,7 @@ Proof.
   Qed.
 
 Lemma GarbageCollectSeparationLogicD2GarbageCollectSeparationLogic_gcsGamma
-      {gcs: GarbageCollectSeparationLogicD L GammaD1}:
+      {gcs: GarbageCollectSeparationLogicDeduction L GammaD1}:
   GarbageCollectSeparationLogic L GammaP.
 Proof.
   constructor.
@@ -204,14 +204,14 @@ Context {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}.
 
 Lemma DupEmpSeparationLogicD2DupEmpSeparationLogic_desGamma:
-DupEmpSeparationLogicD L GammaD1 -> DupEmpSeparationLogic L GammaP.
+DupEmpSeparationLogicDeduction L GammaD1 -> DupEmpSeparationLogic L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply derivable1_emp_dup.
   Qed.
 
 Lemma NonsplitEmpSeparationLogicD2NonsplitEmpSeparationLogic_nssGamma:
-NonsplitEmpSeparationLogicD L GammaD1 -> NonsplitEmpSeparationLogic L GammaP.
+NonsplitEmpSeparationLogicDeduction L GammaD1 -> NonsplitEmpSeparationLogic L GammaP.
 Proof.
   constructor.
   intros. apply derivable1_provable. apply derivable1_emp_sepcon_truep_elim.
@@ -531,7 +531,7 @@ Context {minL: MinimumLanguage L}
         {sepcon_orp_D: SepconOrDeduction L GammaD1}
         {sepcon_false_D: SepconFalseDeduction L GammaD1}.
 
-Lemma derivable1_sepcon_elim2: forall {gcsD: GarbageCollectSeparationLogicD L GammaD1} (x y: expr),
+Lemma derivable1_sepcon_elim2: forall {gcsD: GarbageCollectSeparationLogicDeduction L GammaD1} (x y: expr),
   x * y |-- y.
 Proof.
   intros.
@@ -541,7 +541,7 @@ Proof.
   apply derivable1_provable;auto.
 Qed.
 
-Lemma derivable1_emp_sepcon_elim1: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicD L GammaD1}  x y,
+Lemma derivable1_emp_sepcon_elim1: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicDeduction L GammaD1}  x y,
   x * y && emp |-- x.
 Proof.
   intros.
@@ -550,7 +550,7 @@ Proof.
   apply derivable1_provable;auto.
   Qed.
 
-Lemma derivable1_emp_sepcon_elim2: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicD L GammaD1} x y,
+Lemma derivable1_emp_sepcon_elim2: forall {empL: EmpLanguage L} {empD: EmpDeduction L GammaD1} {truepL: TrueLanguage L} {truepD: TrueDeduction L GammaD1} {nssD: NonsplitEmpSeparationLogicDeduction L GammaD1} x y,
   x * y && emp |-- y.
 Proof.
   intros.

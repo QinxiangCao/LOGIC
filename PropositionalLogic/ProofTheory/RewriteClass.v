@@ -56,16 +56,9 @@ Qed.
 
 Instance orp_proper_impp: Proper ((fun x y => |-- impp x y) ==> (fun x y => |-- impp x y) ==> (fun x y => |-- impp x y)) orp.
 Proof.
-  clear - minAX orpAX.
-  AddSequentCalculus.
   hnf; intros x1 x2 ?.
   hnf; intros y1 y2 ?.
-  rewrite provable_derivable in H, H0 |- *.
-  apply deduction_orp_elim'.
-  + eapply deduction_impp_trans; [exact H |].
-    apply derivable_orp_intros1.
-  + eapply deduction_impp_trans; [exact H0 |].
-    apply derivable_orp_intros2.
+  apply orp_mono; auto.
 Qed.
 
 Instance negp_proper_impp: Proper ((fun x y => |-- impp x y) --> (fun x y => |-- impp x y)) negp.

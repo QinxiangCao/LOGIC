@@ -22,7 +22,7 @@ lib_FILES = \
 
 GeneralLogic_ProofTheory_FILES = \
   BasicSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v \
-  TheoryOfSequentCalculus.v ProofTheoryPatterns.v
+  TheoryOfSequentCalculus.v ProofTheoryPatternsD1.v
 
 GeneralLogic_Semantics_FILES = \
   Kripke.v
@@ -45,7 +45,7 @@ GeneralLogic_FILES = \
   $(GeneralLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
 MinimumLogic_ProofTheory_FILES = \
-  Minimum.v ProofTheoryPatterns.v \
+  Minimum.v ProofTheoryPatternsP.v ProofTheoryPatterns.v \
   RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v TheoryOfJudgement.v
 
 MinimumLogic_Semantics_FILES = \

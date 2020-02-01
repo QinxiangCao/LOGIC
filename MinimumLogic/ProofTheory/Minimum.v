@@ -3,6 +3,8 @@ Require Import Logic.lib.Ensembles_ext.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.TheoryOfSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.TheoryOfSequentCalculus.
 
@@ -41,11 +43,6 @@ Class ProvableDerivable
 Class EquivProvable (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaL:LogicEquiv L): Type := {
   logic_equiv_provable:forall x y, x --||-- y <->
                         provable (impp x y) /\ provable (impp y x)
-}.
-
-Class EquivDerivable1 (L:Language) (GammaD:Derivable1 L) (GammaL:LogicEquiv L): Type :={
-  logic_equiv_derivable1:forall x y,x --||-- y <->
-                        derivable1 x y /\ derivable1 y x
 }.
 
 Class ProvableDerivable1 (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable1 L): Type := {

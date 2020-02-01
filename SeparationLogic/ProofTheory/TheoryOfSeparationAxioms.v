@@ -85,16 +85,16 @@ Context {L: Language}
         {wandAX: WandAxiomatization L Gamma}
         {sepconAX: SepconAxiomatization_weak L Gamma}.
 
-Let sepcon_Comm: Commutativity L Gamma sepcon.
+Let sepcon_Comm: P.Commutativity L Gamma sepcon.
 Proof.
   constructor.
   intros.
   apply __sepcon_comm_impp.
 Qed.
 
-Let sepcon_Mono: Monotonicity L Gamma sepcon.
+Let sepcon_Mono: P.Monotonicity L Gamma sepcon.
 Proof.
-  apply @Adjoint2Mono with (funcp := wand).
+  apply @P.Adjoint2Mono with (funcp := wand).
   + auto.
   + apply wand_sepcon_Adj.
   + apply sepcon_Comm.
@@ -104,7 +104,7 @@ Lemma Adj2SepconMono: SepconMonoAxiomatization L Gamma.
 Proof.
   constructor.
   intros.
-  apply (@prodp_mono _ _ _ _ sepcon_Mono); auto.
+  apply (@P.prodp_mono _ _ _ _ sepcon_Mono); auto.
 Qed.
 
 End FromAdjPlusSepconWeakToSepcon.
@@ -171,15 +171,15 @@ Context {L: Language}
         {speconAX: SepconAxiomatization L Gamma}
         {wandAX: WandAxiomatization L Gamma}.
 
-Let RDistr: RightDistr L Gamma sepcon orp.
+Let RDistr: P.RightDistr L Gamma sepcon orp.
 Proof.
-  apply (@Adjoint2RDistr _ _ _ _ _ _ _ wand).
+  apply (@P.Adjoint2RDistr _ _ _ _ _ _ _ wand).
   apply wand_sepcon_Adj.
 Qed.
 
-Let LDistr: LeftDistr L Gamma sepcon orp.
+Let LDistr: P.LeftDistr L Gamma sepcon orp.
 Proof.
-  apply @RightDistr2LeftDistr; auto.
+  apply @P.RightDistr2LeftDistr; auto.
   + apply sepcon_Comm.
   + apply orp_Mono.
 Qed.
@@ -189,7 +189,7 @@ Proof.
   intros.
   constructor.
   intros.
-  pose proof @prodp_sump_distr_r _ _ _ _ _ _ _ _ RDistr.
+  pose proof @P.prodp_sump_distr_r _ _ _ _ _ _ _ _ RDistr.
   rewrite H.
   apply provable_impp_refl.
 Qed.
@@ -199,7 +199,7 @@ Proof.
   intros.
   constructor.
   intros.
-  rewrite (@falsep_prodp _ _ _ _ _ _ wand_sepcon_Adj); auto.
+  rewrite (@P.falsep_prodp _ _ _ _ _ _ wand_sepcon_Adj); auto.
   apply provable_impp_refl.
 Qed.
 
