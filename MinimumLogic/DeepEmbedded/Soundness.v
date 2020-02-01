@@ -30,7 +30,7 @@ Instance minL: MinimumLanguage L := MinimumLanguage.minL Var.
 
 Instance GP: Provable L := MinimumLogic.GP Var.
 Instance GD: Derivable L := MinimumLogic.GD Var.
-Instance AX: NormalAxiomatization L GP GD := MinimumLogic.AX Var.
+Instance GDP: DerivableProvable L GP GD := MinimumLogic.GDP Var.
 Instance minAX: MinimumAxiomatization L GP := MinimumLogic.minAX Var.
 
 Instance Kripke_MD: Model := KripkeSemantics.MD Var.

@@ -15,7 +15,12 @@ match hc with
 | FROM_andp_impp_TO_iffp => []
 | FROM_falsep_impp_TO_negp => []
 | FROM_falsep_impp_TO_truep => []
+| FROM_impp_negp_TO_orp => []
+| FROM_negp_falsep_TO_truep => []
+| FROM_negp_truep_TO_falsep => []
 | FROM_impp_TO_multi_imp => []
+| FROM_andp_TO_iter_andp => []
+| FROM_sepcon_TO_iter_sepcon => []
 | FROM_empty_set_TO_empty_context => [FROM_ensemble_expr_TO_context]
 end.
 
@@ -37,6 +42,9 @@ match hj with
                                              ]
 | FROM_provable_TO_derivable => [FROM_ensemble_expr_TO_context]
 | FROM_derivable_TO_provable => [FROM_ensemble_expr_TO_context]
+| FROM_provable_TO_derivable1 => []
+| FROM_provable_TO_logic_equiv => []
+| FROM_derivable1_TO_logic_equiv => []
 end.
 
 (* generated connective *)
@@ -47,7 +55,12 @@ match hc with
 | FROM_andp_impp_TO_iffp => iffp
 | FROM_falsep_impp_TO_negp => negp
 | FROM_falsep_impp_TO_truep => truep
+| FROM_impp_negp_TO_orp => orp
+| FROM_negp_falsep_TO_truep => truep
+| FROM_negp_truep_TO_falsep => falsep
 | FROM_impp_TO_multi_imp => multi_imp
+| FROM_andp_TO_iter_andp => iter_andp
+| FROM_sepcon_TO_iter_sepcon => iter_sepcon
 | FROM_empty_set_TO_empty_context => empty_context
 end.
 
@@ -59,6 +72,9 @@ match hj with
 | ___USE_consequence_FOR_derivable _ _ => derivable
 | FROM_provable_TO_derivable => derivable
 | FROM_derivable_TO_provable => provable
+| FROM_provable_TO_derivable1 => derivable1
+| FROM_provable_TO_logic_equiv => logic_equiv
+| FROM_derivable1_TO_logic_equiv => logic_equiv
 end.
 
 (* generated type *)
@@ -80,10 +96,13 @@ match c with
 | truep
 | negp
 | iffp
+| coq_prop
 | sepcon
 | wand
 | emp
-| multi_imp => [expr]
+| multi_imp
+| iter_andp
+| iter_sepcon => [expr]
 | empty_context => [context]
 end.
 
@@ -92,6 +111,8 @@ Definition DTOJ (j: judgement): list type :=
 match j with
 | provable => [expr]
 | derivable => [context; expr]
+| derivable1 => [expr]
+| logic_equiv => [expr]
 | corable => [expr]
 end.
 
@@ -103,7 +124,12 @@ match hc with
 | FROM_andp_impp_TO_iffp => [andp; impp]
 | FROM_falsep_impp_TO_negp => [falsep; impp]
 | FROM_falsep_impp_TO_truep => [falsep; impp]
+| FROM_impp_negp_TO_orp => [impp; negp]
+| FROM_negp_falsep_TO_truep => [negp; falsep]
+| FROM_negp_truep_TO_falsep => [negp; truep]
 | FROM_impp_TO_multi_imp => [impp]
+| FROM_andp_TO_iter_andp => [andp; truep]
+| FROM_sepcon_TO_iter_sepcon => [sepcon; emp]
 | FROM_empty_set_TO_empty_context => []
 end.
 
@@ -115,6 +141,9 @@ match hj with
 | ___USE_consequence_FOR_derivable _ _ => []
 | FROM_provable_TO_derivable => [provable]
 | FROM_derivable_TO_provable => [derivable]
+| FROM_provable_TO_derivable1 => [provable]
+| FROM_provable_TO_logic_equiv => [provable]
+| FROM_derivable1_TO_logic_equiv => [derivable1]
 end.
 
 (* depended types of types *)
@@ -131,10 +160,15 @@ Definition how_connective_class (hc: how_connective): option rule_class :=
 match hc with
 | primitive_connective c => None
 | ___predicate_over_states _ _ => None
-| FROM_andp_impp_TO_iffp => None
-| FROM_falsep_impp_TO_negp => None
-| FROM_falsep_impp_TO_truep => None
+| FROM_andp_impp_TO_iffp => Some (GEN_iffp_FROM_andp_impp)
+| FROM_falsep_impp_TO_truep => Some (GEN_truep_FROM_falsep_impp)
+| FROM_falsep_impp_TO_negp => Some (GEN_negp_FROM_falsep_impp)
+| FROM_impp_negp_TO_orp => Some (GEN_orp_FROM_impp_negp)
+| FROM_negp_falsep_TO_truep => Some (GEN_truep_FROM_negp_falsep)
+| FROM_negp_truep_TO_falsep => Some (GEN_falsep_FROM_negp_truep)
 | FROM_impp_TO_multi_imp => None
+| FROM_andp_TO_iter_andp => Some (GEN_iter_andp_FROM_fold_left_andp)
+| FROM_sepcon_TO_iter_sepcon => Some (GEN_iter_sepcon_FROM_fold_left_sepcon)
 | FROM_empty_set_TO_empty_context => None
 end.
 
@@ -146,6 +180,9 @@ match hj with
 | ___USE_consequence_FOR_derivable _ _ => None
 | FROM_provable_TO_derivable => Some GEN_derivable_FROM_provable
 | FROM_derivable_TO_provable => Some GEN_provable_FROM_derivable
+| FROM_provable_TO_derivable1 => Some GEN_derivable1_FROM_provable
+| FROM_provable_TO_logic_equiv => Some GEN_logic_equiv_FROM_provable
+| FROM_derivable1_TO_logic_equiv => Some GEN_logic_equiv_FROM_derivable1
 end.
 
 Definition all_how_instances: list how_instance :=
@@ -446,6 +483,7 @@ Definition result: Output.output :=
 
 End ComputeHT.
 
+(*
 Module test1.
 
 Definition how_connectives :=
@@ -539,6 +577,7 @@ Definition how_connectives :=
   ;FROM_falsep_impp_TO_negp
   ;FROM_falsep_impp_TO_truep
   ;FROM_impp_TO_multi_imp
+  ;FROM_sepcon_TO_iter_sepcon
   ;FROM_empty_set_TO_empty_context
   ].
 
@@ -566,4 +605,6 @@ Eval compute in (how_types_define how_connectives how_judgements).
 Eval compute in (result how_connectives how_judgements transparent_names primitive_rule_classes).
 
 End test3.
+
+*)
 

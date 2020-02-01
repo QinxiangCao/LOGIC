@@ -44,18 +44,33 @@ Section Canonical.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
-        {AX: NormalAxiomatization L GammaP GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
+        {GammaDP: DerivableProvable L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {MD: Model}
@@ -184,7 +199,7 @@ Proof.
   rewrite <- derivable_closed_element_derivable by (apply AL_DC, (proj2_sig Psi2)).
   apply H; auto.
   exists TT, x; split; [| split]; auto.
-  apply derivable_impp_refl.
+  apply derivable_truep_intros.
 Qed.
 
 Lemma ext_canonical_residual
@@ -270,7 +285,7 @@ Proof.
   + apply derivable_assum; apply H0.
     exists x, TT; split; [| split]; auto.
     - apply derivable_assum; auto.
-    - apply derivable_impp_refl.
+    - apply derivable_truep_intros.
   + rewrite <- derivable_closed_element_derivable by (apply AL_DC, (proj2_sig Phi)).
     rewrite <- (TRUTH emp) by eauto.
     rewrite sat_emp; auto.

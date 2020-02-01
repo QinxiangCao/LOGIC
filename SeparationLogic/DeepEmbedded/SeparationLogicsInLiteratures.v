@@ -9,6 +9,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
@@ -26,7 +27,16 @@ Section ReynoldsLogic.
 
 Context {Sigma: SeparationLanguage.PropositionalVariables}.
 
-Existing Instances SeparationLanguage.L SeparationLanguage.minL SeparationLanguage.pL SeparationLanguage.sepconL  SeparationLanguage.wandL.
+Existing Instances SeparationLanguage.L
+                   SeparationLanguage.minL
+                   SeparationLanguage.andpL
+                   SeparationLanguage.orpL
+                   SeparationLanguage.falsepL
+                   SeparationLanguage.truepL
+                   SeparationLanguage.iffpL
+                   SeparationLanguage.negpL
+                   SeparationLanguage.sepconL
+                   SeparationLanguage.wandL.
 
 Inductive provable: SeparationLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -49,7 +59,7 @@ Instance GP: Provable SeparationLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationLanguage.L GP.
@@ -60,17 +70,31 @@ Proof.
   + apply axiom2.
 Qed.
 
-Instance ipAX: IntuitionisticPropositionalLogic SeparationLanguage.L GP.
+Instance andpAX: AndAxiomatization SeparationLanguage.L GP.
 Proof.
   constructor.
   + apply andp_intros.
   + apply andp_elim1.
   + apply andp_elim2.
+Qed.
+
+
+Instance orpAX: OrAxiomatization SeparationLanguage.L GP.
+Proof.
+  constructor.
   + apply orp_intros1.
   + apply orp_intros2.
   + apply orp_elim.
-  + apply falsep_elim.
 Qed.
+
+Instance falsepAX: FalseAxiomatization SeparationLanguage.L GP.
+Proof.
+  constructor.
+  apply falsep_elim.
+Qed.
+
+Instance iffpAX: IffAxiomatization SeparationLanguage.L GP :=
+  IffFromDefToAX_And_Imp.
 
 Instance wandAX: WandAxiomatization SeparationLanguage.L GP.
 Proof.
@@ -110,7 +134,17 @@ Section OHearnLogic.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
+Existing Instances SeparationEmpLanguage.L
+                   SeparationEmpLanguage.minL
+                   SeparationEmpLanguage.andpL
+                   SeparationEmpLanguage.orpL
+                   SeparationEmpLanguage.falsepL
+                   SeparationEmpLanguage.truepL
+                   SeparationEmpLanguage.iffpL
+                   SeparationEmpLanguage.negpL
+                   SeparationEmpLanguage.sepconL
+                   SeparationEmpLanguage.wandL
+                   SeparationEmpLanguage.empL.
 
 Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -134,7 +168,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
@@ -145,24 +179,40 @@ Proof.
   + apply axiom2.
 Qed.
 
-Instance ipAX: IntuitionisticPropositionalLogic SeparationEmpLanguage.L GP.
+Instance andpAX: AndAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply andp_intros.
   + apply andp_elim1.
   + apply andp_elim2.
+Qed.
+
+
+Instance orpAX: OrAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
   + apply orp_intros1.
   + apply orp_intros2.
   + apply orp_elim.
-  + apply falsep_elim.
 Qed.
 
-Instance cpAX: ClassicalPropositionalLogic SeparationEmpLanguage.L GP.
+Instance falsepAX: FalseAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
+  apply falsep_elim.
+Qed.
+
+Instance iffpAX: IffAxiomatization SeparationEmpLanguage.L GP :=
+  IffFromDefToAX_And_Imp.
+
+(** TODO: Resume this by different constructors of cpAX. *)
+(*
+Instance cpAX: ClassicalAxiomatizatiom SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   apply excluded_middle.
 Qed.
-
+*)
 Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
@@ -203,7 +253,17 @@ Section LogicOnModuResModel.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
+Existing Instances SeparationEmpLanguage.L
+                   SeparationEmpLanguage.minL
+                   SeparationEmpLanguage.andpL
+                   SeparationEmpLanguage.orpL
+                   SeparationEmpLanguage.falsepL
+                   SeparationEmpLanguage.truepL
+                   SeparationEmpLanguage.iffpL
+                   SeparationEmpLanguage.negpL
+                   SeparationEmpLanguage.sepconL
+                   SeparationEmpLanguage.wandL
+                   SeparationEmpLanguage.empL.
 
 Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -227,7 +287,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
@@ -238,17 +298,31 @@ Proof.
   + apply axiom2.
 Qed.
 
-Instance ipAX: IntuitionisticPropositionalLogic SeparationEmpLanguage.L GP.
+Instance andpAX: AndAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply andp_intros.
   + apply andp_elim1.
   + apply andp_elim2.
+Qed.
+
+
+Instance orpAX: OrAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
   + apply orp_intros1.
   + apply orp_intros2.
   + apply orp_elim.
-  + apply falsep_elim.
 Qed.
+
+Instance falsepAX: FalseAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
+  apply falsep_elim.
+Qed.
+
+Instance iffpAX: IffAxiomatization SeparationEmpLanguage.L GP :=
+  IffFromDefToAX_And_Imp.
 
 Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
@@ -296,7 +370,17 @@ Section LogicOnMSL.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
+Existing Instances SeparationEmpLanguage.L
+                   SeparationEmpLanguage.minL
+                   SeparationEmpLanguage.andpL
+                   SeparationEmpLanguage.orpL
+                   SeparationEmpLanguage.falsepL
+                   SeparationEmpLanguage.truepL
+                   SeparationEmpLanguage.iffpL
+                   SeparationEmpLanguage.negpL
+                   SeparationEmpLanguage.sepconL
+                   SeparationEmpLanguage.wandL
+                   SeparationEmpLanguage.empL.
 
 Inductive provable: SeparationEmpLanguage.expr Sigma -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
@@ -320,7 +404,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
@@ -331,17 +415,31 @@ Proof.
   + apply axiom2.
 Qed.
 
-Instance ipAX: IntuitionisticPropositionalLogic SeparationEmpLanguage.L GP.
+Instance andpAX: AndAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply andp_intros.
   + apply andp_elim1.
   + apply andp_elim2.
+Qed.
+
+
+Instance orpAX: OrAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
   + apply orp_intros1.
   + apply orp_intros2.
   + apply orp_elim.
-  + apply falsep_elim.
 Qed.
+
+Instance falsepAX: FalseAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
+  apply falsep_elim.
+Qed.
+
+Instance iffpAX: IffAxiomatization SeparationEmpLanguage.L GP :=
+  IffFromDefToAX_And_Imp.
 
 Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.

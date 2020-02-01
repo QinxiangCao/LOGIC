@@ -36,7 +36,7 @@ Context {L: Language}
         {GammaD: Derivable L}.
 
 Definition context_sepcon (Phi Psi: context): context :=
-  fun z => exists x y, z = x * y /\ Phi |-- x /\ Psi |-- y.
+  fun z => exists x y, z = x * y /\ Phi |--- x /\ Psi |--- y.
 
 Definition context_sepcon_included_l (Phi2 Psi: context): context -> Prop :=
   fun Phi1 => Included _ (context_sepcon Phi1 Phi2) Psi.
@@ -44,16 +44,31 @@ Definition context_sepcon_included_l (Phi2 Psi: context): context -> Prop :=
 Definition context_sepcon_included_r (Phi1 Psi: context): context -> Prop :=
   fun Phi2 => Included _ (context_sepcon Phi1 Phi2) Psi.
 
-Context {pL: PropositionalLanguage L}
+Context {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {wandL: WandLanguage L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
-        {AX: NormalAxiomatization L GammaP GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
+        {GammaDP: DerivableProvable L GammaP GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {sepcon_orp_AX: SepconOrAxiomatization L GammaP}
@@ -61,8 +76,8 @@ Context {pL: PropositionalLanguage L}
 
 Lemma context_sepcon_derivable:
   forall (Phi Psi: context) z,
-    context_sepcon Phi Psi |-- z ->
-    exists x y, |-- x * y --> z /\ Phi |-- x /\ Psi |-- y.
+    context_sepcon Phi Psi |--- z ->
+    exists x y, |-- x * y --> z /\ Phi |--- x /\ Psi |--- y.
 Proof.
   intros.
   rewrite derivable_provable in H.
@@ -71,8 +86,8 @@ Proof.
   + exists TT, TT.
     split; [| split].
     - apply aux_minimun_rule00; auto.
-    - apply derivable_impp_refl.
-    - apply derivable_impp_refl.
+    - apply derivable_truep_intros.
+    - apply derivable_truep_intros.
   + pose proof provable_multi_imp_arg_switch1 l x z.
     pose proof modus_ponens _ _ H2 H1.
     specialize (IHForall _ H3); clear H1 H2 H3.
@@ -104,7 +119,7 @@ Proof.
   rewrite <- (falsep_sepcon TT).
   apply derivable_assum.
   apply H; exists FF, TT; split; [| split]; auto.
-  apply derivable_impp_refl.
+  apply derivable_truep_intros.
 Qed.
 
 Lemma context_sepcon_included_l_derivable_subset_preserved: forall Phi2 Psi,
@@ -173,7 +188,7 @@ Proof.
   subst z1 z2.
   assert (context_orp Phi1 Phi1' (x1 || x2));
   [| assert (context_sepcon (context_orp Phi1 Phi1') Phi2 ((x1 || x2) * (y1 && y2)));
-     [| assert (Psi |-- (x1 * y1) || (x2 * y2))]].
+     [| assert (Psi |--- (x1 * y1) || (x2 * y2))]].
   + exists x1, x2.
     split; [| split]; auto.
   + exists (x1 || x2), (y1 && y2).
@@ -182,7 +197,7 @@ Proof.
     - apply deduction_andp_intros; auto.
   + apply H in H2.
     apply derivable_assum in H2.
-    rewrite sepcon_orp_distr_r in H2.
+    rewrite sepcon_orp_distr_r_iffp in H2.
     rewrite (andp_elim1 y1 y2) in H2 at 1.
     rewrite (andp_elim2 y1 y2) in H2 at 1.
     auto.
@@ -193,8 +208,8 @@ Qed.
 
 Lemma wand_deduction_theorem:
   forall (Phi: context) x y,
-    context_sepcon Phi (Union _ empty_context (Singleton _ x)) |-- y <->
-    Phi |-- x -* y.
+    context_sepcon Phi (Union _ empty_context (Singleton _ x)) |--- y <->
+    Phi |--- x -* y.
 Proof.
   intros.
   split; intros.

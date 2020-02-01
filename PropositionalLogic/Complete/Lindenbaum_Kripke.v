@@ -23,16 +23,22 @@ Section Lindenbaum_Kripke.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}.
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}.
 
 Lemma Lindenbaum_for_orp_witnessed: forall P,
   Lindenbaum_preserves P ->
@@ -67,7 +73,7 @@ Proof.
 Qed.
 
 Lemma Lindenbaum_cannot_derive_ensures_orp_witnessed
-      {AX: NormalAxiomatization L GammaP GammaD}:
+      {GammaDP: DerivableProvable L GammaP GammaD}:
   forall x, Lindenbaum_ensures (cannot_derive x) orp_witnessed.
 Proof.
   intros.
@@ -90,7 +96,7 @@ Proof.
 Qed.
 
 Lemma Lindenbaum_cannot_derive_ensures_consistent
-      {AX: NormalAxiomatization L GammaP GammaD}:
+      {GammaDP: DerivableProvable L GammaP GammaD}:
   forall x, Lindenbaum_ensures (cannot_derive x) consistent.
 Proof.
   intros.
@@ -102,3 +108,4 @@ Proof.
 Qed.
 
 End Lindenbaum_Kripke.
+

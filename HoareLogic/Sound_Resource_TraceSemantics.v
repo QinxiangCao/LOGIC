@@ -133,7 +133,6 @@ Instance KSAAIr: @KSAActionInterpret_resource (resources * model) Ac ac_sem (@pr
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD tt SM}

@@ -7,6 +7,7 @@ Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 
 Require Logic.PropositionalLogic.DeepEmbedded.Deep.
 
@@ -54,15 +55,15 @@ Ltac search_expr n l := let len := length l in search_expr' n len l l.
 Section Temp.
   Context {L : Language}
           {minL : MinimumLanguage L}
-          {pL : PropositionalLanguage L}.
+          {andpL : AndLanguage L}
+          (default: Base.expr)
+          (tbl : list Base.expr).
 
-  Fixpoint reflect (tbl : list Base.expr) (e : Deep.expr) : Base.expr :=
+  Fixpoint reflect (e : Deep.expr) : Base.expr :=
     match e with
-    | Deep.varp n => List.nth (pred n) tbl Syntax.falsep
-    | Deep.andp e1 e2 => Syntax.andp (reflect tbl e1) (reflect tbl e2)
-    | Deep.impp e1 e2 => Syntax.impp (reflect tbl e1) (reflect tbl e2)
-    | Deep.orp e1 e2 => Syntax.orp (reflect tbl e1) (reflect tbl e2)
-    | Deep.falsep => Syntax.falsep
+    | Deep.varp n => List.nth (pred n) tbl default
+    | Deep.andp e1 e2 => Syntax.andp (reflect e1) (reflect e2)
+    | Deep.impp e1 e2 => Syntax.impp (reflect e1) (reflect e2)
     end.
 End Temp.
 
@@ -91,81 +92,74 @@ Ltac shallowToDeep se :=
   match shallowToDeep' se constr:(@nil Base.expr) with
   | (?de, ?tbl) =>
     let tbl' := reverse tbl in
-    assert (reflect tbl' de = se) by reflexivity
+    assert (reflect se tbl' de = se) by reflexivity
   end.
 
 Section Temp.
   Context (L : Base.Language)
           (minL : Syntax.MinimumLanguage L)
-          (pL : Syntax.PropositionalLanguage L).
+          (andL : Syntax.AndLanguage L).
   Context (P Q R : Base.expr).
   Goal False.
     let n := search_expr 1 (1 :: 2 :: 3 :: 4 :: nil) in pose n.
     let n := search_expr 5 (1 :: 2 :: 3 :: 4 :: nil) in pose n.
-    shallowToDeep (Syntax.impp (Syntax.andp P Q) (Syntax.orp Q P)).
+    shallowToDeep (Syntax.impp (Syntax.andp P Q) (Syntax.andp Q P)).
   Abort.
 End Temp.
 
 Section Temp.
   Context {L: Language}
           {minL: MinimumLanguage L}
-          {pL: PropositionalLanguage L}
+          {andpL: AndLanguage L}
           {GammaP: Provable L}
           {minAX: MinimumAxiomatization L GammaP}
-          {ipGamma: IntuitionisticPropositionalLogic L GammaP}.
+          {andpAX: AndAxiomatization L GammaP}.
 
   Theorem reify_sound :
-    forall table (e : Deep.expr), Deep.provable e -> provable (reflect table e).
+    forall table (default: Base.expr) (e : Deep.expr),
+      Deep.provable e -> provable (reflect default table e).
   Proof.
     induction 1.
-    - apply (modus_ponens (reflect table x) (reflect table y)); assumption.
-    - apply (axiom1 (reflect table x) (reflect table y)); assumption.
-    - apply (axiom2 (reflect table x) (reflect table y)); assumption.
-    - apply (andp_intros (reflect table x) (reflect table y)); assumption.
-    - apply (andp_elim1 (reflect table x) (reflect table y)); assumption.
-    - apply (andp_elim2 (reflect table x) (reflect table y)); assumption.
-    - apply (orp_intros1 (reflect table x) (reflect table y)); assumption.
-    - apply (orp_intros2 (reflect table x) (reflect table y)); assumption.
-    - apply (orp_elim (reflect table x) (reflect table y)); assumption.
-    - apply falsep_elim.
+    - apply (modus_ponens (reflect default table x) (reflect default table y)); assumption.
+    - apply (axiom1 (reflect default table x) (reflect default table y)); assumption.
+    - apply (axiom2 (reflect default table x) (reflect default table y)); assumption.
+    - apply (andp_intros (reflect default table x) (reflect default table y)); assumption.
+    - apply (andp_elim1 (reflect default table x) (reflect default table y)); assumption.
+    - apply (andp_elim2 (reflect default table x) (reflect default table y)); assumption.
   Qed.
 End Temp.
 
 Module DSolver.
-  Local Existing Instances Deep.L Deep.minL Deep.pL Deep.GP Deep.minAX Deep.ipG.
+  Local Existing Instances Deep.L Deep.minL Deep.andpL Deep.truepL Deep.iffpL Deep.iter_andp_L Deep.iter_andp_DL Deep.GP Deep.minAX Deep.andpAX Deep.truepAX Deep.iffpAX Deep.iter_andp_AXL.
 
-  Instance Adj : Adjointness _ _ andp impp.
+  Instance Adj : P.Adjointness _ _ andp impp.
   Proof.
     constructor. split; intros.
     - rewrite <- impp_uncurry. auto.
     - rewrite <- impp_curry. auto.
   Qed.
 
-  Instance Comm : Commutativity _ _ andp.
+  Instance Comm : P.Commutativity _ _ andp.
   Proof.
-    constructor. intros.
-    rewrite andp_comm. apply provable_impp_refl.
+    apply andp_Comm.
   Qed.
 
-  Instance Mono : Monotonicity _ _ andp.
+  Instance Mono : P.Monotonicity _ _ andp.
   Proof.
-    constructor. intros.
-    apply solve_impp_andp.
-    - rewrite andp_elim1. auto.
-    - rewrite andp_elim2. auto.
+    apply andp_Mono.
   Qed.
 
-  Instance Assoc : Associativity _ _ andp.
+  Instance Assoc : P.Associativity _ _ andp.
   Proof.
-    constructor; intros; rewrite andp_assoc; apply provable_impp_refl.
+    apply andp_Assoc.
   Qed.
 
-  Instance LUnit : LeftUnit _ _ truep andp.
+  Instance LUnit : P.LeftUnit _ _ truep andp.
   Proof.
     constructor; intros; rewrite truep_andp; apply provable_impp_refl.
   Qed.
 
-  Instance RUnit : RightUnit _ _ truep andp.
+  Instance RUnit : P.RightUnit _ _ truep andp.
   Proof.
     constructor; intros; rewrite andp_truep; apply provable_impp_refl.
   Qed.
@@ -193,37 +187,38 @@ Module DSolver.
     | Deep.andp p q => (flatten_and p ++ flatten_and q)
     | s => s :: nil
     end.
-  
-  Definition flatten_and_inv (es : list expr) := List.fold_left andp es truep.
 
   Lemma flatten_and_sound :
-    forall e, provable (iffp e (flatten_and_inv (flatten_and e))).
+    forall e, provable (iffp e (iter_andp (flatten_and e))).
   Proof.
-    induction e;
+    intros.
+    rewrite iter_andp_def_l.
+    induction e; simpl flatten_and
+        (*;
       [ change (flatten_and_inv _) with (fold_left andp (flatten_and e1 ++ flatten_and e2) truep)
       | change (flatten_and_inv _) with (andp truep (orp e1 e2))
       | change (flatten_and_inv _) with (andp truep (impp e1 e2))
       | change (flatten_and_inv _) with (andp truep falsep)
       | change (flatten_and_inv _) with (andp truep (Deep.varp n))
-      ].
+      ]*).
     {
-      unfold iffp in IHe1, IHe2.
-      apply solve_andp_intros. 
+      apply solve_iffp_intros. 
       {
-        rewrite <- assoc_prodp_fold_left.
-        rewrite andp_elim1 in IHe1.
-        rewrite andp_elim1 in IHe2.
-        apply prodp_mono; auto.
+        rewrite <- P.assoc_prodp_fold_left.
+        rewrite iffp_elim1 in IHe1.
+        rewrite iffp_elim1 in IHe2.
+        apply P.prodp_mono; auto.
       }
       {
-        rewrite assoc_fold_left_app.
-        rewrite andp_elim2 in IHe1.
-        rewrite andp_elim2 in IHe2.
-        apply prodp_mono; auto.
+        rewrite P.assoc_fold_left_app.
+        rewrite iffp_elim2 in IHe1.
+        rewrite iffp_elim2 in IHe2.
+        apply P.prodp_mono; auto.
       }
     }
-    all: apply solve_andp_intros;
-      [rewrite <- left_unit2 | rewrite left_unit1];
+    all: apply solve_iffp_intros;
+      cbv [fold_left];
+      [rewrite <- P.left_unit2 | rewrite P.left_unit1];
       apply provable_impp_refl.
   Qed.
 
@@ -279,11 +274,11 @@ Module DSolver.
     + clear IHes.
       apply flatten_imp_inv_In in H.
       change (flatten_imp_inv _) with (multi_imp (flatten_and a) r) in H.
-      rewrite <- multi_and_multi_imp in H.
+      rewrite <- iter_andp_multi_imp in H.
       pose proof flatten_and_sound a.
       change (flatten_imp_inv _) with (impp a (multi_imp es r)).
       apply multi_imp_weaken.
-      apply solve_andp_elim1 in H0.
+      apply solve_iffp_elim1 in H0.
       eapply aux_minimun_rule02; eauto.
     + apply aux_minimun_rule00, IHes, H.
   Qed.
@@ -340,14 +335,14 @@ Module DSolver.
 End DSolver.
 
 Module SolverSound.
-  Ltac ipSolver' se :=
+  Ltac ipSolver' L se :=
     match shallowToDeep' se constr:(@nil Base.expr) with
     | (?de, ?tbl) =>
       let tbl' := reverse tbl in
       let b := eval hnf in (DSolver.all_in_context de) in
       assert (DSolver.all_in_context de = b) by reflexivity;
-      assert (reflect tbl' de = se) by reflexivity;
-      apply (reify_sound tbl' de);
+      assert (@eq (@Base.expr L) (reflect se tbl' de) (se)) by reflexivity;
+      apply (@reify_sound L _ _ _ _ _ tbl' se de);
       apply DSolver.all_in_provable;
       match goal with
       | [H : DSolver.all_in_context _ = true |- _] => apply H
@@ -356,16 +351,16 @@ Module SolverSound.
 
   Ltac ipSolver :=
     match goal with
-    | [|- Base.provable ?e] => ipSolver' e
+    | [|- @Base.provable ?L ?GammaP ?e] => ipSolver' L e
     end.
 
   Section Temp.
     Context {L: Language}
             {minL: MinimumLanguage L}
-            {pL: PropositionalLanguage L}
+            {andpL: AndLanguage L}
             {GammaP: Provable L}
             {minAX: MinimumAxiomatization L GammaP}
-            {ipGamma: IntuitionisticPropositionalLogic L GammaP}.
+            {andpAX: AndAxiomatization L GammaP}.
     Parameter (P Q R : expr).
     Goal (provable (impp (andp P Q) (andp Q P))).
       ipSolver.

@@ -19,3 +19,11 @@ Notation "x -* y" := (wand x y) (at level 55, right associativity) : syntax.
 
 End SeparationLogicNotation.
 
+Class IterSepconLanguage (L: Language): Type := {
+  iter_sepcon : list expr -> expr
+}.
+
+Class IterWandLanguage (L: Language): Type := {
+  iter_wand : list expr -> expr -> expr
+}.
+

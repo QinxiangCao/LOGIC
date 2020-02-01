@@ -35,7 +35,6 @@ Context {P: ProgrammingLanguage}
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
         {sepconL: SepconLanguage L}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD tt SM}

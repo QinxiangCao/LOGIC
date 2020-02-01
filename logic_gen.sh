@@ -7,12 +7,21 @@ else
     echo "cp ${src} LogicGenerator/Config.v"
     cp ${src} LogicGenerator/Config.v
 fi
-make -j7; cd LogicGenerator; rm Config.vo; make; cd ..
+make -j7 LogicGenerator/ConfigCompute.vo; cd LogicGenerator; rm Config.vo; make Generated.v
+if [ $# -eq 3 ]
+then
+    make Generated2.v
+fi
+cd ..
 if [ $# -le 1 ]
 then
     dst=LogicGenerator/Generated.v
 else
     dst=$2
-    echo "cp LogicGenerator/demo/Generated.v ${dst}"
     cp LogicGenerator/Generated.v ${dst}
+fi
+if [ $# -eq 3 ]
+then
+    dst=$3
+    cp LogicGenerator/Generated2.v ${dst}
 fi

@@ -15,7 +15,6 @@ End NaiveLang.
 Require Import interface_3.
 
 Module NaiveRule.
-  Import NaiveLang.
   Include DerivedNames (NaiveLang).
   Axiom deduction_andp_intros : (forall (Phi : context) (x y : expr), derivable Phi x -> derivable Phi y -> derivable Phi (andp x y)) .
   Axiom deduction_andp_elim1 : (forall (Phi : context) (x y : expr), derivable Phi (andp x y) -> derivable Phi x) .

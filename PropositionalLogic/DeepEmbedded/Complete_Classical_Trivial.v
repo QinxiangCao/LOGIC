@@ -17,6 +17,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.PropositionalLogic.Semantics.Trivial.
 Require Import Logic.PropositionalLogic.Complete.ContextProperty_Kripke.
 Require Import Logic.PropositionalLogic.Complete.ContextProperty_Trivial.
@@ -42,13 +43,39 @@ Section Complete.
 Context {Sigma: PropositionalLanguage.PropositionalVariables}
         {CV: Countable PropositionalLanguage.Var}.
 
-Existing Instances PropositionalLanguage.L PropositionalLanguage.minL PropositionalLanguage.pL.
+Existing Instances PropositionalLanguage.L
+                   PropositionalLanguage.minL
+                   PropositionalLanguage.andpL
+                   PropositionalLanguage.orpL
+                   PropositionalLanguage.falsepL
+                   PropositionalLanguage.negpL
+                   PropositionalLanguage.negpDef
+                   PropositionalLanguage.iffpL
+                   PropositionalLanguage.iffpDef
+                   PropositionalLanguage.truepL
+                   PropositionalLanguage.truepDef.
 
-Existing Instances TrivialSemantics.MD TrivialSemantics.SM TrivialSemantics.tminSM TrivialSemantics.tpSM.
+Existing Instances TrivialSemantics.MD
+                   TrivialSemantics.SM
+                   TrivialSemantics.tminSM
+                   TrivialSemantics.andpSM
+                   TrivialSemantics.orpSM
+                   TrivialSemantics.falsepSM
+                   TrivialSemantics.negpSM.
 
-Existing Instances ProofTheories.ClassicalPropositionalLogic.GP ProofTheories.ClassicalPropositionalLogic.GD ProofTheories.ClassicalPropositionalLogic.AX ProofTheories.ClassicalPropositionalLogic.minAX ProofTheories.ClassicalPropositionalLogic.ipAX ProofTheories.ClassicalPropositionalLogic.cpAX.
+Existing Instances ProofTheories.ClassicalPropositionalLogic.GP
+                   ProofTheories.ClassicalPropositionalLogic.GD
+                   ProofTheories.ClassicalPropositionalLogic.GammaDP
+                   ProofTheories.ClassicalPropositionalLogic.minAX
+                   ProofTheories.ClassicalPropositionalLogic.andpAX
+                   ProofTheories.ClassicalPropositionalLogic.orpAX
+                   ProofTheories.ClassicalPropositionalLogic.falsepAX
+                   ProofTheories.ClassicalPropositionalLogic.inegpAX
+                   ProofTheories.ClassicalPropositionalLogic.gdpAX
+                   ProofTheories.ClassicalPropositionalLogic.dmpAX
+                   ProofTheories.ClassicalPropositionalLogic.cpAX.
 
-Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_ipSC Axiomatization2SequentCalculus_cpSC.
+Existing Instances IffFromDefToAX_And_Imp TrueFromDefToAX_False_Imp Axiomatization2SequentCalculus_GammaPD Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC Axiomatization2SequentCalculus_andpSC Axiomatization2SequentCalculus_orpSC Axiomatization2SequentCalculus_falsepSC Axiomatization2SequentCalculus_inegpSC Axiomatization2SequentCalculus_iffpSC Axiomatization2SequentCalculus_truepSC Axiomatization2SequentCalculus_cpSC.
 
 Definition cP: context -> Prop := maximal consistent.
 
@@ -106,8 +133,8 @@ Proof.
     apply H0; auto.
     hnf; auto.
   }
-  apply (@general_completeness PropositionalLanguage.L _ _ ProofTheories.ClassicalPropositionalLogic.GD _ _ _ _
-           _ _ _ TrivialSemantics.SM _ _ _ _ rel LIN_CONSI TRUTH); auto.
+  apply (@general_completeness PropositionalLanguage.L _ _ _ ProofTheories.ClassicalPropositionalLogic.GD _ _ _ _
+           _ _ _ _ TrivialSemantics.SM _ _ _ rel LIN_CONSI TRUTH); auto.
 Qed.
 
 End Complete.

@@ -9,6 +9,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.DeMorgan.
 Require Import Logic.PropositionalLogic.ProofTheory.GodelDummett.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
@@ -20,10 +21,23 @@ Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 Import SeparationLogicNotation.
 
-Class Parametric_SeparationLogic (PAR: SL_Parameter) (L: Language) {minL: MinimumLanguage L} {pL: PropositionalLanguage L} {sepconL: SepconLanguage L} {wandL: WandLanguage L} {empL: EmpLanguage L} (GammaP: Provable L) {minAX: MinimumAxiomatization L GammaP} {ipAX: IntuitionisticPropositionalLogic L GammaP} {sepconAX: SepconAxiomatization L GammaP} {wandAX: WandAxiomatization L GammaP} {empAX: EmpAxiomatization L GammaP} := {
-  Parametric_DM: WEM = true -> DeMorganPropositionalLogic L GammaP;
-  Parametric_GD: IC = true -> GodelDummettPropositionalLogic L GammaP;
-  Parametric_C: EM = true -> ClassicalPropositionalLogic L GammaP;
+Class Parametric_SeparationLogic
+      (PAR: SL_Parameter)
+      (L: Language)
+      {minL: MinimumLanguage L}
+      {andpL: AndLanguage L}
+      {orpL: OrLanguage L}
+      {iffpL: IffLanguage L}
+      {negpL: NegLanguage L}
+      {falsepL: FalseLanguage L}
+      {truepL: TrueLanguage L}
+      {sepconL: SepconLanguage L}
+      {wandL: WandLanguage L}
+      {empL: EmpLanguage L}
+      (GammaP: Provable L) := {
+  Parametric_DM: WEM = true -> DeMorganAxiomatization L GammaP;
+  Parametric_GD: IC = true -> GodelDummettAxiomatization L GammaP;
+  Parametric_C: EM = true -> ClassicalAxiomatization L GammaP;
   Parametric_GC: SCE = true -> GarbageCollectSeparationLogic L GammaP;
   Parametric_NE: ESE = true -> NonsplitEmpSeparationLogic L GammaP;
   Parametric_ED: ED = true -> DupEmpSeparationLogic L GammaP
@@ -33,7 +47,17 @@ Section SeparationLogic.
 
 Context {Sigma: SeparationEmpLanguage.PropositionalVariables}.
 
-Existing Instances SeparationEmpLanguage.L SeparationEmpLanguage.minL SeparationEmpLanguage.pL SeparationEmpLanguage.sepconL SeparationEmpLanguage.wandL SeparationEmpLanguage.empL.
+Existing Instances SeparationEmpLanguage.L
+                   SeparationEmpLanguage.minL
+                   SeparationEmpLanguage.andpL
+                   SeparationEmpLanguage.orpL
+                   SeparationEmpLanguage.falsepL
+                   SeparationEmpLanguage.truepL
+                   SeparationEmpLanguage.iffpL
+                   SeparationEmpLanguage.negpL
+                   SeparationEmpLanguage.sepconL
+                   SeparationEmpLanguage.wandL
+                   SeparationEmpLanguage.empL.
 
 Context (PAR: SL_Parameter).
 
@@ -50,7 +74,7 @@ Inductive provable: expr -> Prop :=
 | falsep_elim: forall x, provable (FF --> x)
 | weak_excluded_middle: WEM = true -> forall x, provable (~~ x || ~~ ~~ x)
 | impp_choice: IC = true -> forall x y, provable ((x --> y) || (y --> x))
-| excluded_middle: EM = true -> forall x, provable (x || ~~ x)
+| pierce_law: EM = true -> forall x y, provable (((x --> y) --> x) --> x)
 | sepcon_comm_impp: forall x y, provable (x * y --> y * x)
 | sepcon_assoc1: forall x y z, provable (x * (y * z) --> (x * y) * z)
 | wand_sepcon_adjoint1: forall x y z, provable (x * y --> z) -> provable (x --> (y -* z))
@@ -64,7 +88,7 @@ Instance GP: Provable SeparationEmpLanguage.L := Build_Provable _ provable.
 
 Instance GD: Derivable SeparationEmpLanguage.L := Provable2Derivable.
 
-Instance AX: NormalAxiomatization SeparationEmpLanguage.L GP GD :=
+Instance GDP: DerivableProvable SeparationEmpLanguage.L GP GD :=
   Provable2Derivable_Normal.
 
 Instance minAX: MinimumAxiomatization SeparationEmpLanguage.L GP.
@@ -75,17 +99,37 @@ Proof.
   + apply axiom2.
 Qed.
 
-Instance ipAX: IntuitionisticPropositionalLogic SeparationEmpLanguage.L GP.
+Instance andpAX: AndAxiomatization SeparationEmpLanguage.L GP.
 Proof.
   constructor.
   + apply andp_intros.
   + apply andp_elim1.
   + apply andp_elim2.
+Qed.
+
+
+Instance orpAX: OrAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
   + apply orp_intros1.
   + apply orp_intros2.
   + apply orp_elim.
-  + apply falsep_elim.
 Qed.
+
+Instance falsepAX: FalseAxiomatization SeparationEmpLanguage.L GP.
+Proof.
+  constructor.
+  apply falsep_elim.
+Qed.
+
+Instance iffpAX: IffAxiomatization SeparationEmpLanguage.L GP :=
+  IffFromDefToAX_And_Imp.
+
+Instance truepAX: TrueAxiomatization SeparationEmpLanguage.L GP :=
+  TrueFromDefToAX_False_Imp.
+
+Instance inegpAX: IntuitionisticNegAxiomatization SeparationEmpLanguage.L GP :=
+  NegFromDefToAX_False_Imp.
 
 Instance wandAX: WandAxiomatization SeparationEmpLanguage.L GP.
 Proof.
@@ -137,7 +181,7 @@ Proof.
   + intros; constructor.
     apply impp_choice; auto.
   + intros; constructor.
-    apply excluded_middle; auto.
+    apply pierce_law; auto.
   + intros; constructor.
     apply sepcon_elim1; auto.
   + intros; constructor.

@@ -13,6 +13,7 @@ Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfIteratedConnectives.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -22,7 +23,12 @@ Section ContextProperties.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}.
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}.
 
 Definition orp_witnessed: context -> Prop :=
   fun Phi => forall x y, Phi (orp x y) -> Phi x \/ Phi y.
@@ -30,17 +36,27 @@ Definition orp_witnessed: context -> Prop :=
 Context {GammaP: Provable L} {GammaD: Derivable L}.
 
 Definition context_orp (Phi Psi: context): context :=
-  fun z => exists x y, z = x || y /\ Phi |-- x /\ Psi |-- y.
+  fun z => exists x y, z = x || y /\ Phi |--- x /\ Psi |--- y.
 
 Definition context_orp_captured (P: context -> Prop): Prop :=
   forall Phi Psi, P (context_orp Phi Psi) -> P Phi \/ P Psi.
 
-Context {SC: NormalSequentCalculus L GammaP GammaD}
+Context {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L GammaD}
+        {andpSC: AndSequentCalculus L GammaD}
+        {orpSC: OrSequentCalculus L GammaD}
+        {falsepSC: FalseSequentCalculus L GammaD}
+        {inegpSC: IntuitionisticNegSequentCalculus L GammaD}
+        {iffpSC: IffSequentCalculus L GammaD}
+        {truepSC: TrueSequentCalculus L GammaD}
         {minAX: MinimumAxiomatization L GammaP}
-        {ipAX: IntuitionisticPropositionalLogic L GammaP}.
+        {andpAX: AndAxiomatization L GammaP}
+        {orpAX: OrAxiomatization L GammaP}
+        {falsepAX: FalseAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
+        {iffpAX: IffAxiomatization L GammaP}
+        {truepAX: TrueAxiomatization L GammaP}.
 
 Lemma context_orp_mono: forall Phi Psi Phi' Psi',
   Included _ (derivable Phi) (derivable Phi') ->
@@ -74,7 +90,7 @@ Proof.
   hnf; intros.
   apply not_and_or.
   intros [? ?]; apply H; clear H.
-  rewrite <- (orp_dup x).
+  rewrite <- (orp_dup1 x).
   apply derivable_assum.
   exists x, x.
   split; [| split]; auto.
@@ -86,7 +102,7 @@ Lemma DCS_truep: forall (Phi: context),
 Proof.
   intros.
   apply H.
-  apply derivable_impp_refl.
+  apply derivable_truep_intros.
 Qed.
 
 Lemma DCS_andp_iff: forall (Phi: context),
@@ -119,14 +135,16 @@ Proof.
     apply derivable_assum; auto.
 Qed.
 
-Lemma DCS_multi_and_iff: forall (Phi: context),
+Lemma DCS_multi_and_iff
+      {iter_andp_L: IterAndLanguage L}
+      {iter_andp_AXL: IterAndAxiomatization_left L GammaP}: forall (Phi: context),
   derivable_closed Phi ->
-  (forall xs: list expr, Phi (multi_and xs) <-> Forall Phi xs).
+  (forall xs: list expr, Phi (iter_andp xs) <-> Forall Phi xs).
 Proof.
   intros.
-  rewrite (DCS_iffp Phi (multi_and xs) (fold_right andp TT xs)).
+  rewrite (DCS_iffp Phi (iter_andp xs) (fold_right andp TT xs)).
   2: auto.
-  2: apply multi_and_spec.
+  2: apply iter_andp_spec_right.
 
   induction xs.
   + split; intros.
@@ -157,19 +175,20 @@ Proof.
     - pose proof deduction_orp_intros2 Phi x y H; auto.
 Qed.
 
-Lemma derivable_closed_union_derivable {AX: NormalAxiomatization L GammaP GammaD}: forall (Phi Psi: context) (x: expr),
+Lemma derivable_closed_union_derivable {GammaDP: DerivableProvable L GammaP GammaD}: forall (Phi Psi: context) (x: expr),
   derivable_closed Psi ->
-  Union _ Phi Psi |-- x ->
-  exists y, Psi y /\ Phi |-- y --> x.
+  Union _ Phi Psi |--- x ->
+  exists y, Psi y /\ Phi |--- y --> x.
 Proof.
   intros.
   rewrite derivable_provable in H0.
   destruct H0 as [xs [? ?]].
   pose proof provable_multi_imp_split _ _ _ _ H0 H1 as [xs1 [xs2 [? [? ?]]]].
   pose proof H4.
-  rewrite <- multi_and_multi_imp in H4.
+  AddConnective_iter_andp.
+  rewrite <- iter_andp_multi_imp in H4.
   eapply modus_ponens in H4; [| apply provable_multi_imp_arg_switch1].
-  exists (multi_and xs2).
+  exists (iter_andp xs2).
   split.
   + apply DCS_multi_and_iff; auto.
   + rewrite derivable_provable.
@@ -177,13 +196,13 @@ Proof.
     split; auto.
     eapply modus_ponens.
     - apply provable_multi_imp_weaken.
-      rewrite (multi_and_multi_imp xs2 x).
+      rewrite (iter_andp_multi_imp xs2 x).
       apply provable_impp_refl.
     - exact H5.
 Qed.
 
 Lemma consistent_spec:
-  forall (Phi: context), consistent Phi <-> ~ Phi |-- FF.
+  forall (Phi: context), consistent Phi <-> ~ Phi |--- FF.
 Proof.
   intros.
   split; intros.

@@ -23,7 +23,8 @@ Section Sound_Flat.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {iffpL: IffLanguage L}
         {sepconL: SepconLanguage L}
         {wandL: WandLanguage L}
         {MD: Model}
@@ -37,7 +38,8 @@ Context {L: Language}
         {SM: Semantics L MD}
         {kiSM: KripkeIntuitionisticSemantics L MD M SM}
         {kminSM: KripkeMinimumSemantics L MD M SM}
-        {kpSM: KripkePropositionalSemantics L MD M SM}
+        {kandpSM: KripkeAndSemantics L MD M SM}
+        {kiffpSM: KripkeIffSemantics L MD M SM}
         {fsepconSM: FlatSemantics.SepconSemantics L MD M SM}
         {fwandSM: FlatSemantics.WandSemantics L MD M SM}.
 

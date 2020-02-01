@@ -35,18 +35,33 @@ Section TruthLemma.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}
-        {cpSC: ClassicalPropositionalSequentCalculus L Gamma}
+        {andpSC: AndSequentCalculus L Gamma}
+        {orpSC: OrSequentCalculus L Gamma}
+        {falsepSC: FalseSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
+        {iffpSC: IffSequentCalculus L Gamma}
+        {truepSC: TrueSequentCalculus L Gamma}
+        {cpSC: ClassicalSequentCalculus L Gamma}
         {MD: Model}
         {kMD: KripkeModel MD}
         {M: Kmodel}
         {SM: Semantics L MD}
         {tminSM: TrivialMinimumSemantics L MD SM}
-        {tpSM: TrivialPropositionalSemantics L MD SM}.
+        {andpSM: AndSemantics L MD SM}
+        {orpSM: OrSemantics L MD SM}
+        {falsepSM: FalseSemantics L MD SM}
+        {truepSM: TrueSemantics L MD SM}
+        {iffpSM: IffSemantics L MD SM}
+        {negpSM: NegSemantics L MD SM}.
 
 Context (cP: context -> Prop)
         (rel: bijection (Kworlds M) (sig cP)).
@@ -100,6 +115,19 @@ Proof.
   rewrite sat_impp.
   rewrite MCS_impp_iff by (apply AL_MC, (proj2_sig Phi)).
   apply Morphisms_Prop.iff_iff_iff_impl_morphism; auto.
+Qed.
+
+Lemma truth_lemma_negp
+      (x: expr)
+      (IHx: forall m Phi, rel m Phi -> (KRIPKE: M, m |= x <-> proj1_sig Phi x)):
+  forall m Phi, rel m Phi -> (KRIPKE: M, m |= ~~ x <-> proj1_sig Phi (~~ x)).
+Proof.
+  intros.
+  rewrite sat_negp.
+  rewrite IHx by eassumption.
+  pose proof MCS_negp_iff.
+  rewrite MCS_negp_iff by (apply AL_MC, (proj2_sig Phi)).
+  tauto.
 Qed.
 
 End TruthLemma.

@@ -37,7 +37,7 @@ Hypothesis CANON: kMC M.
 Lemma general_completeness: strongly_complete Gamma SM (KripkeModelClass _ kMC).
 Proof.
   intros.
-  assert (forall Phi x, ~ Phi |-- x -> ~ consequence (KripkeModelClass _ kMC) Phi x).
+  assert (forall Phi x, ~ Phi |--- x -> ~ consequence (KripkeModelClass _ kMC) Phi x).
   2: {
     hnf; intros.
     apply Classical_Prop.NNPP; intro; revert H0.

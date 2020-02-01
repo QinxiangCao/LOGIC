@@ -3,6 +3,8 @@ Require Import Logic.lib.Ensembles_ext.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.TheoryOfSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.TheoryOfSequentCalculus.
 
@@ -12,7 +14,7 @@ Local Open Scope syntax.
 Definition multi_imp {L: Language} {minL: MinimumLanguage L} (xs: list expr) (y: expr): expr :=
   fold_right impp y xs.
 
-Class NormalAxiomatization (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable L): Type := {
+Class DerivableProvable (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable L): Type := {
   derivable_provable: forall Phi y, derivable Phi y <->
                         exists xs, Forall (fun x => Phi x) xs /\ provable (multi_imp xs y)
 }.
@@ -24,8 +26,27 @@ Class MinimumAxiomatization (L: Language) {minL: MinimumLanguage L} (Gamma: Prov
 }.
 
 Class MinimumSequentCalculus (L: Language) {minL: MinimumLanguage L} (Gamma: Derivable L) := {
-  deduction_modus_ponens: forall Phi x y, Phi |-- x -> Phi |-- x --> y -> Phi |-- y;
-  deduction_impp_intros: forall Phi x y, Phi;; x |-- y -> Phi |-- x --> y
+  deduction_modus_ponens: forall Phi x y, Phi |--- x -> Phi |--- x --> y -> Phi |--- y;
+  deduction_impp_intros: forall Phi x y, Phi;; x |--- y -> Phi |--- x --> y
+}.
+
+Class Derivable1Provable (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaD:Derivable1 L): Type := {
+  derivable1_provable:forall x y,derivable1 x y <->
+                        provable (impp x y)
+}.
+
+Class ProvableDerivable
+      (L: Language) (GammaP: Provable L) (GammaD: Derivable L): Type := {
+  provable_derivable: forall x, provable x <-> derivable empty_context x
+}.
+
+Class EquivProvable (L:Language) {minL: MinimumLanguage L} (GammaP:Provable L) (GammaL:LogicEquiv L): Type := {
+  logic_equiv_provable:forall x y, x --||-- y <->
+                        provable (impp x y) /\ provable (impp y x)
+}.
+
+Class ProvableDerivable1 (L: Language) {minL: MinimumLanguage L} (GammaP: Provable L) (GammaD: Derivable1 L): Type := {
+  provable_derivable1: forall x, provable x <-> derivable1 (impp x x) x
 }.
 
 Section DerivableRulesFromAxiomatization.
@@ -44,6 +65,13 @@ Proof.
   pose proof modus_ponens _ _ H H0.
   pose proof modus_ponens _ _ H2 H1.
   auto.
+Qed.
+
+Lemma provable_impp_refl': forall (x y: expr), x = y -> |-- x --> y.
+Proof.
+  intros.
+  subst y.
+  apply provable_impp_refl.
 Qed.
 
 Lemma aux_minimun_rule00: forall (x y: expr), |-- x -> |-- y --> x.
@@ -136,6 +164,15 @@ Proof.
   pose proof provable_impp_arg_switch (y --> z) (x --> y) (x --> z).
   eapply modus_ponens; eauto. clear H.
   apply aux_minimun_theorem00.
+Qed.
+
+Lemma solve_impp_trans: forall (x y z: expr), |-- (x --> y) -> |-- (y --> z) -> |-- (x --> z).
+Proof.
+  intros.
+  pose proof provable_impp_trans x y z.
+  pose proof modus_ponens _ _ H1 H.
+  pose proof modus_ponens _ _ H2 H0.
+  auto.
 Qed.
 
 End DerivableRulesFromAxiomatization.
@@ -262,9 +299,9 @@ Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaP: Provable L}
         {GammaD: Derivable L}
-        {AX: NormalAxiomatization L GammaP GammaD}.
+        {GammaDP: DerivableProvable L GammaP GammaD}.
 
-Lemma Axiomatization2SequentCalculus_SC: NormalSequentCalculus L GammaP GammaD.
+Lemma Axiomatization2SequentCalculus_GammaPD: ProvableDerivable L GammaP GammaD.
 Proof.
   constructor.
   intros.
@@ -361,12 +398,22 @@ Context {L: Language}
         {GammaD: Derivable L}
         {bSC: BasicSequentCalculus L GammaD}.
 
+Lemma deduction_weaken0 {GammaP: Provable L} {GammaPD: ProvableDerivable L GammaP GammaD}: forall Phi y,
+  |-- y ->
+  Phi |--- y.
+Proof.
+  intros.
+  rewrite provable_derivable in H.
+  eapply deduction_weaken; eauto.
+  intros ? [].
+Qed.
+
 Context {minL: MinimumLanguage L}
         {minSC: MinimumSequentCalculus L GammaD}.
 
 Lemma deduction_impp_elim: forall Phi x y,
-  Phi |-- impp x y ->
-  Union _ Phi (Singleton _ x) |-- y.
+  Phi |--- impp x y ->
+  Union _ Phi (Singleton _ x) |--- y.
 Proof.
   intros.
   eapply deduction_modus_ponens; solve_assum.
@@ -374,8 +421,8 @@ Qed.
 
 Theorem deduction_theorem:
   forall (Phi: context) (x y: expr),
-    Union _ Phi (Singleton _ x) |-- y <->
-    Phi |-- x --> y.
+    Union _ Phi (Singleton _ x) |--- y <->
+    Phi |--- x --> y.
 Proof.
   intros; split.
   + apply deduction_impp_intros; auto.
@@ -384,8 +431,8 @@ Qed.
 
 Theorem deduction_theorem_multi_imp:
   forall (Phi: context) (xs: list expr) (y: expr),
-    Union _ Phi (fun x => In x xs) |-- y <->
-    Phi |-- multi_imp xs y.
+    Union _ Phi (fun x => In x xs) |--- y <->
+    Phi |--- multi_imp xs y.
 Proof.
   intros.
   revert Phi; induction xs; intros.
@@ -408,7 +455,7 @@ Proof.
       tauto.
 Qed.
 
-Lemma derivable_impp_refl: forall (Phi: context) (x: expr), Phi |-- x --> x.
+Lemma derivable_impp_refl: forall (Phi: context) (x: expr), Phi |--- x --> x.
 Proof.
   intros.
   apply deduction_theorem.
@@ -416,8 +463,8 @@ Proof.
 Qed.
 
 Lemma deduction_left_impp_intros: forall (Phi: context) (x y: expr),
-  Phi |-- x ->
-  Phi |-- y --> x.
+  Phi |--- x ->
+  Phi |--- y --> x.
 Proof.
   intros.
   apply deduction_theorem.
@@ -425,7 +472,7 @@ Proof.
 Qed.
 
 Lemma derivable_axiom1: forall (Phi: context) (x y: expr),
-  Phi |-- x --> y --> x.
+  Phi |--- x --> y --> x.
 Proof.
   intros.
   rewrite <- !deduction_theorem.
@@ -433,7 +480,7 @@ Proof.
 Qed.
 
 Lemma derivable_axiom2: forall (Phi: context) (x y z: expr),
-  Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
+  Phi |--- (x --> y --> z) --> (x --> y) --> (x --> z).
 Proof.
   intros.
   rewrite <- !deduction_theorem.
@@ -443,7 +490,7 @@ Proof.
 Qed.
 
 Lemma derivable_modus_ponens: forall (Phi: context) (x y: expr),
-  Phi |-- x --> (x --> y) --> y.
+  Phi |--- x --> (x --> y) --> y.
 Proof.
   intros.
   rewrite <- !deduction_theorem.
@@ -451,9 +498,9 @@ Proof.
 Qed.
 
 Lemma deduction_impp_trans: forall (Phi: context) (x y z: expr),
-  Phi |-- x --> y ->
-  Phi |-- y --> z ->
-  Phi |-- x --> z.
+  Phi |--- x --> y ->
+  Phi |--- y --> z ->
+  Phi |--- x --> z.
 Proof.
   intros.
   rewrite <- deduction_theorem in H |- *.
@@ -461,8 +508,8 @@ Proof.
 Qed.
 
 Lemma deduction_impp_arg_switch: forall (Phi: context) (x y z: expr),
-  Phi |-- x --> y --> z ->
-  Phi |-- y --> x --> z.
+  Phi |--- x --> y --> z ->
+  Phi |--- y --> x --> z.
 Proof.
   intros.
   rewrite <- !deduction_theorem in *.
@@ -476,13 +523,27 @@ Qed.
 
 End DerivableRulesFromSequentCalculus.
 
+Lemma provable_right
+      {L: Language}
+      {minL: MinimumLanguage L}
+      {GammaP: Provable L}
+      {GammaD1: Derivable1 L}
+      {GammaD1P: Derivable1Provable L GammaP GammaD1}
+      {minAX: MinimumAxiomatization L GammaP}:
+  forall x y, |-- x -> y |-- x.
+Proof.
+  intros.
+  rewrite derivable1_provable.
+  apply aux_minimun_rule00; auto.
+Qed.
+
 Section SequentCalculus2Axiomatization.
 
 Context {L: Language}
         {GammaP: Provable L}
         {GammaD: Derivable L}
         {minL: MinimumLanguage L}
-        {SC: NormalSequentCalculus L GammaP GammaD}
+        {GammaPD: ProvableDerivable L GammaP GammaD}
         {bSC: BasicSequentCalculus L GammaD}
         {minSC: MinimumSequentCalculus L GammaD}.
 
@@ -501,7 +562,7 @@ Proof.
     apply derivable_axiom2.
 Qed.
 
-Theorem SequentCalculus2Axiomatization_AX {fwSC: FiniteWitnessedSequentCalculus L GammaD}: NormalAxiomatization L GammaP GammaD.
+Theorem SequentCalculus2Axiomatization_GammaDP {fwSC: FiniteWitnessedSequentCalculus L GammaD}: DerivableProvable L GammaP GammaD.
 Proof.
   constructor; intros.
   split; intros.
@@ -525,25 +586,109 @@ Qed.
 
 End SequentCalculus2Axiomatization.
 
+Section EquivProvableToEquivDerivable1.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD: Derivable1 L}
+        {GammaE: LogicEquiv L}
+        {GammaD1P: Derivable1Provable L GammaP GammaD}
+        {GammaEP: EquivProvable L GammaP GammaE}.
+
+Lemma Axiomatization2Deduction_GammaED1 : EquivDerivable1 L GammaD GammaE.
+Proof.
+  constructor.
+  intros. split.
+  -intros.
+   apply logic_equiv_provable in H;destruct H.
+   split. apply derivable1_provable;auto. apply derivable1_provable;auto.
+  -intros. destruct H. apply derivable1_provable in H.
+   apply derivable1_provable in H0.
+   apply logic_equiv_provable.
+   auto.
+  Qed.
+
+End EquivProvableToEquivDerivable1.
+
+Section EquivProvable1ToEquivDerivable.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {GammaP: Provable L}
+        {GammaD: Derivable1 L}
+        {GammaE: LogicEquiv L}
+        {GammaD1P: Derivable1Provable L GammaP GammaD}
+        {GammaED1: EquivDerivable1 L GammaD GammaE}.
+
+Lemma Deduction2Axiomatization_GammaEP : EquivProvable L GammaP GammaE.
+Proof.
+  constructor.
+  intros.
+  split.
+  -intros. apply logic_equiv_derivable1 in H.
+   destruct H.
+   apply derivable1_provable in H. apply derivable1_provable in H0.
+   auto.
+  -intros.
+   apply logic_equiv_derivable1. destruct H.
+   split.
+   apply derivable1_provable;auto. apply derivable1_provable;auto.
+  Qed.
+
+End EquivProvable1ToEquivDerivable.
+
 Section Transformation.
 
 Context {L: Language} {minL: MinimumLanguage L}.
-  
+
 Definition Provable2Derivable {GammaP: Provable L}: Derivable L :=
   Build_Derivable L (fun Phi y => exists xs,
     Forall (fun x => Phi x) xs /\ |-- multi_imp xs y).
 
 Definition Provable2Derivable_Normal {GammaP: Provable L}:
-  NormalAxiomatization L GammaP Provable2Derivable :=
-  Build_NormalAxiomatization
+  DerivableProvable L GammaP Provable2Derivable :=
+  Build_DerivableProvable
     L minL GammaP Provable2Derivable (fun _ _ => iff_refl _).
 
 Definition Derivable2Provable {GammaD: Derivable L}: Provable L :=
-  Build_Provable L (fun x => (Empty_set _) |-- x).
+  Build_Provable L (fun x => (Empty_set _) |--- x).
 
 Definition Derivable2Provable_Normal {GammaD: Derivable L}:
-  NormalSequentCalculus L Derivable2Provable GammaD :=
-  Build_NormalSequentCalculus L Derivable2Provable GammaD (fun _ => iff_refl _).
+  ProvableDerivable L Derivable2Provable GammaD :=
+  Build_ProvableDerivable L Derivable2Provable GammaD (fun _ => iff_refl _).
+
+Definition Provable2Derivable1 {GammaP: Provable L}: Derivable1 L :=
+  Build_Derivable1 L (fun x y => |-- (impp x y)).
+
+Definition Provable2Derivable1_Normal {GammaP: Provable L}:
+  Derivable1Provable L GammaP Provable2Derivable1 :=
+  Build_Derivable1Provable
+    L minL GammaP Provable2Derivable1 (fun _ _ => iff_refl _).
+
+Definition Provable2Equiv {GammaP: Provable L}: LogicEquiv L :=
+  Build_LogicEquiv L (fun x y => |-- (impp x y) /\ provable (impp y x)).
+
+Definition Provable2Equiv_Normal {GammaP: Provable L}:
+  EquivProvable L GammaP Provable2Equiv :=
+  Build_EquivProvable
+    L minL GammaP Provable2Equiv (fun _ _ => iff_refl _).
+
+Definition Derivable12Equiv {GammaD1: Derivable1 L}: LogicEquiv L :=
+  Build_LogicEquiv L (fun x y => derivable1 x y /\ derivable1 y x).
+
+Definition Derivable12Equiv_Normal {GammaD1: Derivable1 L}:
+  EquivDerivable1 L GammaD1 Derivable12Equiv :=
+  Build_EquivDerivable1
+    L GammaD1 Derivable12Equiv (fun _ _ => iff_refl _).
+
+Definition Derivable12Provable {GammaD1: Derivable1 L}: Provable L :=
+  Build_Provable L (fun x => derivable1 (impp x x) x).
+
+Definition Derivable12Provable_Normal {GammaD1: Derivable1 L}:
+  ProvableDerivable1 L Derivable12Provable GammaD1 :=
+  Build_ProvableDerivable1
+    L minL Derivable12Provable GammaD1 (fun _ => iff_refl _).
 
 End Transformation.
 

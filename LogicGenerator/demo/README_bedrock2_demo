@@ -1,0 +1,98 @@
+Now, bedrock2 demo's building commands are hardcoded in unifySL's Makefile. Here is how to use it:
+
+1. Git clone bedrock2 as a parallel folder of UnifySL
+2. Build bedrock2.
+3. create a folder "exportLogic" under bedrock2/bedrock2/src/
+4. Add the following lines to bedrock2/_CoqProject
+      -Q ../../UnifySL Logic
+      -Q src/exportLogic exportLogic
+5. Build UnifySL by "make" or "make -jN"
+6. Build bedrock2 demo by "make lgen_demo_bedrock2"
+7. Play in bedrock2 with exported rules and tactic. Here is an example:
+
+(* EXAMPLE BEGIN *)
+
+
+Require Import exportLogic.export_lib.
+Require Import exportLogic.SepApply.
+
+Import EXPO.
+
+Print EXPO.
+
+Notation "|--  x" := ((provable) x) (at level 71, no associativity).
+Notation "x --> y" := ((impp) x y) (at level 55, right associativity).
+
+Goal forall (PP: Prop) (P Q R S T: mem -> Prop), (PP -> |-- P * Q --> R) -> PP -> |-- P * S * Q * T --> T * S * R.
+Proof.
+  intros.
+  sep_apply H.
+Abort.
+
+Section LinkedList.
+
+Parameter lseg:
+  Interface.word.rep -> list Interface.word.rep -> Interface.word.rep -> mem -> Prop.
+
+Parameter listrep:
+  Interface.word.rep -> list Interface.word.rep -> mem -> Prop.
+
+Axiom lseg_listrep: forall  x y l1 l2,
+  |-- lseg x l1 y * listrep y l2 --> listrep x (l1 ++ l2).
+
+Goal forall x y z w l1 l2 l3 l4,
+  |-- lseg z l3 w * lseg x l1 y * listrep w l4 * lseg y l2 z --> listrep x (l1 ++ l2 ++ l3 ++ l4).
+Proof.
+  intros.
+  sep_apply lseg_listrep.
+  sep_apply lseg_listrep.
+  sep_apply lseg_listrep.
+  apply provable_impp_refl.
+Qed.
+
+Ltac list_cancel :=
+  multimatch goal with
+  | |- ?A ?m1 =>
+    multimatch goal with
+    | H: ?B ?m2 |- _ =>
+      syntactic_unify_deltavar m1 m2;
+        let HH := fresh in
+        assert (|-- B --> A) as HH;
+        [clear H | exact (HH m1 H)]
+    end
+  end;
+  repeat sep_apply lseg_listrep;
+  intros ?m ?H;
+  multimatch goal with
+  | |- ?A ?m1 =>
+    multimatch goal with
+    | H: ?B ?m2 |- _ =>
+      syntactic_unify_deltavar m1 m2;
+      refine (Lift1Prop.subrelation_iff1_impl1 _ _ _ _ _ H); clear H
+    end
+  end;
+  cancel.
+
+Goal forall x y z w l1 l2 l3 l4 m,
+  (lseg z l3 w * lseg x l1 y * listrep w l4 * lseg y l2 z) m -> listrep x (l1 ++ l2 ++ l3 ++ l4) m.
+Proof.
+  intros.
+  list_cancel.
+Qed.
+
+Goal forall x y z w l1 l2 l3 l4 m,
+  (lseg z l3 w * lseg x l1 y * listrep w l4 * listrep y l2) m -> (listrep x (l1 ++ l2) * listrep z (l3 ++ l4)) m.
+Proof.
+  intros.
+  list_cancel.
+Qed.
+
+End LinkedList.
+
+
+(* EXAMPLE END *)
+
+
+
+
+

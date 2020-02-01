@@ -94,7 +94,7 @@ Qed.
 
 Lemma derivable_closed_element_derivable: forall (Phi: context),
   derivable_closed Phi ->
-  (forall x: expr, Phi x <-> Phi |-- x).
+  (forall x: expr, Phi x <-> Phi |--- x).
 Proof.
   intros.
   split; intros; auto.
@@ -109,10 +109,10 @@ Context {L: Language}
         {Gamma: Derivable L}.
 
 Definition can_derive (x: expr): context -> Prop :=
-  fun Phi => Phi |-- x.
+  fun Phi => Phi |--- x.
 
 Definition cannot_derive (x: expr): context -> Prop :=
-  fun Phi => ~ Phi |-- x.
+  fun Phi => ~ Phi |--- x.
 
 Lemma can_derive_derivable_superset_preserved: forall x,
   derivable_superset_preserved (can_derive x).

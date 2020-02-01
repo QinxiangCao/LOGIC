@@ -7,8 +7,8 @@ COQC=$(COQBIN)coqc
 COQDEP=$(COQBIN)coqdep
 
 DIRS = \
-  lib GeneralLogic MinimumLogic PropositionalLogic ModalLogic SeparationLogic \
-  QuantifierLogic Extensions HoareLogic LogicGenerator
+  lib GeneralLogic MinimumLogic PropositionalLogic MetaLogicInj ModalLogic SeparationLogic \
+  QuantifierLogic Extensions HoareLogic ExportSolvers LogicGenerator
 
 COQ_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
 DEP_FLAG = $(foreach d, $(DIRS), -R $(CURRENT_DIR)/$(d) Logic.$(d))
@@ -21,7 +21,8 @@ lib_FILES = \
   Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v 
 
 GeneralLogic_ProofTheory_FILES = \
-  BasicSequentCalculus.v TheoryOfSequentCalculus.v
+  BasicSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v \
+  TheoryOfSequentCalculus.v ProofTheoryPatternsD1.v
 
 GeneralLogic_Semantics_FILES = \
   Kripke.v
@@ -44,8 +45,8 @@ GeneralLogic_FILES = \
   $(GeneralLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
 MinimumLogic_ProofTheory_FILES = \
-  Minimum.v ProofTheoryPatterns.v \
-  RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v
+  Minimum.v ProofTheoryPatternsP.v ProofTheoryPatterns.v \
+  RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v TheoryOfJudgement.v
 
 MinimumLogic_Semantics_FILES = \
   Kripke.v Trivial.v SemanticEquiv.v
@@ -73,7 +74,10 @@ MinimumLogic_FILES = \
 PropositionalLogic_ProofTheory_FILES = \
   Intuitionistic.v DeMorgan.v \
   GodelDummett.v Classical.v \
-  RewriteClass.v ProofTheoryPatterns.v
+  RewriteClass.v ProofTheoryPatterns.v \
+  TheoryOfIteratedConnectives.v \
+  TheoryOfPropositionalConnectives.v \
+  TheoryOfClassicalAxioms.v
 
 PropositionalLogic_Semantics_FILES = \
   Kripke.v Trivial.v
@@ -91,6 +95,7 @@ PropositionalLogic_DeepEmbedded_FILES = \
   PropositionalLanguage.v ProofTheories.v \
   KripkeSemantics.v TrivialSemantics.v \
   Soundness.v Complete_Kripke.v Complete_Classical_Trivial.v \
+  configuration_Mendelson.v interface_Mendelson.v implementation_Mendelson.v \
   Deep.v Solver.v
 
 PropositionalLogic_ShallowEmbedded_FILES = \
@@ -105,6 +110,21 @@ PropositionalLogic_FILES = \
   $(PropositionalLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v) \
   $(PropositionalLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v) \
   $(PropositionalLogic_Complete_FILES:%.v=Complete/%.v)
+
+MetaLogicInj_ProofTheory_FILES = \
+  ProofRules.v
+
+MetaLogicInj_Semantics_FILES = \
+  Kripke.v
+
+MetaLogicInj_Sound_FILES = \
+  Sound_Kripke.v
+
+MetaLogicInj_FILES = \
+  Syntax.v \
+  $(MetaLogicInj_ProofTheory_FILES:%.v=ProofTheory/%.v) \
+  $(MetaLogicInj_Semantics_FILES:%.v=Semantics/%.v) \
+  $(MetaLogicInj_Sound_FILES:%.v=Sound/%.v)
 
 ModalLogic_ProofTheory_FILES = \
   ModalLogic.v RewriteClass.v \
@@ -148,7 +168,7 @@ QuantifierLogic_FILES = \
 
 SeparationLogic_ProofTheory_FILES = \
   SeparationLogic.v SeparationLogicExtension.v TheoryOfSeparationAxioms.v \
-  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v
+  RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v Corable.v Deduction.v
 
 SeparationLogic_Model_FILES = \
   SeparationAlgebra.v OrderedSA.v \
@@ -164,7 +184,7 @@ SeparationLogic_Semantics_FILES = \
 
 SeparationLogic_Sound_FILES = \
   Sound_Downwards.v Sound_Upwards.v Sound_Flat.v \
-  Sound_DownUp_Fail.v
+  Sound_DownUp_Fail.v Sound_Flat_Corable.v
 
 SeparationLogic_Complete_FILES = \
   ContextProperty_Flat.v \
@@ -188,6 +208,9 @@ SeparationLogic_FILES = \
   $(SeparationLogic_Complete_FILES:%.v=Complete/%.v) \
   $(SeparationLogic_DeepEmbedded_FILES:%.v=DeepEmbedded/%.v) \
   $(SeparationLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
+
+ExportSolvers_FILES = \
+  Normalize.v Normalize_Para.v #SepApply/SepApply.v SepApply/export_lib.v
 
 Extensions_ProofTheory_FILES = \
   Stable.v ModalSeparation.v Corable.v CoreTransit.v
@@ -222,17 +245,23 @@ HoareLogic_FILES = \
 LogicGenerator_FILES = \
   ConfigLang.v ConfigDenot.v ConfigCompute.v Utils.v #Generate.v 
 
+Example_Files = \
+  Pub_Problem.v
+
 FILES = \
   $(lib_FILES:%.v=lib/%.v) \
   $(GeneralLogic_FILES:%.v=GeneralLogic/%.v) \
   $(MinimumLogic_FILES:%.v=MinimumLogic/%.v) \
   $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.v) \
-  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
+  $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.v) \
   $(QuantifierLogic_FILES:%.v=QuantifierLogic/%.v) \
   $(SeparationLogic_FILES:%.v=SeparationLogic/%.v) \
-  $(Extensions_FILES:%.v=Extensions/%.v) \
+  $(ExportSolvers_FILES:%.v=ExportSolvers/%.v) \
   $(HoareLogic_FILES:%.v=HoareLogic/%.v) \
   $(LogicGenerator_FILES:%.v=LogicGenerator/%.v)
+#  $(ModalLogic_FILES:%.v=ModalLogic/%.v) \
+#  $(Extensions_FILES:%.v=Extensions/%.v) \
+#  $(Example_Files:%.v=Examples/%.v) \
 
 $(FILES:%.v=%.vo): %.vo: %.v
 	@echo COQC $*.v
@@ -250,6 +279,9 @@ MinimumLogic: \
 PropositionalLogic: \
   .depend $(PropositionalLogic_FILES:%.v=PropositionalLogic/%.vo)
 
+MetaLogicInj: \
+  .depend $(MetaLogicInj_FILES:%.v=MetaLogicInj/%.vo)
+
 ModalLogic: \
   .depend $(ModalLogic_FILES:%.v=ModalLogic/%.vo)
 
@@ -259,15 +291,24 @@ QuantifierLogic: \
 SeparationLogic: \
   .depend $(SeparationLogic_FILES:%.v=SeparationLogic/%.vo)
 
+LogicGenerator: \
+  .depend $(LogicGenerator_FILES:%.v=LogicGenerator/%.vo)
+
 all: \
   $(FILES:%.v=%.vo)
 
+PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo
+	./logic_gen.sh PropositionalLogic/DeepEmbedded/configuration_Mendelson.v PropositionalLogic/DeepEmbedded/interface_Mendelson.v
+
 lgen_demo_1:
-	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
+	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v LogicGenerator/demo/export_lib_1.v
 	@echo COQC LogicGenerator/demo/interface_1.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_1.v
 	@echo COQC LogicGenerator/demo/implementation_1.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_1.v
+	@echo COQC LogicGenerator/demo/export_lib_1.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/export_lib_1.v
 
 lgen_demo_2:
 	./logic_gen.sh LogicGenerator/demo/configuration_2.v LogicGenerator/demo/interface_2.v
@@ -285,6 +326,48 @@ lgen_demo_3:
 	@echo COQC LogicGenerator/demo/implementation_3.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_3.v
 
+lgen_demo_4:
+	./logic_gen.sh LogicGenerator/demo/configuration_4.v LogicGenerator/demo/interface_4.v
+	@echo COQC LogicGenerator/demo/interface_4.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_4.v
+	@echo COQC LogicGenerator/demo/implementation_4.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_4.v
+
+lgen_demo_5:
+	./logic_gen.sh LogicGenerator/demo/configuration_5.v LogicGenerator/demo/interface_5.v
+	@echo COQC LogicGenerator/demo/interface_5.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/interface_5.v
+	@echo COQC LogicGenerator/demo/implementation_5.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_5.v
+
+lgen_demo_6:
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/HypotheticalExternLib.v
+	./logic_gen.sh LogicGenerator/demo6/configuration.v LogicGenerator/demo6/interface.v LogicGenerator/demo6/export_lib.v
+	@echo COQC LogicGenerator/demo6/interface.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/interface.v
+	@echo COQC LogicGenerator/demo6/implementation.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/implementation.v
+	@echo COQC LogicGenerator/demo6/export_lib.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/export_lib.v
+	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/demo6/
+	@echo COQC LogicGenerator/demo6/SepApply.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/SepApply.v
+	@echo COQC LogicGenerator/demo6/test.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test.v
+
+lgen_demo_bedrock2:
+	./logic_gen.sh LogicGenerator/demo/configuration_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/interface.v ../bedrock2/bedrock2/src/exportLogic/export_lib.v
+	@echo COQC interface.v [in-bedrock2-folder]
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/interface.v
+	@echo COQC implementation.v [in-bedrock2-folder]
+	@cp LogicGenerator/demo/implementation_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/implementation.v
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/implementation.v
+	@echo COQC export_lib.v [in-bedrock2-folder]
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/export_lib.v
+	@cp ExportSolvers/SepApply/SepApply.v ../bedrock2/bedrock2/src/exportLogic/
+	@echo COQC SepApply.v [in-bedrock2-folder]
+	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
+
 depend:
 	$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
 
@@ -292,7 +375,7 @@ depend:
 	@$(COQDEP) $(DEP_FLAG) $(FILES) > .depend
 
 clean:
-	@rm */*.vo */*.glob */*/*.vo */*/*.glob
+	@rm */*.vo */*.glob */*/*.vo */*/*.glob PropositionalLogic/DeepEmbedded/interface_Mendelson.v
 
 .DEFAULT_GOAL := all
 

@@ -1,0 +1,33 @@
+Demo 1:
+  With instance parameter.
+  Full intuintionistic propositional logic.
+  Defining primary rules using "provable", i.e. " |-- P "
+  Deriving " Phi |-- P " from " |-- P ".
+  Implementation using shallow embedding.
+
+Demo 2:
+  A very small language and logic (only connective is "implication").
+  Defining primary rules using "provable", i.e. " |-- P "
+  Implementation using both deep embedding and shallow embedding.
+
+Demo 3:
+  Full intuintionistic propositional logic.
+  Defining primary rules using "derivable", i.e. " Phi |-- P "
+  Deriving " |-- P " from " Phi |-- P ".
+  Implementation using shallow embedding.
+
+Demo 4:
+  Intuintionistic separation logic logic (without wand)
+  Defining primary rules using "provable", i.e. " |-- P "
+  Implementation using shallow embedding.
+
+Demo 5:
+  Intuintionistic separation logic logic (with wand)
+  Defining primary rules using "provable", i.e. " |-- P "
+  Implementation using shallow embedding.
+
+Demo 6:
+  Classic separation logic logic (without wand)
+  Defining primary rules using "provable", i.e. " |-- P "
+  Implementation using shallow embedding.
+

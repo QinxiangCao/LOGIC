@@ -28,31 +28,49 @@ Section ContextProperties.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
-        {pL: PropositionalLanguage L}
+        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {truepL: TrueLanguage L}
         {Gamma: Derivable L}
         {bSC: BasicSequentCalculus L Gamma}
         {minSC: MinimumSequentCalculus L Gamma}
-        {ipSC: IntuitionisticPropositionalSequentCalculus L Gamma}
-        {cpSC: ClassicalPropositionalSequentCalculus L Gamma}.
+        {andpSC: AndSequentCalculus L Gamma}
+        {orpSC: OrSequentCalculus L Gamma}
+        {falsepSC: FalseSequentCalculus L Gamma}
+        {inegpSC: IntuitionisticNegSequentCalculus L Gamma}
+        {cpSC: ClassicalSequentCalculus L Gamma}.
 
 Lemma classical_derivable_spec: forall (Phi: context) (x: expr),
-  Phi |-- x <-> ~ consistent (Union _ Phi (Singleton _ (~~ x))).
+  Phi |--- x <-> ~ consistent (Union _ Phi (Singleton _ (~~ x))).
 Proof.
+  clear dependent andpL.
+  clear dependent falsepL.
   intros.
   unfold consistent.
   AddAxiomatization.
   fold (@consistent L Gamma (Phi;; ~~ x)).
-  rewrite <- (double_negp x) at 1.
-  unfold negp at 1.
-  rewrite <- deduction_theorem.
-  rewrite consistent_spec.
-  tauto.
+  split; intros.
+  + rewrite (double_negp_intros x) in H.
+    intro.
+    destruct H0 as [y ?].
+    apply H0; clear H0.
+    apply deduction_contradiction_elim with (~~ x).
+    - solve_assum.
+    - apply deduction_weaken1; auto.
+  + rewrite <- (double_negp_elim x).
+    apply NNPP; intro.
+    apply H; clear H; exists (~~ (~~ x)).
+    intro; apply H0.
+    apply deduction_negp_right; auto.
 Qed.
 
 Lemma MCS_nonelement_inconsistent: forall (Phi: context),
   maximal consistent Phi ->
-  (forall x: expr, ~ Phi x <-> Phi |-- x --> FF).
+  (forall x: expr, ~ Phi x <-> Phi |--- x --> FF).
 Proof.
+  clear dependent andpL.
   intros.
   split; intros.
   + destruct H.
@@ -72,6 +90,7 @@ Qed.
 Lemma maximal_consistent_orp_witnessed: forall (Phi: context),
   maximal consistent Phi -> orp_witnessed Phi.
 Proof.
+  clear dependent andpL.
   intros.
   hnf; intros.
   rewrite MCS_element_derivable in H0 by auto.
@@ -124,11 +143,12 @@ Proof.
     - exfalso.
       apply H0 in H2.
       rewrite MCS_element_derivable in H1, H2 by auto.
+      apply (deduction_negp_unfold Phi y) in H1. rewrite deduction_theorem in H1.
       pose proof deduction_modus_ponens _ _ _ H2 H1.
       destruct H as [? _].
       rewrite consistent_spec in H; auto.
     - rewrite MCS_element_derivable in H2 |- * by auto.
-      unfold negp in H2.
+      apply (deduction_negp_unfold Phi x) in H2. rewrite deduction_theorem in H2.
       rewrite <- deduction_theorem in H2 |- *.
       pose proof deduction_falsep_elim _ y H2.
       auto.
@@ -138,13 +158,26 @@ Lemma MCS_negp_iff: forall (Phi: context),
   maximal consistent Phi ->
   (forall x: expr, Phi (~~ x) <-> ~ Phi x).
 Proof.
+  clear dependent andpL.
+  clear dependent falsepL.
   intros.
-  unfold negp.
-  rewrite MCS_impp_iff by auto.
-  assert (~ Phi FF); [| tauto].
-  pose proof proj1 H.
-  rewrite consistent_spec, <- MCS_element_derivable in H0 by auto.
-  auto.
+  rewrite MCS_element_derivable by auto.
+  split.
+  + intros ? ?.
+    rewrite maximal_consistent_spec in H.
+    destruct H as [[y ?] _].
+    apply H; clear H.
+    apply deduction_contradiction_elim with x; auto.
+    apply derivable_assum; auto.
+  + intros.
+    pose proof proj1 (maximal_consistent_spec _) H as [_ ?].
+    specialize (H1 x).
+    pose proof fun HH => H0 (H1 HH); clear H0 H1.
+    apply deduction_negp_right.
+    apply NNPP; intro.
+    apply H2.
+    exists (~~ x).
+    auto.
 Qed.
 
 Lemma DDCS_MCS: forall (Phi: context),
@@ -169,7 +202,9 @@ Proof.
   apply derivable_assum in H5.
   eapply deduction_modus_ponens.
   - apply H4.
-  - apply H5.
+  - apply (deduction_negp_unfold Psi x) in H5.
+    rewrite deduction_theorem in H5. apply H5.
 Qed.
 
 End ContextProperties.
+
