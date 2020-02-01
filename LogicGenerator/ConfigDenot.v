@@ -666,7 +666,6 @@ Definition instance_transitions :=
   ; (bE, Axiomatization2Equiv_bE)
   ; (GammaED1, Axiomatization2Deduction_GammaED1)
   ; (imppE, Axiomatization2LogicEquiv_imppE)
-  ; (sepconD, Axiomatization2Deduction_sepconD)
   ].
 
 Definition type_instances: list Name :=
@@ -952,5 +951,3 @@ Definition D_derived_rules_dependency_via_ins :=
 
 End S.
 End S.
-
-
