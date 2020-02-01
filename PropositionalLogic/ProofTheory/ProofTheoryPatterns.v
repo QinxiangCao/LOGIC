@@ -639,10 +639,6 @@ Proof.
   + apply Adjoint2RDistr.
 Qed.
 
-Context {minL: MinimumLanguage L}
-        {iffpL: IffLanguage L}
-        {iffpD: IffDeduction L GammaD1}.
-
 (* TODO: l/r wrong *)
 Lemma prodp_orp_distr_l:
   forall x y z: expr, prodp (x || y) z --||-- (prodp x z || prodp y z).
@@ -661,6 +657,7 @@ Proof.
 Qed.
 
 Lemma orp_funcp
+      {minL: MinimumLanguage L}
       {andpL: AndLanguage L}
       {adjD: ImpAndAdjointDeduction L GammaD1}
       {andpD: AndDeduction L GammaD1}
@@ -731,11 +728,9 @@ End AdjointTheorems.
 
 Section MonoTheorems.
 
-Context {minL: MinimumLanguage L}
-        {iffpL: IffLanguage L}
-        {iffpD: IffDeduction L GammaD1}
-        {Mono: Monotonicity L GammaD1 prodp}.
+Context {Mono: Monotonicity L GammaD1 prodp}.
 
+(* TODO: remove iffp from the name *)
 Lemma prodp_iffp: forall x1 x2 y1 y2,
   x1 --||-- x2 ->
   y1 --||-- y2 ->
@@ -751,6 +746,7 @@ Proof.
     - apply logic_equiv_derivable1 in H0; tauto.
 Qed.
 
+(* TODO: remove iffp from the name *)
 Lemma fold_left_iffp: forall x1 x2 xs1 xs2,
   (Forall2 (fun x1 x2 => x1 --||-- x2) xs1 xs2) ->
   x1 --||-- x2 ->

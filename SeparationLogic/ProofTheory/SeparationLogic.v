@@ -1,5 +1,7 @@
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
+Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.ProofTheoryPatterns.
@@ -135,6 +137,262 @@ Class GarbageCollectSeparationLogic
         (Gamma: Provable L) := {
   sepcon_elim1: forall x y, |-- x * y --> x
 }.
+
+Class SepconDeduction
+        (L: Language)
+        {sepconL: SepconLanguage L}
+        (GammaD1: Derivable1 L) := {
+  derivable1_sepcon_comm: forall x y, x * y |-- y * x;
+  derivable1_sepcon_assoc1: forall x y z, x * (y * z) |-- (x * y) * z;
+  derivable1_sepcon_mono: forall x1 x2 y1 y2, x1 |-- x2 -> y1 |-- y2 
+               -> (x1 * y1) |-- (x2 * y2);
+}.
+
+Class SepconOrDeduction
+        (L: Language)
+        {orpL: OrLanguage L}
+        {sepconL: SepconLanguage L}
+        (GammaD1: Derivable1 L) := {
+  orp_sepcon_left: forall x y z,
+     (x || y) * z |-- x * z || y * z
+}.
+
+Class SepconFalseDeduction
+        (L: Language)
+        {falsepL: FalseLanguage L}
+        {sepconL: SepconLanguage L}
+        (GammaD1: Derivable1 L) := {
+  falsep_sepcon_left: forall x,
+     FF * x |-- FF
+}.
+
+Class EmpDeduction
+        (L: Language)
+        {sepconL: SepconLanguage L}
+        {empL: EmpLanguage L}
+        (GammaD1: Derivable1 L) := {
+    sepcon_emp_left: forall x,  x * emp |-- x;
+    sepcon_emp_right: forall x, x |-- x * emp
+}.
+
+Class WandDeduction
+        (L: Language)
+        {sepconL: SepconLanguage L}
+        {wandL: WandLanguage L}
+        (GammaD1: Derivable1 L) := {
+  derivable1_wand_sepcon_adjoint: forall x y z, x * y  |-- z <-> x |-- (y -* z)
+}.
+
+Class ExtSeparationLogicDeduction
+        (L: Language)
+        {truepL: TrueLanguage L}
+        {sepconL: SepconLanguage L}
+        (GammaD1: Derivable1 L) := {
+  derivable1_sepcon_ext: forall x, x |-- x * TT
+}.
+
+Class NonsplitEmpSeparationLogicDeduction
+        (L: Language)
+        {andpL: AndLanguage L}
+        {truepL: TrueLanguage L}
+        {sepconL: SepconLanguage L}
+        {empL: EmpLanguage L}
+        (GammaD1: Derivable1 L) := {
+  derivable1_emp_sepcon_truep_elim: forall x, (x * TT) && emp |-- x
+}.
+
+Class DupEmpSeparationLogicDeduction
+        (L: Language)
+        {andpL: AndLanguage L}
+        {sepconL: SepconLanguage L}
+        {empL: EmpLanguage L}
+        (GammaD1: Derivable1 L) := {
+  derivable1_emp_dup: forall x, x && emp |-- x * x
+}.
+
+Class GarbageCollectSeparationLogicDeduction
+        (L: Language)
+        {sepconL: SepconLanguage L}
+        (GammaD1: Derivable1 L) := {
+  derivable1_sepcon_elim1: forall x y, x * y |-- x
+}.
+
+Section SepconRules.
+
+Context {L: Language}
+        {sepconL: SepconLanguage L}
+        {GammaD1: Derivable1 L}
+        {bD: BasicDeduction L GammaD1}
+        {sepconD: SepconDeduction L GammaD1}.
+
+Lemma derivable1_sepcon_Comm: D1.Commutativity L GammaD1 sepcon.
+Proof.
+  constructor.
+  intros.
+  apply derivable1_sepcon_comm.
+Qed.
+
+Lemma derivable1_sepcon_Mono: D1.Monotonicity L GammaD1 sepcon.
+Proof.
+  constructor.
+  intros.
+  apply derivable1_sepcon_mono; auto.
+Qed.
+
+Lemma derivable1_sepcon_Assoc: D1.Associativity L GammaD1 sepcon.
+Proof.
+  apply @D1.Build_Associativity1; auto.
+  + apply derivable1_sepcon_Comm.
+  + apply derivable1_sepcon_Mono.
+  + intros.
+    apply derivable1_sepcon_assoc1.
+Qed.
+
+Lemma derivable1_sepcon_assoc2: forall x y z, (x * y) * z |-- x * (y * z).
+Proof.
+  intros.
+  apply (@D1.prodp_assoc2 _ _ _ derivable1_sepcon_Assoc).
+Qed.
+
+Lemma orp_sepcon_right
+      {orpL: OrLanguage L}
+      {orpD: OrDeduction L GammaD1}:
+  forall (x y z: expr), x * z || y * z |-- (x || y) * z.
+Proof.
+  intros.
+  apply derivable1_orp_elim; apply derivable1_sepcon_mono.
+  - apply derivable1_orp_intros1.
+  - reflexivity.
+  - apply derivable1_orp_intros2.
+  - reflexivity.
+Qed.
+
+Lemma falsep_sepcon_right
+      {falsepL: FalseLanguage L}
+      {falsepD: FalseDeduction L GammaD1}:
+  forall (x: expr), FF |-- FF * x.
+Proof.
+  intros.
+  apply derivable1_falsep_elim.
+Qed.
+
+Section emp.
+
+Context {empL: EmpLanguage L}
+        {empD: EmpDeduction L GammaD1}.
+
+Lemma derivable1_sepcon_LU: D1.LeftUnit L GammaD1 emp sepcon.
+Proof.
+  constructor; intros.
+  + rewrite derivable1_sepcon_comm.
+    apply sepcon_emp_left.
+  + rewrite <- derivable1_sepcon_comm.
+    apply sepcon_emp_right.
+Qed.
+
+Lemma derivable1_sepcon_RU: D1.RightUnit L GammaD1 emp sepcon.
+Proof.
+  constructor; intros.
+  intros.
+  + apply sepcon_emp_left.
+  + apply sepcon_emp_right.
+Qed.
+
+End emp.
+
+Context {GammaE: LogicEquiv L}
+        {GammED1: EquivDerivable1 L GammaD1 GammaE}.
+(*        {andpL: AndLanguage L}
+        {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {negpL: NegLanguage L}
+        {iffpL: IffLanguage L}
+        {truepL: TrueLanguage L}
+        {andpAX: AndAxiomatization L Gamma}
+        {orpAX: OrAxiomatization L Gamma}
+        {falsepAX: FalseAxiomatization L Gamma}
+        {inegpAX: IntuitionisticNegAxiomatization L Gamma}
+        {iffpAX: IffAxiomatization L Gamma}
+        {truepAX: TrueAxiomatization L Gamma}.*)
+
+Lemma sepcon_comm_logic_equiv:
+  forall (x y: expr), x * y --||-- y * x.
+Proof.
+  intros.
+  apply (@D1.prodp_comm _ _ _ _ _ derivable1_sepcon_Comm).
+Qed.
+
+Lemma sepcon_assoc_logic_equiv:
+  forall x y z, x * (y * z) --||-- (x * y) * z.
+Proof.
+  intros.
+  apply (@D1.prodp_assoc _ _ _ _ _ derivable1_sepcon_Assoc).
+Qed.
+
+Section emp.
+
+Context {empL: EmpLanguage L}
+        {empD: EmpDeduction L GammaD1}.
+
+Lemma sepcon_emp_equiv: forall x, x * emp --||-- x.
+Proof. apply (@D1.right_unit _ _ _ _ _ _ derivable1_sepcon_RU). Qed.
+
+Lemma emp_sepcon_equiv: forall x, emp * x --||-- x.
+Proof. apply (@D1.left_unit _ _ _ _ _ _ derivable1_sepcon_LU). Qed.
+
+End emp.
+
+Context {orpL: OrLanguage L}
+        {falsepL: FalseLanguage L}
+        {orpD: OrDeduction L GammaD1}
+        {falsepD: FalseDeduction L GammaD1}
+        {sepcon_orp_D: SepconOrDeduction L GammaD1}
+        {sepcon_falsep_D: SepconFalseDeduction L GammaD1}.
+
+Lemma derivable1_sepcon_orp_RDistr: D1.RightDistr L GammaD1 sepcon orp.
+Proof.
+  constructor; intros.
+  + apply orp_sepcon_left.
+  + apply orp_sepcon_right.
+Qed.
+
+Lemma derivable1_sepcon_orp_LDistr: D1.LeftDistr L GammaD1 sepcon orp.
+Proof.
+  apply @D1.RightDistr2LeftDistr; auto.
+  + apply derivable1_sepcon_Comm.
+  + apply derivable1_orp_Mono.
+  + apply derivable1_sepcon_orp_RDistr.
+Qed.
+
+End SepconRules.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Section SepconRules.
 

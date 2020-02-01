@@ -26,85 +26,6 @@ Local Open Scope syntax.
 Import PropositionalLanguageNotation.
 Import SeparationLogicNotation.
 
-Class SepconDeduction
-        (L: Language)
-        {sepconL: SepconLanguage L}
-        (GammaD1: Derivable1 L) := {
-  derivable1_sepcon_comm: forall x y, x * y |-- y * x;
-  derivable1_sepcon_assoc1: forall x y z, x * (y * z) |-- (x * y) * z;
-  derivable1_sepcon_mono: forall x1 x2 y1 y2, x1 |-- x2 -> y1 |-- y2 
-               -> (x1 * y1) |-- (x2 * y2);
-}.
-
-Class SepconOrDeduction
-        (L: Language)
-        {orpL: OrLanguage L}
-        {sepconL: SepconLanguage L}
-        (GammaD1: Derivable1 L) := {
-  orp_sepcon_left: forall x y z,
-     (x || y) * z |-- x * z || y * z
-}.
-
-Class SepconFalseDeduction
-        (L: Language)
-        {falsepL: FalseLanguage L}
-        {sepconL: SepconLanguage L}
-        (GammaD1: Derivable1 L) := {
-  falsep_sepcon_left: forall x,
-     FF * x |-- FF
-}.
-
-Class EmpDeduction
-        (L: Language)
-        {sepconL: SepconLanguage L}
-        {empL: EmpLanguage L}
-        (GammaD1: Derivable1 L) := {
-    sepcon_emp_left: forall x,  x * emp |-- x;
-    sepcon_emp_right: forall x, x |-- x * emp
-}.
-
-Class WandDeduction
-        (L: Language)
-        {sepconL: SepconLanguage L}
-        {wandL: WandLanguage L}
-        (GammaD1: Derivable1 L) := {
-  derivable1_wand_sepcon_adjoint: forall x y z, x * y  |-- z <-> x |-- (y -* z)
-}.
-
-Class ExtSeparationLogicDeduction
-        (L: Language)
-        {truepL: TrueLanguage L}
-        {sepconL: SepconLanguage L}
-        (GammaD1: Derivable1 L) := {
-  derivable1_sepcon_ext: forall x, x |-- x * TT
-}.
-
-Class NonsplitEmpSeparationLogicDeduction
-        (L: Language)
-        {andpL: AndLanguage L}
-        {truepL: TrueLanguage L}
-        {sepconL: SepconLanguage L}
-        {empL: EmpLanguage L}
-        (GammaD1: Derivable1 L) := {
-  derivable1_emp_sepcon_truep_elim: forall x, (x * TT) && emp |-- x
-}.
-
-Class DupEmpSeparationLogicDeduction
-        (L: Language)
-        {andpL: AndLanguage L}
-        {sepconL: SepconLanguage L}
-        {empL: EmpLanguage L}
-        (GammaD1: Derivable1 L) := {
-  derivable1_emp_dup: forall x, x && emp |-- x * x
-}.
-
-Class GarbageCollectSeparationLogicDeduction
-        (L: Language)
-        {sepconL: SepconLanguage L}
-        (GammaD1: Derivable1 L) := {
-  derivable1_sepcon_elim1: forall x y, x * y |-- x
-}.
-
 Section SLFromDeduction2SLFromAxiomatization1.
 
 Context {L: Language}
@@ -286,85 +207,6 @@ Qed.
 
 End FromAxiomatizationToDeduction.
 
-Section SepconRulesFromDerivable1.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {sepconL: SepconLanguage L}
-        {GammaD1: Derivable1 L}
-        {andpD: AndDeduction L GammaD1}
-        {adjD: ImpAndAdjointDeduction L GammaD1}
-        {sepconD: SepconDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
-
-Lemma derivable1_sepcon_assoc2: forall x y z, (x * y) * z |-- x * (y * z).
-Proof.
-  AddAxiomatization.
-  intros.
-  apply derivable1_provable.
-  apply sepcon_assoc2.
-  Qed.
-
-Lemma orp_sepcon_right
-      {pL: OrLanguage L}
-      {orpD: OrDeduction L GammaD1}:
-  forall (x y z: expr), x * z || y * z |-- (x || y) * z.
-Proof.
-  AddAxiomatization.
-  intros.
-  apply derivable1_provable.
-  apply impp_orp_sepcon.
-  Qed.
-
-Lemma falsep_sepcon_right
-      {falsepL: FalseLanguage L}
-      {falsepD: FalseDeduction L GammaD1}:
-  forall (x: expr), FF |-- FF * x.
-Proof.
-  AddAxiomatization.
-  intros.
-  apply derivable1_provable.
-  apply impp_falsep_sepcon.
-  Qed.
-
-End SepconRulesFromDerivable1.
-
-(* TODO: This is fully temporary. *)
-Section SepconRulesFromLogicEquiv'.
-
-Context {L: Language}
-        {minL: MinimumLanguage L}
-        {andpL: AndLanguage L}
-        {sepconL: SepconLanguage L}
-        {GammaP: Provable L}
-        {GammaE: LogicEquiv L}
-        {GammEP: EquivProvable L GammaP GammaE}
-        {minAX: MinimumAxiomatization L GammaP}
-        {sepconAX: SepconAxiomatization L GammaP}.
-
-Lemma sepcon_assoc_equiv:
-  forall x y z, x * (y * z) --||-- (x * y) * z.
-Proof.
-  intros.
-  apply logic_equiv_provable. split.
-  + apply sepcon_assoc1.
-  + apply sepcon_assoc2.
-Qed.
-
-Context {empL: EmpLanguage L}
-        {empAX: EmpAxiomatization L GammaP}.
-
-Lemma sepcon_emp_equiv: forall x, x * emp --||-- x.
-Proof.
-  intros.
-  apply logic_equiv_provable. split.
-  + apply sepcon_emp1.
-  + apply sepcon_emp2.
-Qed.
-
-End SepconRulesFromLogicEquiv'.
-
 Section SepconRulesFromLogicEquiv.
 
 Context {L: Language}
@@ -378,24 +220,6 @@ Context {L: Language}
         {adjD: ImpAndAdjointDeduction L GammaD1}
         {sepconD: SepconDeduction L GammaD1}
         {BD: BasicDeduction L GammaD1}.
-
-Lemma sepcon_comm_logic_equiv:
-  forall (x y: expr), x * y --||-- y * x.
-Proof.
-  intros.
-  apply logic_equiv_derivable1. split.
-  + apply derivable1_sepcon_comm.
-  + apply derivable1_sepcon_comm.
-Qed.
-
-Lemma sepcon_assoc_logic_equiv:
-  forall x y z, x * (y * z) --||-- (x * y) * z.
-Proof.
-  intros.
-  apply logic_equiv_derivable1. split.
-  + apply derivable1_sepcon_assoc1.
-  + apply derivable1_sepcon_assoc2.
-Qed.
 
 Context {orpL: OrLanguage L}
         {falsepL: FalseLanguage L}
