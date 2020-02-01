@@ -119,7 +119,7 @@ Proof.
   rewrite (sepcon_ext x) at 1.
   assert (|-- TT --> x || ~~ x) by (apply solve_impp_elim_left, excluded_middle).
   rewrite H; clear H.
-  rewrite sepcon_orp_distr_l.
+  rewrite sepcon_orp_distr_l_iffp.
   apply solve_orp_impp; [apply provable_impp_refl |].
   rewrite <- (andp_dup (x * ~~ x)).
   rewrite sepcon_elim1 at 1.

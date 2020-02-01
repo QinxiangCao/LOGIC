@@ -36,7 +36,7 @@ Definition orp_witnessed: context -> Prop :=
 Context {GammaP: Provable L} {GammaD: Derivable L}.
 
 Definition context_orp (Phi Psi: context): context :=
-  fun z => exists x y, z = x || y /\ Phi |-- x /\ Psi |-- y.
+  fun z => exists x y, z = x || y /\ Phi |--- x /\ Psi |--- y.
 
 Definition context_orp_captured (P: context -> Prop): Prop :=
   forall Phi Psi, P (context_orp Phi Psi) -> P Phi \/ P Psi.
@@ -177,8 +177,8 @@ Qed.
 
 Lemma derivable_closed_union_derivable {GammaDP: DerivableProvable L GammaP GammaD}: forall (Phi Psi: context) (x: expr),
   derivable_closed Psi ->
-  Union _ Phi Psi |-- x ->
-  exists y, Psi y /\ Phi |-- y --> x.
+  Union _ Phi Psi |--- x ->
+  exists y, Psi y /\ Phi |--- y --> x.
 Proof.
   intros.
   rewrite derivable_provable in H0.
@@ -202,7 +202,7 @@ Proof.
 Qed.
 
 Lemma consistent_spec:
-  forall (Phi: context), consistent Phi <-> ~ Phi |-- FF.
+  forall (Phi: context), consistent Phi <-> ~ Phi |--- FF.
 Proof.
   intros.
   split; intros.

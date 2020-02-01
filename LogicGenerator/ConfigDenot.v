@@ -314,7 +314,7 @@ Definition Build_EmpDeduction := Build_EmpDeduction.
 Definition Build_SepconOrDeduction := Build_SepconOrDeduction.
 Definition Build_SepconFalseDeduction := Build_SepconFalseDeduction.
 Definition Build_BasicLogicEquiv := Build_BasicLogicEquiv.
-Definition Build_MinimumEquiv := Build_MinimumEquiv.
+Definition Build_ImpLogicEquiv := Build_ImpLogicEquiv.
 Definition Build_Corable_withAxiomatization := Build_Corable_withAxiomatization.
 Definition Build_CoqPropCorable := Build_CoqPropCorable.
 
@@ -417,7 +417,7 @@ Context {L: Language}
         {sepcon_orp_D : SepconOrDeduction L GammaD1}
         {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
         {bE: BasicLogicEquiv L GammaE}
-        {minE: MinimumEquiv L GammaE}
+        {imppE: ImpLogicEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .
@@ -563,7 +563,7 @@ Definition rule_instances_build :=
   ; (sepcon_orp_D, Build_SepconOrDeduction L orpL sepconL GammaD1 orp_sepcon_left)
   ; (sepcon_falsep_D, Build_SepconFalseDeduction L falsepL sepconL GammaD1 falsep_sepcon_left)
   ; (bE, Build_BasicLogicEquiv L GammaE logic_equiv_refl logic_equiv_symm logic_equiv_trans)
-  ; (minE, Build_MinimumEquiv L minL GammaE equiv_impp)
+  ; (imppE, Build_ImpLogicEquiv L minL GammaE logic_equiv_impp)
   ; (CorAX, Build_Corable_withAxiomatization L andpL iffpL sepconL GammaP Cor corable_preserved' corable_andp_sepcon1)
   ; (coq_prop_Cor, Build_CoqPropCorable L coq_prop_L Cor corable_coq_prop)
   ; (iffpDef, Build_IffDefinition_And_Imp L minL andpL iffpL andp_impp2iffp)
@@ -659,9 +659,13 @@ Definition instance_transitions :=
   ; (empAX, EmpAxiomatizationIff2EmpAxiomatization)
   ; (sepcon_coq_prop_AX, CoqPropCorable2SepconCoqPropAX)
   ; (sepcon_coq_prop_AX, Adj2SepconCoqProp)
-  ; (bE, Axiomatization2BasicLogicEquiv_bE)
+  ; (bD, Axiomatization2Deduction_bD)
+  ; (sepconD, Axiomatization2Deduction_sepconD)
+  ; (wandD, Axiomatization2Deduction_wandD)
+  ; (empD, Axiomatization2Deduction_empD)
+  ; (bE, Axiomatization2Equiv_bE)
   ; (GammaED1, Axiomatization2Deduction_GammaED1)
-  ; (minE, Axiomatization2LogicEquiv_minE)
+  ; (imppE, Axiomatization2LogicEquiv_imppE)
   ; (sepconD, Axiomatization2Deduction_sepconD)
   ].
 
@@ -860,9 +864,9 @@ Definition derived_rules :=
   ; logic_equiv_symm_instance
   ; logic_equiv_trans_instance
 
-  ; sepcon_assoc_equiv
-  ; sepcon_emp_equiv
-
+  ; sepcon_comm_logic_equiv
+  ; sepcon_assoc_logic_equiv
+  ; sepcon_emp_logic_equiv
 
 (*
   ; derivable1_sepcon_assoc2

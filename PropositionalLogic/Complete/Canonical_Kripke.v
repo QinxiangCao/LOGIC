@@ -93,7 +93,7 @@ Proof.
   rewrite derivable_closed_element_derivable in H0, H1 by (apply AL_DC, (proj2_sig Psi)).
   apply (deduction_negp_unfold (proj1_sig Psi) x) in H1. rewrite deduction_theorem in H1.
   pose proof deduction_modus_ponens _ _ _ H0 H1.
-  revert H2; change (~ proj1_sig Psi |-- FF).
+  revert H2; change (~ proj1_sig Psi |--- FF).
   rewrite <- consistent_spec.
   apply AL_CONSI, (proj2_sig Psi).
 Qed.
@@ -183,7 +183,7 @@ Proof.
   }
   clear rel H_R m1 m2 n H1 H2 H3.
 
-  assert (~ (Union _ (proj1_sig Psi1) (proj1_sig Psi2)) |-- FF).
+  assert (~ (Union _ (proj1_sig Psi1) (proj1_sig Psi2)) |--- FF).
   + intro.
     apply derivable_closed_union_derivable in H1; [| apply AL_DC, (proj2_sig Psi2)].
     destruct H1 as [x [? ?]].
@@ -196,7 +196,7 @@ Proof.
       rewrite derivable_closed_element_derivable in H3 by (apply AL_DC, (proj2_sig Psi2)).
       apply (deduction_negp_unfold (proj1_sig Psi2) x) in H3. rewrite deduction_theorem in H3.
       pose proof deduction_modus_ponens _ _ _ H1 H3.
-      revert H4; change (~ proj1_sig Psi2 |-- FF).
+      revert H4; change (~ proj1_sig Psi2 |--- FF).
       rewrite <- consistent_spec.
       apply AL_CONSI, (proj2_sig Psi2).
     - apply H in H3; unfold Ensembles.In in H3.
@@ -204,7 +204,7 @@ Proof.
       apply (deduction_negp_unfold (proj1_sig Psi1) (~~ x)) in H3. rewrite deduction_theorem in H3.
       rewrite <- deduction_theorem in H2. apply (deduction_negp_fold (proj1_sig Psi1) x) in H2.
       pose proof deduction_modus_ponens _ _ _ H2 H3.
-      revert H4; change (~ proj1_sig Psi1 |-- FF).
+      revert H4; change (~ proj1_sig Psi1 |--- FF).
       rewrite <- consistent_spec.
       apply AL_CONSI, (proj2_sig Psi1).
   + apply LIN_CD in H1.

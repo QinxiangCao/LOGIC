@@ -60,7 +60,7 @@ Qed.
 Lemma MCS_element_derivable:
   forall(Phi: context),
   maximal consistent Phi ->
-  (forall x: expr, Phi x <-> Phi |-- x).
+  (forall x: expr, Phi x <-> Phi |--- x).
 Proof.
   intros.
   apply derivable_closed_element_derivable, maximal_consistent_derivable_closed.

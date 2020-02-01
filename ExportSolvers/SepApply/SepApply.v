@@ -44,7 +44,7 @@ Existing Instances impp_proper_equiv
 
 Ltac cancel_tac EVAR :=
   apply cancel_ready;
-  rewrite <- !sepcon_assoc_equiv;
+  rewrite <- !sepcon_assoc_logic_equiv;
   apply cancel_ready;
   repeat
     lazymatch goal with
@@ -76,7 +76,7 @@ Ltac sep_apply_aux2 H' :=
                 [ apply sepcon_mono;
                   [ clear frame; apply H'
                   | try subst frame; apply provable_impp_refl]
-                | subst frame; rewrite sepcon_emp_equiv
+                | subst frame; rewrite sepcon_emp_logic_equiv
                 ]
              ]
      end.

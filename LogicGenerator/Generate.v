@@ -19,7 +19,6 @@ Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfClassicalAxioms.
 Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.MetaLogicInj.Syntax.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
-Require Import Logic.MetaLogicInj.ProofTheory.Deduction.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
@@ -147,7 +146,7 @@ Context {L: Language}
         {sepcon_orp_D : SepconOrDeduction L GammaD1}
         {sepcon_falsep_D : SepconFalseDeduction L GammaD1}
         {bE: BasicLogicEquiv L GammaE}
-        {minE: MinimumEquiv L GammaE}
+        {imppE: ImpLogicEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
         .
@@ -374,7 +373,6 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.";
   idtac "Require Import Logic.MetaLogicInj.Syntax.";
   idtac "Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.";
-  idtac "Require Import Logic.MetaLogicInj.ProofTheory.Deduction.";
   idtac "Require Import Logic.SeparationLogic.Syntax.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.";

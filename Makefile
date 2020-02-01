@@ -21,7 +21,8 @@ lib_FILES = \
   Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v 
 
 GeneralLogic_ProofTheory_FILES = \
-  BasicSequentCalculus.v TheoryOfSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v
+  BasicSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v \
+  TheoryOfSequentCalculus.v ProofTheoryPatternsD1.v
 
 GeneralLogic_Semantics_FILES = \
   Kripke.v
@@ -44,7 +45,7 @@ GeneralLogic_FILES = \
   $(GeneralLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
 MinimumLogic_ProofTheory_FILES = \
-  Minimum.v ProofTheoryPatterns.v \
+  Minimum.v ProofTheoryPatternsP.v ProofTheoryPatterns.v \
   RewriteClass.v TheoryOfSequentCalculus.v ExtensionTactic.v TheoryOfJudgement.v
 
 MinimumLogic_Semantics_FILES = \
@@ -94,7 +95,7 @@ PropositionalLogic_DeepEmbedded_FILES = \
   PropositionalLanguage.v ProofTheories.v \
   KripkeSemantics.v TrivialSemantics.v \
   Soundness.v Complete_Kripke.v Complete_Classical_Trivial.v \
-  configuration_Mendelson.v interface_Mendelson.v \
+  configuration_Mendelson.v interface_Mendelson.v implementation_Mendelson.v \
   Deep.v Solver.v
 
 PropositionalLogic_ShallowEmbedded_FILES = \
@@ -111,7 +112,7 @@ PropositionalLogic_FILES = \
   $(PropositionalLogic_Complete_FILES:%.v=Complete/%.v)
 
 MetaLogicInj_ProofTheory_FILES = \
-  ProofRules.v Deduction.v
+  ProofRules.v
 
 MetaLogicInj_Semantics_FILES = \
   Kripke.v

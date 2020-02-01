@@ -4,6 +4,7 @@ Require Import Logic.lib.Coqlib.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
+Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.MinimumLogic.Syntax.
 Require Import Logic.MinimumLogic.ProofTheory.Minimum.
 Require Import Logic.MinimumLogic.ProofTheory.RewriteClass.
@@ -91,14 +92,10 @@ End RewriteClass1.
 
 Section RewriteClass2.
 
-Import Derivable1.
-Local Open Scope Derivable1.
-
 Context {L: Language}
         {minL: MinimumLanguage L}
         {sepconL: SepconLanguage L}
         {GammaD: Derivable1 L}
-        {minD: MinimumDeduction L GammaD}
         {sepconD: SepconDeduction L GammaD}.
 
 Instance sepcon_proper_derivable1: Proper (derivable1 ==> derivable1 ==> derivable1) sepcon.
@@ -110,7 +107,7 @@ Proof.
 
 Context {wandL: WandLanguage L}
         {wandD: WandDeduction L GammaD}
-        {BD: BasicDeduction L GammaD}.
+        {bD: BasicDeduction L GammaD}.
 
 Instance wand_proper_derivable1: Proper (derivable1 --> derivable1 ==> derivable1) wand.
 Proof.
@@ -129,7 +126,6 @@ Context {L: Language}
         {GammaD1: Derivable1 L}
         {GammaE: LogicEquiv L}
         {GammaED1: EquivDerivable1 L GammaD1 GammaE}
-        {minD: MinimumDeduction L GammaD1}
         {sepconD: SepconDeduction L GammaD1}.
 
 Instance sepcon_proper_logic_equiv: Proper (logic_equiv ==> logic_equiv ==> logic_equiv) sepcon.

@@ -30,14 +30,14 @@ Axiom impp_proper_equiv:
 Axiom sepcon_proper_logic_equiv:
   Proper (logic_equiv ==> logic_equiv ==> logic_equiv) sepcon.
 Axiom provable_proper_equiv : Proper (logic_equiv ==> iff) provable.
-Axiom logic_equiv_refl: Reflexive logic_equiv.
+Axiom logic_equiv_refl_instance: Reflexive logic_equiv.
 
 Axiom provable_impp_refl : forall x, |-- x --> x.
 Axiom provable_impp_refl' : forall x y, x = y -> |-- x --> y.
 Axiom solve_impp_trans: forall (x y z: expr), |-- (x --> y) -> |-- (y --> z) -> |-- (x --> z).
 Axiom sepcon_mono: forall x1 x2 y1 y2, |-- x1 --> x2 -> |-- y1 --> y2 -> |-- (x1 * y1) --> (x2 * y2).
-Axiom sepcon_assoc_equiv: forall x y z, x * (y * z) --||-- (x * y) * z.
-Axiom sepcon_emp_equiv: forall x, x * emp --||-- x.
+Axiom sepcon_assoc_logic_equiv: forall x y z, x * (y * z) --||-- (x * y) * z.
+Axiom sepcon_emp_logic_equiv: forall x, x * emp --||-- x.
 
 Axiom cancel_ready: forall x y, |-- x * emp --> y -> |-- x --> y.
 Axiom cancel_one_succeed: forall u x y z, |-- x * y --> z -> |-- (u * x) * y --> u * z.

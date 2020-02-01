@@ -15,13 +15,13 @@ Context (L: Language)
         {minL: MinimumLanguage L}.
 
 Definition DeductionMP: Prop :=
-  forall (Phi: context) (x y: expr), Phi |-- x -> Phi |-- x --> y -> Phi |-- y.
+  forall (Phi: context) (x y: expr), Phi |--- x -> Phi |--- x --> y -> Phi |--- y.
 
 Definition DeductionImpIntro: Prop :=
-  forall (Phi: context) (x y: expr), Phi;; x |-- y -> Phi |-- x --> y.
+  forall (Phi: context) (x y: expr), Phi;; x |--- y -> Phi |--- x --> y.
 
 Definition DeductionImpElim: Prop :=
-  forall (Phi: context) (x y: expr), Phi |-- x --> y -> Phi;; x |-- y.
+  forall (Phi: context) (x y: expr), Phi |--- x --> y -> Phi;; x |--- y.
 
 End PropertiesOfSequentCalculus.
 

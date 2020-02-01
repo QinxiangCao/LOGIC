@@ -20,11 +20,11 @@ Class ClassicalAxiomatization (L: Language) {minL: MinimumLanguage L} (Gamma: Pr
 }.
 
 Class ClassicalSequentCalculus (L: Language) {orpL: OrLanguage L} {negpL: NegLanguage L} (Gamma: Derivable L) := {
-  derivable_excluded_middle: forall Phi x, Phi |-- x || ~~ x
+  derivable_excluded_middle: forall Phi x, Phi |--- x || ~~ x
 }.
 
 Class ClassicalDeduction (L:Language) {orpL: OrLanguage L} {negp:NegLanguage L} (GammaD1:Derivable1 L) := {
-  deduction_excluded_middle: forall x y,derivable1 x (y || ~~y)
+  deduction_excluded_middle: forall x y, x |-- y || ~~ y
 }.
 
 Class ClassicalPropositionalLogicEquiv (L:Language) {minL: MinimumLanguage L} {andpL: AndLanguage L} {negpL: NegLanguage L}  (GammaE:LogicEquiv L) := {
@@ -307,8 +307,8 @@ Context {L: Language}
         {cpSC: ClassicalSequentCalculus L Gamma}.
 
 Lemma deduction_contrapositiveNN: forall Phi (x y: expr),
-  Phi |-- ~~ y --> ~~ x ->
-  Phi |-- x --> y.
+  Phi |--- ~~ y --> ~~ x ->
+  Phi |--- x --> y.
 Proof.
   AddAxiomatization.
   intros.
@@ -317,8 +317,8 @@ Proof.
 Qed.
 
 Lemma deduction_contrapositiveNP: forall Phi (x y: expr),
-  Phi |-- ~~ y --> x ->
-  Phi |-- ~~ x --> y.
+  Phi |--- ~~ y --> x ->
+  Phi |--- ~~ x --> y.
 Proof.
   AddAxiomatization.
   intros.
@@ -327,8 +327,8 @@ Proof.
 Qed.
 
 Lemma deduction_negp_right: forall Phi x,
-  Phi;; x |-- ~~ x ->
-  Phi |-- ~~ x.
+  Phi;; x |--- ~~ x ->
+  Phi |--- ~~ x.
 Proof.
   AddAxiomatization.
   intros.

@@ -14,66 +14,67 @@ Inductive P2D_reg: Type :=.
 Inductive D2P_reg: Type :=.
 Inductive P2D1_reg: Type :=.
 Inductive P2E_reg: Type :=.
-Inductive D1ToP_reg: Type :=.
+Inductive D12P_reg: Type :=.
+Inductive D12E_reg: Type :=.
 
-Ltac pose_proof_SC_instance n :=
+Ltac pose_proof_P2D_instance n :=
   let a := get_nth P2D_reg n in
   match a with
   | fun x: unit => ?T => 
     try pose_proof_instance_as T x
   end.
 
-Ltac pose_proof_AX_instance n :=
+Ltac pose_proof_D2P_instance n :=
   let a := get_nth D2P_reg n in
   match a with
   | fun x: unit => ?T => 
     try pose_proof_instance_as T x
   end.
 
-Ltac pose_proof_ND_instance n :=
+Ltac pose_proof_P2D1_instance n :=
   let a := get_nth P2D1_reg n in
   match a with
   | fun x: unit => ?T =>
     try pose_proof_instance_as T x
   end.
 
-Ltac pose_proof_NE_instance n :=
+Ltac pose_proof_P2E_instance n :=
   let a := get_nth P2E_reg n in
   match a with
   | fun x: unit => ?T =>
     try pose_proof_instance_as T x
   end.
 
-Ltac pose_proof_Ax1_instance n :=
-  let a := get_nth D1ToP_reg n in
+Ltac pose_proof_D12P_instance n :=
+  let a := get_nth D12P_reg n in
   match a with
   | fun x: unit => ?T => 
     try pose_proof_instance_as T x
   end.
 
 Ltac AddSequentCalculus :=
-  let AX := fresh "AX" in
+  let GammaDP := fresh "GammaDP" in
   let GammaD := fresh "GammaD" in
-  pose proof Provable2Derivable_Normal as AX;
-  set (GammaD := Provable2Derivable) in AX;
+  pose proof Provable2Derivable_Normal as GammaDP;
+  set (GammaD := Provable2Derivable) in GammaDP;
   clearbody GammaD;
-  rec_from_n (0%nat) pose_proof_SC_instance.
+  rec_from_n (0%nat) pose_proof_P2D_instance.
 
 Ltac AddAxiomatizationFromSequentCalculus :=
-  let SC := fresh "SC" in
+  let SC := fresh "GammaPD" in
   let GammaP := fresh "GammaP" in
-  pose proof Derivable2Provable_Normal as SC;
-  set (GammaP := Derivable2Provable) in SC;
+  pose proof Derivable2Provable_Normal as GammaPD;
+  set (GammaP := Derivable2Provable) in GammaPD;
   clearbody GammaP;
-  rec_from_n (0%nat) pose_proof_AX_instance.
+  rec_from_n (0%nat) pose_proof_D2P_instance.
 
 Ltac AddAxiomatizationFromDeduction :=
-  let D1P :=fresh "D2P" in
+  let GammaPD1 :=fresh "GammaPD1" in
   let GammaP := fresh "GammaP" in
-  pose proof Derivable12Provable_Normal as D1P;
-  set (GammaP := Derivable12Provable) in D1P;
+  pose proof Derivable12Provable_Normal as GammaPD1;
+  set (GammaP := Derivable12Provable) in GammaPD1;
   clearbody GammaP;
-  rec_from_n (0%nat) pose_proof_Ax1_instance.
+  rec_from_n (0%nat) pose_proof_D12P_instance.
 
 Ltac AddAxiomatization :=
   match goal with
@@ -82,20 +83,20 @@ Ltac AddAxiomatization :=
   end.
 
 Ltac AddDeduction :=
-  let ND := fresh "ND" in
+  let GammaD1P := fresh "GammaD1P" in
   let GammaD1 := fresh "GammaD1" in
-  pose proof Provable2Derivable1_Normal as ND;
-  set (GammaD1 := Provable2Derivable1) in ND;
+  pose proof Provable2Derivable1_Normal as GammaD1P;
+  set (GammaD1 := Provable2Derivable1) in GammaD1P;
   clearbody GammaD1;
-  rec_from_n (0%nat) pose_proof_ND_instance.
+  rec_from_n (0%nat) pose_proof_P2D1_instance.
 
 Ltac AddEquiv :=
-  let NEL :=fresh "NE" in
-  let GammaL :=fresh "GammaE" in
-  pose proof Provable2Equiv_Normal as NEL;
-  set (GammaL := Provable2Equiv) in NEL;
-  clearbody GammaL;
-  rec_from_n (0%nat) pose_proof_NE_instance.
+  let GammaEP :=fresh "GammaEP" in
+  let GammaE :=fresh "GammaE" in
+  pose proof Provable2Equiv_Normal as GammaEP;
+  set (GammaE := Provable2Equiv) in GammaEP;
+  clearbody GammaE;
+  rec_from_n (0%nat) pose_proof_P2E_instance.
 
 Instance reg_Axiomatization2SequentCalculus_GammaPD:
   RegisterClass P2D_reg (fun SC: unit => @Axiomatization2SequentCalculus_GammaPD) 0.
@@ -121,32 +122,12 @@ Instance reg_SequentCalculus2Axiomatization_minAX:
   RegisterClass D2P_reg (fun minAX: unit => @SequentCalculus2Axiomatization_minAX) 1.
 Qed.
 
-Instance reg_Axiomatization2Deduction_minD:
-  RegisterClass P2D1_reg (fun minD: unit => @Axiomatization2Deduction_minD) 0.
-Qed.
-
 Instance reg_Axiomatization2Deduction_bD:
-  RegisterClass P2D1_reg (fun BD: unit => @Axiomatization2Deduction_bD) 1.
+  RegisterClass P2D1_reg (fun BD: unit => @Axiomatization2Deduction_bD) 0.
 Qed.
 
-Instance reg_Axiomatization2Deduction_GammaPD1:
-  RegisterClass P2D1_reg (fun PD: unit => @Axiomatization2Deduction_GammaPD1) 2.
-Qed.
-
-Instance reg_Axiomatization2LogicEquiv_minE:
-  RegisterClass P2E_reg (fun minE: unit => @Axiomatization2LogicEquiv_minE) 0.
-Qed.
-
-Instance reg_Axiomatization2BasicLogicEquiv_bE:
-  RegisterClass P2E_reg (fun bE: unit => @Axiomatization2BasicLogicEquiv_bE) 1.
-Qed.
-
-Instance reg_Derivable1ToAxiomatization_minAX:
-  RegisterClass D1ToP_reg (fun minAX: unit => @Deduction2Axiomatization_minAX) 0.
-Qed.
-
-Instance reg_PD2ND:
-  RegisterClass D1ToP_reg (fun ND: unit => @Deduction2Axiomatization_GammaD1P) 1.
+Instance reg_Axiomatization2Equiv_bE:
+  RegisterClass P2E_reg (fun bE: unit => @Axiomatization2Equiv_bE) 0.
 Qed.
 
 Section Test_AddD.
@@ -214,7 +195,7 @@ Context {L: Language}
 Local Open Scope logic_base.
 Local Open Scope syntax.
 
-Lemma derivable_axiom2': forall Phi (x y z: expr), Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
+Lemma derivable_axiom2': forall Phi (x y z: expr), Phi |--- (x --> y --> z) --> (x --> y) --> (x --> z).
 Proof.
   AddAxiomatizationFromSequentCalculus.
 Abort.
@@ -226,8 +207,7 @@ Section test_AddAXD.
 Context {L: Language}
         {minL: MinimumLanguage L}
         {GammaD1: Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -254,7 +234,7 @@ Context {GammaD: Derivable L}
         {minSC: MinimumSequentCalculus L GammaD}
         {fwSC: FiniteWitnessedSequentCalculus L GammaD}.
 
-Lemma test_1: forall Phi (x y z: expr), Phi |-- (x --> y --> z) --> (x --> y) --> (x --> z).
+Lemma test_1: forall Phi (x y z: expr), Phi |--- (x --> y --> z) --> (x --> y) --> (x --> z).
 Proof.
   AddAxiomatization.
   Abort.
@@ -263,12 +243,8 @@ End test_SequentCalculus.
 
 Section test_Deduction.
 
-Import Derivable1.
-Local Open Scope Derivable1.
-
 Context {GammaD1 :Derivable1 L}
-        {minD: MinimumDeduction L GammaD1}
-        {BD: BasicDeduction L GammaD1}.
+        {bD: BasicDeduction L GammaD1}.
 
 Lemma test_2:forall x y, (x --> x) |-- (y --> y).
 Proof.

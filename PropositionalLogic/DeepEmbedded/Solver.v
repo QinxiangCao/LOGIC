@@ -132,34 +132,34 @@ End Temp.
 Module DSolver.
   Local Existing Instances Deep.L Deep.minL Deep.andpL Deep.truepL Deep.iffpL Deep.iter_andp_L Deep.iter_andp_DL Deep.GP Deep.minAX Deep.andpAX Deep.truepAX Deep.iffpAX Deep.iter_andp_AXL.
 
-  Instance Adj : Adjointness _ _ andp impp.
+  Instance Adj : P.Adjointness _ _ andp impp.
   Proof.
     constructor. split; intros.
     - rewrite <- impp_uncurry. auto.
     - rewrite <- impp_curry. auto.
   Qed.
 
-  Instance Comm : Commutativity _ _ andp.
+  Instance Comm : P.Commutativity _ _ andp.
   Proof.
     apply andp_Comm.
   Qed.
 
-  Instance Mono : Monotonicity _ _ andp.
+  Instance Mono : P.Monotonicity _ _ andp.
   Proof.
     apply andp_Mono.
   Qed.
 
-  Instance Assoc : Associativity _ _ andp.
+  Instance Assoc : P.Associativity _ _ andp.
   Proof.
     apply andp_Assoc.
   Qed.
 
-  Instance LUnit : LeftUnit _ _ truep andp.
+  Instance LUnit : P.LeftUnit _ _ truep andp.
   Proof.
     constructor; intros; rewrite truep_andp; apply provable_impp_refl.
   Qed.
 
-  Instance RUnit : RightUnit _ _ truep andp.
+  Instance RUnit : P.RightUnit _ _ truep andp.
   Proof.
     constructor; intros; rewrite andp_truep; apply provable_impp_refl.
   Qed.
@@ -204,21 +204,21 @@ Module DSolver.
     {
       apply solve_iffp_intros. 
       {
-        rewrite <- assoc_prodp_fold_left.
+        rewrite <- P.assoc_prodp_fold_left.
         rewrite iffp_elim1 in IHe1.
         rewrite iffp_elim1 in IHe2.
-        apply prodp_mono; auto.
+        apply P.prodp_mono; auto.
       }
       {
-        rewrite assoc_fold_left_app.
+        rewrite P.assoc_fold_left_app.
         rewrite iffp_elim2 in IHe1.
         rewrite iffp_elim2 in IHe2.
-        apply prodp_mono; auto.
+        apply P.prodp_mono; auto.
       }
     }
     all: apply solve_iffp_intros;
       cbv [fold_left];
-      [rewrite <- left_unit2 | rewrite left_unit1];
+      [rewrite <- P.left_unit2 | rewrite P.left_unit1];
       apply provable_impp_refl.
   Qed.
 
