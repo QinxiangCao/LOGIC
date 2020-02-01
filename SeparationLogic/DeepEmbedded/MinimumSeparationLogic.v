@@ -23,6 +23,7 @@ Require Import Logic.MinimumLogic.Semantics.Kripke.
 Require Import Logic.MinimumLogic.Complete.ContextProperty_Kripke.
 Require Import Logic.MinimumLogic.Complete.Lindenbaum_Kripke.
 Require Import Logic.MinimumLogic.Complete.Truth_Kripke.
+Require Import Logic.PropositionalLogic.Semantics.Kripke.
 Require Import Logic.PropositionalLogic.Complete.Lindenbaum_Kripke.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
@@ -34,36 +35,36 @@ Require Import Logic.SeparationLogic.Complete.ContextProperty_Flat.
 Require Import Logic.SeparationLogic.Complete.Lindenbaum_Flat.
 Require Import Logic.SeparationLogic.Complete.Truth_Flat.
 Require Import Logic.SeparationLogic.Complete.Canonical_Flat.
-Require Logic.SeparationLogic.Semantics.FlatSemantics.
+Require Import Logic.SeparationLogic.Semantics.FlatSemantics.
+Require Import Logic.SeparationLogic.DeepEmbedded.MinimumSeparationLogic_LibSupport.
 
 Import KripkeModelFamilyNotation.
 Import KripkeModelNotation_Intuitionistic.
 
-Class PropositionalVariables: Type := {
-  Var: Type
-}.
-
 (***** Language *****)
 
-Inductive expr {Sigma: PropositionalVariables}: Type :=
+Inductive expr: Type :=
   | impp : expr -> expr -> expr
+  | andp : expr -> expr -> expr
   | sepcon : expr -> expr -> expr
-  | varp : Var -> expr.
-
-Arguments expr: clear implicits.
+  | varp : nat -> expr.
 
 Declare Scope local_syntax.
 Local Open Scope local_syntax.
 
 Notation "x --> y" := (impp x y) (at level 55, right associativity) : local_syntax.
+Notation "x && y" := (andp x y) (at level 40, left associativity) : local_syntax.
 Notation "x * y" := (sepcon x y) (at level 40, left associativity) : local_syntax.
 
 (***** Proof Theory *****)
 
-Inductive provable {Sigma: PropositionalVariables}: expr Sigma -> Prop :=
+Inductive provable: expr -> Prop :=
 | modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
 | axiom1: forall x y, provable (x --> (y --> x))
 | axiom2: forall x y z, provable ((x --> y --> z) --> (x --> y) --> (x --> z))
+| andp_intros: forall x y, provable (x --> y --> x && y)
+| andp_elim1: forall x y, provable (x && y --> x)
+| andp_elim2: forall x y, provable (x && y --> y)
 | sepcon_comm_impp: forall x y, provable (x * y --> y * x)
 | sepcon_assoc1: forall x y z, provable (x * (y * z) --> (x * y) * z)
 | sepcon_mono: forall x1 x2 y1 y2,
@@ -84,31 +85,28 @@ Local Open Scope TheKripkeSemantics.
 
 Definition sem (f: frame) := @Ensemble (underlying_set f).
 
-Definition denotation {Sigma: PropositionalVariables} (F: frame) (eval: Var -> sem F): expr Sigma -> sem F :=
-  fix denotation (x: expr Sigma): sem F:=
+Definition denotation (F: frame) (eval: nat -> sem F): expr -> sem F :=
+  fix denotation (x: expr): sem F:=
   match x with
   | impp y z => @Semantics.impp F (underlying_relation F) (denotation y) (denotation z)
+  | andp y z => @Semantics.andp F (denotation y) (denotation z)
   | sepcon y z => @WeakSemantics.sepcon F (underlying_join F) (denotation y) (denotation z)
   | varp p => eval p
   end.
 
-Record Kmodel {Sigma: PropositionalVariables} : Type := {
+Record Kmodel : Type := {
   underlying_frame :> frame;
-  sem_var: Var -> sem underlying_frame
+  sem_var: nat -> sem underlying_frame
 }.
 
-Arguments Kmodel: clear implicits.
-
-Record model {Sigma: PropositionalVariables}: Type := {
-  underlying_model :> Kmodel Sigma;
+Record model: Type := {
+  underlying_model :> Kmodel;
   elm: underlying_model
 }.
 
-Arguments model: clear implicits.
-
-Record well_formed {Sigma: PropositionalVariables} (m: model Sigma): Prop := {
+Record well_formed (m: model): Prop := {
   WF_Monotonic:
-    forall v: Var, @upwards_closed_Kdenote _ (underlying_relation m) (sem_var m v);
+    forall v: nat, @upwards_closed_Kdenote _ (underlying_relation m) (sem_var m v);
   WF_PreOrder:
     PreOrder (@Krelation _ (underlying_relation m));
   WF_SeparationAlgebra:
@@ -119,97 +117,87 @@ Record well_formed {Sigma: PropositionalVariables} (m: model Sigma): Prop := {
     @DownwardsClosedSeparationAlgebra _ (underlying_relation m) (underlying_join m)
 }.
 
-Definition satisfy {Sigma: PropositionalVariables} (m: model Sigma) (x: expr Sigma): Prop :=
+Definition satisfy (m: model) (x: expr): Prop :=
   denotation m (sem_var m) x (elm m).
 
-Definition valid {Sigma: PropositionalVariables} (x: expr Sigma): Prop :=
+Definition valid (x: expr): Prop :=
   forall m, well_formed m -> satisfy m x.
+
+Definition sound: Prop := forall x, provable x -> valid x.
+
+Definition complete: Prop := forall x, valid x -> provable x.
 
 (***** Auxiliary *****)
 
-Section Aux.
+Module Lang <: LanguageSig.
+  Definition expr := expr.
+  Definition provable := provable.
+  Definition impp := impp.
+  Definition andp := andp.
+  Definition sepcon := sepcon.
+End Lang.
 
-Context {Sigma: PropositionalVariables}.
+Module Rule <: PrimitiveRuleSig Lang.
+Include DerivedNames Lang.
+Definition modus_ponens := modus_ponens.
+Definition axiom1 := axiom1.
+Definition axiom2 := axiom2.
+Definition andp_intros := andp_intros.
+Definition andp_elim1 := andp_elim1.
+Definition andp_elim2 := andp_elim2.
+Definition sepcon_comm_impp := sepcon_comm_impp.
+Definition sepcon_assoc1 := sepcon_assoc1.
+Definition sepcon_mono := sepcon_mono.
+End Rule.
 
-Global Instance L: Language :=
-  Build_Language (expr Sigma).
+Module Theorems := LogicTheorem Lang Rule.
 
-Global Instance minL: MinimumLanguage L :=
-  Build_MinimumLanguage L impp.
+Instance MD: Model :=
+  Build_Model model.
 
-Global Instance sepconL: SepconLanguage L :=
-  Build_SepconLanguage L sepcon.
-
-Global Instance GP: Provable L := Build_Provable _ provable.
-
-Global Instance GD: Derivable L := Provable2Derivable.
-
-Global Instance AX: NormalAxiomatization L GP GD :=
-  Provable2Derivable_Normal.
-
-Global Instance minAX: MinimumAxiomatization L GP.
-Proof.
-  constructor.
-  + apply modus_ponens.
-  + apply axiom1.
-  + apply axiom2.
-Qed.
-
-Global Instance sepconAX: SepconAxiomatization L GP.
-Proof.
-  constructor.
-  + apply sepcon_comm_impp.
-  + apply sepcon_assoc1.
-  + apply sepcon_mono.
-Qed.
-
-Global Instance MD: Model := Build_Model (model Sigma).
-
-Global Instance kMD: KripkeModel MD :=
+Instance kMD: KripkeModel MD :=
   Build_KripkeModel _
-    (Kmodel Sigma)
+    Kmodel
     (fun M => M)
-    (fun M m => Build_model _ M m).
+    (fun M m => Build_model M m).
 
-Global Instance SM: Semantics L MD :=
-  Build_Semantics L MD (fun x M => (denotation M (sem_var M) x) (elm M)).
+Instance SM: Semantics Theorems.L MD :=
+  Build_Semantics Theorems.L MD (fun x m => denotation m (sem_var m) x (elm m)).
 
-Global Instance R (M: Kmodel Sigma): Relation (Kworlds M) :=
+Instance R (M: Kmodel): Relation (Kworlds M) :=
   @underlying_relation M.
 
-Global Instance J (M: Kmodel Sigma): Join (Kworlds M) :=
+Instance J (M: Kmodel): Join (Kworlds M) :=
   @underlying_join M.
 
-Global Instance kminSM (M: Kmodel Sigma): KripkeMinimumSemantics L MD M SM.
+Instance kminSM (M: Kmodel): KripkeMinimumSemantics Theorems.L MD M SM.
 Proof.
   apply Build_KripkeMinimumSemantics.
   intros; apply Same_set_refl.
-Defined.
+Qed.
 
-Global Instance fsepconSM (M: Kmodel Sigma): FlatSemantics.SepconSemantics L MD M SM.
+Instance fsepconSM (M: Kmodel): SepconSemantics Theorems.L MD M SM.
 Proof.
   hnf; intros; apply Same_set_refl.
 Qed.
 
-Definition Kmodel_Monotonic: Kmodel Sigma -> Prop := fun M =>
-  forall v: Var, upwards_closed_Kdenote (sem_var M v).
+Definition Kmodel_Monotonic: Kmodel -> Prop := fun M =>
+  forall v: nat, upwards_closed_Kdenote (sem_var M v).
 
-Definition Kmodel_PreOrder: Kmodel Sigma -> Prop := fun M =>
+Definition Kmodel_PreOrder: Kmodel -> Prop := fun M =>
   PreOrder (@Krelation _ (R M)).
 
-Definition Kmodel_SeparationAlgebra: Kmodel Sigma -> Prop := fun M =>
+Definition Kmodel_SeparationAlgebra: Kmodel -> Prop := fun M =>
   SeparationAlgebra (Kworlds M).
 
-Definition Kmodel_UpwardsClosed: Kmodel Sigma -> Prop := fun M =>
+Definition Kmodel_UpwardsClosed: Kmodel-> Prop := fun M =>
   UpwardsClosedSeparationAlgebra (Kworlds M).
 
-Definition Kmodel_DownwardsClosed: Kmodel Sigma -> Prop := fun M =>
+Definition Kmodel_DownwardsClosed: Kmodel -> Prop := fun M =>
   DownwardsClosedSeparationAlgebra (Kworlds M).
 
-End Aux.
-
 (***** Completeness *****)
-
+(*
 Section Complete.
 
 Import KripkeModelFamilyNotation.
@@ -345,6 +333,4 @@ Proof.
 Qed.
 
 End Complete.
-
-(* X1 * X2, Y1 * Y2, (X1 * X2 --> Y1 * Y2 --> Z) --> Z
-U * (X1 && X2) * (Y1 && Y2) |-- U * ((X1 * X2 --> Y1 * Y2 --> Z) --> Z)
+*)
