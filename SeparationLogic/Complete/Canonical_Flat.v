@@ -68,9 +68,8 @@ Context {L: Language}
         {andpAX: AndAxiomatization L GammaP}
         {orpAX: OrAxiomatization L GammaP}
         {falsepAX: FalseAxiomatization L GammaP}
-        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
-        {iffpAX: IffAxiomatization L GammaP}
         {truepAX: TrueAxiomatization L GammaP}
+        {inegpAX: IntuitionisticNegAxiomatization L GammaP}
         {sepconAX: SepconAxiomatization L GammaP}
         {wandAX: WandAxiomatization L GammaP}
         {MD: Model}
@@ -94,6 +93,7 @@ Instance SA
          (LIN_SR: forall (Phi: context) (Psi: sig cP), Lindenbaum_constructable (context_sepcon_included_r Phi (proj1_sig Psi)) cP):
   SeparationAlgebra (Kworlds M).
 Proof.
+  clear dependent truepL.
   constructor.
   + intros.
     destruct (im_bij _ _ rel m1) as [Phi1 ?].
@@ -122,7 +122,7 @@ Proof.
       apply context_sepcon_derivable in H8.
       destruct H8 as [y [z [? [? ?]]]].
       rewrite derivable_closed_element_derivable by (apply AL_DC, (proj2_sig Phi_xyz)).
-      rewrite <- H6, sepcon_assoc.
+      rewrite <- H6, <- sepcon_assoc2.
       rewrite <- derivable_closed_element_derivable by (apply AL_DC, (proj2_sig Phi_xyz)).
       apply H0.
       exists (x * y), z; split; [| split]; auto.
@@ -217,7 +217,7 @@ Proof.
     rewrite deduction_theorem, <- provable_derivable in H1.
     rewrite derivable_closed_element_derivable by (apply AL_DC, (proj2_sig Phi)).
     subst; rewrite <- H1.
-    rewrite <- sepcon_comm, <- sepcon_ext; auto.
+    rewrite <- sepcon_comm_impp, <- sepcon_ext; auto.
   + apply LIN_SL in H0.
     destruct H0 as [Psi [? ?]].
     destruct (su_bij _ _ rel Psi) as [m ?].
@@ -248,7 +248,7 @@ Proof.
     destruct H0 as [y [z [? [? ?]]]].
     rewrite deduction_theorem, <- provable_derivable in H2.
     rewrite derivable_closed_element_derivable by (apply AL_DC, (proj2_sig Phi)).
-    subst; rewrite <- H2, sepcon_emp; auto.
+    subst; rewrite <- H2, <- sepcon_emp2; auto.
   + apply LIN_SR in H0.
     destruct H0 as [Psi [? ?]].
     destruct (su_bij _ _ rel Psi) as [m ?].

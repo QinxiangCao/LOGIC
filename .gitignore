@@ -14,3 +14,4 @@ LogicGenerator/demo6/export_lib.v
 LogicGenerator/demo6/interface.v
 LogicGenerator/demo6/SepApply.v
 PropositionalLogic/DeepEmbedded/interface_Mendelson.v
+SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v

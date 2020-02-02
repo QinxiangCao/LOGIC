@@ -868,7 +868,7 @@ Lemma sepcon_elim2: forall {gcsGamma: GarbageCollectSeparationLogic L Gamma} (x 
   |-- x * y --> y.
 Proof.
   intros.
-  rewrite (sepcon_comm x y).
+  rewrite (sepcon_comm_impp x y).
   apply sepcon_elim1.
 Qed.
 

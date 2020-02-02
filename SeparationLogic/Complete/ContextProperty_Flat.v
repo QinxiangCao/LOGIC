@@ -16,6 +16,7 @@ Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.RewriteClass.
 Require Import Logic.PropositionalLogic.ProofTheory.ProofTheoryPatterns.
+Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnectives.
 Require Import Logic.PropositionalLogic.Complete.ContextProperty_Kripke.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
@@ -79,7 +80,10 @@ Lemma context_sepcon_derivable:
     context_sepcon Phi Psi |--- z ->
     exists x y, |-- x * y --> z /\ Phi |--- x /\ Psi |--- y.
 Proof.
+  clear iffpAX iffpSC truepL truepAX truepSC.
   intros.
+  AddConnective_truep_impp_self.
+  pose proof Axiomatization2SequentCalculus_truepSC as truepSC. (* TODO remove it *)
   rewrite derivable_provable in H.
   destruct H as [xs [? ?]].
   revert z H0; induction H; intros.
@@ -101,7 +105,7 @@ Proof.
       rewrite (provable_sepcon_andp_left x x' y').
       rewrite (andp_elim1 (x * y) _).
       rewrite (andp_elim2 _ (x' * y')).
-      rewrite <- impp_curry_uncurry.
+      rewrite <- impp_curry.
       auto.
     - apply deduction_andp_intros; auto.
     - apply deduction_andp_intros; auto.

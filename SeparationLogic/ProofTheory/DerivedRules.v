@@ -61,7 +61,7 @@ Lemma provable_sepcon_andp_right: forall (x y z: expr),
   |-- x * (y && z) --> (x * y) && (x * z).
 Proof.
   intros.
-  rewrite !(sepcon_comm x).
+  rewrite !(sepcon_comm_impp x), <- !(sepcon_comm_impp _ x).
   apply provable_sepcon_andp_left.
 Qed.
 

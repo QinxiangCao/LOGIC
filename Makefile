@@ -38,7 +38,7 @@ GeneralLogic_ShallowEmbedded_FILES = \
 
 GeneralLogic_FILES = \
   Base.v HenkinCompleteness.v \
-  KripkeModel.v \
+  KripkeModel.v  ModelClass.v \
   $(GeneralLogic_ProofTheory_FILES:%.v=ProofTheory/%.v) \
   $(GeneralLogic_Semantics_FILES:%.v=Semantics/%.v) \
   $(GeneralLogic_Complete_FILES:%.v=Complete/%.v) \
@@ -55,7 +55,7 @@ MinimumLogic_Sound_FILES = \
   Sound_Kripke.v Sound_Classical_Trivial.v
 
 MinimumLogic_Complete_FILES = \
-  ContextProperty_Kripke.v Lindenbaum_Kripke.v Truth_Kripke.v
+  Complete.v ContextProperty_Kripke.v Lindenbaum_Kripke.v Truth_Kripke.v
 
 MinimumLogic_ShallowEmbedded_FILES = \
 
@@ -194,7 +194,8 @@ SeparationLogic_DeepEmbedded_FILES = \
   SeparationLanguage.v SeparationEmpLanguage.v \
   Parameter.v \
   ParametricSeparationLogic.v SeparationLogicsInLiteratures.v \
-  FlatSemantics.v ParametricCompleteness.v
+  FlatSemantics.v ParametricCompleteness.v \
+  MinimumSeparationLogic_Config.v MinimumSeparationLogic_LibSupport.v MinimumSeparationLogic.v
 
 SeparationLogic_ShallowEmbedded_FILES = \
   PredicateSeparationLogic.v MonoPredicateSeparationLogic.v
@@ -300,6 +301,9 @@ all: \
 PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo
 	./logic_gen.sh PropositionalLogic/DeepEmbedded/configuration_Mendelson.v PropositionalLogic/DeepEmbedded/interface_Mendelson.v
 
+SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v: SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v LogicGenerator/ConfigCompute.vo
+	./logic_gen.sh SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v
+
 lgen_demo_1:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
 	./logic_gen.sh LogicGenerator/demo/configuration_1.v LogicGenerator/demo/interface_1.v LogicGenerator/demo/export_lib_1.v
@@ -368,7 +372,7 @@ lgen_demo_bedrock2:
 	@echo COQC SepApply.v [in-bedrock2-folder]
 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
 
-DF=PropositionalLogic/DeepEmbedded/interface_Mendelson.v
+DF=PropositionalLogic/DeepEmbedded/interface_Mendelson.v SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v
 
 depend:
 	@for name in $(DF); do \
