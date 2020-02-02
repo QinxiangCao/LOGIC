@@ -8,6 +8,7 @@ Require Import Coq.omega.Omega.
 Require Import Logic.lib.Bijection.
 Require Import Logic.lib.Countable.
 Require Import Logic.GeneralLogic.Base.
+Require Import Logic.GeneralLogic.ModelClass.
 Require Import Logic.GeneralLogic.KripkeModel.
 Require Import Logic.GeneralLogic.Semantics.Kripke.
 Require Import Logic.GeneralLogic.Complete.ContextProperty.
@@ -23,8 +24,10 @@ Require Import Logic.MinimumLogic.Semantics.Kripke.
 Require Import Logic.MinimumLogic.Complete.ContextProperty_Kripke.
 Require Import Logic.MinimumLogic.Complete.Lindenbaum_Kripke.
 Require Import Logic.MinimumLogic.Complete.Truth_Kripke.
+Require Import Logic.MinimumLogic.Complete.Complete.
 Require Import Logic.PropositionalLogic.Semantics.Kripke.
 Require Import Logic.PropositionalLogic.Complete.Lindenbaum_Kripke.
+Require Import Logic.PropositionalLogic.Complete.Truth_Kripke.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
@@ -104,7 +107,7 @@ Record model: Type := {
   elm: underlying_model
 }.
 
-Record well_formed (m: model): Prop := {
+Record well_formed (m: Kmodel): Prop := {
   WF_Monotonic:
     forall v: nat, @upwards_closed_Kdenote _ (underlying_relation m) (sem_var m v);
   WF_PreOrder:
@@ -121,7 +124,7 @@ Definition satisfy (m: model) (x: expr): Prop :=
   denotation m (sem_var m) x (elm m).
 
 Definition valid (x: expr): Prop :=
-  forall m, well_formed m -> satisfy m x.
+  forall m: model, well_formed m -> satisfy m x.
 
 Definition sound: Prop := forall x, provable x -> valid x.
 
@@ -131,6 +134,7 @@ Definition complete: Prop := forall x, valid x -> provable x.
 
 Module Lang <: LanguageSig.
   Definition expr := expr.
+  Definition context := expr -> Prop.
   Definition provable := provable.
   Definition impp := impp.
   Definition andp := andp.
@@ -172,7 +176,13 @@ Instance J (M: Kmodel): Join (Kworlds M) :=
 
 Instance kminSM (M: Kmodel): KripkeMinimumSemantics Theorems.L MD M SM.
 Proof.
-  apply Build_KripkeMinimumSemantics.
+  constructor.
+  intros; apply Same_set_refl.
+Qed.
+
+Instance andpSM (M: Kmodel): KripkeAndSemantics Theorems.L MD M SM.
+Proof.
+  constructor.
   intros; apply Same_set_refl.
 Qed.
 
@@ -197,7 +207,7 @@ Definition Kmodel_DownwardsClosed: Kmodel -> Prop := fun M =>
   DownwardsClosedSeparationAlgebra (Kworlds M).
 
 (***** Completeness *****)
-(*
+
 Section Complete.
 
 Import KripkeModelFamilyNotation.
@@ -207,10 +217,7 @@ Local Open Scope logic_base.
 Local Open Scope kripke_model.
 Local Open Scope kripke_model_class.
 
-Context {Sigma: PropositionalVariables}
-        {CV: Countable (expr Sigma)}.
-
-Existing Instances Axiomatization2SequentCalculus_SC Axiomatization2SequentCalculus_bSC Axiomatization2SequentCalculus_fwSC Axiomatization2SequentCalculus_minSC.
+Context {CV: Countable expr}.
 
 Definition cP : context -> Prop :=
   derivable_closed.
@@ -218,11 +225,7 @@ Definition cP : context -> Prop :=
 Lemma AL_DC: at_least derivable_closed cP.
 Proof. solve_at_least. Qed.
 
-(*
-Lemma AL_CONSI: at_least consistent cP.
-Proof. solve_at_least. Qed.
-*)
-Lemma LIN_CD: forall x: expr Sigma, Lindenbaum_constructable (cannot_derive x) cP.
+Lemma LIN_CD: forall x: expr, Lindenbaum_constructable (cannot_derive x) cP.
 Proof.
   intros.
   apply Lindenbaum_constructable_suffice; auto.
@@ -257,11 +260,11 @@ Definition canonical_frame: frame :=
     (fun a b => Included _ (proj1_sig a) (proj1_sig b))
     (fun a b c => Included _ (context_sepcon (proj1_sig a) (proj1_sig b)) (proj1_sig c)).
 
-Definition canonical_eval: Var -> sem canonical_frame :=
+Definition canonical_eval: nat -> sem canonical_frame :=
   fun p a => proj1_sig a (varp p).
 
 Definition canonical_Kmodel: @Base.Kmodel MD kMD :=
-  Build_Kmodel _ canonical_frame canonical_eval.
+  Build_Kmodel canonical_frame canonical_eval.
 
 Definition rel: bijection (Kworlds canonical_Kmodel) (sig cP) := bijection_refl.
 
@@ -287,26 +290,36 @@ Proof.
 Qed.
 
 Lemma TRUTH:
-  forall x: expr Sigma, forall m Phi, rel m Phi ->
+  forall x: expr , forall m Phi, rel m Phi ->
     (KRIPKE: canonical_Kmodel, m |= x <-> proj1_sig Phi x).
 Proof.
   induction x.
   + exact (truth_lemma_impp cP rel H_R AL_DC LIN_CD x1 x2 IHx1 IHx2).
+  + exact (truth_lemma_andp cP rel AL_DC x1 x2 IHx1 IHx2).
   + exact (truth_lemma_sepcon cP rel H_J AL_DC LIN_SL LIN_SR x1 x2 IHx1 IHx2).
   + intros; change (m = Phi) in H; subst; reflexivity.
 Qed.
 
-Theorem ParametricCompleteness:
-  strongly_complete GD SM
-    (KripkeModelClass _
-      (Kmodel_Monotonic +
-       Kmodel_PreOrder +
-       Kmodel_SeparationAlgebra +
-       Kmodel_UpwardsClosed +
-       Kmodel_DownwardsClosed)).
+Theorem completeness: complete.
 Proof.
-  apply (@general_completeness _ _ _ _ _ _ _ _ cP rel LIN_CD TRUTH).
-  split; [split; [split; [split |] |] |].
+  assert (Same_set model well_formed (KripkeModelClass _ well_formed)).
+  {
+    apply (@KripkeModelClass_ModelClass_Same_set_spec MD).
+    intros.
+    destruct m as [M w].
+    simpl.
+    split; intros; [eauto |].
+    destruct H as [? [? [? ?]]].
+    inversion H0.
+    subst; auto.
+  }
+  pose proof @strongly_complete_strong _ _ _ _ _ _ well_formed.
+  pose proof @general_completeness _ _ _ _ _ canonical_Kmodel _ well_formed cP rel LIN_CD TRUTH.
+  apply H0.
+  rewrite H.
+  apply H1.
+  clear H H0 H1.
+  constructor.
   + hnf; intros.
     exact (denote_monotonic cP rel H_R
              (varp v)
@@ -315,22 +328,6 @@ Proof.
   + exact (SA cP rel H_J AL_DC LIN_SR).
   + exact (uSA cP rel H_R H_J AL_DC).
   + exact (dSA cP rel H_R H_J AL_DC).
-  + exact (unitSA cP rel H_R H_J AL_DC LIN_SR TRUTH).
-  + inversion PC.
-    constructor; intros HH; rewrite HH in *.
-    - pose proof ParametricSeparationLogic.Parametric_C H.
-      exact (classical_canonical_ident cP rel H_R AL_DC AL_OW AL_CONSI).
-    - pose proof ParametricSeparationLogic.Parametric_GD H0.
-      exact (GodelDummett_canonical_no_branch cP rel H_R AL_DC AL_OW).
-    - pose proof ParametricSeparationLogic.Parametric_DM H1.
-      exact (DeMorgan_canonical_branch_join cP rel H_R AL_DC AL_OW AL_CONSI LIN_CD).
-    - pose proof ParametricSeparationLogic.Parametric_GC H2.
-      exact (garbage_collected_canonical_increaing cP rel H_R H_J AL_DC).
-    - pose proof ParametricSeparationLogic.Parametric_NE H3.
-      exact (nonsplit_canonical_split_smaller cP rel H_R H_J AL_DC TRUTH).
-    - pose proof ParametricSeparationLogic.Parametric_ED H4.
-      exact (dup_canonical_incr_join cP rel H_J AL_DC TRUTH).
 Qed.
 
 End Complete.
-*)

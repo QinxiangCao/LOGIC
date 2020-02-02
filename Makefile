@@ -38,7 +38,7 @@ GeneralLogic_ShallowEmbedded_FILES = \
 
 GeneralLogic_FILES = \
   Base.v HenkinCompleteness.v \
-  KripkeModel.v \
+  KripkeModel.v  ModelClass.v \
   $(GeneralLogic_ProofTheory_FILES:%.v=ProofTheory/%.v) \
   $(GeneralLogic_Semantics_FILES:%.v=Semantics/%.v) \
   $(GeneralLogic_Complete_FILES:%.v=Complete/%.v) \
@@ -55,7 +55,7 @@ MinimumLogic_Sound_FILES = \
   Sound_Kripke.v Sound_Classical_Trivial.v
 
 MinimumLogic_Complete_FILES = \
-  ContextProperty_Kripke.v Lindenbaum_Kripke.v Truth_Kripke.v
+  Complete.v ContextProperty_Kripke.v Lindenbaum_Kripke.v Truth_Kripke.v
 
 MinimumLogic_ShallowEmbedded_FILES = \
 

@@ -9,10 +9,12 @@ Definition how_connectives :=
   ;primitive_connective andp
   ;primitive_connective sepcon
   ;FROM_impp_TO_multi_imp
+  ;FROM_empty_set_TO_empty_context
   ].
 
 Definition how_judgements :=
   [ primitive_judgement provable
+  ; FROM_provable_TO_derivable
   ].
 
 Definition transparent_names :=
