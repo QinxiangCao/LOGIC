@@ -256,14 +256,175 @@ Ltac cancel_seplog :=
   cancel_seplog' auto_cancel.
 
 Section temp.
-Parameter (P Q R S T U V W: Language.expr).
+Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: Language.expr).
 Local Open Scope shallow_syntax.
 
-Goal |-- W * U --> S * V -> |-- W * U * P * Q --> S * V * Q * P.
+Goal |-- (W --> T) * U --> S * V -> |-- (W --> T) * U * (V --> W) * (P * Q) * T --> T * S * V * Q * P * (V --> W).
   intros.
   Time
   cancel_seplog.
   auto.
   Time
   Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
+  intros.
+  Time
+  cancel_seplog.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
+  intros.
+  Time
+  cancel_seplog.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
+  intros.
+  Time
+  cancel_seplog.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
+  intros.
+  Time
+  cancel_seplog.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
+  intros.
+  Time
+  cancel_seplog.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
+  intros.
+  Time
+  cancel_seplog.
+  Time
+  Qed.
+
+Goal
+|-- A * B * C * D --> M * N * O * E ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
+  intros.
+  Time
+  cancel_seplog.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- A * B * C * D * A * B * C * D
+--> M * N * O * E * M * N * O * E ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
+    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
+  intros.
+  Time
+  cancel_seplog.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- A * B * C * D * A * B * C * D * A * B * C * D
+--> M * N * O * M * N * O * E * E * M * N * O * E ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
+    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
+    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
+  intros.
+  Time
+  cancel_seplog.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- A * B * C * D * E * F * G * H --> S * T * Q * X * U * V * W * R ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
+--> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
+  intros.
+  Time
+  cancel_seplog.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H
+--> S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
+--> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
+    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
+  intros.
+  Time
+  cancel_seplog.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H
+--> S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
+--> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
+    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
+    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
+  intros.
+  Time
+  cancel_seplog.
+  auto.
+  Time
+  Qed.
+
 End temp.

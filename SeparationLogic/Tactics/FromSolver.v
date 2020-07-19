@@ -204,7 +204,9 @@ Ltac cancel_solver' se :=
       | apply UnflattenH
       | ];
     match goal with
-        | [|- provable ?dr] => apply (abstract_sound dr tbl' se); compute
+        | [|- provable ?dr] =>
+          apply (abstract_sound dr tbl' se);
+          let rfl := eval compute in (reflect dr tbl' se) in change (Language.provable rfl)
     end;
     repeat first [rewrite -> Language.sepcon_emp3 | rewrite <- Language.sepcon_emp4 | apply Language.emp_refl];
     clear ReflectH FlattenH CancelH UnflattenH
@@ -216,14 +218,175 @@ Ltac cancel_solver :=
     end.
 
 Section temp.
-Parameter (P Q R S T U V W: Language.expr).
+Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: Language.expr).
 Local Open Scope shallow_syntax.
 
-Goal |-- U * W --> V * S -> |-- W * U * P * Q --> S * V * Q * P.
+Goal |-- U * (W --> T) --> V * S -> |-- (W --> T) * U * (V --> W) * (P * Q) * T --> T * S * V * Q * P * (V --> W).
   intros.
   Time
   cancel_solver.
   auto.
   Time
   Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
+  intros.
+  Time
+  cancel_solver.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
+  intros.
+  Time
+  cancel_solver.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
+  intros.
+  Time
+  cancel_solver.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
+  intros.
+  Time
+  cancel_solver.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
+  intros.
+  Time
+  cancel_solver.
+  Time
+  Qed.
+
+Goal
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X
+--> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
+    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
+  intros.
+  Time
+  cancel_solver.
+  Time
+  Qed.
+
+Goal
+|-- D * C * B * A --> E * O * N * M ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
+  intros.
+  Time
+  cancel_solver.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- D * C * B * A * D * C * B * A
+--> E * O * N * M * E * O * N * M ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
+    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
+  intros.
+  Time
+  cancel_solver.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- D * C * B * A * D * C * B * A * D * C * B * A
+--> E * O * N * M * E * E * O * N * M * O * N * M ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
+--> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
+    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
+    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
+  intros.
+  Time
+  cancel_solver.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- H * G * F * E * D * C * B * A --> R * W * V * U * X * Q * T * S ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
+--> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
+  intros.
+  Time
+  cancel_solver.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- H * G * F * E * D * C * B * A * H * G * F * E * D * C * B * A
+--> R * W * V * U * X * Q * T * S * R * W * V * U * X * Q * T * S ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
+--> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
+    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
+  intros.
+  Time
+  cancel_solver.
+  auto.
+  Time
+  Qed.
+
+Goal
+|-- H * G * F * E * D * C * B * A * H * G * F * E * D * C * B * A * H * G * F * E * D * C * B * A
+--> R * W * V * U * X * Q * T * S * R * W * V * U * X * Q * T * S * R * W * V * U * X * Q * T * S ->
+|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
+    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
+--> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
+    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
+    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
+  intros.
+  Time
+  cancel_solver.
+  auto.
+  Time
+  Qed.
+
 End temp.
