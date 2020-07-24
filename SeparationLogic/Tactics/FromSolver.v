@@ -165,10 +165,16 @@ Fixpoint cancel_deep es rs : list expr * list expr:=
     end
   end.
 
-Fixpoint unflatten_sepcon le : expr:=
+Fixpoint unflatten_sepcon' et e : expr :=
+  match et with
+  | nil => e
+  | ep :: et0 => unflatten_sepcon' et0 (sepcon e ep)
+  end.
+
+Definition unflatten_sepcon le : expr :=
   match le with
   | nil => emp
-  | e :: et => sepcon (unflatten_sepcon et) e
+  | e :: et => unflatten_sepcon' et e
   end.
 
 Definition unflatten (es rs : list expr) : expr:=
@@ -208,7 +214,7 @@ Ltac cancel_solver' se :=
           apply (abstract_sound dr tbl' se);
           let rfl := eval compute in (reflect dr tbl' se) in change (Language.provable rfl)
     end;
-    repeat first [rewrite -> Language.sepcon_emp3 | rewrite <- Language.sepcon_emp4 | apply Language.emp_refl];
+    try apply Language.emp_refl;
     clear ReflectH FlattenH CancelH UnflattenH
   end.
 
@@ -221,7 +227,7 @@ Section temp.
 Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: Language.expr).
 Local Open Scope shallow_syntax.
 
-Goal |-- U * (W --> T) --> V * S -> |-- (W --> T) * U * (V --> W) * (P * Q) * T --> T * S * V * Q * P * (V --> W).
+Goal |-- (W --> T) * U --> S * V -> |-- (W --> T) * U * (V --> W) * (P * Q) * T --> T * S * V * Q * P * (V --> W).
   intros.
   Time
   cancel_solver.
@@ -308,7 +314,7 @@ Goal
   Qed.
 
 Goal
-|-- D * C * B * A --> E * O * N * M ->
+|-- A * B * C * D --> M * N * O * E ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
 --> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
@@ -319,8 +325,8 @@ Goal
   Qed.
 
 Goal
-|-- D * C * B * A * D * C * B * A
---> E * O * N * M * E * O * N * M ->
+|-- A * B * C * D * A * B * C * D
+--> M * N * O * E * M * N * O * E ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
 --> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
@@ -333,8 +339,8 @@ Goal
   Qed.
 
 Goal
-|-- D * C * B * A * D * C * B * A * D * C * B * A
---> E * O * N * M * E * E * O * N * M * O * N * M ->
+|-- A * B * C * D * A * B * C * D * A * B * C * D
+--> M * N * O * M * N * O * E * E * M * N * O * E ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
@@ -349,7 +355,7 @@ Goal
   Qed.
 
 Goal
-|-- H * G * F * E * D * C * B * A --> R * W * V * U * X * Q * T * S ->
+|-- A * B * C * D * E * F * G * H --> S * T * Q * X * U * V * W * R ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
 --> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
@@ -360,8 +366,8 @@ Goal
   Qed.
 
 Goal
-|-- H * G * F * E * D * C * B * A * H * G * F * E * D * C * B * A
---> R * W * V * U * X * Q * T * S * R * W * V * U * X * Q * T * S ->
+|-- A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H
+--> S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
 --> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
@@ -374,8 +380,8 @@ Goal
   Qed.
 
 Goal
-|-- H * G * F * E * D * C * B * A * H * G * F * E * D * C * B * A * H * G * F * E * D * C * B * A
---> R * W * V * U * X * Q * T * S * R * W * V * U * X * Q * T * S * R * W * V * U * X * Q * T * S ->
+|-- A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H
+--> S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
