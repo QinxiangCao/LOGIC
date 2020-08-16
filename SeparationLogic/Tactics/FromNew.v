@@ -143,25 +143,25 @@ Ltac shallowTolist' se lsp lsq:=
   end.
 
 Fixpoint match_list (es : list expr) (lsp : list Language.expr):
-list (Language.expr * positive) :=
+list (Language.expr * option positive) :=
   match es, lsp with
   | nil, nil=> nil
   | nil, sp :: spt => nil
   | e :: et, nil => nil
-  | e :: et, sp :: spt => (sp , xH) :: (match_list et spt)
+  | e :: et, sp :: spt => (sp , None) :: (match_list et spt)
   end.
 
 Fixpoint cancel_mark_context es r nes key :
-(list (Language.expr * positive)) * bool :=
+(list (Language.expr * option positive)) * bool :=
   match es, nes with
   | nil, nil => (nes, false)
   | nil, _ :: net => (nes, false)
   | _ :: et, nil => (nes, false)
-  | e :: et, (sp, xH) :: net =>
+  | e :: et, (sp, None) :: net =>
     match (beq e r) with
-    | true => ((sp, key) :: net, true)
+    | true => ((sp, Some key) :: net, true)
     | false => let (net', isfind) := cancel_mark_context et r net key 
-                in ((sp, xH) :: net', (false || isfind)%bool)
+                in ((sp, None) :: net', (false || isfind)%bool)
     end
   | e :: et, p :: net =>
     let (net', isfind) := cancel_mark_context et r net key
@@ -169,7 +169,7 @@ Fixpoint cancel_mark_context es r nes key :
   end.
 
 Fixpoint cancel_mark' es rs nes nrs key :
-list (Language.expr * positive) * list (Language.expr * positive) :=
+list (Language.expr * option positive) * list (Language.expr * option positive) :=
   match rs, nrs with
   | nil, nil => (nes, nrs)
   | nil, _ :: nrt => (nes, nrs)
@@ -177,32 +177,34 @@ list (Language.expr * positive) * list (Language.expr * positive) :=
   | r :: rt, (sq, nr) :: nrt =>
     match (cancel_mark_context es r nes key) with
     | (nes', true) => let (nes'', nrt') := cancel_mark' es rt nes' nrt (Pos.succ key)
-                       in (nes'', (sq, key) :: nrt')
+                       in (nes'', (sq, Some key) :: nrt')
     | (nes', false) => let (nes'', nrt') := cancel_mark' es rt nes' nrt key
-                        in (nes'', (sq, xH) :: nrt')
+                        in (nes'', (sq, None) :: nrt')
     end
   end.
 
 Definition cancel_mark es rs lsp lsq:
-list (Language.expr * positive) * list (Language.expr * positive) :=
-  cancel_mark' es rs (match_list es lsp) (match_list rs lsq) (Pos.succ xH).
+list (Language.expr * option positive) * list (Language.expr * option positive) :=
+  cancel_mark' es rs (match_list es lsp) (match_list rs lsq) xH.
 
-Fixpoint unflatten_sepcon' net p : Language.expr :=
+Fixpoint unflatten_sepcon' (net : list (Language.expr * option positive)) p :
+Language.expr :=
   match net with
   | nil => p
-  | (sp, ne) :: net0 => 
+  | (sp, ne) :: net0 =>
     match ne with
-    | xH => unflatten_sepcon' net0 (Language.sepcon p sp)
+    | None => unflatten_sepcon' net0 (Language.sepcon p sp)
     | _ => unflatten_sepcon' net0 p
     end
   end.
 
-Fixpoint unflatten_sepcon nes : Language.expr :=
+Fixpoint unflatten_sepcon (nes : list (Language.expr * option positive)) :
+Language.expr :=
   match nes with
   | nil => Language.emp
   | (sp, ne) :: net =>
     match ne with
-    | xH => unflatten_sepcon' net sp
+    | None => unflatten_sepcon' net sp
     | _ => unflatten_sepcon net
     end
   end.
@@ -254,8 +256,8 @@ Fixpoint shallow_scan nes : PTree.tree Language.expr :=
   | nil => PTree.empty
   | (sp, ne) :: net =>
     match ne with
-    | xH => shallow_scan net
-    | _ => let m := shallow_scan net in PTree.set Language.expr ne sp m
+    | None => shallow_scan net
+    | Some pos => let m := shallow_scan net in PTree.set Language.expr pos sp m
     end
   end.
 
@@ -277,9 +279,6 @@ Lemma cancel_new_sound : forall se nes nrs,
   Language.provable (cancel_different nes nrs) ->
   Language.provable se.
 Proof.
-  intros.
-  unfold cancel_same in H.
-  unfold cancel_different in H0.
 Admitted.
 
 Ltac cancel_new' se :=
