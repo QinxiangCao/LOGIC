@@ -54,15 +54,6 @@ Ltac pred n :=
   | S ?m => m
   end.
 
-(*
-Definition rev (l: list nat): list nat :=
-  (fix rev (l: list nat) (cont: list nat -> list nat): list nat :=
-    match l with
-    | nil => cont nil
-    | a :: l0 => rev l0 (fun l => a :: cont l)
-    end) l (fun l => l).
-*)
-
 Ltac reverse_cont l k :=
   match l with
   | @nil ?T => k (@nil T)
@@ -111,20 +102,6 @@ Ltac shallowTodeep' se l0 :=
           | (?i, ?l1) => constr:((varp i, l1))
           end
   end.
-Ltac shallowTodeep se :=
-match shallowTodeep' se constr:(@nil Language.expr) with
-  | (?de, ?tbl) =>
-    let tbl' := reverse tbl in
-    assert (reflect de tbl' se = se) by reflexivity
-end.
-
-Theorem reify_sound : forall (e : expr) table (default: Language.expr),
-  provable e -> Language.provable (reflect e table default).
-Admitted.
-
-Theorem abstract_sound : forall (e' : expr) table (default: Language.expr),
-  Language.provable (reflect e' table default) -> provable e'.
-Admitted.
 
 Definition flatten_imp (e : expr) : list expr * expr :=
     match e with
@@ -165,79 +142,73 @@ Ltac shallowTolist' se lsp lsq:=
     end
   end.
 
-Fixpoint match_list (es : list expr) : list positive :=
-  match es with
-  | nil => nil
-  | e :: et => xH :: (match_list et)
+Fixpoint match_list (es : list expr) (lsp : list Language.expr):
+list (Language.expr * positive) :=
+  match es, lsp with
+  | nil, nil=> nil
+  | nil, sp :: spt => nil
+  | e :: et, nil => nil
+  | e :: et, sp :: spt => (sp , xH) :: (match_list et spt)
   end.
 
-Fixpoint cancel_mark_context es r nes key : (list positive) * bool :=
-  match es with
-  | nil => (nes, false)
-  | e :: et =>
-    match nes with
-    | nil => (nes, false)
-    | xH :: net =>
-      match (beq e r) with
-      | true => (key :: net, true)
-      | false => let (net', isfind) := cancel_mark_context et r net key in (xH :: net', (false || isfind)%bool)
-      end
-    | p :: net => let (net', isfind) := cancel_mark_context et r net key in (p :: net', (false || isfind)%bool)
+Fixpoint cancel_mark_context es r nes key :
+(list (Language.expr * positive)) * bool :=
+  match es, nes with
+  | nil, nil => (nes, false)
+  | nil, _ :: net => (nes, false)
+  | _ :: et, nil => (nes, false)
+  | e :: et, (sp, xH) :: net =>
+    match (beq e r) with
+    | true => ((sp, key) :: net, true)
+    | false => let (net', isfind) := cancel_mark_context et r net key 
+                in ((sp, xH) :: net', (false || isfind)%bool)
+    end
+  | e :: et, p :: net =>
+    let (net', isfind) := cancel_mark_context et r net key
+     in (p :: net', (false || isfind)%bool)
+  end.
+
+Fixpoint cancel_mark' es rs nes nrs key :
+list (Language.expr * positive) * list (Language.expr * positive) :=
+  match rs, nrs with
+  | nil, nil => (nes, nrs)
+  | nil, _ :: nrt => (nes, nrs)
+  | r :: rt, nil => (nes, nrs)
+  | r :: rt, (sq, nr) :: nrt =>
+    match (cancel_mark_context es r nes key) with
+    | (nes', true) => let (nes'', nrt') := cancel_mark' es rt nes' nrt (Pos.succ key)
+                       in (nes'', (sq, key) :: nrt')
+    | (nes', false) => let (nes'', nrt') := cancel_mark' es rt nes' nrt key
+                        in (nes'', (sq, xH) :: nrt')
     end
   end.
 
-Fixpoint cancel_mark' es rs nes nrs key : list positive * list positive :=
-  match rs with
-  | nil => (nes, nrs)
-  | r :: rt  =>
-    match nrs with
-    | nil => (nes, nrs)
-    | nr :: nrt =>
-      match (cancel_mark_context es r nes key) with
-      | (nes', true) => let (nes'', nrt') := cancel_mark' es rt nes' nrt (Pos.succ key) in (nes'', key :: nrt')
-      | (nes', false) => let (nes'', nrt') := cancel_mark' es rt nes' nrt key in (nes'', xH :: nrt')
-      end
-    end
-  end.
+Definition cancel_mark es rs lsp lsq:
+list (Language.expr * positive) * list (Language.expr * positive) :=
+  cancel_mark' es rs (match_list es lsp) (match_list rs lsq) (Pos.succ xH).
 
-Definition cancel_mark es rs : list positive * list positive :=
-  cancel_mark' es rs (match_list es) (match_list rs) (Pos.succ xH).
-
-(*
-Definition all_in_context e :=
-  let (es, rs) := flatten e in forallb (fun r => existsb (beq r) es) rs.
-*)
-
-Fixpoint unflatten_sepcon' spt net p : Language.expr :=
-  match spt with
+Fixpoint unflatten_sepcon' net p : Language.expr :=
+  match net with
   | nil => p
-  | sp :: spt0 =>
-    match net with
-    | nil => p
-    | ne :: net0 => 
-      match ne with
-      | xH => unflatten_sepcon' spt0 net0 (Language.sepcon p sp)
-      | _ => unflatten_sepcon' spt0 net0 p
-      end
+  | (sp, ne) :: net0 => 
+    match ne with
+    | xH => unflatten_sepcon' net0 (Language.sepcon p sp)
+    | _ => unflatten_sepcon' net0 p
     end
   end.
 
-Fixpoint unflatten_sepcon lsp nes : Language.expr :=
-  match lsp with
+Fixpoint unflatten_sepcon nes : Language.expr :=
+  match nes with
   | nil => Language.emp
-  | sp :: spt =>
-    match nes with
-    | nil => Language.emp
-    | ne :: net =>
-      match ne with
-      | xH => unflatten_sepcon' spt net sp
-      | _ => unflatten_sepcon spt net
-      end
+  | (sp, ne) :: net =>
+    match ne with
+    | xH => unflatten_sepcon' net sp
+    | _ => unflatten_sepcon net
     end
   end.
 
-Definition cancel_different lsp lsq nes nrs : Language.expr :=
-  Language.impp (unflatten_sepcon lsp nes) (unflatten_sepcon lsq nrs).
+Definition cancel_different nes nrs : Language.expr :=
+  Language.impp (unflatten_sepcon nes) (unflatten_sepcon nrs).
 
 Module PTree.
 
@@ -260,7 +231,7 @@ Module PTree.
         | xI ii => get A ii r
         end
     end.
-
+(*get_rec(A : Type) (i : positive) (m : tree A) (f : tree A -> option A) : option A :=*)
   Fixpoint set (A : Type) (i : positive) (v : A) (m : tree A) {struct i} : tree A :=
     match m with
     | Leaf =>
@@ -278,17 +249,13 @@ Module PTree.
     end.
 End PTree.
 
-Fixpoint shallow_scan lsp nes : PTree.tree Language.expr :=
-  match lsp with
+Fixpoint shallow_scan nes : PTree.tree Language.expr :=
+  match nes with
   | nil => PTree.empty
-  | sp :: spt =>
-    match nes with
-    | nil => PTree.empty
-    | ne :: net => 
-      match ne with
-      | xH => shallow_scan spt net
-      | _ => let m := shallow_scan spt net in PTree.set Language.expr ne sp m
-      end
+  | (sp, ne) :: net =>
+    match ne with
+    | xH => shallow_scan net
+    | _ => let m := shallow_scan net in PTree.set Language.expr ne sp m
     end
   end.
 
@@ -302,13 +269,17 @@ Fixpoint unflatten_ptree' m p : Language.expr :=
 Definition unflatten_ptree m : Language.expr :=
   unflatten_ptree' m Language.emp.
 
-Definition cancel_same lsp lsq nes nrs : Language.expr :=
-  Language.impp (unflatten_ptree (shallow_scan lsp nes)) (unflatten_ptree (shallow_scan lsq nrs)).
-
-Lemma cancel_new_sound : forall se nes nrs lsp lsq,
-  Language.provable (cancel_same lsp lsq nes nrs) ->
-  Language.provable (cancel_different lsp lsq nes nrs) ->
+Definition cancel_same nes nrs : Language.expr :=
+  Language.impp (unflatten_ptree (shallow_scan nes)) (unflatten_ptree (shallow_scan nrs)).
+(*cancel_same --> m is same*)
+Lemma cancel_new_sound : forall se nes nrs,
+  Language.provable (cancel_same nes nrs) ->
+  Language.provable (cancel_different nes nrs) ->
   Language.provable se.
+Proof.
+  intros.
+  unfold cancel_same in H.
+  unfold cancel_different in H0.
 Admitted.
 
 Ltac cancel_new' se :=
@@ -320,14 +291,14 @@ Ltac cancel_new' se :=
     let lde := eval compute in (flatten de) in
     let es := eval compute in (fst lde) in
     let rs := eval compute in (snd lde) in
-    let lnt := eval compute in (cancel_mark es rs) in
+    let lnt := eval compute in (cancel_mark es rs lsp lsq) in
     let nes := eval compute in (fst lnt) in
     let nrs := eval compute in (snd lnt) in
-    apply (cancel_new_sound se nes nrs lsp lsq);
+    apply (cancel_new_sound se nes nrs);
     [
-    let same := eval compute in (cancel_same lsp lsq nes nrs) in change (Language.provable same);
-    apply impp_refl |
-    let different := eval compute in (cancel_different lsp lsq nes nrs) in change (Language.provable different);
+    let same := eval compute in (cancel_same nes nrs) in change (Language.provable same);
+    apply Language.impp_refl |
+    let different := eval compute in (cancel_different nes nrs) in change (Language.provable different);
     try apply Language.emp_refl
     ]
     end

@@ -31,19 +31,23 @@ Section AxiomClass.
 
 Lemma impp_refl : forall x,
   |-- x --> x.
-Admitted.
-
-Lemma sepcon_emp3 : forall x,
-  |-- emp * x --> x.
-Admitted.
-
-Lemma sepcon_emp4 : forall x,
-  |-- x --> emp * x.
-Admitted.
+Proof.
+  intros.
+  pose proof axiom2 x (x --> x) x.
+  pose proof axiom1 x (x --> x).
+  pose proof axiom1 x x.
+  pose proof modus_ponens _ _ H H0.
+  pose proof modus_ponens _ _ H2 H1.
+  auto.
+Qed.
 
 Lemma emp_refl :
   |-- emp --> emp.
-Admitted.
+Proof.
+  intros.
+  pose proof impp_refl emp.
+  auto.
+Qed.
 
 End AxiomClass.
 
