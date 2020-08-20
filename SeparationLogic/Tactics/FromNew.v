@@ -233,7 +233,25 @@ Module PTree.
         | xI ii => get A ii r
         end
     end.
-(*get_rec(A : Type) (i : positive) (m : tree A) (f : tree A -> option A) : option A :=*)
+
+  Fixpoint get_rec' {A : Type} (i : positive) (m : tree A) (f : tree A -> tree A) : tree A :=
+    match i with
+    | xH => f m
+    | xO ii => get_rec' ii m (fun m0 : tree A => match f m0 with
+                                      | Leaf => Leaf
+                                      | Node l o r => l
+                                      end)
+    | xI ii => get_rec' ii m (fun m0 : tree A => match f m0 with
+                                      | Leaf => Leaf
+                                      | Node l o r => r
+                                      end)
+    end.
+  Definition get_rec {A : Type} (i : positive) (m : tree A) : option A :=
+    match get_rec' i m (fun m0 : tree A => m0) with
+    | Leaf => None
+    | Node l o r => o
+    end.
+
   Fixpoint set (A : Type) (i : positive) (v : A) (m : tree A) {struct i} : tree A :=
     match m with
     | Leaf =>
@@ -249,6 +267,24 @@ Module PTree.
         | xI ii => Node l o (set A ii v r)
         end
     end.
+
+  Fixpoint set_rec' {A : Type} (i : positive) (v : A) (m : tree A) (f : tree A -> tree A) : tree A :=
+    match m with
+    | Leaf =>
+        match i with
+        | xH => f (Node Leaf (Some v) Leaf)
+        | xO ii => set_rec' ii v Leaf (fun hole : tree A => f (Node hole None Leaf))
+        | xI ii => set_rec' ii v Leaf (fun hole : tree A => f (Node Leaf None hole))
+        end
+    | Node l o r =>
+        match i with
+        | xH => f (Node l (Some v) r)
+        | xO ii => set_rec' ii v l (fun hole : tree A => f (Node hole o r))
+        | xI ii => set_rec' ii v r (fun hole : tree A => f (Node l o hole))
+        end
+    end.
+  Definition set_rec {A : Type} (i : positive) (v : A) (m : tree A) : tree A :=
+    set_rec' i v m (fun hole : tree A => hole).
 End PTree.
 
 Fixpoint shallow_scan nes : PTree.tree Language.expr :=
@@ -257,10 +293,10 @@ Fixpoint shallow_scan nes : PTree.tree Language.expr :=
   | (sp, ne) :: net =>
     match ne with
     | None => shallow_scan net
-    | Some pos => let m := shallow_scan net in PTree.set Language.expr pos sp m
+    | Some pos => let m := shallow_scan net in PTree.set_rec pos sp m
     end
   end.
-
+(*
 Fixpoint unflatten_ptree' m p : Language.expr :=
   match m with
   | PTree.Leaf => p
@@ -270,12 +306,12 @@ Fixpoint unflatten_ptree' m p : Language.expr :=
 
 Definition unflatten_ptree m : Language.expr :=
   unflatten_ptree' m Language.emp.
+*)
+Definition cancel_same nes nrs : Prop :=
+  shallow_scan nes = shallow_scan nrs.
 
-Definition cancel_same nes nrs : Language.expr :=
-  Language.impp (unflatten_ptree (shallow_scan nes)) (unflatten_ptree (shallow_scan nrs)).
-(*cancel_same --> m is same*)
 Lemma cancel_new_sound : forall se nes nrs,
-  Language.provable (cancel_same nes nrs) ->
+  cancel_same nes nrs ->
   Language.provable (cancel_different nes nrs) ->
   Language.provable se.
 Proof.
@@ -295,8 +331,8 @@ Ltac cancel_new' se :=
     let nrs := eval compute in (snd lnt) in
     apply (cancel_new_sound se nes nrs);
     [
-    let same := eval compute in (cancel_same nes nrs) in change (Language.provable same);
-    apply Language.impp_refl |
+    let same := eval compute in (cancel_same nes nrs) in change same;
+    reflexivity |
     let different := eval compute in (cancel_different nes nrs) in change (Language.provable different);
     try apply Language.emp_refl
     ]
