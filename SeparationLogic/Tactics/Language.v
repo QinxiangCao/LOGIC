@@ -49,6 +49,11 @@ Proof.
   auto.
 Qed.
 
+Lemma emp_sepcon : forall x,
+  emp * x = x.
+Proof.
+Admitted.
+
 End AxiomClass.
 
 Section RewriteClass.

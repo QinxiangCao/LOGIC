@@ -310,10 +310,83 @@ Definition unflatten_ptree m : Language.expr :=
 Definition cancel_same nes nrs : Prop :=
   shallow_scan nes = shallow_scan nrs.
 
-Lemma cancel_new_sound : forall se nes nrs,
+Fixpoint fold_right_sepcon (nes : list (Language.expr * option positive)) :
+Language.expr :=
+ match nes with
+ | nil => Language.emp
+ | (b,p)::r => Language.sepcon b (fold_right_sepcon r)
+ end.
+
+Lemma cancel_new_sound' : forall nes nrs,
   cancel_same nes nrs ->
   Language.provable (cancel_different nes nrs) ->
-  Language.provable se.
+  Language.provable (Language.impp (fold_right_sepcon nes) (fold_right_sepcon nrs)).
+Proof.
+Admitted.
+
+Inductive construct_fold_right_sepcon_rec: Language.expr -> list (Language.expr * option positive) -> list (Language.expr * option positive) -> Prop :=
+| construct_fold_right_sepcon_rec_sepcon: forall P Q R R' R'',
+    construct_fold_right_sepcon_rec Q R R' ->
+    construct_fold_right_sepcon_rec P R' R'' ->
+    construct_fold_right_sepcon_rec (Language.sepcon P Q) R R''
+| construct_fold_right_sepcon_rec_single: forall P R pos,
+    construct_fold_right_sepcon_rec P R ((P, pos) :: R).
+
+Inductive construct_fold_right_sepcon: Language.expr -> list (Language.expr * option positive) -> Prop :=
+| construct_fold_right_sepcon_constr: forall P R,
+    construct_fold_right_sepcon_rec P nil R ->
+    construct_fold_right_sepcon P R.
+
+Ltac construct_fold_right_sepcon_rec :=
+  match goal with
+  | |- construct_fold_right_sepcon_rec (Language.sepcon _ _) _ _ =>
+         eapply construct_fold_right_sepcon_rec_sepcon;
+         [construct_fold_right_sepcon_rec | construct_fold_right_sepcon_rec]
+  | _ =>
+         apply construct_fold_right_sepcon_rec_single
+  end.
+
+Ltac construct_fold_right_sepcon :=
+  apply construct_fold_right_sepcon_constr;
+  construct_fold_right_sepcon_rec.
+
+Lemma construct_fold_right_sepcon_spec1: forall P R,
+  construct_fold_right_sepcon P R ->
+  (fold_right_sepcon R) = P.
+  (*Language.provable (Language.impp (fold_right_sepcon R) P).*)
+Proof.
+(*  intros.
+  destruct H.
+  rename R into R'.
+  transitivity (Language.sepcon (fold_right_sepcon nil) P).
+  2:{
+    simpl.
+    rewrite !emp_sepcon.
+    auto.
+  }
+
+Tactic Notation "forget" constr(X) "as" ident(y) :=
+   set (y:=X) in *; clearbody y.
+
+  forget (@nil (Language.expr * (option positive))) as R.
+  induction H.
+  + etransitivity; [eassumption |].
+    transitivity (fold_right_sepcon R * Q * P); [f_equal; eassumption |].
+    clear.
+    rewrite (sepcon_comm P).
+    rewrite !sepcon_assoc; auto.
+  + rewrite sepcon_emp; auto.
+  + simpl.
+    rewrite (sepcon_comm _ P).
+    auto.*)
+Admitted.
+
+Lemma cancel_new_sound : forall sp sq nes nrs,
+  construct_fold_right_sepcon sp nes ->
+  construct_fold_right_sepcon sq nrs ->
+  cancel_same nes nrs ->
+  Language.provable (cancel_different nes nrs) ->
+  Language.provable (Language.impp sp sq).
 Proof.
 Admitted.
 
@@ -329,11 +402,12 @@ Ltac cancel_new' se :=
     let lnt := eval compute in (cancel_mark es rs lsp lsq) in
     let nes := eval compute in (fst lnt) in
     let nrs := eval compute in (snd lnt) in
-    apply (cancel_new_sound se nes nrs);
-    [
-    let same := eval compute in (cancel_same nes nrs) in change same;
-    reflexivity |
-    let different := eval compute in (cancel_different nes nrs) in change (Language.provable different);
+    apply (cancel_new_sound _ _ nes nrs);
+    [ construct_fold_right_sepcon
+    | construct_fold_right_sepcon
+    | let same := eval compute in (cancel_same nes nrs) in change same;
+      reflexivity
+    | let different := eval compute in (cancel_different nes nrs) in change (Language.provable different);
     try apply Language.emp_refl
     ]
     end
