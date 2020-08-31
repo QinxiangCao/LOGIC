@@ -227,12 +227,13 @@ Section temp.
 Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: Language.expr).
 Local Open Scope shallow_syntax.
 
+Lemma foo: forall P, P /\ P -> P.
+Proof. intros. tauto. Qed.
+
 Goal |-- (W --> T) * U --> S * V -> |-- (W --> T) * U * (V --> W) * (P * Q) * T --> T * S * V * Q * P * (V --> W).
   intros.
-  Time
   cancel_solver.
   auto.
-  Time
   Qed.
 
 Goal
@@ -240,7 +241,11 @@ Goal
 --> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
+  auto.
   Time
   Qed.
 
@@ -251,7 +256,11 @@ Goal
     (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
+  auto.
   Time
   Qed.
 
@@ -264,7 +273,11 @@ Goal
     (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
+  auto.
   Time
   Qed.
 
@@ -275,7 +288,11 @@ Goal
     (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
+  auto.
   Time
   Qed.
 
@@ -290,7 +307,11 @@ Goal
     (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
+  auto.
   Time
   Qed.
 
@@ -309,7 +330,11 @@ Goal
     (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
+  auto.
   Time
   Qed.
 
@@ -319,7 +344,10 @@ Goal
 --> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
   auto.
   Time
   Qed.
@@ -333,7 +361,10 @@ Goal
     I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
   auto.
   Time
   Qed.
@@ -349,7 +380,10 @@ Goal
     I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
   auto.
   Time
   Qed.
@@ -360,7 +394,10 @@ Goal
 --> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
   auto.
   Time
   Qed.
@@ -374,7 +411,10 @@ Goal
     (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
   auto.
   Time
   Qed.
@@ -390,7 +430,10 @@ Goal
     (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
   Time
-  cancel_solver.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_solver;
   auto.
   Time
   Qed.

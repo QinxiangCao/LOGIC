@@ -73,8 +73,8 @@ Ltac search_expr' n i l l0 :=
   end.
 Ltac search_expr n l := let len := length l in search_expr' n len l l.
 
-Fixpoint reflect (e : expr) (tbl : list Language.expr) (default : Language.expr) : Language.expr :=
-    match e with
+Fixpoint reflect (de : expr) (tbl : list Language.expr) (default : Language.expr) : Language.expr :=
+    match de with
     | varp n => nth (pred n) tbl default
     | sepcon e1 e2 => Language.sepcon (reflect e1 tbl default) (reflect e2 tbl default )
     | impp e1 e2 => Language.impp (reflect e1 tbl default) (reflect e2 tbl default)
@@ -103,114 +103,126 @@ Ltac shallowTodeep' se l0 :=
           end
   end.
 
-Definition flatten_imp (e : expr) : list expr * expr :=
-    match e with
-    | impp p q => (p :: nil, q)
-    | _ => (nil, e)
-    end.
-
-Fixpoint flatten_sepcon (e : expr) : list expr :=
-    match e with
-    | sepcon p q => (flatten_sepcon p ++ flatten_sepcon q)
-    | s => s :: nil
-    end.
-
-Definition flatten (e : expr) : list expr * list expr :=
-   let (ctx, r) := flatten_imp e in
-   (List.flat_map flatten_sepcon ctx, flatten_sepcon r).
-
-Ltac shallowTolist_odd se l0 :=
-  match se with
-  | Language.sepcon ?sp ?sq =>
-    match shallowTolist_odd sp l0 with
-    | (?sp', ?l1) =>
-      match shallowTolist_odd sq l1 with
-      | (?sq', ?l2) => constr:((se, l1 ++ l2))
-      end
+Ltac shallowTodeep se :=
+  match shallowTodeep' se constr:(@nil Language.expr) with
+  | (?de, ?tbl) =>
+    match de with
+    | impp ?dep ?deq => constr:((dep, deq, tbl))
     end
-  | ?sm => constr:((sm, sm :: nil))
   end.
 
-Ltac shallowTolist' se lsp lsq:=
+Inductive tree_pos: Type :=
+  | var_pos : Language.expr -> option positive -> tree_pos
+  | sepcon_pos : tree_pos -> tree_pos -> tree_pos.
+
+Ltac shallowTotree_odd se :=
   match se with
-  | Language.impp ?sp ?sq =>
-    match shallowTolist_odd sp constr:(@nil Language.expr) with
-    | (?sp', ?l1) =>
-      match shallowTolist_odd sq constr:(@nil Language.expr) with
-      | (?sq', ?l2) => constr:((se, l1, l2))
+  |Language.sepcon ?sp ?sq =>
+    match shallowTotree_odd sp with
+    | ?tp =>
+      match shallowTotree_odd sq with
+      | ?tq => constr:(sepcon_pos tp tq)
+      end
+    end
+  | ?sp => constr:(var_pos sp None)
+  end.
+
+Ltac shallowTotree se :=
+  match se with
+  | Language.impp ?sep ?seq =>
+    match shallowTotree_odd sep with
+    | ?tep =>
+      match shallowTotree_odd seq with
+      | ?teq => constr:((tep, teq))
       end
     end
   end.
 
-Fixpoint match_list (es : list expr) (lsp : list Language.expr):
-list (Language.expr * option positive) :=
-  match es, lsp with
-  | nil, nil=> nil
-  | nil, sp :: spt => nil
-  | e :: et, nil => nil
-  | e :: et, sp :: spt => (sp , None) :: (match_list et spt)
-  end.
-
-Fixpoint cancel_mark_context es r nes key :
-(list (Language.expr * option positive)) * bool :=
-  match es, nes with
-  | nil, nil => (nes, false)
-  | nil, _ :: net => (nes, false)
-  | _ :: et, nil => (nes, false)
-  | e :: et, (sp, None) :: net =>
-    match (beq e r) with
-    | true => ((sp, Some key) :: net, true)
-    | false => let (net', isfind) := cancel_mark_context et r net key 
-                in ((sp, None) :: net', (false || isfind)%bool)
+Fixpoint cancel_mark_context dep q tep key : tree_pos * bool:=
+  match dep, tep with
+  | sepcon dp dq, sepcon_pos tp tq =>
+    match cancel_mark_context dp q tp key with
+    | (tp', true) => ((sepcon_pos tp' tq), true)
+    | (tp', false) =>
+      match cancel_mark_context dq q tq key with
+      | (tq', true) => ((sepcon_pos tp tq'), true)
+      | (tq', false) => (tep, false)
+      end
     end
-  | e :: et, p :: net =>
-    let (net', isfind) := cancel_mark_context et r net key
-     in (p :: net', (false || isfind)%bool)
+  | p, (var_pos sp o) =>
+    match (beq p q) with
+    | true =>
+      match o with
+      | None => ((var_pos sp (Some key)), true)
+      | _ => (tep, false)
+      end
+    | false => (tep, false)
+    end
+  | _, _ => (tep, false)
   end.
 
-Fixpoint cancel_mark' es rs nes nrs key :
-list (Language.expr * option positive) * list (Language.expr * option positive) :=
-  match rs, nrs with
-  | nil, nil => (nes, nrs)
-  | nil, _ :: nrt => (nes, nrs)
-  | r :: rt, nil => (nes, nrs)
-  | r :: rt, (sq, nr) :: nrt =>
-    match (cancel_mark_context es r nes key) with
-    | (nes', true) => let (nes'', nrt') := cancel_mark' es rt nes' nrt (Pos.succ key)
-                       in (nes'', (sq, Some key) :: nrt')
-    | (nes', false) => let (nes'', nrt') := cancel_mark' es rt nes' nrt key
-                        in (nes'', (sq, None) :: nrt')
+Fixpoint cancel_mark' dep deq tep teq key : tree_pos * tree_pos * positive :=
+  match deq, teq with
+  | sepcon dp dq, sepcon_pos tp tq =>
+    match (cancel_mark' dep dp tep tp key) with
+    | (tep', tp', key') =>
+      match (cancel_mark' dep dq tep' tq key') with
+      | (tep'', tq', key'') => (tep'', sepcon_pos tp' tq', key'')
+      end
+    end
+  | q, (var_pos sq o) =>
+    match (cancel_mark_context dep q tep key) with
+    | (tep', true) => (tep', (var_pos sq (Some key)), Pos.succ key)
+    | (tep', false) => (tep', var_pos sq None, key)
+    end
+  | _, _ => (tep, teq, key)
+  end.
+
+Definition cancel_mark dep deq tep teq : tree_pos * tree_pos :=
+  match (cancel_mark' dep deq tep teq xH) with
+  | (tep', teq', key') => (tep', teq')
+  end.
+(*
+Fixpoint unmark_sort' tep sp: Language.expr :=
+  match tep with
+  | sepcon_pos tp tq =>
+    match unmark_sort' tp sp with
+    | sp' => unmark_sort' tq sp'
+    end
+  | var_pos sq o =>
+    match o with
+    | None => Language.sepcon sp sq
+    | _ => sp
+    end
+  end.
+Definition unmark_sort tep : Language.expr :=
+  unmark_sort' tep Language.emp.
+*)
+
+Fixpoint flatten tep : list Language.expr :=
+  match tep with
+  | sepcon_pos tp tq => (flatten tp) ++ (flatten tq)
+  | var_pos sp o =>
+    match o with
+    | None => sp :: nil
+    | _ => nil
     end
   end.
 
-Definition cancel_mark es rs lsp lsq:
-list (Language.expr * option positive) * list (Language.expr * option positive) :=
-  cancel_mark' es rs (match_list es lsp) (match_list rs lsq) xH.
-
-Fixpoint unflatten_sepcon' (net : list (Language.expr * option positive)) p :
-Language.expr :=
-  match net with
-  | nil => p
-  | (sp, ne) :: net0 =>
-    match ne with
-    | None => unflatten_sepcon' net0 (Language.sepcon p sp)
-    | _ => unflatten_sepcon' net0 p
-    end
+Fixpoint unflatten' lep sp : Language.expr :=
+  match lep with
+  | nil => sp
+  | sq :: lep' => unflatten' lep' (Language.sepcon sp sq)
   end.
 
-Fixpoint unflatten_sepcon (nes : list (Language.expr * option positive)) :
-Language.expr :=
-  match nes with
+Definition unflatten lep : Language.expr :=
+  match lep with
   | nil => Language.emp
-  | (sp, ne) :: net =>
-    match ne with
-    | None => unflatten_sepcon' net sp
-    | _ => unflatten_sepcon net
-    end
+  | sp :: lep' => unflatten' lep' sp
   end.
 
-Definition cancel_different nes nrs : Language.expr :=
-  Language.impp (unflatten_sepcon nes) (unflatten_sepcon nrs).
+Definition cancel_different tep teq : Language.expr :=
+  Language.impp (unflatten (flatten tep)) (unflatten (flatten teq)).
 
 Module PTree.
 
@@ -287,127 +299,52 @@ Module PTree.
     set_rec' i v m (fun hole : tree A => hole).
 End PTree.
 
-Fixpoint shallow_scan nes : PTree.tree Language.expr :=
-  match nes with
-  | nil => PTree.empty
-  | (sp, ne) :: net =>
-    match ne with
-    | None => shallow_scan net
-    | Some pos => let m := shallow_scan net in PTree.set_rec pos sp m
+Fixpoint mark_sort' tep m: PTree.tree Language.expr :=
+  match tep with
+  | sepcon_pos tp tq =>
+    match mark_sort' tp m with
+    | m' => mark_sort' tq m'
+    end
+  | var_pos sp o =>
+    match o with
+    | None => m
+    | Some pos => PTree.set_rec pos sp m
     end
   end.
-(*
-Fixpoint unflatten_ptree' m p : Language.expr :=
-  match m with
-  | PTree.Leaf => p
-  | PTree.Node l None r => unflatten_ptree' l (unflatten_ptree' r p)
-  | PTree.Node l (Some v) r => unflatten_ptree' l (Language.sepcon (unflatten_ptree' r p) v)
+Definition mark_sort tep : PTree.tree Language.expr :=
+  mark_sort' tep PTree.empty.
+
+Definition cancel_same tep teq : Prop :=
+  mark_sort tep = mark_sort teq.
+
+Fixpoint restore' tep : Language.expr :=
+  match tep with
+  | sepcon_pos tp tq => Language.sepcon (restore' tp) (restore' tq)
+  | var_pos sp o => sp
   end.
+Definition restore tep teq : Language.expr :=
+  Language.impp (restore' tep) (restore' teq).
 
-Definition unflatten_ptree m : Language.expr :=
-  unflatten_ptree' m Language.emp.
-*)
-Definition cancel_same nes nrs : Prop :=
-  shallow_scan nes = shallow_scan nrs.
-
-Fixpoint fold_right_sepcon (nes : list (Language.expr * option positive)) :
-Language.expr :=
- match nes with
- | nil => Language.emp
- | (b,p)::r => Language.sepcon b (fold_right_sepcon r)
- end.
-
-Lemma cancel_new_sound' : forall nes nrs,
-  cancel_same nes nrs ->
-  Language.provable (cancel_different nes nrs) ->
-  Language.provable (Language.impp (fold_right_sepcon nes) (fold_right_sepcon nrs)).
-Proof.
-Admitted.
-
-Inductive construct_fold_right_sepcon_rec: Language.expr -> list (Language.expr * option positive) -> list (Language.expr * option positive) -> Prop :=
-| construct_fold_right_sepcon_rec_sepcon: forall P Q R R' R'',
-    construct_fold_right_sepcon_rec Q R R' ->
-    construct_fold_right_sepcon_rec P R' R'' ->
-    construct_fold_right_sepcon_rec (Language.sepcon P Q) R R''
-| construct_fold_right_sepcon_rec_single: forall P R pos,
-    construct_fold_right_sepcon_rec P R ((P, pos) :: R).
-
-Inductive construct_fold_right_sepcon: Language.expr -> list (Language.expr * option positive) -> Prop :=
-| construct_fold_right_sepcon_constr: forall P R,
-    construct_fold_right_sepcon_rec P nil R ->
-    construct_fold_right_sepcon P R.
-
-Ltac construct_fold_right_sepcon_rec :=
-  match goal with
-  | |- construct_fold_right_sepcon_rec (Language.sepcon _ _) _ _ =>
-         eapply construct_fold_right_sepcon_rec_sepcon;
-         [construct_fold_right_sepcon_rec | construct_fold_right_sepcon_rec]
-  | _ =>
-         apply construct_fold_right_sepcon_rec_single
-  end.
-
-Ltac construct_fold_right_sepcon :=
-  apply construct_fold_right_sepcon_constr;
-  construct_fold_right_sepcon_rec.
-
-Lemma construct_fold_right_sepcon_spec1: forall P R,
-  construct_fold_right_sepcon P R ->
-  (fold_right_sepcon R) = P.
-  (*Language.provable (Language.impp (fold_right_sepcon R) P).*)
-Proof.
-(*  intros.
-  destruct H.
-  rename R into R'.
-  transitivity (Language.sepcon (fold_right_sepcon nil) P).
-  2:{
-    simpl.
-    rewrite !emp_sepcon.
-    auto.
-  }
-
-Tactic Notation "forget" constr(X) "as" ident(y) :=
-   set (y:=X) in *; clearbody y.
-
-  forget (@nil (Language.expr * (option positive))) as R.
-  induction H.
-  + etransitivity; [eassumption |].
-    transitivity (fold_right_sepcon R * Q * P); [f_equal; eassumption |].
-    clear.
-    rewrite (sepcon_comm P).
-    rewrite !sepcon_assoc; auto.
-  + rewrite sepcon_emp; auto.
-  + simpl.
-    rewrite (sepcon_comm _ P).
-    auto.*)
-Admitted.
-
-Lemma cancel_new_sound : forall sp sq nes nrs,
-  construct_fold_right_sepcon sp nes ->
-  construct_fold_right_sepcon sq nrs ->
-  cancel_same nes nrs ->
-  Language.provable (cancel_different nes nrs) ->
-  Language.provable (Language.impp sp sq).
+Lemma cancel_new_sound : forall tep teq,
+  cancel_same tep teq ->
+  Language.provable (cancel_different tep teq) ->
+  Language.provable (restore tep teq).
 Proof.
 Admitted.
 
 Ltac cancel_new' se :=
-  match shallowTodeep' se constr:(@nil Language.expr) with
-    | (?de, ?tbl) =>
-    match shallowTolist' se (@nil Language.expr) (@nil Language.expr) with
-    | (?se', ?lsp, ?lsq) =>
-    let tbl' := reverse tbl in
-    let lde := eval compute in (flatten de) in
-    let es := eval compute in (fst lde) in
-    let rs := eval compute in (snd lde) in
-    let lnt := eval compute in (cancel_mark es rs lsp lsq) in
-    let nes := eval compute in (fst lnt) in
-    let nrs := eval compute in (snd lnt) in
-    apply (cancel_new_sound _ _ nes nrs);
-    [ construct_fold_right_sepcon
-    | construct_fold_right_sepcon
-    | let same := eval compute in (cancel_same nes nrs) in change same;
+  match shallowTodeep se with
+    | (?dep, ?deq, ?tbl) =>
+    match shallowTotree se with
+    | (?tep, ?teq) =>
+    (*let tbl' := reverse tbl in*)
+    let te' := eval compute in (cancel_mark dep deq tep teq) in
+    let tep' := eval compute in (fst te') in
+    let teq' := eval compute in (snd te') in
+    apply (cancel_new_sound tep' teq');
+    [ let same := eval compute in (cancel_same tep' teq') in change same;
       reflexivity
-    | let different := eval compute in (cancel_different nes nrs) in change (Language.provable different);
+    | let different := eval compute in (cancel_different tep' teq') in change (Language.provable different);
     try apply Language.emp_refl
     ]
     end
@@ -422,12 +359,13 @@ Section temp.
 Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: Language.expr).
 Local Open Scope shallow_syntax.
 
+Lemma foo: forall P, P /\ P -> P.
+Proof. intros. tauto. Qed.
+
 Goal |-- (W --> T) * U --> S * V -> |-- (W --> T) * U * (V --> W) * (P * Q) * T --> T * S * V * Q * P * (V --> W).
   intros.
-  Time
   cancel_new.
   auto.
-  Time
   Qed.
 
 Goal
@@ -435,7 +373,11 @@ Goal
 --> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
+  auto.
   Time
   Qed.
 
@@ -446,7 +388,11 @@ Goal
     (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
+  auto.
   Time
   Qed.
 
@@ -459,7 +405,11 @@ Goal
     (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
+  auto.
   Time
   Qed.
 
@@ -470,7 +420,11 @@ Goal
     (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
+  auto.
   Time
   Qed.
 
@@ -485,7 +439,11 @@ Goal
     (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
+  auto.
   Time
   Qed.
 
@@ -504,7 +462,11 @@ Goal
     (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
+  auto.
   Time
   Qed.
 
@@ -514,7 +476,10 @@ Goal
 --> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
   auto.
   Time
   Qed.
@@ -528,7 +493,10 @@ Goal
     I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
   auto.
   Time
   Qed.
@@ -544,7 +512,10 @@ Goal
     I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
   auto.
   Time
   Qed.
@@ -556,7 +527,10 @@ Goal
 --> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
   auto.
   Time
   Qed.
@@ -570,7 +544,10 @@ Goal
     (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
   auto.
   Time
   Qed.
@@ -586,7 +563,10 @@ Goal
     (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
   Time
-  cancel_new.
+  apply foo; split;
+    apply foo; split;
+      apply foo; split;
+  cancel_new;
   auto.
   Time
   Qed.
