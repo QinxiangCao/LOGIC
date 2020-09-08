@@ -7,6 +7,8 @@ Require Import Logic.lib.Coqlib.
 Local Open Scope shallow_syntax.
 Local Open Scope list_scope.
 
+Section Deep.
+
 Inductive expr: Type :=
   | impp : expr -> expr -> expr
   | sepcon : expr -> expr -> expr
@@ -31,6 +33,8 @@ Inductive provable: expr -> Prop :=
     provable (x1 --> x2) -> provable (y1 --> y2) -> provable ((x1 * y1) --> (x2 * y2)).
 
 Notation "|--  x" := (provable x) (at level 71, no associativity) : deep_syntax.
+
+End Deep.
 
 Fixpoint beq e1 e2 :=
   match e1, e2 with
@@ -76,21 +80,21 @@ Ltac search_expr n l := let len := length l in search_expr' n len l l.
 Fixpoint reflect (de : expr) (tbl : list Language.expr) (default : Language.expr) : Language.expr :=
     match de with
     | varp n => nth (pred n) tbl default
-    | sepcon e1 e2 => Language.sepcon (reflect e1 tbl default) (reflect e2 tbl default )
-    | impp e1 e2 => Language.impp (reflect e1 tbl default) (reflect e2 tbl default)
+    | sepcon e1 e2 => (reflect e1 tbl default) * (reflect e2 tbl default )
+    | impp e1 e2 => (reflect e1 tbl default) --> (reflect e2 tbl default)
     | emp => Language.emp
     end.
 
 Ltac shallowTodeep' se l0 :=
   match se with
-  | Language.sepcon ?sp ?sq =>
+  | ?sp * ?sq =>
     match shallowTodeep' sp l0 with
     | (?dp, ?l1) =>
       match shallowTodeep' sq l1 with
       | (?dq, ?l2) => constr:((sepcon dp dq, l2))
       end
     end
-  | Language.impp ?sp ?sq =>
+  | ?sp --> ?sq =>
     match shallowTodeep' sp l0 with
     | (?dp, ?l1) =>
       match shallowTodeep' sq l1 with
@@ -117,7 +121,7 @@ Inductive tree_pos: Type :=
 
 Ltac shallowTotree_odd se :=
   match se with
-  |Language.sepcon ?sp ?sq =>
+  |?sp * ?sq =>
     match shallowTotree_odd sp with
     | ?tp =>
       match shallowTotree_odd sq with
@@ -129,7 +133,7 @@ Ltac shallowTotree_odd se :=
 
 Ltac shallowTotree se :=
   match se with
-  | Language.impp ?sep ?seq =>
+  | ?sep --> ?seq =>
     match shallowTotree_odd sep with
     | ?tep =>
       match shallowTotree_odd seq with
@@ -182,22 +186,29 @@ Definition cancel_mark dep deq tep teq : tree_pos * tree_pos :=
   match (cancel_mark' dep deq tep teq xH) with
   | (tep', teq', key') => (tep', teq')
   end.
-(*
-Fixpoint unmark_sort' tep sp: Language.expr :=
+
+Fixpoint unmark_sort' tep : option Language.expr :=
   match tep with
   | sepcon_pos tp tq =>
-    match unmark_sort' tp sp with
-    | sp' => unmark_sort' tq sp'
+    match unmark_sort' tp with
+    | None => unmark_sort' tq
+    | Some sp =>
+      match unmark_sort' tq with
+      | None => Some sp
+      | Some sq => Some (sp * sq)
+      end
     end
   | var_pos sq o =>
     match o with
-    | None => Language.sepcon sp sq
-    | _ => sp
+    | None => Some sq
+    | _ => None
     end
   end.
 Definition unmark_sort tep : Language.expr :=
-  unmark_sort' tep Language.emp.
-*)
+  match unmark_sort' tep with
+  | Some sp => sp
+  | None => Language.emp
+  end.
 
 Fixpoint flatten tep : list Language.expr :=
   match tep with
@@ -212,7 +223,7 @@ Fixpoint flatten tep : list Language.expr :=
 Fixpoint unflatten' lep sp : Language.expr :=
   match lep with
   | nil => sp
-  | sq :: lep' => unflatten' lep' (Language.sepcon sp sq)
+  | sq :: lep' => unflatten' lep' (sp * sq)
   end.
 
 Definition unflatten lep : Language.expr :=
@@ -220,9 +231,12 @@ Definition unflatten lep : Language.expr :=
   | nil => Language.emp
   | sp :: lep' => unflatten' lep' sp
   end.
-
+(*
 Definition cancel_different tep teq : Language.expr :=
-  Language.impp (unflatten (flatten tep)) (unflatten (flatten teq)).
+  (unflatten (flatten tep)) --> (unflatten (flatten teq)).
+*)
+Definition cancel_different tep teq : Language.expr :=
+  (unmark_sort tep) --> (unmark_sort teq).
 
 Module PTree.
 
@@ -297,6 +311,7 @@ Module PTree.
     end.
   Definition set_rec {A : Type} (i : positive) (v : A) (m : tree A) : tree A :=
     set_rec' i v m (fun hole : tree A => hole).
+
 End PTree.
 
 Fixpoint mark_sort' tep m: PTree.tree Language.expr :=
@@ -319,17 +334,71 @@ Definition cancel_same tep teq : Prop :=
 
 Fixpoint restore' tep : Language.expr :=
   match tep with
-  | sepcon_pos tp tq => Language.sepcon (restore' tp) (restore' tq)
+  | sepcon_pos tp tq => (restore' tp) * (restore' tq)
   | var_pos sp o => sp
   end.
 Definition restore tep teq : Language.expr :=
-  Language.impp (restore' tep) (restore' teq).
+  (restore' tep) --> (restore' teq).
+
+Fixpoint build' m p : Language.expr :=
+  match m with
+  | PTree.Leaf => p
+  | PTree.Node l None r => build' l (build' r p)
+  | PTree.Node l (Some v) r => build' l ((build' r p) * v)
+  end.
+
+Definition build m : Language.expr :=
+  build' m Language.emp.
+
+Lemma before_L1 : forall sp p,
+  build (mark_sort (var_pos sp (Some p))) = sp.
+Admitted.
+
+Lemma provable_emp_sepcon2 : forall x,
+  |-- x --> Language.emp * x.
+Proof.
+Admitted.
+
+Lemma L1 : forall tep,
+  |-- restore' tep --> unmark_sort tep * (build (mark_sort tep)).
+Proof.
+  intros.
+  induction tep as [sp op|p1 IH1 p2 IH2].
+  - compute.
+    destruct op.
+    + pose proof (before_L1 sp p) as before_L1; compute in before_L1.
+      rewrite before_L1; clear before_L1.
+      apply provable_emp_sepcon2.
+    + apply Language.sepcon_emp2.
+  - unfold restore'; fold restore'.
+    unfold unmark_sort.
+Admitted.
+
+Lemma L2 : forall teq,
+  |-- unmark_sort teq --> build (mark_sort teq) --> restore' teq.
+Proof.
+  intros.
+  induction teq as [sq oq|q1 IH1 q2 IH2].
+  - compute.
+    destruct oq.
+Admitted.
+
+Lemma L3 : forall m1 m2,
+  m1 = m2 ->
+  |-- build m1 --> build m2.
+Proof.
+  intros.
+  rewrite H.
+  apply Language.provable_impp_refl.
+Qed.
 
 Lemma cancel_new_sound : forall tep teq,
   cancel_same tep teq ->
-  Language.provable (cancel_different tep teq) ->
-  Language.provable (restore tep teq).
+  |-- cancel_different tep teq ->
+  |-- restore tep teq.
 Proof.
+  unfold restore, cancel_same, cancel_different.
+  intros.
 Admitted.
 
 Ltac cancel_new' se :=
@@ -345,7 +414,7 @@ Ltac cancel_new' se :=
     [ let same := eval compute in (cancel_same tep' teq') in change same;
       reflexivity
     | let different := eval compute in (cancel_different tep' teq') in change (Language.provable different);
-    try apply Language.emp_refl
+    try apply Language.provable_emp_refl
     ]
     end
   end.

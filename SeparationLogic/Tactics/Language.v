@@ -29,7 +29,7 @@ Notation "|--  x" := (provable x) (at level 71, no associativity) : shallow_synt
 
 Section AxiomClass.
 
-Lemma impp_refl : forall x,
+Lemma provable_impp_refl : forall x,
   |-- x --> x.
 Proof.
   intros.
@@ -41,33 +41,17 @@ Proof.
   auto.
 Qed.
 
-Lemma emp_refl :
+Lemma provable_emp_refl :
   |-- emp --> emp.
 Proof.
   intros.
-  pose proof impp_refl emp.
+  pose proof provable_impp_refl emp.
   auto.
 Qed.
-
-Lemma emp_sepcon : forall x,
-  emp * x = x.
-Proof.
-Admitted.
 
 End AxiomClass.
 
 Section RewriteClass.
-
-Lemma provable_impp_refl: forall (x: expr), |-- x --> x.
-Proof.
-  intros.
-  pose proof axiom2 x (x --> x) x.
-  pose proof axiom1 x (x --> x).
-  pose proof axiom1 x x.
-  pose proof modus_ponens _ _ H H0.
-  pose proof modus_ponens _ _ H2 H1.
-  auto.
-Qed.
 
 Lemma aux_minimun_rule00: forall (x y: expr), |-- x -> |-- y --> x.
 Proof.

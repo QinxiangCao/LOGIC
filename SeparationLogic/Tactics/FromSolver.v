@@ -214,7 +214,7 @@ Ltac cancel_solver' se :=
           apply (abstract_sound dr tbl' se);
           let rfl := eval compute in (reflect dr tbl' se) in change (Language.provable rfl)
     end;
-    try apply Language.emp_refl;
+    try apply Language.provable_emp_refl;
     clear ReflectH FlattenH CancelH UnflattenH
   end.
 

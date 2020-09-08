@@ -250,7 +250,7 @@ Ltac cancel_seplog' local_tac :=
   ].
 
 Ltac auto_cancel :=
-  simple apply impp_refl.
+  simple apply provable_impp_refl.
 
 Ltac cancel_seplog :=
   cancel_seplog' auto_cancel.
