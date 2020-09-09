@@ -7,41 +7,18 @@ Require Import Logic.lib.Coqlib.
 Local Open Scope shallow_syntax.
 Local Open Scope list_scope.
 
-Section Deep.
-
-Inductive expr: Type :=
-  | impp : expr -> expr -> expr
-  | sepcon : expr -> expr -> expr
-  | emp : expr
-  | varp : nat -> expr.
-
-Declare Scope deep_syntax.
-Local Open Scope deep_syntax.
-
-Notation "x --> y" := (impp x y) (at level 55, right associativity) : deep_syntax.
-Notation "x * y" := (sepcon x y) (at level 40, left associativity) : deep_syntax.
-
-Inductive provable: expr -> Prop :=
-| modus_ponens: forall x y, provable (x --> y) -> provable x -> provable y
-| axiom1: forall x y, provable (x --> (y --> x))
-| axiom2: forall x y z, provable ((x --> y --> z) --> (x --> y) --> (x --> z))
-| sepcon_emp1: forall x, provable (x * emp --> x)
-| sepcon_emp2: forall x, provable (x --> x * emp)
-| sepcon_comm_impp: forall x y, provable (x * y --> y * x)
-| sepcon_assoc1: forall x y z, provable (x * (y * z) --> (x * y) * z)
-| sepcon_mono: forall x1 x2 y1 y2,
-    provable (x1 --> x2) -> provable (y1 --> y2) -> provable ((x1 * y1) --> (x2 * y2)).
-
-Notation "|--  x" := (provable x) (at level 71, no associativity) : deep_syntax.
-
-End Deep.
+Inductive expr_deep: Type :=
+  | impp_deep : expr_deep -> expr_deep -> expr_deep
+  | sepcon_deep : expr_deep -> expr_deep -> expr_deep
+  | emp_deep : expr_deep
+  | varp_deep : nat -> expr_deep.
 
 Fixpoint beq e1 e2 :=
   match e1, e2 with
-  | emp, emp => true
-  | varp x, varp y => EqNat.beq_nat x y
-  | sepcon p11 p12, sepcon p21 p22 => andb (beq p11 p21) (beq p12 p22)
-  | impp p11 p12, impp p21 p22 => andb (beq p11 p21) (beq p12 p22)
+  | emp_deep, emp_deep => true
+  | varp_deep x, varp_deep y => EqNat.beq_nat x y
+  | sepcon_deep p11 p12, sepcon_deep p21 p22 => andb (beq p11 p21) (beq p12 p22)
+  | impp_deep p11 p12, impp_deep p21 p22 => andb (beq p11 p21) (beq p12 p22)
   | _, _ => false
   end.
 
@@ -77,12 +54,12 @@ Ltac search_expr' n i l l0 :=
   end.
 Ltac search_expr n l := let len := length l in search_expr' n len l l.
 
-Fixpoint reflect (de : expr) (tbl : list Language.expr) (default : Language.expr) : Language.expr :=
+Fixpoint reflect (de : expr_deep) (tbl : list expr) (default : expr) : expr :=
     match de with
-    | varp n => nth (pred n) tbl default
-    | sepcon e1 e2 => (reflect e1 tbl default) * (reflect e2 tbl default )
-    | impp e1 e2 => (reflect e1 tbl default) --> (reflect e2 tbl default)
-    | emp => Language.emp
+    | varp_deep n => nth (pred n) tbl default
+    | sepcon_deep e1 e2 => (reflect e1 tbl default) * (reflect e2 tbl default )
+    | impp_deep e1 e2 => (reflect e1 tbl default) --> (reflect e2 tbl default)
+    | emp_deep => emp
     end.
 
 Ltac shallowTodeep' se l0 :=
@@ -91,32 +68,32 @@ Ltac shallowTodeep' se l0 :=
     match shallowTodeep' sp l0 with
     | (?dp, ?l1) =>
       match shallowTodeep' sq l1 with
-      | (?dq, ?l2) => constr:((sepcon dp dq, l2))
+      | (?dq, ?l2) => constr:((sepcon_deep dp dq, l2))
       end
     end
   | ?sp --> ?sq =>
     match shallowTodeep' sp l0 with
     | (?dp, ?l1) =>
       match shallowTodeep' sq l1 with
-      | (?dq, ?l2) => constr:((impp dp dq, l2))
+      | (?dq, ?l2) => constr:((impp_deep dp dq, l2))
       end
     end
-  | Language.emp => constr:((emp, l0))
+  | emp => constr:((emp_deep, l0))
   | ?sp => match search_expr sp l0 with
-          | (?i, ?l1) => constr:((varp i, l1))
+          | (?i, ?l1) => constr:((varp_deep i, l1))
           end
   end.
 
 Ltac shallowTodeep se :=
-  match shallowTodeep' se constr:(@nil Language.expr) with
+  match shallowTodeep' se constr:(@nil expr) with
   | (?de, ?tbl) =>
     match de with
-    | impp ?dep ?deq => constr:((dep, deq, tbl))
+    | impp_deep ?dep ?deq => constr:((dep, deq, tbl))
     end
   end.
 
 Inductive tree_pos: Type :=
-  | var_pos : Language.expr -> option positive -> tree_pos
+  | var_pos : expr -> option positive -> tree_pos
   | sepcon_pos : tree_pos -> tree_pos -> tree_pos.
 
 Ltac shallowTotree_odd se :=
@@ -144,7 +121,7 @@ Ltac shallowTotree se :=
 
 Fixpoint cancel_mark_context dep q tep key : tree_pos * bool:=
   match dep, tep with
-  | sepcon dp dq, sepcon_pos tp tq =>
+  | sepcon_deep dp dq, sepcon_pos tp tq =>
     match cancel_mark_context dp q tp key with
     | (tp', true) => ((sepcon_pos tp' tq), true)
     | (tp', false) =>
@@ -167,7 +144,7 @@ Fixpoint cancel_mark_context dep q tep key : tree_pos * bool:=
 
 Fixpoint cancel_mark' dep deq tep teq key : tree_pos * tree_pos * positive :=
   match deq, teq with
-  | sepcon dp dq, sepcon_pos tp tq =>
+  | sepcon_deep dp dq, sepcon_pos tp tq =>
     match (cancel_mark' dep dp tep tp key) with
     | (tep', tp', key') =>
       match (cancel_mark' dep dq tep' tq key') with
@@ -187,7 +164,7 @@ Definition cancel_mark dep deq tep teq : tree_pos * tree_pos :=
   | (tep', teq', key') => (tep', teq')
   end.
 
-Fixpoint unmark_sort' tep : option Language.expr :=
+Fixpoint unmark_sort' tep : option expr :=
   match tep with
   | sepcon_pos tp tq =>
     match unmark_sort' tp with
@@ -204,13 +181,17 @@ Fixpoint unmark_sort' tep : option Language.expr :=
     | _ => None
     end
   end.
-Definition unmark_sort tep : Language.expr :=
+Definition unmark_sort tep : expr :=
   match unmark_sort' tep with
   | Some sp => sp
-  | None => Language.emp
+  | None => emp
   end.
 
-Fixpoint flatten tep : list Language.expr :=
+Definition cancel_different tep teq : expr :=
+  (unmark_sort tep) --> (unmark_sort teq).
+
+(*
+Fixpoint flatten tep : list expr :=
   match tep with
   | sepcon_pos tp tq => (flatten tp) ++ (flatten tq)
   | var_pos sp o =>
@@ -220,23 +201,21 @@ Fixpoint flatten tep : list Language.expr :=
     end
   end.
 
-Fixpoint unflatten' lep sp : Language.expr :=
+Fixpoint unflatten' lep sp : expr :=
   match lep with
   | nil => sp
   | sq :: lep' => unflatten' lep' (sp * sq)
   end.
 
-Definition unflatten lep : Language.expr :=
+Definition unflatten lep : expr :=
   match lep with
-  | nil => Language.emp
+  | nil => emp
   | sp :: lep' => unflatten' lep' sp
   end.
-(*
-Definition cancel_different tep teq : Language.expr :=
+
+Definition cancel_different tep teq : expr :=
   (unflatten (flatten tep)) --> (unflatten (flatten teq)).
 *)
-Definition cancel_different tep teq : Language.expr :=
-  (unmark_sort tep) --> (unmark_sort teq).
 
 Module PTree.
 
@@ -314,7 +293,7 @@ Module PTree.
 
 End PTree.
 
-Fixpoint mark_sort' tep m: PTree.tree Language.expr :=
+Fixpoint mark_sort' tep m: PTree.tree expr :=
   match tep with
   | sepcon_pos tp tq =>
     match mark_sort' tp m with
@@ -326,37 +305,110 @@ Fixpoint mark_sort' tep m: PTree.tree Language.expr :=
     | Some pos => PTree.set_rec pos sp m
     end
   end.
-Definition mark_sort tep : PTree.tree Language.expr :=
+Definition mark_sort tep : PTree.tree expr :=
   mark_sort' tep PTree.empty.
 
 Definition cancel_same tep teq : Prop :=
   mark_sort tep = mark_sort teq.
 
-Fixpoint restore' tep : Language.expr :=
+Fixpoint restore' tep : expr :=
   match tep with
   | sepcon_pos tp tq => (restore' tp) * (restore' tq)
   | var_pos sp o => sp
   end.
-Definition restore tep teq : Language.expr :=
+Definition restore tep teq : expr :=
   (restore' tep) --> (restore' teq).
 
-Fixpoint build' m p : Language.expr :=
+Section AxiomClass2.
+
+End AxiomClass2.
+
+Section Proof.
+
+Fixpoint build' m p : expr :=
   match m with
   | PTree.Leaf => p
   | PTree.Node l None r => build' l (build' r p)
   | PTree.Node l (Some v) r => build' l ((build' r p) * v)
   end.
 
-Definition build m : Language.expr :=
-  build' m Language.emp.
+Definition build m : expr :=
+  build' m emp.
 
-Lemma before_L1 : forall sp p,
-  build (mark_sort (var_pos sp (Some p))) = sp.
+Lemma switch : forall x y p q,
+  |-- x * y * (p * q) --> x * p * (y * q).
+Proof.
+  intros.
+  rewrite <- (sepcon_assoc1 x p (y * q)).
+  rewrite <- (sepcon_comm_impp (y * q) p).
+  rewrite <- (sepcon_assoc1 y q p).
+  rewrite <- (sepcon_comm_impp p q).
+  rewrite (sepcon_comm_impp (x * y) (p * q)).
+  rewrite (sepcon_assoc1 (p * q) x y).
+  rewrite (sepcon_comm_impp ((p * q) * x) y).
+  rewrite (sepcon_assoc1 y (p * q) x).
+  rewrite (sepcon_comm_impp (y * (p * q)) x).
+  apply provable_impp_refl.
+Qed.
+
+Lemma set_same : forall A i v m,
+  PTree.set A i v m = PTree.set_rec i v m.
+Proof.
+  intros.
+  unfold PTree.set_rec.
+  unfold PTree.set, PTree.set_rec'.
+  destruct m, i.
+  compute; fold PTree.set.
 Admitted.
 
-Lemma provable_emp_sepcon2 : forall x,
-  |-- x --> Language.emp * x.
+Lemma L1_before1 : forall sp p,
+  |-- sp --> build (mark_sort (var_pos sp (Some p))).
 Proof.
+  intros.
+  unfold build, mark_sort.
+  induction p.
+  - unfold mark_sort'.
+    unfold mark_sort' in IHp.
+    rewrite <- set_same.
+    rewrite <- set_same in IHp.
+    compute.
+    compute in IHp.
+    auto.
+  - unfold mark_sort'.
+    unfold mark_sort' in IHp.
+    rewrite <- set_same.
+    rewrite <- set_same in IHp.
+    compute.
+    compute in IHp.
+    auto.
+  - compute.
+    rewrite <- sepcon_comm_impp.
+    apply sepcon_emp2.
+Qed.
+
+Lemma L1_before2 : forall p1 p2,
+  |-- unmark_sort p1 * unmark_sort p2 --> unmark_sort (sepcon_pos p1 p2).
+Proof.
+  intros.
+  unfold unmark_sort.
+  unfold unmark_sort'; fold unmark_sort'.
+  destruct (unmark_sort' p1), (unmark_sort' p2).
+  - apply provable_impp_refl.
+  - apply sepcon_emp1.
+  - rewrite sepcon_comm_impp; apply sepcon_emp1.
+  - apply sepcon_emp1.
+Qed.
+
+Lemma L1_before3 : forall p1 p2,
+  |-- build (mark_sort p1) * build (mark_sort p2) --> build (mark_sort (sepcon_pos p1 p2)).
+Proof.
+  intros.
+  unfold build, mark_sort.
+  unfold mark_sort'; fold mark_sort'.
+  induction (mark_sort' p1 PTree.empty).
+  - rewrite sepcon_comm_impp; apply sepcon_emp1.
+  - fold build' in IHt1, IHt2.
+    destruct o.
 Admitted.
 
 Lemma L1 : forall tep,
@@ -366,22 +418,60 @@ Proof.
   induction tep as [sp op|p1 IH1 p2 IH2].
   - compute.
     destruct op.
-    + pose proof (before_L1 sp p) as before_L1; compute in before_L1.
-      rewrite before_L1; clear before_L1.
-      apply provable_emp_sepcon2.
-    + apply Language.sepcon_emp2.
+    + pose proof (L1_before1 sp p) as L1_before1; compute in L1_before1.
+      rewrite <- L1_before1; clear L1_before1.
+      rewrite <- sepcon_comm_impp.
+      apply sepcon_emp2.
+    + apply sepcon_emp2.
   - unfold restore'; fold restore'.
-    unfold unmark_sort.
+    rewrite IH1, IH2.
+    rewrite <- L1_before2, <- L1_before3.
+    apply switch.
+Qed.
+
+Lemma L2_before1 : forall sq p,
+  |-- build (mark_sort (var_pos sq (Some p))) --> sq.
+Proof.
+  intros.
+  compute.
+  induction p.
+Admitted.
+
+Lemma L2_before2 : forall q1 q2,
+  |-- unmark_sort (sepcon_pos q1 q2) --> unmark_sort q1 * unmark_sort q2.
+Proof.
+  intros.
+  unfold unmark_sort.
+  unfold unmark_sort'; fold unmark_sort'.
+  destruct (unmark_sort' q1), (unmark_sort' q2).
+  - apply provable_impp_refl.
+  - apply sepcon_emp2.
+  - rewrite <- sepcon_comm_impp; apply sepcon_emp2.
+  - apply sepcon_emp2.
+Qed.
+
+Lemma L2_before3 : forall q1 q2,
+  |-- build (mark_sort (sepcon_pos q1 q2)) --> build (mark_sort q1) * build (mark_sort q2).
+Proof.
 Admitted.
 
 Lemma L2 : forall teq,
-  |-- unmark_sort teq --> build (mark_sort teq) --> restore' teq.
+  |-- unmark_sort teq * build (mark_sort teq) --> restore' teq.
 Proof.
   intros.
   induction teq as [sq oq|q1 IH1 q2 IH2].
   - compute.
     destruct oq.
-Admitted.
+    + pose proof (L2_before1 sq p) as L2_before1; compute in L2_before1.
+      rewrite L2_before1; clear L2_before1.
+      rewrite sepcon_comm_impp.
+      apply sepcon_emp1.
+    + apply sepcon_emp1.
+  - unfold restore'; fold restore'.
+    rewrite <- IH1, <- IH2.
+    rewrite L2_before2, L2_before3.
+    apply switch.
+Qed.
 
 Lemma L3 : forall m1 m2,
   m1 = m2 ->
@@ -389,8 +479,10 @@ Lemma L3 : forall m1 m2,
 Proof.
   intros.
   rewrite H.
-  apply Language.provable_impp_refl.
+  apply provable_impp_refl.
 Qed.
+
+End Proof.
 
 Lemma cancel_new_sound : forall tep teq,
   cancel_same tep teq ->
@@ -398,35 +490,36 @@ Lemma cancel_new_sound : forall tep teq,
   |-- restore tep teq.
 Proof.
   unfold restore, cancel_same, cancel_different.
-  intros.
-Admitted.
+  intros tep teq CS CD.
+  apply L3 in CS.
+  rewrite L1, CS, CD.
+  apply L2.
+Qed.
 
 Ltac cancel_new' se :=
   match shallowTodeep se with
     | (?dep, ?deq, ?tbl) =>
     match shallowTotree se with
     | (?tep, ?teq) =>
-    (*let tbl' := reverse tbl in*)
     let te' := eval compute in (cancel_mark dep deq tep teq) in
     let tep' := eval compute in (fst te') in
     let teq' := eval compute in (snd te') in
     apply (cancel_new_sound tep' teq');
     [ let same := eval compute in (cancel_same tep' teq') in change same;
       reflexivity
-    | let different := eval compute in (cancel_different tep' teq') in change (Language.provable different);
-    try apply Language.provable_emp_refl
+    | let different := eval compute in (cancel_different tep' teq') in change (provable different);
+    try apply provable_emp_refl
     ]
     end
   end.
 
 Ltac cancel_new :=
     match goal with
-    | [|- Language.provable ?se] => cancel_new' se
+    | [|- |-- ?se] => cancel_new' se
     end.
 
-Section temp.
-Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: Language.expr).
-Local Open Scope shallow_syntax.
+Section Temp.
+Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: expr).
 
 Lemma foo: forall P, P /\ P -> P.
 Proof. intros. tauto. Qed.
@@ -540,7 +633,7 @@ Goal
   Qed.
 
 Goal
-|-- A * B * C * D --> M * N * O * E ->
+|-- A * B * (C * D) --> M * N * (O * E) ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
 --> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
   intros.
@@ -554,8 +647,8 @@ Goal
   Qed.
 
 Goal
-|-- A * B * C * D * A * B * C * D
---> M * N * O * E * M * N * O * E ->
+|-- A * B * (C * D) * A * B * (C * D)
+--> M * N * O * E * (M * N) * (O * E) ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
 --> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
@@ -571,8 +664,8 @@ Goal
   Qed.
 
 Goal
-|-- A * B * C * D * A * B * C * D * A * B * C * D
---> M * N * O * M * N * O * E * E * M * N * O * E ->
+|-- A * B * (C * D) * A * B * (C * D) * A * B * (C * D)
+--> M * N * O * (M * N) * (O * E) * E * (M * N) * (O * E) ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
@@ -590,8 +683,8 @@ Goal
   Qed.
 
 Goal
-|-- A * B * C * D * E * F * G * H
---> S * T * Q * X * U * V * W * R ->
+|-- A * B * (C * D) * (E * F * (G * H))
+--> S * T * Q * X * U * (V * W) * R ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
 --> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
   intros.
@@ -605,8 +698,8 @@ Goal
   Qed.
 
 Goal
-|-- A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H
---> S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R ->
+|-- A * B * (C * D) * (E * F * (G * H)) * A * B * (C * D) * (E * F * (G * H))
+--> S * T * Q * X * U * (V * W) * R * (S * T * Q) * X * U * (V * W) * R ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
 --> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
@@ -622,8 +715,8 @@ Goal
   Qed.
 
 Goal
-|-- A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H * A * B * C * D * E * F * G * H
---> S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R * S * T * Q * X * U * V * W * R ->
+|-- A * B * (C * D) * (E * F * (G * H)) * A * B * (C * D) * (E * F * (G * H)) * A * B * (C * D) * (E * F * (G * H))
+--> S * T * Q * X * U * (V * W) * R * (S * T * Q) * X * U * (V * W) * R * (S * T * Q) * X * U * (V * W) * R ->
 |-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
     A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
@@ -640,4 +733,4 @@ Goal
   Time
   Qed.
 
-End temp.
+End Temp.

@@ -27,7 +27,7 @@ Inductive provable: expr -> Prop :=
 
 Notation "|--  x" := (provable x) (at level 71, no associativity) : shallow_syntax.
 
-Section AxiomClass.
+Section AxiomClass1.
 
 Lemma provable_impp_refl : forall x,
   |-- x --> x.
@@ -49,7 +49,7 @@ Proof.
   auto.
 Qed.
 
-End AxiomClass.
+End AxiomClass1.
 
 Section RewriteClass.
 
