@@ -239,20 +239,20 @@ Module PTree.
         end
     end.
 
-  Fixpoint get_rec' {A : Type} (i : positive) (m : tree A) (f : tree A -> tree A) : tree A :=
+  Fixpoint get_rec' (A : Type) (i : positive) (m : tree A) (f : tree A -> tree A) : tree A :=
     match i with
     | xH => f m
-    | xO ii => get_rec' ii m (fun m0 : tree A => match f m0 with
+    | xO ii => get_rec' A ii m (fun m0 : tree A => match f m0 with
                                       | Leaf => Leaf
                                       | Node l o r => l
                                       end)
-    | xI ii => get_rec' ii m (fun m0 : tree A => match f m0 with
+    | xI ii => get_rec' A ii m (fun m0 : tree A => match f m0 with
                                       | Leaf => Leaf
                                       | Node l o r => r
                                       end)
     end.
-  Definition get_rec {A : Type} (i : positive) (m : tree A) : option A :=
-    match get_rec' i m (fun m0 : tree A => m0) with
+  Definition get_rec (A : Type) (i : positive) (m : tree A) : option A :=
+    match get_rec' A i m (fun m0 : tree A => m0) with
     | Leaf => None
     | Node l o r => o
     end.
@@ -273,23 +273,65 @@ Module PTree.
         end
     end.
 
-  Fixpoint set_rec' {A : Type} (i : positive) (v : A) (m : tree A) (f : tree A -> tree A) : tree A :=
+  Fixpoint set_rec' (A : Type) (i : positive) (v : A) (m : tree A) (f : tree A -> tree A) : tree A :=
     match m with
     | Leaf =>
         match i with
         | xH => f (Node Leaf (Some v) Leaf)
-        | xO ii => set_rec' ii v Leaf (fun hole : tree A => f (Node hole None Leaf))
-        | xI ii => set_rec' ii v Leaf (fun hole : tree A => f (Node Leaf None hole))
+        | xO ii => set_rec' A ii v Leaf (fun hole : tree A => f (Node hole None Leaf))
+        | xI ii => set_rec' A ii v Leaf (fun hole : tree A => f (Node Leaf None hole))
         end
     | Node l o r =>
         match i with
         | xH => f (Node l (Some v) r)
-        | xO ii => set_rec' ii v l (fun hole : tree A => f (Node hole o r))
-        | xI ii => set_rec' ii v r (fun hole : tree A => f (Node l o hole))
+        | xO ii => set_rec' A ii v l (fun hole : tree A => f (Node hole o r))
+        | xI ii => set_rec' A ii v r (fun hole : tree A => f (Node l o hole))
         end
     end.
-  Definition set_rec {A : Type} (i : positive) (v : A) (m : tree A) : tree A :=
-    set_rec' i v m (fun hole : tree A => hole).
+  Definition set_rec (A : Type) (i : positive) (v : A) (m : tree A) : tree A :=
+    set_rec' A i v m (fun hole : tree A => hole).
+
+  Fixpoint xelements (A : Type) (m : tree A) (k : list A) {struct m} : list A :=
+  match m with
+  | Leaf => k
+  | Node l None r =>
+    xelements A l (xelements A r k)
+  | Node l (Some x) r =>
+    xelements A l (x :: xelements A r k)
+  end.
+  Definition elements (A : Type) (m : tree A) :=
+  xelements A m nil.
+
+  Goal forall A p x,
+  elements A (set A p x empty) = x :: nil.
+  intros.
+  induction p.
+  - compute.
+    fold set. fold xelements.
+    auto.
+  - compute.
+    fold set. fold xelements.
+    auto.
+  - compute.
+    auto.
+  Qed.
+
+  Goal forall A p x,
+  set_rec' A p x Leaf (fun hole : tree A => Node Leaf None hole) = Node Leaf None (set_rec' A p x Leaf (fun hole : tree A => hole)).
+  intros.
+  induction p.
+  - compute. fold set_rec'.
+Admitted.
+
+  Lemma elements_single : forall A p x,
+  elements A (set_rec A p x empty) = x :: nil.
+Proof.
+  intros.
+  induction p.
+  - unfold set_rec; unfold set_rec in IHp.
+    unfold set_rec'; fold set_rec'.
+    unfold empty.
+Admitted.
 
 End PTree.
 
@@ -302,7 +344,7 @@ Fixpoint mark_sort' tep m: PTree.tree expr :=
   | var_pos sp o =>
     match o with
     | None => m
-    | Some pos => PTree.set_rec pos sp m
+    | Some pos => PTree.set_rec expr pos sp m
     end
   end.
 Definition mark_sort tep : PTree.tree expr :=
@@ -325,15 +367,16 @@ End AxiomClass2.
 
 Section Proof.
 
-Fixpoint build' m p : expr :=
-  match m with
-  | PTree.Leaf => p
-  | PTree.Node l None r => build' l (build' r p)
-  | PTree.Node l (Some v) r => build' l ((build' r p) * v)
+Fixpoint build' l p: expr :=
+  match l with
+  | nil => p
+  | q :: l' => build' l' (p * q)
   end.
-
-Definition build m : expr :=
-  build' m emp.
+Fixpoint build l : expr :=
+  match l with
+  | nil => emp
+  | p :: l' => build' l' p
+  end.
 
 Lemma switch : forall x y p q,
   |-- x * y * (p * q) --> x * p * (y * q).
@@ -351,39 +394,14 @@ Proof.
   apply provable_impp_refl.
 Qed.
 
-Lemma set_same : forall A i v m,
-  PTree.set A i v m = PTree.set_rec i v m.
-Proof.
-  intros.
-  unfold PTree.set_rec.
-  unfold PTree.set, PTree.set_rec'.
-  destruct m, i.
-  compute; fold PTree.set.
-Admitted.
-
 Lemma L1_before1 : forall sp p,
-  |-- sp --> build (mark_sort (var_pos sp (Some p))).
+  |-- sp --> build (PTree.elements expr (mark_sort (var_pos sp (Some p)))).
 Proof.
   intros.
-  unfold build, mark_sort.
-  induction p.
-  - unfold mark_sort'.
-    unfold mark_sort' in IHp.
-    rewrite <- set_same.
-    rewrite <- set_same in IHp.
-    compute.
-    compute in IHp.
-    auto.
-  - unfold mark_sort'.
-    unfold mark_sort' in IHp.
-    rewrite <- set_same.
-    rewrite <- set_same in IHp.
-    compute.
-    compute in IHp.
-    auto.
-  - compute.
-    rewrite <- sepcon_comm_impp.
-    apply sepcon_emp2.
+  unfold mark_sort, mark_sort'.
+  rewrite PTree.elements_single.
+  compute.
+  apply provable_impp_refl.
 Qed.
 
 Lemma L1_before2 : forall p1 p2,
@@ -400,19 +418,18 @@ Proof.
 Qed.
 
 Lemma L1_before3 : forall p1 p2,
-  |-- build (mark_sort p1) * build (mark_sort p2) --> build (mark_sort (sepcon_pos p1 p2)).
+  |-- build (PTree.elements expr (mark_sort p1)) * build (PTree.elements expr (mark_sort p2)) --> build (PTree.elements expr (mark_sort (sepcon_pos p1 p2))).
 Proof.
   intros.
-  unfold build, mark_sort.
+  unfold  mark_sort.
   unfold mark_sort'; fold mark_sort'.
   induction (mark_sort' p1 PTree.empty).
   - rewrite sepcon_comm_impp; apply sepcon_emp1.
-  - fold build' in IHt1, IHt2.
-    destruct o.
+  -
 Admitted.
 
 Lemma L1 : forall tep,
-  |-- restore' tep --> unmark_sort tep * (build (mark_sort tep)).
+  |-- restore' tep --> unmark_sort tep * (build (PTree.elements expr (mark_sort tep))).
 Proof.
   intros.
   induction tep as [sp op|p1 IH1 p2 IH2].
@@ -430,12 +447,14 @@ Proof.
 Qed.
 
 Lemma L2_before1 : forall sq p,
-  |-- build (mark_sort (var_pos sq (Some p))) --> sq.
+  |-- build (PTree.elements expr (mark_sort (var_pos sq (Some p)))) --> sq.
 Proof.
   intros.
+  unfold mark_sort, mark_sort'.
+  rewrite PTree.elements_single.
   compute.
-  induction p.
-Admitted.
+  apply provable_impp_refl.
+Qed.
 
 Lemma L2_before2 : forall q1 q2,
   |-- unmark_sort (sepcon_pos q1 q2) --> unmark_sort q1 * unmark_sort q2.
@@ -451,12 +470,12 @@ Proof.
 Qed.
 
 Lemma L2_before3 : forall q1 q2,
-  |-- build (mark_sort (sepcon_pos q1 q2)) --> build (mark_sort q1) * build (mark_sort q2).
+  |-- build (PTree.elements expr (mark_sort (sepcon_pos q1 q2))) --> build (PTree.elements expr (mark_sort q1)) * build (PTree.elements expr (mark_sort q2)).
 Proof.
 Admitted.
 
 Lemma L2 : forall teq,
-  |-- unmark_sort teq * build (mark_sort teq) --> restore' teq.
+  |-- unmark_sort teq * build (PTree.elements expr (mark_sort teq)) --> restore' teq.
 Proof.
   intros.
   induction teq as [sq oq|q1 IH1 q2 IH2].
@@ -475,7 +494,7 @@ Qed.
 
 Lemma L3 : forall m1 m2,
   m1 = m2 ->
-  |-- build m1 --> build m2.
+  |-- build (PTree.elements expr m1) --> build (PTree.elements expr m2).
 Proof.
   intros.
   rewrite H.
