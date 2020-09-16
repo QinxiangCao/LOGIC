@@ -316,22 +316,29 @@ Module PTree.
     auto.
   Qed.
 
-  Goal forall A p x,
-  set_rec' A p x Leaf (fun hole : tree A => Node Leaf None hole) = Node Leaf None (set_rec' A p x Leaf (fun hole : tree A => hole)).
-  intros.
-  induction p.
-  - compute. fold set_rec'.
-Admitted.
-
   Lemma elements_single : forall A p x,
   elements A (set_rec A p x empty) = x :: nil.
 Proof.
   intros.
-  induction p.
-  - unfold set_rec; unfold set_rec in IHp.
-    unfold set_rec'; fold set_rec'.
-    unfold empty.
-Admitted.
+  unfold set_rec.
+  set (f := fun hole : tree A => hole).
+  assert (forall t, elements A t = elements A (f t)).
+  subst; auto.
+  clearbody f.
+  revert f H.
+  induction p; intros.
+  - unfold set_rec', empty. fold set_rec'.
+    apply IHp.
+    intros t'; rewrite <- H.
+    subst; auto.
+  - unfold set_rec', empty. fold set_rec'.
+    apply IHp.
+    intros t'; rewrite <- H.
+    subst; auto.
+  - unfold set_rec', empty.
+    rewrite <- H.
+    subst; auto.
+Qed.
 
 End PTree.
 
@@ -423,9 +430,15 @@ Proof.
   intros.
   unfold  mark_sort.
   unfold mark_sort'; fold mark_sort'.
-  induction (mark_sort' p1 PTree.empty).
-  - rewrite sepcon_comm_impp; apply sepcon_emp1.
-  -
+  set (m1 := mark_sort' p1 PTree.empty).
+  induction p2.
+  2:{ unfold mark_sort'; fold mark_sort'. (*
+  - unfold mark_sort'. fold mark_sort'.
+    destruct o.
+    + rewrite PTree.elements_single.
+      
+    + compute.
+        apply sepcon_emp1.*)
 Admitted.
 
 Lemma L1 : forall tep,
