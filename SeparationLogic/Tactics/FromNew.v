@@ -316,7 +316,45 @@ Module PTree.
     auto.
   Qed.
 
-  Lemma elements_single : forall A p x,
+  Lemma get_empty : forall A p,
+  get_rec A p empty = None.
+Proof.
+  intros.
+  unfold get_rec, empty.
+  set (f := fun  m0 : tree A => m0).
+  assert (f Leaf = Leaf).
+  subst; auto.
+  clearbody f.
+  revert f H.
+  induction p; intros.
+  - unfold get_rec'; fold get_rec'.
+    set (f' := (fun m0 : tree A => match f m0 with
+                                        | Leaf => Leaf
+                                        | Node _ _ r => r
+                                        end)).
+    assert (f' Leaf = Leaf).
+    unfold f'. rewrite H. auto.
+    apply IHp, H0.
+  - unfold get_rec'; fold get_rec'.
+    set (f' := (fun m0 : tree A => match f m0 with
+                                        | Leaf => Leaf
+                                        | Node l _ _ => l
+                                        end)).
+    assert (f' Leaf = Leaf).
+    unfold f'. rewrite H. auto.
+    apply IHp, H0.
+  - compute.
+    rewrite H.
+    auto.
+Qed.
+(*
+  Lemma get_elements_general : forall A p m x,
+  get_rec A p m = Some x ->
+  In x (elements A m).
+Proof.
+Admitted.
+*)
+  Lemma elements_set_empty : forall A p x,
   elements A (set_rec A p x empty) = x :: nil.
 Proof.
   intros.
@@ -340,6 +378,20 @@ Proof.
     subst; auto.
 Qed.
 
+  Lemma elements_set_none : forall A p x m, exists l1 l2,
+  get_rec A p m = None ->
+  elements A m = l1 ++ l2 /\
+  elements A (set_rec A p x m) = l1 ++ (x :: l2).
+Proof.
+Admitted.
+(*
+  Lemma elements_set_some : forall A p x x' m l1 l2,
+  get_rec A p m = Some x ->
+  elements A m = l1 ++ (x :: l2) ->
+  elements A (set_rec A p x' m) = l1 ++ (x' :: l2).
+Proof.
+Admitted.
+*)
 End PTree.
 
 Fixpoint mark_sort' tep m: PTree.tree expr :=
@@ -348,10 +400,14 @@ Fixpoint mark_sort' tep m: PTree.tree expr :=
     match mark_sort' tp m with
     | m' => mark_sort' tq m'
     end
-  | var_pos sp o =>
+  | var_pos sq o =>
     match o with
     | None => m
-    | Some pos => PTree.set_rec expr pos sp m
+    | Some pos =>
+      match PTree.get_rec expr pos m with
+      | None => PTree.set_rec expr pos sq m
+      | Some sp => PTree.set_rec expr pos (sp * sq) m
+      end
     end
   end.
 Definition mark_sort tep : PTree.tree expr :=
@@ -370,6 +426,29 @@ Definition restore tep teq : expr :=
 
 Section AxiomClass2.
 
+Lemma sepcon_assoc2 : forall x y z,
+  |-- (x * y) * z --> (x * (y * z)).
+Proof.
+  intros.
+  rewrite (sepcon_comm_impp (x * y) z).
+  rewrite (sepcon_assoc1 z x y).
+  rewrite (sepcon_comm_impp (z * x) y).
+  rewrite (sepcon_assoc1 y z x).
+  rewrite (sepcon_comm_impp (y * z) x).
+  apply provable_impp_refl.
+Qed.
+
+Lemma switch : forall x y p q,
+  |-- x * y * (p * q) --> x * p * (y * q).
+Proof.
+  intros.
+  rewrite <- (sepcon_assoc1 x p (y * q)).
+  rewrite <- (sepcon_comm_impp (y * q) p).
+  rewrite <- (sepcon_assoc1 y q p).
+  rewrite <- (sepcon_comm_impp p q).
+  apply sepcon_assoc2.
+Qed.
+
 End AxiomClass2.
 
 Section Proof.
@@ -385,28 +464,34 @@ Fixpoint build l : expr :=
   | p :: l' => build' l' p
   end.
 
-Lemma switch : forall x y p q,
-  |-- x * y * (p * q) --> x * p * (y * q).
+Lemma add1 : forall e' p m,
+  |-- build (PTree.elements expr (mark_sort' (var_pos e' (Some p)) m))
+  --> build (PTree.elements expr m) * e'.
 Proof.
   intros.
-  rewrite <- (sepcon_assoc1 x p (y * q)).
-  rewrite <- (sepcon_comm_impp (y * q) p).
-  rewrite <- (sepcon_assoc1 y q p).
-  rewrite <- (sepcon_comm_impp p q).
-  rewrite (sepcon_comm_impp (x * y) (p * q)).
-  rewrite (sepcon_assoc1 (p * q) x y).
-  rewrite (sepcon_comm_impp ((p * q) * x) y).
-  rewrite (sepcon_assoc1 y (p * q) x).
-  rewrite (sepcon_comm_impp (y * (p * q)) x).
-  apply provable_impp_refl.
-Qed.
+  unfold mark_sort'.
+  destruct (PTree.get_rec expr p m) eqn:?H.
+  -(* pose proof (PTree.elements_set_some expr p e e' m).*)
+    
+    
+
+Admitted.
+
+Lemma add2 : forall e' p m,
+  |-- build (PTree.elements expr m) * e'
+  --> build (PTree.elements expr (mark_sort' (var_pos e' (Some p)) m)).
+Proof.
+  intros.
+  unfold mark_sort'.
+Admitted.
 
 Lemma L1_before1 : forall sp p,
   |-- sp --> build (PTree.elements expr (mark_sort (var_pos sp (Some p)))).
 Proof.
   intros.
   unfold mark_sort, mark_sort'.
-  rewrite PTree.elements_single.
+  rewrite PTree.get_empty.
+  rewrite PTree.elements_set_empty.
   compute.
   apply provable_impp_refl.
 Qed.
@@ -430,16 +515,25 @@ Proof.
   intros.
   unfold  mark_sort.
   unfold mark_sort'; fold mark_sort'.
-  set (m1 := mark_sort' p1 PTree.empty).
-  induction p2.
-  2:{ unfold mark_sort'; fold mark_sort'. (*
-  - unfold mark_sort'. fold mark_sort'.
-    destruct o.
-    + rewrite PTree.elements_single.
-      
-    + compute.
-        apply sepcon_emp1.*)
-Admitted.
+  set (m1 := mark_sort' p1 PTree.empty) at 1.
+  set (m3 := mark_sort' p1 PTree.empty).
+  set (m2 := PTree.empty).
+  assert (|-- build (PTree.elements expr m1) * build (PTree.elements expr m2) --> build (PTree.elements expr m3)).
+  { unfold m2, PTree.empty, PTree.elements, PTree.xelements. apply sepcon_emp1. }
+  clearbody m1 m2 m3.
+  revert m1 m2 m3 H.
+  induction p2; intros.
+  - destruct o.
+    + rewrite add1.
+      rewrite <- add2.
+      rewrite sepcon_assoc1.
+      rewrite H.
+      apply provable_impp_refl.
+    + auto.
+  - apply IHp2_1 in H.
+    apply IHp2_2 in H.
+    auto.
+Qed.
 
 Lemma L1 : forall tep,
   |-- restore' tep --> unmark_sort tep * (build (PTree.elements expr (mark_sort tep))).
@@ -464,7 +558,8 @@ Lemma L2_before1 : forall sq p,
 Proof.
   intros.
   unfold mark_sort, mark_sort'.
-  rewrite PTree.elements_single.
+  rewrite PTree.get_empty.
+  rewrite PTree.elements_set_empty.
   compute.
   apply provable_impp_refl.
 Qed.
@@ -485,7 +580,28 @@ Qed.
 Lemma L2_before3 : forall q1 q2,
   |-- build (PTree.elements expr (mark_sort (sepcon_pos q1 q2))) --> build (PTree.elements expr (mark_sort q1)) * build (PTree.elements expr (mark_sort q2)).
 Proof.
-Admitted.
+  intros.
+  unfold  mark_sort.
+  unfold mark_sort'; fold mark_sort'.
+  set (m1 := mark_sort' q1 PTree.empty) at 2.
+  set (m3 := mark_sort' q1 PTree.empty).
+  set (m2 := PTree.empty).
+  assert (|-- build (PTree.elements expr m3) --> build (PTree.elements expr m1) * build (PTree.elements expr m2)).
+  { unfold m2, PTree.empty, PTree.elements, PTree.xelements. apply sepcon_emp2. }
+  clearbody m1 m2 m3.
+  revert m1 m2 m3 H.
+  induction q2; intros.
+  - destruct o.
+    + rewrite add1.
+      rewrite <- add2.
+      rewrite <- sepcon_assoc2.
+      rewrite H.
+      apply provable_impp_refl.
+    + auto.
+  - apply IHq2_1 in H.
+    apply IHq2_2 in H.
+    auto.
+Qed.
 
 Lemma L2 : forall teq,
   |-- unmark_sort teq * build (PTree.elements expr (mark_sort teq)) --> restore' teq.
