@@ -1,12 +1,30 @@
-Require Import Logic.SeparationLogic.Tactics.Language.
+Require Import Logic.GeneralLogic.Base.
+Require Import Logic.MinimumLogic.Syntax.
+Require Import Logic.MinimumLogic.ProofTheory.Minimum.
+Require Import Logic.SeparationLogic.Syntax.
+Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
+
 Require Import Coq.Lists.List.
 Require Import Coq.Numbers.BinNums.
 Require Import Coq.PArith.BinPosDef.
 Require Import Logic.lib.Coqlib.
 Require Import Logic.lib.PTree.
 
-Local Open Scope shallow_syntax.
-Local Open Scope list_scope.
+Local Open Scope logic_base.
+Local Open Scope syntax.
+Import SeparationLogicNotation.
+
+Section TheoryOfCancel.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {empL: EmpLanguage L}
+        {Gamma: Provable L}
+        {minAX: MinimumAxiomatization L Gamma}
+        {sepconAX: SepconAxiomatization L Gamma}
+        {empAX: EmpAxiomatization L Gamma}.
 
 Inductive expr_deep: Type :=
   | impp_deep : expr_deep -> expr_deep -> expr_deep
@@ -23,83 +41,9 @@ Fixpoint beq e1 e2 :=
   | _, _ => false
   end.
 
-Ltac length_cont ls k :=
-  match ls with
-  | nil => k O
-  | _ :: ?ls' => length_cont ls' ltac:(fun n => k (S n))
-  end.
-Ltac length ls := length_cont ls ltac:(fun l => l).
-
-Ltac pred n :=
-  match n with
-  | O => O
-  | S ?m => m
-  end.
-
-Ltac search_expr' n i l l0 :=
-  match l with
-  | nil => let len := length l0 in constr:((S len, n :: l0))
-  | n :: ?t => constr:((i, l0))
-  | _ :: ?t => let pi := pred i in search_expr' n pi t l0
-  end.
-Ltac search_expr n l := let len := length l in search_expr' n len l l.
-
-Ltac shallowTodeep' se l0 :=
-  match se with
-  | ?sp * ?sq =>
-    match shallowTodeep' sp l0 with
-    | (?dp, ?l1) =>
-      match shallowTodeep' sq l1 with
-      | (?dq, ?l2) => constr:((sepcon_deep dp dq, l2))
-      end
-    end
-  | ?sp --> ?sq =>
-    match shallowTodeep' sp l0 with
-    | (?dp, ?l1) =>
-      match shallowTodeep' sq l1 with
-      | (?dq, ?l2) => constr:((impp_deep dp dq, l2))
-      end
-    end
-  | emp => constr:((emp_deep, l0))
-  | ?sp => match search_expr sp l0 with
-          | (?i, ?l1) => constr:((varp_deep i, l1))
-          end
-  end.
-
-Ltac shallowTodeep se :=
-  match shallowTodeep' se constr:(@nil expr) with
-  | (?de, ?tbl) =>
-    match de with
-    | impp_deep ?dep ?deq => constr:((dep, deq, tbl))
-    end
-  end.
-
 Inductive tree_pos: Type :=
   | var_pos : expr -> option positive -> tree_pos
   | sepcon_pos : tree_pos -> tree_pos -> tree_pos.
-
-Ltac shallowTotree_odd se :=
-  match se with
-  |?sp * ?sq =>
-    match shallowTotree_odd sp with
-    | ?tp =>
-      match shallowTotree_odd sq with
-      | ?tq => constr:(sepcon_pos tp tq)
-      end
-    end
-  | ?sp => constr:(var_pos sp None)
-  end.
-
-Ltac shallowTotree se :=
-  match se with
-  | ?sep --> ?seq =>
-    match shallowTotree_odd sep with
-    | ?tep =>
-      match shallowTotree_odd seq with
-      | ?teq => constr:((tep, teq))
-      end
-    end
-  end.
 
 Fixpoint cancel_mark_context dep q tep key : tree_pos * bool:=
   match dep, tep with
@@ -172,33 +116,6 @@ Definition unmark_sort tep : expr :=
 Definition cancel_different tep teq : expr :=
   (unmark_sort tep) --> (unmark_sort teq).
 
-(*
-Fixpoint flatten tep : list expr :=
-  match tep with
-  | sepcon_pos tp tq => (flatten tp) ++ (flatten tq)
-  | var_pos sp o =>
-    match o with
-    | None => sp :: nil
-    | _ => nil
-    end
-  end.
-
-Fixpoint unflatten' lep sp : expr :=
-  match lep with
-  | nil => sp
-  | sq :: lep' => unflatten' lep' (sp * sq)
-  end.
-
-Definition unflatten lep : expr :=
-  match lep with
-  | nil => emp
-  | sp :: lep' => unflatten' lep' sp
-  end.
-
-Definition cancel_different tep teq : expr :=
-  (unflatten (flatten tep)) --> (unflatten (flatten teq)).
-*)
-
 Fixpoint mark_sort' tep m: PTree.tree expr :=
   match tep with
   | sepcon_pos tp tq =>
@@ -229,8 +146,6 @@ Fixpoint restore' tep : expr :=
 Definition restore tep teq : expr :=
   (restore' tep) --> (restore' teq).
 
-Section AxiomClass2.
-
 Lemma sepcon_assoc2 : forall x y z,
   |-- (x * y) * z --> (x * (y * z)).
 Proof.
@@ -253,10 +168,6 @@ Proof.
   rewrite <- (sepcon_comm_impp p q).
   apply sepcon_assoc2.
 Qed.
-
-End AxiomClass2.
-
-Section Proof.
 
 Fixpoint build l : expr :=
   match l with
@@ -337,7 +248,7 @@ Proof.
   unfold mark_sort, mark_sort'.
   rewrite PTree.get_empty.
   rewrite PTree.elements_set_empty.
-  compute.
+  unfold build.
   apply sepcon_emp2.
 Qed.
 
@@ -384,16 +295,15 @@ Lemma L1 : forall tep,
   |-- restore' tep --> unmark_sort tep * (build (PTree.elements expr (mark_sort tep))).
 Proof.
   intros.
-  induction tep as [sp op|p1 IH1 p2 IH2].
-  - compute.
+  induction tep as [sp op|p1 IH1 p2 IH2]; unfold restore'; fold restore'.
+  - unfold unmark_sort, unmark_sort'.
     destruct op.
     + pose proof (L1_before1 sp p) as L1_before1; compute in L1_before1.
       rewrite <- L1_before1; clear L1_before1.
       rewrite <- sepcon_comm_impp.
       apply sepcon_emp2.
     + apply sepcon_emp2.
-  - unfold restore'; fold restore'.
-    rewrite IH1, IH2.
+  - rewrite IH1, IH2.
     rewrite <- L1_before2, <- L1_before3.
     apply switch.
 Qed.
@@ -405,7 +315,7 @@ Proof.
   unfold mark_sort, mark_sort'.
   rewrite PTree.get_empty.
   rewrite PTree.elements_set_empty.
-  compute.
+  unfold build.
   apply sepcon_emp1.
 Qed.
 
@@ -452,16 +362,15 @@ Lemma L2 : forall teq,
   |-- unmark_sort teq * build (PTree.elements expr (mark_sort teq)) --> restore' teq.
 Proof.
   intros.
-  induction teq as [sq oq|q1 IH1 q2 IH2].
-  - compute.
+  induction teq as [sq oq|q1 IH1 q2 IH2]; unfold restore'; fold restore'.
+  - unfold unmark_sort, unmark_sort'.
     destruct oq.
     + pose proof (L2_before1 sq p) as L2_before1; compute in L2_before1.
       rewrite L2_before1; clear L2_before1.
       rewrite sepcon_comm_impp.
       apply sepcon_emp1.
     + apply sepcon_emp1.
-  - unfold restore'; fold restore'.
-    rewrite <- IH1, <- IH2.
+  - rewrite <- IH1, <- IH2.
     rewrite L2_before2, L2_before3.
     apply switch.
 Qed.
@@ -475,8 +384,6 @@ Proof.
   apply provable_impp_refl.
 Qed.
 
-End Proof.
-
 Lemma cancel_new_sound : forall tep teq,
   cancel_same tep teq ->
   |-- cancel_different tep teq ->
@@ -489,241 +396,4 @@ Proof.
   apply L2.
 Qed.
 
-Ltac cancel_new' se :=
-  match shallowTodeep se with
-    | (?dep, ?deq, ?tbl) =>
-    match shallowTotree se with
-    | (?tep, ?teq) =>
-    let te' := eval compute in (cancel_mark dep deq tep teq) in
-    let tep' := eval compute in (fst te') in
-    let teq' := eval compute in (snd te') in
-    apply (cancel_new_sound tep' teq');
-    [ let same := eval compute in (cancel_same tep' teq') in change same;
-      reflexivity
-    | let different := eval compute in (cancel_different tep' teq') in change (provable different);
-    try apply provable_impp_refl
-    ]
-    end
-  end.
-
-Ltac cancel_new :=
-    match goal with
-    | [|- |-- ?se] => cancel_new' se
-    end.
-
-Section Temp.
-Parameter (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z: expr).
-
-Lemma foo: forall P, P /\ P -> P.
-Proof. intros. tauto. Qed.
-
-Goal |-- (W --> T) * U --> S * V -> |-- (W --> T) * U * (V --> W) * (P * Q) * T --> T * S * V * Q * P * (V --> W).
-  intros.
-  cancel_new.
-  auto.
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
---> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
---> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
---> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X
---> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
-    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
---> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
-    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    (M * (N * O) * P) * (Q * R * S) * T * (U * V) * W * X
---> (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
-    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U) *
-    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (I * J * (D * K) * L) * A * B * (C * H) * (E * F * G) *
-    (M * X * (N * W) * O) * P * Q * (T * S) * (V * R * U).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) --> M * N * (O * E) ->
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
---> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * A * B * (C * D)
---> M * N * O * E * (M * N) * (O * E) ->
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
---> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
-    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * A * B * (C * D) * A * B * (C * D)
---> M * N * O * (M * N) * (O * E) * E * (M * N) * (O * E) ->
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L)
---> I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
-    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H) *
-    I * J * (G * E) * (F * M * N) * (O * (L * K * E) * H).
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H))
---> S * T * Q * X * U * (V * W) * R ->
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
---> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * A * B * (C * D) * (E * F * (G * H))
---> S * T * Q * X * U * (V * W) * R * (S * T * Q) * X * U * (V * W) * R ->
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
---> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
-    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-Goal
-|-- A * B * (C * D) * (E * F * (G * H)) * A * B * (C * D) * (E * F * (G * H)) * A * B * (C * D) * (E * F * (G * H))
---> S * T * Q * X * U * (V * W) * R * (S * T * Q) * X * U * (V * W) * R * (S * T * Q) * X * U * (V * W) * R ->
-|-- A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P) *
-    A * B * (C * D) * (E * F * (G * H)) * (I * J * K * L) * (M * (N * O) * P)
---> (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
-    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R *
-    (P * (I * J * (S * T)) * Q) * X * (U * M * N) * (O * (L * K * V) * W) * R.
-  intros.
-  Time
-  apply foo; split;
-    apply foo; split;
-      apply foo; split;
-  cancel_new;
-  auto.
-  Time
-  Qed.
-
-End Temp.
+End TheoryOfCancel.
