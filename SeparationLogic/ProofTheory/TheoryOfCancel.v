@@ -15,7 +15,7 @@ Local Open Scope logic_base.
 Local Open Scope syntax.
 Import SeparationLogicNotation.
 
-Section TheoryOfCancel.
+Section StructOfCancel.
 
 Context {L: Language}
         {minL: MinimumLanguage L}
@@ -145,6 +145,19 @@ Fixpoint restore' tep : expr :=
   end.
 Definition restore tep teq : expr :=
   (restore' tep) --> (restore' teq).
+
+End StructOfCancel.
+
+Section ProofOfLemma.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {empL: EmpLanguage L}
+        {Gamma: Provable L}
+        {minAX: MinimumAxiomatization L Gamma}
+        {sepconAX: SepconAxiomatization L Gamma}
+        {empAX: EmpAxiomatization L Gamma}.
 
 Lemma sepcon_assoc2 : forall x y z,
   |-- (x * y) * z --> (x * (y * z)).
@@ -383,6 +396,19 @@ Proof.
   rewrite H.
   apply provable_impp_refl.
 Qed.
+
+End ProofOfLemma.
+
+Section TheoryOfCancel.
+
+Context {L: Language}
+        {minL: MinimumLanguage L}
+        {sepconL: SepconLanguage L}
+        {empL: EmpLanguage L}
+        {Gamma: Provable L}
+        {minAX: MinimumAxiomatization L Gamma}
+        {sepconAX: SepconAxiomatization L Gamma}
+        {empAX: EmpAxiomatization L Gamma}.
 
 Lemma cancel_new_sound : forall tep teq,
   cancel_same tep teq ->

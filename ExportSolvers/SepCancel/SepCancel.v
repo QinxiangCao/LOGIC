@@ -63,7 +63,7 @@ Ltac shallowTodeep' se l0 :=
   end.
 
 Ltac shallowTodeep se :=
-  match shallowTodeep' se constr:(@nil expr) with
+  match shallowTodeep' se nil with
   | (?de, ?tbl) =>
     match de with
     | impp_deep ?dep ?deq => constr:((dep, deq, tbl))

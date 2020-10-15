@@ -337,7 +337,7 @@ Proof.
   unfold mark_sort, mark_sort'.
   rewrite PTree.get_empty.
   rewrite PTree.elements_set_empty.
-  compute.
+  unfold build.
   apply sepcon_emp2.
 Qed.
 
@@ -384,16 +384,15 @@ Lemma L1 : forall tep,
   |-- restore' tep --> unmark_sort tep * (build (PTree.elements expr (mark_sort tep))).
 Proof.
   intros.
-  induction tep as [sp op|p1 IH1 p2 IH2].
-  - compute.
+  induction tep as [sp op|p1 IH1 p2 IH2]; unfold restore'; fold restore'.
+  - unfold unmark_sort, unmark_sort'.
     destruct op.
     + pose proof (L1_before1 sp p) as L1_before1; compute in L1_before1.
       rewrite <- L1_before1; clear L1_before1.
       rewrite <- sepcon_comm_impp.
       apply sepcon_emp2.
     + apply sepcon_emp2.
-  - unfold restore'; fold restore'.
-    rewrite IH1, IH2.
+  - rewrite IH1, IH2.
     rewrite <- L1_before2, <- L1_before3.
     apply switch.
 Qed.
@@ -405,7 +404,7 @@ Proof.
   unfold mark_sort, mark_sort'.
   rewrite PTree.get_empty.
   rewrite PTree.elements_set_empty.
-  compute.
+  unfold build.
   apply sepcon_emp1.
 Qed.
 
@@ -452,16 +451,15 @@ Lemma L2 : forall teq,
   |-- unmark_sort teq * build (PTree.elements expr (mark_sort teq)) --> restore' teq.
 Proof.
   intros.
-  induction teq as [sq oq|q1 IH1 q2 IH2].
-  - compute.
+  induction teq as [sq oq|q1 IH1 q2 IH2]; unfold restore'; fold restore'.
+  - unfold unmark_sort, unmark_sort'.
     destruct oq.
     + pose proof (L2_before1 sq p) as L2_before1; compute in L2_before1.
       rewrite L2_before1; clear L2_before1.
       rewrite sepcon_comm_impp.
       apply sepcon_emp1.
     + apply sepcon_emp1.
-  - unfold restore'; fold restore'.
-    rewrite <- IH1, <- IH2.
+  - rewrite <- IH1, <- IH2.
     rewrite L2_before2, L2_before3.
     apply switch.
 Qed.
