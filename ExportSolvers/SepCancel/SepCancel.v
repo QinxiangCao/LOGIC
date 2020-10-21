@@ -1,6 +1,6 @@
-Require Import Coq.Lists.List.
-Require Import Coq.Numbers.BinNums.
-Require Import Coq.PArith.BinPosDef.
+Require Export Coq.Lists.List.
+Require Export Coq.Numbers.BinNums.
+Require Export Coq.PArith.BinPosDef.
 
 Require Import Setoid.
 Require Import Morphisms.

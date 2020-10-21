@@ -8,7 +8,6 @@ Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
 Require Import Coq.Lists.List.
 Require Import Coq.Numbers.BinNums.
 Require Import Coq.PArith.BinPosDef.
-Require Import Logic.lib.Coqlib.
 Require Import Logic.lib.PTree.
 
 Local Open Scope logic_base.
