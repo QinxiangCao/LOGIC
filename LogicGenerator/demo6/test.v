@@ -2,6 +2,7 @@ Require Import Morphisms.
 Require Import HypotheticalExternLib.
 Require Import export_lib.
 Require Import SepApply.
+Require Import SepCancel.
 Require Import implementation.
 
 Import EXPO.
@@ -18,4 +19,9 @@ Existing Instance p.
 Goal forall (PP: Prop) (P Q R S T: (nat -> option X) -> Prop), (PP -> |-- P * Q --> R) -> PP -> |-- P * S * Q * T --> T * S * R.
   intros.
   sep_apply H.
+Abort.
+
+Goal forall (PP: Prop) (P Q R S T: (nat -> option X) -> Prop), (PP -> |-- P * Q --> R) -> PP -> |-- P * S * Q * T --> T * S * R.
+  intros.
+  sep_cancel.
 Abort.

@@ -24,6 +24,7 @@ Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
 Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.
 Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
+Require Import Logic.SeparationLogic.ProofTheory.TheoryOfCancel.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 
@@ -855,6 +856,18 @@ Definition derived_rules :=
   ; sepcon_proper_iffp
   ; wand_proper_iffp
 
+  ; expr_deep
+  ; impp_deep
+  ; sepcon_deep
+  ; emp_deep
+  ; varp_deep
+  ; var_pos
+  ; sepcon_pos
+  ; cancel_mark
+  ; cancel_different
+  ; cancel_same
+  ; restore
+  ; cancel_sound
 
   ; impp_proper_equiv
   ; sepcon_proper_logic_equiv

@@ -356,6 +356,9 @@ lgen_demo_6:
 	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/demo6/
 	@echo COQC LogicGenerator/demo6/SepApply.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/SepApply.v
+	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/demo6/
+	@echo COQC LogicGenerator/demo6/SepCancel.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/SepCancel.v
 	@echo COQC LogicGenerator/demo6/test.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test.v
 

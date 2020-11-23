@@ -13,11 +13,17 @@ Local Declare Scope syntax.
 Local Open Scope syntax.
 
 Module SepCancelNotation.
+Notation "'UNFOLD2' x" := ltac:(unfold2_tac x) (only parsing, at level 99): syntax.
 Notation "|--  x" := ((provable) x) (only parsing, at level 71, no associativity) : syntax.
 Notation "x --> y" := ((impp) x y) (only parsing, at level 55, right associativity) : syntax.
-Notation "x * y" := ((sepcon) x y) (only parsing, at level 40, left associativity) : syntax.
+Notation "x * y" := ((implementation.SepCon) x y) (only parsing, at level 40, left associativity) : syntax.
 End SepCancelNotation.
 Import SepCancelNotation.
+
+Existing Instances impp_proper_equiv
+                   sepcon_proper_logic_equiv
+                   provable_proper_equiv
+                   logic_equiv_refl_instance.
 
 Ltac length_cont ls k :=
   match ls with
@@ -56,14 +62,14 @@ Ltac shallowTodeep' se l0 :=
       | (?dq, ?l2) => constr:((impp_deep dp dq, l2))
       end
     end
-  | emp => constr:((emp_deep, l0))
+  | (implementation.Emp) => constr:((emp_deep, l0))
   | ?sp => match search_expr sp l0 with
           | (?i, ?l1) => constr:((varp_deep i, l1))
           end
   end.
 
 Ltac shallowTodeep se :=
-  match shallowTodeep' se nil with
+  match shallowTodeep' se (@nil (expr)) with
   | (?de, ?tbl) =>
     match de with
     | impp_deep ?dep ?deq => constr:((dep, deq, tbl))
@@ -93,7 +99,7 @@ Ltac shallowTotree se :=
     end
   end.
 
-Ltac cancel_new' se :=
+Ltac sep_cancel' se :=
   match shallowTodeep se with
     | (?dep, ?deq, ?tbl) =>
     match shallowTotree se with
@@ -101,16 +107,22 @@ Ltac cancel_new' se :=
     let te' := eval compute in (cancel_mark dep deq tep teq) in
     let tep' := eval compute in (fst te') in
     let teq' := eval compute in (snd te') in
-    apply (cancel_new_sound tep' teq');
+    apply (cancel_sound tep' teq');
     [ let same := eval compute in (cancel_same tep' teq') in change same;
       reflexivity
-    | let different := eval compute in (cancel_different tep' teq') in change (provable different);
-    try apply provable_impp_refl
+    | cbv beta delta 
+      [ cancel_different
+        ___LogicTheorem___.cancel_different
+        TheoryOfCancel.cancel_different
+        TheoryOfCancel.unmark_sort
+      ];
+      repeat unfold TheoryOfCancel.unmark_sort';
+      try apply (provable_impp_refl implementation.Emp)
     ]
     end
   end.
 
-Ltac cancel_new :=
+Ltac sep_cancel :=
     match goal with
-    | [|- |-- ?se] => cancel_new' se
+    | [|- |-- ?se] => sep_cancel' se
     end.

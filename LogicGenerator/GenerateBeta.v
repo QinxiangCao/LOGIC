@@ -1,4 +1,7 @@
 Require Import Coq.Lists.List.
+Require Import Coq.Numbers.BinNums.
+Require Import Coq.PArith.BinPosDef.
+Require Import Logic.lib.PTree.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
@@ -24,6 +27,7 @@ Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
 Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.
 Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
+Require Import Logic.SeparationLogic.ProofTheory.TheoryOfCancel.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.ProofTheory.Deduction.
@@ -322,6 +326,9 @@ Ltac beta_print :=
   import_local_lib_tac;
   import_implementation_tac;
   idtac "Require Import Coq.Lists.List.";
+  idtac "Require Import Coq.Numbers.BinNums.";
+  idtac "Require Import Coq.PArith.BinPosDef.";
+  idtac "Require Import Logic.lib.PTree.";
   idtac "Require Import Coq.Sets.Ensembles.";
   idtac "Import ListNotations.";
 
@@ -374,11 +381,23 @@ Ltac beta_print :=
   dolist (print Der2) derived_judgements;
   dolist (print Der2) derived_connectives;
   dolist (print Def2) primary_rules;
+  idtac "Definition tree_pos : Type := tree_pos.";
   dolist (print Def2) derived_rules;
 
   newline;
 
   idtac "  End EXPO_SECTION.";
+
+  newline;
+
+  idtac "  Ltac unfold2_tac x :=";
+  idtac "    let x0 :=";
+  idtac "    eval cbv beta delta [";
+  dolist (print Prt) transparent_types;
+  dolist (print Prt) transparent_judgements;
+  dolist (print Prt) transparent_connectives;
+  idtac "    ] in x";
+  idtac "    in exact x0.";
 
   newline;
 

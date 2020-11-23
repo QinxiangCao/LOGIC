@@ -409,7 +409,7 @@ Context {L: Language}
         {sepconAX: SepconAxiomatization L Gamma}
         {empAX: EmpAxiomatization L Gamma}.
 
-Lemma cancel_new_sound : forall tep teq,
+Lemma cancel_sound : forall tep teq,
   cancel_same tep teq ->
   |-- cancel_different tep teq ->
   |-- restore tep teq.

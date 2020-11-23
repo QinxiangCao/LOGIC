@@ -1,4 +1,7 @@
 Require Import Coq.Lists.List.
+Require Import Coq.Numbers.BinNums.
+Require Import Coq.PArith.BinPosDef.
+Require Import Logic.lib.PTree.
 Require Import Logic.GeneralLogic.Base.
 Require Import Logic.GeneralLogic.ProofTheory.BasicSequentCalculus.
 Require Import Logic.GeneralLogic.ProofTheory.BasicDeduction.
@@ -24,6 +27,7 @@ Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.
 Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.
 Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
+Require Import Logic.SeparationLogic.ProofTheory.TheoryOfCancel.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.ProofTheory.Deduction.
@@ -297,6 +301,9 @@ Set Printing Width 1000.
 Ltac two_stage_print :=
   when instance_para_open: import_local_lib_tac;
   idtac "Require Import Coq.Lists.List.";
+  idtac "Require Import Coq.Numbers.BinNums.";
+  idtac "Require Import Coq.PArith.BinPosDef.";
+  idtac "Require Import Logic.lib.PTree.";
   idtac "Require Import Coq.Sets.Ensembles.";
   idtac "Import ListNotations.";
 
@@ -342,6 +349,7 @@ Ltac two_stage_print :=
 
   idtac "Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).";
   idtac "Include Rules.";
+  idtac "Parameter Inline tree_pos : forall `{ para }, Type .";
   when instance_para_open: (
     idtac "  Section LogicTheoremSig.";
     context_expr_tac
@@ -377,6 +385,7 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.RewriteClass.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.DerivedRules.";
+  idtac "Require Import Logic.SeparationLogic.ProofTheory.TheoryOfCancel.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.Corable.";
@@ -395,6 +404,7 @@ Ltac two_stage_print :=
   dolist (print AIns) aux_primitive_instances;
   dolist (print AIns) aux_refl_instances_for_derivation;
   dolist (print AIns) aux_derived_instances;
+  idtac "Definition tree_pos : Type := tree_pos.";
   dolist (print Def) derived_rules;
   when instance_para_open:
     idtac "  End LogicTheorem.";
