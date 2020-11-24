@@ -15,7 +15,6 @@ Notation "x * y" := (SepCon x y) (at level 40, left associativity) : syntax.
 Parameter p: para.
 Existing Instance p.
 
-
 Goal forall (PP: Prop) (P Q R S T: (nat -> option X) -> Prop), (PP -> |-- P * Q --> R) -> PP -> |-- P * S * Q * T --> T * S * R.
   intros.
   sep_apply H.

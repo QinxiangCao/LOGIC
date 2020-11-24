@@ -13,10 +13,8 @@ Local Declare Scope syntax.
 Local Open Scope syntax.
 
 Module SepCancelNotation.
-Notation "'UNFOLD2' x" := ltac:(unfold2_tac x) (only parsing, at level 99): syntax.
 Notation "|--  x" := ((provable) x) (only parsing, at level 71, no associativity) : syntax.
 Notation "x --> y" := ((impp) x y) (only parsing, at level 55, right associativity) : syntax.
-Notation "x * y" := ((implementation.SepCon) x y) (only parsing, at level 40, left associativity) : syntax.
 End SepCancelNotation.
 Import SepCancelNotation.
 
@@ -24,6 +22,13 @@ Existing Instances impp_proper_equiv
                    sepcon_proper_logic_equiv
                    provable_proper_equiv
                    logic_equiv_refl_instance.
+
+Ltac unfold3_tac x :=
+    eval cbv beta delta [
+       EXPO.expr
+       EXPO.sepcon
+       EXPO.emp
+    ] in x.
 
 Ltac length_cont ls k :=
   match ls with
@@ -47,8 +52,12 @@ Ltac search_expr' n i l l0 :=
 Ltac search_expr n l := let len := length l in search_expr' n len l l.
 
 Ltac shallowTodeep' se l0 :=
+  let _sepcon := (unfold3_tac constr:(EXPO.sepcon)) in
+  let _emp := (unfold3_tac constr:(EXPO.emp)) in
+(*let _sepcon := (unfold3_tac EXPO.sepcon) in
+  name term implicit*)
   match se with
-  | ?sp * ?sq =>
+  | _sepcon ?sp ?sq =>
     match shallowTodeep' sp l0 with
     | (?dp, ?l1) =>
       match shallowTodeep' sq l1 with
@@ -62,7 +71,7 @@ Ltac shallowTodeep' se l0 :=
       | (?dq, ?l2) => constr:((impp_deep dp dq, l2))
       end
     end
-  | (implementation.Emp) => constr:((emp_deep, l0))
+  | _emp => constr:((emp_deep, l0))
   | ?sp => match search_expr sp l0 with
           | (?i, ?l1) => constr:((varp_deep i, l1))
           end
@@ -77,8 +86,9 @@ Ltac shallowTodeep se :=
   end.
 
 Ltac shallowTotree_odd se :=
+  let _sepcon := (unfold3_tac constr:(EXPO.sepcon)) in
   match se with
-  |?sp * ?sq =>
+  | _sepcon ?sp ?sq =>
     match shallowTotree_odd sp with
     | ?tp =>
       match shallowTotree_odd sq with
@@ -100,6 +110,8 @@ Ltac shallowTotree se :=
   end.
 
 Ltac sep_cancel' se :=
+  let _sepcon := (unfold3_tac constr:(EXPO.sepcon)) in
+  let _emp := (unfold3_tac constr:(EXPO.emp)) in
   match shallowTodeep se with
     | (?dep, ?deq, ?tbl) =>
     match shallowTotree se with
@@ -110,14 +122,17 @@ Ltac sep_cancel' se :=
     apply (cancel_sound tep' teq');
     [ let same := eval compute in (cancel_same tep' teq') in change same;
       reflexivity
-    | cbv beta delta 
+    | cbv beta delta
       [ cancel_different
         ___LogicTheorem___.cancel_different
         TheoryOfCancel.cancel_different
         TheoryOfCancel.unmark_sort
       ];
       repeat unfold TheoryOfCancel.unmark_sort';
-      try apply (provable_impp_refl implementation.Emp)
+      change Syntax.impp with impp;
+      change Syntax.sepcon with _sepcon;
+      change Syntax.emp with _emp;
+      try apply (provable_impp_refl _emp)
     ]
     end
   end.

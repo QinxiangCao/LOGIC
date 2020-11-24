@@ -390,17 +390,6 @@ Ltac beta_print :=
 
   newline;
 
-  idtac "  Ltac unfold2_tac x :=";
-  idtac "    let x0 :=";
-  idtac "    eval cbv beta delta [";
-  dolist (print Prt) transparent_types;
-  dolist (print Prt) transparent_judgements;
-  dolist (print Prt) transparent_connectives;
-  idtac "    ] in x";
-  idtac "    in exact x0.";
-
-  newline;
-
   dolist (print DIns) derived_rules_as_instance;
 
   newline;
