@@ -15,6 +15,10 @@ Local Open Scope syntax.
 Module SepCancelNotation.
 Notation "|--  x" := ((provable) x) (only parsing, at level 71, no associativity) : syntax.
 Notation "x --> y" := ((impp) x y) (only parsing, at level 55, right associativity) : syntax.
+(*
+  NOTE: (sepcon) (emp) can not refer to sepcon or emp
+        in export_lib correctly.
+*)
 End SepCancelNotation.
 Import SepCancelNotation.
 
@@ -54,8 +58,10 @@ Ltac search_expr n l := let len := length l in search_expr' n len l l.
 Ltac shallowTodeep' se l0 :=
   let _sepcon := (unfold3_tac constr:(EXPO.sepcon)) in
   let _emp := (unfold3_tac constr:(EXPO.emp)) in
-(*let _sepcon := (unfold3_tac EXPO.sepcon) in
-  name term implicit*)
+(*
+  NOTE: using 'let _sepcon := (unfold3_tac EXPO.sepcon) in'
+        will make implicit arguments explicit, name term.
+*)
   match se with
   | _sepcon ?sp ?sq =>
     match shallowTodeep' sp l0 with
@@ -109,9 +115,26 @@ Ltac shallowTotree se :=
     end
   end.
 
-Ltac sep_cancel' se :=
+Ltac same_handle :=
+  cbv beta delta [cancel_same];
+  reflexivity.
+
+Ltac different_handle :=
   let _sepcon := (unfold3_tac constr:(EXPO.sepcon)) in
   let _emp := (unfold3_tac constr:(EXPO.emp)) in
+  cbv beta delta
+    [ cancel_different
+      ___LogicTheorem___.cancel_different
+      TheoryOfCancel.cancel_different
+      TheoryOfCancel.unmark_sort
+    ];
+  repeat unfold TheoryOfCancel.unmark_sort';
+  change Syntax.impp with impp;
+  change Syntax.sepcon with _sepcon;
+  change Syntax.emp with _emp;
+  try apply (provable_impp_refl _emp).
+
+Ltac sep_cancel' se :=
   match shallowTodeep se with
     | (?dep, ?deq, ?tbl) =>
     match shallowTotree se with
@@ -120,20 +143,8 @@ Ltac sep_cancel' se :=
     let tep' := eval compute in (fst te') in
     let teq' := eval compute in (snd te') in
     apply (cancel_sound tep' teq');
-    [ let same := eval compute in (cancel_same tep' teq') in change same;
-      reflexivity
-    | cbv beta delta
-      [ cancel_different
-        ___LogicTheorem___.cancel_different
-        TheoryOfCancel.cancel_different
-        TheoryOfCancel.unmark_sort
-      ];
-      repeat unfold TheoryOfCancel.unmark_sort';
-      change Syntax.impp with impp;
-      change Syntax.sepcon with _sepcon;
-      change Syntax.emp with _emp;
-      try apply (provable_impp_refl _emp)
-    ]
+    [ same_handle
+    | different_handle]
     end
   end.
 
