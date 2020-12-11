@@ -18,7 +18,8 @@ lib_FILES = \
   Bijection.v Countable.v NatChoice.v StrongInduction.v \
   Bisimulation.v RelationPairs_ext.v \
   register_typeclass.v SublistT.v \
-  Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v 
+  Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v \
+  CancelFoundation.v
 
 GeneralLogic_ProofTheory_FILES = \
   BasicSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v \
@@ -167,7 +168,7 @@ QuantifierLogic_FILES = \
   $(QuantifierLogic_ShallowEmbedded_FILES:%.v=ShallowEmbedded/%.v)
 
 SeparationLogic_ProofTheory_FILES = \
-  SeparationLogic.v SeparationLogicExtension.v TheoryOfSeparationAxioms.v \
+  SeparationLogic.v SeparationLogicExtension.v TheoryOfSeparationAxioms.v TheoryOfCancel.v \
   RewriteClass.v DerivedRules.v IterSepcon.v WandFrame.v Corable.v Deduction.v
 
 SeparationLogic_Model_FILES = \
