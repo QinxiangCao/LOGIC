@@ -362,6 +362,23 @@ lgen_demo_6:
 	@echo COQC LogicGenerator/demo6/test.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test.v
 
+lgen_demo_7:
+	./logic_gen.sh LogicGenerator/demo7/configuration.v LogicGenerator/demo7/interface.v LogicGenerator/demo7/export_lib.v
+	@echo COQC LogicGenerator/demo7/interface.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/interface.v
+	@echo COQC LogicGenerator/demo7/implementation.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/implementation.v
+	@echo COQC LogicGenerator/demo7/export_lib.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/export_lib.v
+	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/demo7/
+	@echo COQC LogicGenerator/demo7/SepApply.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepApply.v
+	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/demo7/
+	@echo COQC LogicGenerator/demo7/SepCancel.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepCancel.v
+	@echo COQC LogicGenerator/demo7/test.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/test.v
+
 lgen_demo_bedrock2:
 	./logic_gen.sh LogicGenerator/demo/configuration_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/interface.v ../bedrock2/bedrock2/src/exportLogic/export_lib.v
 	@echo COQC interface.v [in-bedrock2-folder]

@@ -53,6 +53,7 @@ Definition PARA_OPEN: bool :=
 End PARA_OPEN.
 
 Definition instance_para_open := PARA_OPEN.PARA_OPEN.
+Definition instance_para_close := negb PARA_OPEN.PARA_OPEN.
 
 Section Generate.
 Context {L: Language}
@@ -349,8 +350,10 @@ Ltac two_stage_print :=
 
   idtac "Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).";
   idtac "Include Rules.";
-  idtac "Parameter Inline tree_pos : forall `{ para }, Type .";
+  when instance_para_close:
+    idtac "Parameter Inline tree_pos : Type .";
   when instance_para_open: (
+    idtac "Parameter Inline tree_pos : forall `{ para }, Type .";
     idtac "  Section LogicTheoremSig.";
     context_expr_tac
   );
