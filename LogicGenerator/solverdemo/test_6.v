@@ -3,7 +3,7 @@ Require Import HypotheticalExternLib.
 Require Import export_lib.
 Require Import SepApply.
 Require Import SepCancel.
-Require Import implementation.
+Require Import implementation_6.
 
 Import EXPO.
 Declare Scope syntax.

@@ -1,5 +1,5 @@
 Require Import ZArith.
-Require Import interface.
+Require Import interface_7.
 
 Definition X: Type := nat.
 

@@ -1,6 +1,6 @@
 Require Import HypotheticalExternLib.
 Require Import ZArith.
-Require Import interface.
+Require Import interface_6.
 
 Definition RealProvable `{para} (e: (nat -> option X) -> Prop) := forall st, e st.
 Definition join `{para} : (nat -> option X) -> (nat -> option X) -> (nat -> option X) -> Prop :=

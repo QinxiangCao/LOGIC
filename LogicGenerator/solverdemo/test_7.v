@@ -2,7 +2,7 @@ Require Import Morphisms.
 Require Import export_lib.
 Require Import SepApply.
 Require Import SepCancel.
-Require Import implementation.
+Require Import implementation_7.
 
 Import EXPO.
 Declare Scope syntax.
