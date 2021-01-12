@@ -416,7 +416,7 @@ Ltac two_stage_print :=
 
   newline;
 
-  idtac "Require Logic.PropositionalLogic.DeepEmbedded.Solver.";
+  idtac "(*Require Logic.PropositionalLogic.DeepEmbedded.Solver.";
   idtac "Module IPSolver (Names: LanguageSig).";
   idtac "  Import Names.";
   idtac "  Ltac ip_solve :=";
@@ -425,7 +425,7 @@ Ltac two_stage_print :=
   idtac "    change impp with Syntax.impp;";
   idtac "    change andp with Syntax.andp;";
   idtac "    intros; Solver.SolverSound.ipSolver.";
-  idtac "End IPSolver.";
+  idtac "End IPSolver.*)";
 
 
 
