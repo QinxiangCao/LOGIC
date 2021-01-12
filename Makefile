@@ -346,39 +346,43 @@ lgen_demo_5:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/implementation_5.v
 
 lgen_demo_6:
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/HypotheticalExternLib.v
-	./logic_gen.sh LogicGenerator/solverdemo/configuration_6.v LogicGenerator/solverdemo/interface_6.v LogicGenerator/solverdemo/export_lib.v
-	@echo COQC LogicGenerator/solverdemo/interface_6.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/interface_6.v
-	@echo COQC LogicGenerator/solverdemo/implementation_6.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/implementation_6.v
-	@echo COQC LogicGenerator/solverdemo/export_lib.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/export_lib.v
-	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/solverdemo/
-	@echo COQC LogicGenerator/solverdemo/SepApply.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/SepApply.v
-	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/solverdemo/
-	@echo COQC LogicGenerator/solverdemo/SepCancel.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/SepCancel.v
-	@echo COQC LogicGenerator/solverdemo/test_6.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/test_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/HypotheticalExternLib.v
+	./logic_gen.sh LogicGenerator/demo6/configuration_6.v LogicGenerator/demo6/interface_6.v LogicGenerator/demo6/export_lib_6.v
+	@echo COQC LogicGenerator/demo6/interface_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/interface_6.v
+	@echo COQC LogicGenerator/demo6/implementation_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/implementation_6.v
+	@echo COQC LogicGenerator/demo6/export_lib_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/export_lib_6.v
+	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/demo6/SepApply_6.v
+	@sed -i 's/export_lib/export_lib_6/g' LogicGenerator/demo6/SepApply_6.v
+	@echo COQC LogicGenerator/demo6/SepApply_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/SepApply_6.v
+	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/demo6/SepCancel_6.v
+	@sed -i 's/export_lib/export_lib_6/g' LogicGenerator/demo6/SepCancel_6.v
+	@echo COQC LogicGenerator/demo6/SepCancel_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/SepCancel_6.v
+	@echo COQC LogicGenerator/demo6/test_6.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test_6.v
 
 lgen_demo_7:
-	./logic_gen.sh LogicGenerator/solverdemo/configuration_7.v LogicGenerator/solverdemo/interface_7.v LogicGenerator/solverdemo/export_lib.v
-	@echo COQC LogicGenerator/solverdemo/interface_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/interface_7.v
-	@echo COQC LogicGenerator/solverdemo/implementation_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/implementation_7.v
-	@echo COQC LogicGenerator/solverdemo/export_lib.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/export_lib.v
-	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/solverdemo/
-	@echo COQC LogicGenerator/solverdemo/SepApply.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/SepApply.v
-	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/solverdemo/
-	@echo COQC LogicGenerator/solverdemo/SepCancel.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/SepCancel.v
-	@echo COQC LogicGenerator/solverdemo/test_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/solverdemo/test_7.v
+	./logic_gen.sh LogicGenerator/demo7/configuration_7.v LogicGenerator/demo7/interface_7.v LogicGenerator/demo7/export_lib_7.v
+	@echo COQC LogicGenerator/demo7/interface_7.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/interface_7.v
+	@echo COQC LogicGenerator/demo7/implementation_7.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/implementation_7.v
+	@echo COQC LogicGenerator/demo7/export_lib_7.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/export_lib_7.v
+	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/demo7/SepApply_7.v
+	@sed -i 's/export_lib/export_lib_7/g' LogicGenerator/demo7/SepApply_7.v
+	@echo COQC LogicGenerator/demo7/SepApply_7.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepApply_7.v
+	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/demo7/SepCancel_7.v
+	@sed -i 's/export_lib/export_lib_7/g' LogicGenerator/demo7/SepCancel_7.v
+	@echo COQC LogicGenerator/demo7/SepCancel_7.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepCancel_7.v
+	@echo COQC LogicGenerator/demo7/test_7.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/test_7.v
 
 lgen_demo_bedrock2:
 	./logic_gen.sh LogicGenerator/demo/configuration_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/interface.v ../bedrock2/bedrock2/src/exportLogic/export_lib.v
