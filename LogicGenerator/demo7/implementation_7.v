@@ -63,8 +63,8 @@ Module NaiveRule.
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.
-Module Solver := IPSolver NaiveLang.
+(*Module Solver := IPSolver NaiveLang.*)
 Import T.
-Import Solver.
+(*Import Solver.*)
 
 
