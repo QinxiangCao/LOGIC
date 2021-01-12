@@ -19,7 +19,7 @@ lib_FILES = \
   Bisimulation.v RelationPairs_ext.v \
   register_typeclass.v SublistT.v \
   Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v \
-  CancelFoundation.v
+  PTree.v CancelFoundation.v
 
 GeneralLogic_ProofTheory_FILES = \
   BasicSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v \
