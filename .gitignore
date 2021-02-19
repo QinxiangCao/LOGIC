@@ -1,7 +1,10 @@
 *.vo
+*.vos
+*.vok
 *.glob
 *.v.d
 *.aux
+.lia.cache
 .depend
 CONFIGURE
 LogicGenerator/Config.v
