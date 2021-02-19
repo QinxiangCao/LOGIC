@@ -1,6 +1,8 @@
 Require Import Coq.Logic.ChoiceFacts.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Coq.Logic.ClassicalChoice.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Arith.Arith.
 Require Import Logic.lib.Coqlib.
 Require Import Logic.lib.RelationPairs_ext.
 Require Import Logic.GeneralLogic.KripkeModel.
@@ -10,7 +12,6 @@ Require Import Logic.SeparationLogic.Model.DownwardsClosure.
 Require Import Logic.SeparationLogic.Model.OrderedSA.
 Require Import Logic.SeparationLogic.Model.OSAGenerators.
 
-Require Import Coq.omega.Omega.
 
 
 (***********************************)
@@ -27,8 +28,8 @@ Section nat_algs.
   Instance po_nat_geR: PreOrder (@Krelation _ nat_geR).
   Proof.
     constructor.
-    + hnf; intros; hnf; omega.
-    + hnf; intros; hnf in *; omega.
+    + hnf; intros; hnf; lia.
+    + hnf; intros; hnf in *; lia.
   Qed.
 
   Definition indexAlg: @SeparationAlgebra nat equiv_Join.
@@ -174,7 +175,7 @@ Section nat_algs.
       constructor; auto.
     - inversion H; inversion H0; subst.
       exists (my+mz); split; try constructor; simpl;
-      omega.
+      lia.
   Qed.
 
   (* upwards-closed*)
@@ -185,8 +186,8 @@ Section nat_algs.
     simpl in H0.
     inversion H;  subst.
     destruct (le_lt_dec n m1).
-    - exists n, 0; split; constructor; simpl; hnf; try omega.
-    - exists m1, (n - m1); split; constructor; simpl; hnf in *; try omega.
+    - exists n, 0; split; constructor; simpl; hnf; try lia.
+    - exists m1, (n - m1); split; constructor; simpl; hnf in *; try lia.
   Qed.
 
   (* downwards-closed*)
@@ -196,7 +197,7 @@ Section nat_algs.
     hnf; intros.
     simpl in H0, H1.
     inversion H; subst.
-    exists (n1 + n2); split; simpl; try constructor; hnf in *; try omega.
+    exists (n1 + n2); split; simpl; try constructor; hnf in *; try lia.
   Qed.
 
   (* The only increasing is 0*)
@@ -204,7 +205,7 @@ Section nat_algs.
   @increasing nat nat_geR sum_Join 0.
   Proof. hnf; intros.
        hnf.
-       inversion H; subst; omega.
+       inversion H; subst; lia.
   Qed.
 
   Lemma sumAlg_zero_decreasing_only:
@@ -212,8 +213,8 @@ Section nat_algs.
       @increasing nat nat_geR sum_Join x -> x = 0.
   Proof.
     intros.
-    specialize (H 1 (x+1) ltac:(constructor; omega)).
-    simpl in H. hnf in H; omega.
+    specialize (H 1 (x+1) ltac:(constructor; lia)).
+    simpl in H. hnf in H; lia.
   Qed.
   
   (* Unital *)
@@ -222,10 +223,10 @@ Section nat_algs.
   Proof.
     constructor; intros.
     - exists 0; split.
-      + exists n; split; simpl; try constructor; omega.
+      + exists n; split; simpl; try constructor; lia.
       + hnf; intros.
         inversion H; subst; simpl;
-        hnf; omega.
+        hnf; lia.
   Qed.
   
   (*Residual*)
@@ -234,8 +235,8 @@ Section nat_algs.
   Proof.
     constructor; intro.
     exists 0, n; split.
-    constructor; omega.
-    hnf; omega.
+    constructor; lia.
+    hnf; lia.
   Qed.
 
 (** *Minimum Algebra on Positive integers*)
@@ -257,7 +258,7 @@ Section nat_algs.
     try apply Nat.le_preorder.
     destruct x, y, z;
     unfold lep in *; simpl in *;
-    omega.
+    lia.
   Qed.
 
   Definition natPlus_R: Relation natPlus:= lep.
@@ -272,9 +273,9 @@ Proof. constructor; intros.
            constructor; auto.
        - inversion H; inversion H0; subst.
          exists (natp (my+mz)
-                          ltac:(destruct my, mz; simpl in *; omega))
+                          ltac:(destruct my, mz; simpl in *; lia))
          ; split; try constructor; simpl;
-         omega.
+         lia.
 Qed.
 
 (* it is NOT upwards-closed*)
@@ -295,11 +296,12 @@ Proof.
   inversion H; subst.
   unfold lep in *.
   destruct m1, m2, m, n1, n2; simpl in *.
-  exists (natp (nat_p3 + nat_p4) ltac:(simpl in *; omega));
-    split; simpl; try constructor; try omega.
+  exists (natp (nat_p3 + nat_p4) ltac:(simpl in *; lia));
+    split; simpl; try constructor; try lia.
   reflexivity.
   unfold natPlus_R, lep in *; simpl.
-  rewrite <- H2. unfold Krelation in *. simpl in *. omega.
+  revert is_pos2 H.
+  rewrite <- H2. unfold Krelation in *. simpl in *. lia.
 Qed.
   
   (*it is NOT Residual*)
@@ -322,7 +324,7 @@ Proof. constructor; intros.
        - inversion H; inversion H0; subst.
          exists (my+mz)
          ; split; try constructor; simpl;
-         omega.
+         lia.
 Qed.
 
 (* upwards-closed*)
@@ -333,8 +335,8 @@ Proof.
   simpl in H0.
   inversion H;  subst.
   destruct (le_ge_dec m1 m2).
-  - exists m1, (n- m1). split; constructor; simpl; hnf in *; try omega.
-  - exists (n-m2), m2. split; constructor; simpl; hnf in *; try omega.
+  - exists m1, (n- m1). split; constructor; simpl; hnf in *; try lia.
+  - exists (n-m2), m2. split; constructor; simpl; hnf in *; try lia.
 Qed.
 
 (* downwards-closed*)
@@ -344,7 +346,7 @@ Proof.
   hnf; intros.
   simpl in H0, H1.
   inversion H; subst.
-  exists (n1 + n2); split; simpl; try constructor; hnf in *; try omega.
+  exists (n1 + n2); split; simpl; try constructor; hnf in *; try lia.
 Qed.
 
 
@@ -355,7 +357,7 @@ Qed.
     constructor; intro.
     hnf; intros.
     inversion H; subst.
-    hnf. omega.
+    hnf. lia.
   Qed.
 
   
@@ -365,7 +367,7 @@ Qed.
   Proof.
     constructor; intro.
     exists 0, n; split.
-    constructor; omega.
+    constructor; lia.
     reflexivity.
   Qed.
   
@@ -448,8 +450,8 @@ Proof.
   { apply Qlt_shift_div_l.
     - rewrite <- (Qplus_0_l 0).
       apply Qplus_lt_le_compat.
-      unfold Qlt; simpl; omega.
-      unfold Qle; simpl; omega.
+      unfold Qlt; simpl; lia.
+      unfold Qle; simpl; lia.
     - rewrite Qmult_0_l.
       destruct n; auto. }
   exists (qp (n / (1 + 1)) HH), (qp (n / (1 + 1)) HH); split.
@@ -468,11 +470,11 @@ Proof.
   inversion H; subst.
   unfold lep in *.
   destruct m1, m2, m, n1, n2; simpl in *.
-  exists (natp (nat_p3 + nat_p4) ltac:(simpl in *; omega));
-    split; simpl; try constructor; try omega.
+  exists (natp (nat_p3 + nat_p4) ltac:(simpl in *; lia));
+    split; simpl; try constructor; try lia.
   reflexivity.
   unfold lep; simpl.
-  rewrite <- H2; omega.
+  rewrite <- H2; lia.
 Qed.
   
   (*it is NOT Residual*)

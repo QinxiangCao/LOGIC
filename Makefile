@@ -19,7 +19,7 @@ lib_FILES = \
   Bisimulation.v RelationPairs_ext.v \
   register_typeclass.v SublistT.v \
   Stream/SigStream.v Stream/StreamFunctions.v Stream/StreamSplit.v \
-  CancelFoundation.v
+  PTree.v CancelFoundation.v
 
 GeneralLogic_ProofTheory_FILES = \
   BasicSequentCalculus.v BasicDeduction.v BasicLogicEquiv.v \
@@ -299,10 +299,10 @@ LogicGenerator: \
 all: \
   $(FILES:%.v=%.vo)
 
-PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo
+PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo PropositionalLogic/DeepEmbedded/Solver.vo
 	./logic_gen.sh PropositionalLogic/DeepEmbedded/configuration_Mendelson.v PropositionalLogic/DeepEmbedded/interface_Mendelson.v
 
-SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v: SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v LogicGenerator/ConfigCompute.vo
+SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v: SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v LogicGenerator/ConfigCompute.vo PropositionalLogic/DeepEmbedded/Solver.vo
 	./logic_gen.sh SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v
 
 lgen_demo_1:

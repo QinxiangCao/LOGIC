@@ -301,11 +301,11 @@ Set Printing Width 1000.
 
 Ltac two_stage_print :=
   when instance_para_open: import_local_lib_tac;
-  idtac "Require Import Coq.Lists.List.";
   idtac "Require Import Coq.Numbers.BinNums.";
   idtac "Require Import Coq.PArith.BinPosDef.";
   idtac "Require Import Logic.lib.PTree.";
   idtac "Require Import Coq.Sets.Ensembles.";
+  idtac "Require Import Coq.Lists.List.";
   idtac "Import ListNotations.";
 
   newline;

@@ -1,5 +1,6 @@
 Require Import Coq.Logic.ProofIrrelevance.
-Require Import Coq.omega.Omega.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Arith.Arith.
 Require Import Logic.lib.Bijection.
 Require Import Logic.lib.Countable.
 Require Import Logic.GeneralLogic.Base.
@@ -50,7 +51,7 @@ Definition formula_countable: forall Var, Countable Var -> Countable (expr Var).
         end)).
       * hnf; intros.
         destruct a as [[y z | p] ?H].
-        (* 1 *) simpl in H. assert (rank y <= n) by omega. assert (rank z <= n) by omega.
+        (* 1 *) simpl in H. assert (rank y <= n) by lia. assert (rank z <= n) by lia.
                 exists (inl (exist _ y H0, exist _ z H1)); auto.
         (* 2 *) exists (inr p); auto.
       * hnf; intros.

@@ -1,4 +1,5 @@
-Require Import Coq.omega.Omega.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Arith.Arith.
 Require Import Coq.Lists.List.
 Require Import Logic.lib.Coqlib.
 Require Import Logic.lib.StrongInduction.
@@ -8,7 +9,7 @@ Definition fin_stream {A: Type} (h: list A) : stream A.
   exists (fun n => nth_error h n).
   intros.
   rewrite nth_error_None_iff in H0 |- *.
-  omega.
+  lia.
 Defined.
 
 Definition inf_stream {A: Type} (h: nat -> A) : stream A.
@@ -37,10 +38,10 @@ Proof.
   intros.
   split.
   + simpl.
-    apply nth_error_None_iff; omega.
+    apply nth_error_None_iff; lia.
   + intros.
     simpl.
-    rewrite nth_error_None_iff; omega.
+    rewrite nth_error_None_iff; lia.
 Qed.
 
 Definition empty_stream {A: Type}: stream A := fin_stream nil.
@@ -56,7 +57,7 @@ Lemma empty_stream_is_empty {A: Type}: is_empty_stream (@empty_stream A).
 Proof.
   split.
   + apply empty_stream_spec.
-  + intros; omega.
+  + intros; lia.
 Qed.
 
 Program Definition stream_map {A B: Type} (f: A -> B) (h: stream A): stream B :=
@@ -152,27 +153,27 @@ Program Definition fstn_stream {A: Type} (n: nat) (h: stream A) : stream A :=
   fun m => if le_lt_dec n m then None else h m.
 Next Obligation.
   destruct (le_lt_dec n x), (le_lt_dec n y); try congruence.
-  + omega.
-  + apply (stream_sound1 h x y); auto; omega.
+  + lia.
+  + apply (stream_sound1 h x y); auto; lia.
 Qed.
 
 Definition skipn_stream {A: Type} (n: nat) (h: stream A) : stream A.
   exists (fun m => h (m + n)).
   intros.
   revert H0; apply (stream_sound1 h).
-  omega.
+  lia.
 Defined.
 
 Lemma fstn_stream_Some {A: Type}: forall n m (h: stream A), m < n -> (fstn_stream n h) m = h m.
 Proof.
   intros; simpl.
-  destruct (le_lt_dec n m); auto; omega.
+  destruct (le_lt_dec n m); auto; lia.
 Qed.
 
 Lemma fstn_stream_None {A: Type}: forall n m (h: stream A), n <= m -> (fstn_stream n h) m = None.
 Proof.
   intros; simpl.
-  destruct (le_lt_dec n m); auto; omega.
+  destruct (le_lt_dec n m); auto; lia.
 Qed.
 
 Lemma fstn_stream_is_n_stream {A: Type}: forall n (h: stream A),
@@ -184,8 +185,8 @@ Proof.
   split.
   + rewrite fstn_stream_None by auto; auto.
   + intros.
-    rewrite fstn_stream_Some by omega.
-    apply H; omega.
+    rewrite fstn_stream_Some by lia.
+    apply H; lia.
 Qed.
 
 Lemma fstn_stream_eq {A: Type}: forall n (h: stream A),
@@ -196,10 +197,10 @@ Proof.
   hnf in H.
   stream_extensionality m.
   destruct (lt_dec m n).
-  + rewrite fstn_stream_Some by omega; auto.
-  + rewrite fstn_stream_None by omega.
+  + rewrite fstn_stream_Some by lia; auto.
+  + rewrite fstn_stream_None by lia.
     symmetry.
-    apply (stream_sound1 h n m); auto; omega.
+    apply (stream_sound1 h n m); auto; lia.
 Qed.
 
 Lemma fstn_stream_is_fin_stream {A: Type}: forall n (h: stream A),
@@ -212,7 +213,7 @@ Proof.
   + eapply at_most_n_stream_is_fin_stream.
     apply fstn_stream_is_n_stream.
     eapply at_least_n_stream_mono; [| eauto].
-    omega.
+    lia.
 Qed.
 
 (*
@@ -224,7 +225,7 @@ Proof.
   split.
   + rewrite fstn_stream_None by auto; auto.
   + intros.
-    rewrite fstn_stream_Some by omega.
+    rewrite fstn_stream_Some by lia.
     apply H.
 Qed.
 
@@ -238,10 +239,10 @@ Proof.
   split.
   + destruct (lt_dec n m).
     - rewrite fstn_stream_Some by auto; auto.
-    - rewrite fstn_stream_None by omega; auto.
+    - rewrite fstn_stream_None by lia; auto.
   + intros.
-    rewrite fstn_stream_Some by omega.
-    apply H1; omega.
+    rewrite fstn_stream_Some by lia.
+    apply H1; lia.
 Qed.
 *)
 Lemma skipn_stream_spec {A: Type}: forall n m (h: stream A), (skipn_stream n h) m = h (m + n).
@@ -258,7 +259,7 @@ Proof.
   stream_extensionality m.
   rewrite skipn_stream_spec.
   hnf in H.
-  rewrite (stream_sound1 h n (m + n)) by (auto; omega).
+  rewrite (stream_sound1 h n (m + n)) by (auto; lia).
   rewrite empty_stream_spec.
   auto.
 Qed.
@@ -313,7 +314,7 @@ Proof.
   rewrite (stream_sound1 h n m H) by auto.
   f_equal.
   remember (m - n) as d.
-  replace m with (d + n) by omega.
+  replace m with (d + n) by lia.
   clear Heqd H m.
   induction d.
   + simpl.
@@ -322,7 +323,7 @@ Proof.
     destruct (h n) eqn:?H; [| congruence].
     destruct n; rewrite H; auto.
   + simpl.
-    rewrite (stream_sound1 h n (S (d + n))) by (auto; omega).
+    rewrite (stream_sound1 h n (S (d + n))) by (auto; lia).
     auto.
 Qed.
 
@@ -345,10 +346,10 @@ Program Definition stream_app {A: Type} (h1 h2: stream A): stream A :=
 Next Obligation.
   destruct (partial_stream_len h1 x) eqn:?H.
   + pose proof H1.
-    apply (partial_stream_len_mono2 h1 x y n) in H1; [| omega].
+    apply (partial_stream_len_mono2 h1 x y n) in H1; [| lia].
     rewrite H1.
     apply (stream_sound1 h2 (x - n) (y - n)); auto.
-    omega.
+    lia.
   + unfold partial_stream_len in H1.
     rewrite H0 in H1.
     congruence.
@@ -372,7 +373,7 @@ Proof.
   rewrite stream_app_spec1; auto.
   hnf; intros.
   intro.
-  rewrite (stream_sound1 h1 n' m) in H by (auto; omega).
+  rewrite (stream_sound1 h1 n' m) in H by (auto; lia).
   congruence.
 Qed.
 
@@ -382,8 +383,8 @@ Lemma stream_app_spec2 {A: Type}: forall (h1 h2: stream A) (n m: nat),
 Proof.
   intros.
   simpl.
-  erewrite partial_stream_len_Some; [| | eassumption]; [| omega].
-  f_equal; omega.
+  erewrite partial_stream_len_Some; [| | eassumption]; [| lia].
+  f_equal; lia.
 Qed.
 
 Lemma stream_app_empty_stream {A: Type}: forall (h: stream A),
@@ -394,10 +395,10 @@ Proof.
   destruct (at_most_n_stream_or_at_least_Sn_stream h n).
   + rewrite at_most_n_stream_spec in H.
     destruct H as [m [? ?]].
-    replace n with ((n - m) + m) at 1 by omega.
+    replace n with ((n - m) + m) at 1 by lia.
     rewrite (stream_app_spec2 _ _ m) by auto.
     destruct H0.
-    rewrite (stream_sound1 h m n) by (auto; omega).
+    rewrite (stream_sound1 h m n) by (auto; lia).
     rewrite empty_stream_spec; auto.
   + apply stream_app_spec1; auto.
 Qed.
@@ -417,11 +418,11 @@ Proof.
         auto.
       * apply fstn_stream_is_n_stream in H.
         rewrite at_least_n_stream_spec; left; exists n.
-        split; [omega | auto].
-    - replace m with ((m - n) + n) at 1 by omega.
+        split; [lia | auto].
+    - replace m with ((m - n) + n) at 1 by lia.
       rewrite (stream_app_spec2 _ _ n).
       * rewrite skipn_stream_spec.
-        f_equal; omega.
+        f_equal; lia.
       * apply fstn_stream_is_n_stream; auto.
 Qed.
 
@@ -433,7 +434,7 @@ Proof.
   destruct (at_most_n_stream_or_at_least_Sn_stream h1 n).
   + rewrite at_most_n_stream_spec in H.
     destruct H as [m [? ?]].
-    replace n with ((n - m) + m) by omega.
+    replace n with ((n - m) + m) by lia.
     rewrite stream_map_spec.
     rewrite stream_app_spec2 by auto.
     rewrite stream_app_spec2 by (apply stream_map_n_stream; auto).
@@ -456,10 +457,10 @@ Proof.
   + rewrite fstn_stream_Some by auto.
     rewrite stream_app_spec1; auto.
     rewrite at_least_n_stream_spec; left; exists n.
-    split; [omega | auto].
-  + rewrite fstn_stream_None by omega.
+    split; [lia | auto].
+  + rewrite fstn_stream_None by lia.
     destruct H as [? _].
-    rewrite (stream_sound1 h1 n m) by (auto; omega).
+    rewrite (stream_sound1 h1 n m) by (auto; lia).
     auto.
 Qed.
 
@@ -562,9 +563,9 @@ Proof.
   revert m H0 H; induction n; intros.
   + simpl.
     destruct ((h 0) 0) eqn:?H; auto.
-  + destruct m; [omega |].
+  + destruct m; [lia |].
     simpl.
-    rewrite (IHn (S m)) by (auto; omega).
+    rewrite (IHn (S m)) by (auto; lia).
     destruct ((h 0) (S n)) eqn:?H; auto.
     pose proof (proj2 H0 (S n) H).
     congruence.
@@ -582,10 +583,10 @@ Opaque partial_stream_clen.
     rewrite (partial_stream_clen_fin0_left _ _ m) by auto.
     destruct ((h 0) 0) eqn:?H; auto.
     pose proof (proj2 H0 0 H); congruence.
-  + destruct m; [omega |].
+  + destruct m; [lia |].
     simpl.
     rewrite (partial_stream_clen_fin0_left _ _ (S m)) by auto.
-    rewrite (IHn (S m) H0) by omega.
+    rewrite (IHn (S m) H0) by lia.
     destruct ((h 0) (S n)) eqn:?H; auto.
     pose proof (proj2 H0 (S n) H); congruence.
 Transparent partial_stream_clen.
@@ -611,10 +612,10 @@ Lemma partial_stream_clen_fin0_right {A: Type}: forall (h: nat -> stream A) (n m
   end.
 Proof.
   intros.
-  destruct n; [omega |].
+  destruct n; [lia |].
   induction m.
   + simpl.
-    rewrite (partial_stream_clen_fin0_left _ _ (S n)) by (auto; omega).
+    rewrite (partial_stream_clen_fin0_left _ _ (S n)) by (auto; lia).
     rewrite (proj1 H0).
     auto.
   + simpl.
@@ -634,17 +635,17 @@ Lemma partial_stream_clen'_fin0_right {A: Type}: forall (h: nat -> stream A) (n 
 Proof.
 Opaque partial_stream_clen.
   intros.
-  destruct n; [omega |].
+  destruct n; [lia |].
   induction m.
   + simpl.
     change (partial_stream_clen h (S n)) with (partial_stream_clen h (0 + S n)).
-    rewrite (partial_stream_clen_fin0_right _ _ 0) by (auto; omega).
-    rewrite (partial_stream_clen'_fin0_left _ _ (S n)) by (auto; omega).
+    rewrite (partial_stream_clen_fin0_right _ _ 0) by (auto; lia).
+    rewrite (partial_stream_clen'_fin0_left _ _ (S n)) by (auto; lia).
     destruct (partial_stream_clen (fun k : nat => h (S k)) 0).
     destruct ((h (S n0)) n1); auto.
   + simpl.
     change (partial_stream_clen h (S (m + S n))) with (partial_stream_clen h (S m + S n)).
-    rewrite (partial_stream_clen_fin0_right _ _ (S m)) by (auto; omega).
+    rewrite (partial_stream_clen_fin0_right _ _ (S m)) by (auto; lia).
     rewrite IHm.
     destruct (partial_stream_clen (fun k : nat => h (S k)) (S m)); auto.
     destruct ((h (S n0)) n1); auto.
@@ -659,7 +660,7 @@ Program Definition stream_capp {A: Type} (h: nat -> stream A): stream A :=
     | None => None
     end.
 Next Obligation.
-  assert (x <= y) by omega; clear H.
+  assert (x <= y) by lia; clear H.
   rewrite partial_stream_clen'_None_iff in H0 |- *.
   induction H1; auto.
   clear H0 H1 x.
@@ -689,7 +690,7 @@ Proof.
   rewrite stream_capp_spec1; auto.
   hnf; intros.
   intro.
-  rewrite (stream_sound1 (h 0) n' m) in H by (auto; omega).
+  rewrite (stream_sound1 (h 0) n' m) in H by (auto; lia).
   congruence.
 Qed.
 
@@ -709,7 +710,7 @@ Lemma stream_capp_empty0 {A: Type}: forall (h: nat -> stream A),
   is_empty_stream (stream_capp h).
 Proof.
   intros.
-  split; [| intros; omega].
+  split; [| intros; lia].
   simpl.
   destruct H as [? _].
   rewrite H.
@@ -725,9 +726,9 @@ Proof.
   destruct (at_most_n_stream_or_at_least_Sn_stream (h 0) m).
   + rewrite at_most_n_stream_spec in H0.
     destruct H0 as [n [? ?]].
-    replace m with (m - n + n) by omega.
+    replace m with (m - n + n) by lia.
     rewrite stream_capp_spec2;
-      [| destruct (Nat.eq_dec n 0); [subst; tauto | omega] | auto].
+      [| destruct (Nat.eq_dec n 0); [subst; tauto | lia] | auto].
     rewrite stream_app_spec2 by auto.
     auto.
   + rewrite stream_capp_spec1 by auto.
@@ -751,23 +752,23 @@ Proof.
     apply (stream_map_n_stream f) in H.
     apply (stream_capp_empty0 (fun n : nat => stream_map f (h n))) in H0.
     destruct H as [H _], H0 as [H0 _].
-    rewrite (stream_sound1 _ 0 n) by (auto; omega).
-    rewrite (stream_sound1 _ 0 n) by (auto; omega).
+    rewrite (stream_sound1 _ 0 n) by (auto; lia).
+    rewrite (stream_sound1 _ 0 n) by (auto; lia).
     reflexivity.
   }
 
   destruct (at_most_n_stream_or_at_least_Sn_stream (h 0) n).
   + rewrite at_most_n_stream_spec in H0.
     destruct H0 as [m [? ?]].
-    replace n with (n - m + m) by omega.
+    replace n with (n - m + m) by lia.
     rewrite stream_capp_spec2;
-      [| destruct (Nat.eq_dec m 0); [subst; tauto | omega]
+      [| destruct (Nat.eq_dec m 0); [subst; tauto | lia]
        | apply stream_map_n_stream; auto].
     rewrite stream_capp_cons by auto.
     rewrite stream_map_stream_app.
     rewrite stream_app_spec2 by (apply stream_map_n_stream; auto).
     apply IH.
-    destruct (Nat.eq_dec m 0); [| omega].
+    destruct (Nat.eq_dec m 0); [| lia].
     subst; tauto.
   + rewrite stream_capp_cons by auto.
     rewrite stream_capp_spec1 by (apply stream_map_at_least_n_stream; auto).

@@ -1,7 +1,7 @@
 Require Import Coq.Sets.Ensembles.
 Require Import Coq.Classes.Morphisms.
-Require Import Coq.Lists.List.
 Require Import Logic.lib.Ensembles_ext.
+Require Import Coq.Lists.List.
 
 Section Properties.
 

@@ -1,6 +1,6 @@
 Require Import Coq.Sets.Ensembles.
 Require Import Coq.Lists.List.
-Require Import Coq.omega.Omega.
+Require Import Coq.micromega.Psatz.
 Require Import Coq.Logic.ClassicalFacts.
 
 Lemma prop_ext: prop_extensionality.
@@ -104,8 +104,8 @@ Proof.
 intros until i; intros H.
 revert i l H.
 induction i; destruct l; intros; simpl in *;
-  try solve [eauto | omega].
-apply IHi; omega.
+  try solve [eauto | lia].
+apply IHi; lia.
 Qed.
 
 Lemma nth_error_app: forall {T} (al bl : list T) (j: nat),
@@ -118,19 +118,19 @@ Lemma nth_error_app1: forall {T} (al bl : list T) (j: nat),
      (j < length al)%nat ->
      nth_error (al++bl) j = nth_error al j.
 Proof.
-  intros. revert al H; induction j; destruct al; simpl; intros; auto; try omega.
-   apply IHj. omega.
+  intros. revert al H; induction j; destruct al; simpl; intros; auto; try lia.
+   apply IHj. lia.
 Qed.
 
 Lemma nth_error_None_iff: forall {A} (l: list A) n, nth_error l n = None <-> n >= length l.
 Proof.
   intros.
   revert n; induction l; intros; destruct n; simpl.
-  + split; [intros _; omega | auto].
-  + split; [intros _; omega | auto].
-  + split; [intros; inversion H | omega].
+  + split; [intros _; lia | auto].
+  + split; [intros _; lia | auto].
+  + split; [intros; inversion H | lia].
   + rewrite IHl.
-    omega.
+    lia.
 Qed.
 
 Lemma Forall_rev: forall {A} (P: A -> Prop) (l: list A), Forall P (rev l) <-> Forall P l.

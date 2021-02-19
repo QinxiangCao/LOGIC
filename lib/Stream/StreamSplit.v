@@ -1,4 +1,5 @@
-Require Import Coq.omega.Omega.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Arith.Arith.
 Require Import Coq.Lists.List.
 Require Import Coq.Arith.Wf_nat.
 Require Import Logic.lib.Coqlib.
@@ -28,10 +29,10 @@ Proof.
     - clear H H1 a.
       intros; intro.
       destruct (lt_dec n0 n);
-        [| rewrite fstn_stream_None in H by omega; congruence].
+        [| rewrite fstn_stream_None in H by lia; congruence].
       rewrite fstn_stream_Some in H by auto.
       specialize (H0 n0 (ex_intro _ a (conj H H1))).
-      omega.
+      lia.
     - exists a; split; auto.
   + right.
     firstorder.

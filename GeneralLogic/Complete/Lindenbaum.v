@@ -1,7 +1,8 @@
 Require Import Coq.Logic.Classical_Prop.
 Require Import Coq.Sets.Ensembles.
 Require Export Coq.Lists.List.
-Require Import Coq.omega.Omega.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Arith.Arith.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Classes.RelationClasses.
 Require Import Logic.lib.Bijection.
@@ -61,14 +62,14 @@ Proof.
   split; [apply (Lindenbaum_included_n_omega (S n)) | intros].
   destruct H0 as [m ?].
   destruct (le_dec m (S n)); [revert H0; apply Lindenbaum_included_n_m; auto |].
-  assert (S n <= m) by omega; clear n0.
+  assert (S n <= m) by lia; clear n0.
   induction H1; auto.
   apply IHle; clear IHle.
   simpl in H0.
   destruct H0; auto.
   destruct H0 as [? _]; exfalso.
   pose proof pf_inj _ _ CA a _ _ H H0.
-  omega.
+  lia.
 Qed.
 
 Lemma Lindenbaum_finite_witness:

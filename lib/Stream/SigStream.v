@@ -1,4 +1,5 @@
-Require Import Coq.omega.Omega.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Arith.Arith.
 Require Import Coq.Lists.List.
 Require Export Coq.Logic.Classical.
 Require Export Coq.Logic.Classical_Prop.
@@ -19,7 +20,7 @@ Proof.
   intros ? [h ?] ? ? ?.
   destruct H; auto; simpl.
   apply (e x (S m)).
-  omega.
+  lia.
 Qed.
 
 Lemma stream_sound2: forall {A: Type} (h: stream A) (x y: nat), x <= y -> (exists a, h y = Some a) -> (exists a, h x = Some a).
@@ -105,12 +106,12 @@ Proof.
     - right.
       split; auto.
       intros; intro.
-      rewrite (stream_sound1 h n' n) in H0 by (auto; omega).
+      rewrite (stream_sound1 h n' n) in H0 by (auto; lia).
       congruence.
     - left.
       auto.
   + hnf in H |- *.
-    rewrite (stream_sound1 h n (S n)) by (auto; omega).
+    rewrite (stream_sound1 h n (S n)) by (auto; lia).
     auto.
   + destruct H; auto.
 Qed.
@@ -120,7 +121,7 @@ Lemma at_most_n_stream_0 {A: Type}: forall (h: stream A),
 Proof.
   intros; split; intros.
   + split; auto.
-    intros; omega.
+    intros; lia.
   + destruct H; auto.
 Qed.
 
@@ -132,21 +133,21 @@ Proof.
   induction n.
   + rewrite at_most_n_stream_0.
     split; intros.
-    - exists 0; split; [omega | auto].
+    - exists 0; split; [lia | auto].
     - destruct H as [m [? ?]].
-      replace m with 0 in H0 by omega.
+      replace m with 0 in H0 by lia.
       auto.
   + rewrite at_most_n_stream_Sn.
     rewrite IHn.
     split; intros.
     - destruct H as [[m [? ?]] | ?].
-      * exists m; split; [omega | auto].
-      * exists (S n); split; [omega | auto].
+      * exists m; split; [lia | auto].
+      * exists (S n); split; [lia | auto].
     - destruct H as [m [? ?]].
       destruct (le_gt_dec m n).
       * left; exists m; split; auto.
       * right.
-        replace (S n) with m by omega.
+        replace (S n) with m by lia.
         auto.
 Qed.
 
@@ -172,7 +173,7 @@ Proof.
   rewrite at_most_n_stream_spec in H0 |- *.
   destruct H0 as [m0 [? ?]].
   exists m0.
-  split; [omega | auto].
+  split; [lia | auto].
 Qed.
 
 Lemma at_most_n_stream_is_fin_stream {A: Type}: forall (h: stream A) (n: nat),
@@ -208,7 +209,7 @@ Proof.
   split; [intro | intros [? ?]].
   + split.
     - hnf in H |- *.
-      intros; apply H; omega.
+      intros; apply H; lia.
     - intros [? ?].
       exact (H n (le_n _) H0).
   + hnf in H |- *.
@@ -216,7 +217,7 @@ Proof.
     apply H0; clear H0.
     split.
     - specialize ((fun HH => H n' HH H2): ~ n' < n).
-      replace n with n' by omega; auto.
+      replace n with n' by lia; auto.
     - intros; apply H; auto.
 Qed.
 
@@ -227,7 +228,7 @@ Proof.
   split; auto.
   intros _.
   hnf; intros.
-  omega.
+  lia.
 Qed.
 
 Lemma at_least_n_stream_spec {A: Type}: forall (h: stream A) (n: nat),
@@ -239,21 +240,21 @@ Proof.
   + rewrite at_least_n_stream_0.
     split; auto; intros _.
     destruct (n_stream_or_inf_stream h) as [[m ?] | ?].
-    - left; exists m; split; [omega | auto].
+    - left; exists m; split; [lia | auto].
     - right; auto.
   + rewrite at_least_n_stream_Sn.
     rewrite IHn.
     split; intros.
     - destruct H as [[[m [? ?]] | ?] ?].
       * left; exists m; split; [| auto].
-        destruct (Nat.eq_dec m n); [subst; tauto | omega].
+        destruct (Nat.eq_dec m n); [subst; tauto | lia].
       * right; auto.
     - destruct H as [[m [? ?]] | ?].
       * split.
-       ++ left; exists m; split; [omega | auto].
+       ++ left; exists m; split; [lia | auto].
        ++ intro.
           pose proof (is_n_stream_pf _ _ _ H0 H1).
-          omega.
+          lia.
       * split.
        ++ right; auto.
        ++ intros [? ?].
@@ -282,7 +283,7 @@ Proof.
   rewrite at_least_n_stream_spec in H0 |- *.
   destruct H0 as [[m0 [? ?]] | ?].
   + left; exists m0.
-    split; [omega | auto].
+    split; [lia | auto].
   + right; auto.
 Qed.
 
@@ -303,11 +304,11 @@ Proof.
   + right.
     rewrite at_least_n_stream_spec.
     left; exists m.
-    split; [omega | tauto].
+    split; [lia | tauto].
   + left.
     rewrite at_most_n_stream_spec.
     exists m.
-    split; [omega | tauto].
+    split; [lia | tauto].
   + right.
     rewrite at_least_n_stream_spec.
     right; auto.
@@ -321,7 +322,7 @@ Proof.
   + left; auto.
   + right.
     eapply at_least_n_stream_mono; [| eassumption].
-    omega.
+    lia.
 Qed.
 
 (*
@@ -371,7 +372,7 @@ Proof.
   intros.
   intros n0 ?.
   apply H0.
-  omega.
+  lia.
 Qed.
 
 Lemma is_n_stream_None {A: Type}: forall n m (h: stream A), n <= m -> is_n_stream n h -> h m = None.
@@ -386,7 +387,7 @@ Lemma fstn_stream_coincide {A: Type}: forall n (h: stream A),
 Proof.
   intros.
   intros m ?.
-  rewrite fstn_stream_Some by omega.
+  rewrite fstn_stream_Some by lia.
   auto.
 Qed.
 
@@ -428,14 +429,14 @@ Proof.
     destruct (H n); [| right; congruence].
     assert (m < n).
     Focus 1. {
-      destruct (le_dec n m); try omega.
+      destruct (le_dec n m); try lia.
       exfalso; apply H2.
       eapply stream_sound1; eauto.
     } Unfocus.
     destruct (H m); [congruence |].
     destruct (H0 m); [| congruence].
     left.
-    apply stream_sound1 with m; auto. omega.
+    apply stream_sound1 with m; auto. lia.
   + hnf; intros n.
     destruct (classic (h1 n = None)), (classic (h1 n = h2 n)); try tauto.
     exfalso.
@@ -457,7 +458,7 @@ Proof.
   destruct (le_dec n m).
   + rewrite fstn_stream_None; auto.
   + rewrite fstn_stream_Some; auto.
-    omega.
+    lia.
 Qed.
 
 Lemma prefix_stream_coincide {A: Type}: forall n (h1 h2: stream A),
@@ -477,10 +478,10 @@ Proof.
   intros.
   split; intros; hnf; intros.
   + specialize (H0 n' H1).
-    rewrite fstn_stream_Some in H0 by omega.
+    rewrite fstn_stream_Some in H0 by lia.
     auto.
   + specialize (H0 n' H1).
-    rewrite fstn_stream_Some by omega.
+    rewrite fstn_stream_Some by lia.
     auto.
 Qed.
 
@@ -511,21 +512,21 @@ Lemma app_fin_inf_list {A: Type}: forall l (h: nat -> A) m, m < length l -> Some
 Proof.
   intros.
   revert l H; induction m; intros; simpl.
-  + destruct l; [simpl in H; omega |].
+  + destruct l; [simpl in H; lia |].
     simpl; auto.
-  + destruct l; [simpl in H; omega |].
+  + destruct l; [simpl in H; lia |].
     simpl.
     apply IHm.
-    simpl in H; omega.
+    simpl in H; lia.
 Qed.
 
 Lemma app_fin_inf_fun {A: Type}: forall l (h: nat -> A) m, length l <= m -> app_fin_inf l h m = h (m - length l).
 Proof.
   intros.
   revert m H; induction l; intros; simpl.
-  + f_equal; omega.
-  + destruct m; [simpl in H; omega |].
-    rewrite IHl by (simpl in H; omega).
+  + f_equal; lia.
+  + destruct m; [simpl in H; lia |].
+    rewrite IHl by (simpl in H; lia).
     f_equal.
 Qed.
 
@@ -535,21 +536,21 @@ Proof.
   induction n; simpl; auto.
   rewrite app_length, IHn.
   simpl.
-  omega.
+  lia.
 Qed.
 
 Lemma nth_error_firstn_list_from_fun: forall {A} (f: nat -> A) n m, m < n -> nth_error (fisrtn_list_from_fun f n) m = Some (f m).
 Proof.
   intros.
   revert m H; induction n; intros; simpl.
-  + omega.
+  + lia.
   + destruct (le_dec n m).
-    - assert (n = m) by omega; subst.
-      replace m with (length (fisrtn_list_from_fun f m) + 0) at 3 by (rewrite length_firstn_list_from_fun; omega).
+    - assert (n = m) by lia; subst.
+      replace m with (length (fisrtn_list_from_fun f m) + 0) at 3 by (rewrite length_firstn_list_from_fun; lia).
       rewrite nth_error_app.
       simpl; auto.
-    - rewrite nth_error_app1 by (rewrite length_firstn_list_from_fun; omega).
-      apply IHn; omega.
+    - rewrite nth_error_app1 by (rewrite length_firstn_list_from_fun; lia).
+      apply IHn; lia.
 Qed.
 
 Lemma fstn_app_inf_fin {A: Type}: forall l (h: nat -> A) n,
@@ -565,17 +566,17 @@ Proof.
     apply nth_error_None_iff.
     rewrite app_length.
     rewrite length_firstn_list_from_fun.
-    omega.
-  + rewrite fstn_stream_Some by omega.
+    lia.
+  + rewrite fstn_stream_Some by lia.
     simpl.
     destruct (le_dec (length l) m).
     - rewrite app_fin_inf_fun by auto.
-      replace m with (length l + (m - length l)) at 2 by omega.
+      replace m with (length l + (m - length l)) at 2 by lia.
       rewrite nth_error_app.
-      rewrite nth_error_firstn_list_from_fun by omega.
+      rewrite nth_error_firstn_list_from_fun by lia.
       auto.
-    - rewrite nth_error_app1 by omega.
-      rewrite app_fin_inf_list by omega.
+    - rewrite nth_error_app1 by lia.
+      rewrite app_fin_inf_list by lia.
       auto.
 Qed.
 

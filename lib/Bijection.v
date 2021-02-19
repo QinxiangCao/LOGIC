@@ -2,10 +2,9 @@ Require Export Coq.Relations.Relation_Definitions.
 Require Export Coq.Relations.Relation_Operators.
 Require Export Coq.Relations.Relation_Definitions.
 Require Export Coq.Classes.RelationClasses.
-Require Import Coq.Arith.Even.
-Require Import Coq.Arith.Div2.
+Require Import Coq.Arith.Arith.
 Require Import Coq.Numbers.Natural.Peano.NPeano.
-Require Import Omega.
+Require Import Coq.micromega.Psatz.
 
 Definition image_defined {A B} (R: A -> B -> Prop): Prop :=
   forall a, exists b, R a b.
@@ -191,15 +190,15 @@ Definition nat2_nat_bijection: bijection (sum nat nat) nat.
   + hnf; intros.
     destruct a; inversion H; inversion H0; auto.
   + hnf; intros.
-    destruct a1, a2; inversion H; inversion H0; destruct (lt_eq_lt_dec n n0) as [[? | ?] | ?]; try omega; subst; auto.
+    destruct a1, a2; inversion H; inversion H0; destruct (lt_eq_lt_dec n n0) as [[? | ?] | ?]; try lia; subst; auto.
   + hnf; intros.
     destruct (Even.even_odd_dec b) as [H | H].
     - rewrite (proj1 (Div2.even_odd_double _)), NPeano.double_twice in H.
       exists (inl (Div2.div2 b)).
-      rewrite H at 1. omega.
+      rewrite H at 1. lia.
     - rewrite (proj2 (Div2.even_odd_double _)), NPeano.double_twice in H.
       exists (inr (Div2.div2 b)).
-      rewrite H at 1. omega.
+      rewrite H at 1. lia.
 Defined.
 
 Definition natnat_nat_bijection: bijection (prod nat nat) nat.
@@ -212,7 +211,7 @@ Definition natnat_nat_bijection: bijection (prod nat nat) nat.
   + hnf; intros.
     destruct a; eauto.
   + hnf; intros.
-    destruct a; omega.
+    destruct a; lia.
   + hnf; intros.
     destruct a1 as [a11 a12], a2 as [a21 a22].
     assert (forall m1 m2, m1 < m2 ->
@@ -228,23 +227,23 @@ Definition natnat_nat_bijection: bijection (prod nat nat) nat.
           end) m2).
     {
       intros.
-      remember (m2 - m1 - 1) as d; assert (m2 = (S d) + m1) by omega.
+      remember (m2 - m1 - 1) as d; assert (m2 = (S d) + m1) by lia.
       subst m2; clear.
       induction d.
       + simpl.
-        omega.
+        lia.
       + simpl in *.
-        omega.
+        lia.
     }
     destruct (lt_eq_lt_dec (a11 + a12) (a21 + a22)) as [[HH | HH] | HH].
     - specialize (H1 _ _ HH).
-      omega.
+      lia.
     - rewrite HH in H.
-      assert (a11 = a21) by omega.
-      assert (a12 = a22) by omega.
+      assert (a11 = a21) by lia.
+      assert (a12 = a22) by lia.
       subst; auto.
     - specialize (H1 _ _ HH).
-      omega.
+      lia.
   + hnf; intros.
     assert (exists s,
         (fix sum (x : nat) : nat :=
@@ -260,7 +259,7 @@ Definition natnat_nat_bijection: bijection (prod nat nat) nat.
     {
       induction b.
       + exists 0; simpl.
-        omega.
+        lia.
       + destruct IHb as [s ?].
         remember (b - (fix sum (x : nat) : nat :=
                          match x with
@@ -268,8 +267,8 @@ Definition natnat_nat_bijection: bijection (prod nat nat) nat.
                          | S x0 => S x0 + sum x0
                          end) s) as d.
         destruct (lt_dec d s) as [HH | HH].
-        - exists s; simpl in *; omega.
-        - exists (S s); simpl in *; omega.
+        - exists s; simpl in *; lia.
+        - exists (S s); simpl in *; lia.
     }
     destruct H as [s ?].
     remember (b - (fix sum (x : nat) : nat :=
@@ -278,7 +277,7 @@ Definition natnat_nat_bijection: bijection (prod nat nat) nat.
                 | S x0 => S x0 + sum x0
                 end) s) as a1.
     exists (a1, s - a1).
-    replace (a1 + (s - a1)) with s by omega.
-    omega.
+    replace (a1 + (s - a1)) with s by lia.
+    lia.
 Defined.
 
