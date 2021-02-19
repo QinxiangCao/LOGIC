@@ -2,7 +2,7 @@ Require Import String.
 Local Open Scope string.
 
 Definition instance_para_open := false.
-Definition implementation_file := "implementation".
+Definition implementation_file := "implementation_7".
 Definition result_module := "T".
 
 Require Import Coq.Lists.List.

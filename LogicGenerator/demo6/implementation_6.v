@@ -1,24 +1,24 @@
+Require Import HypotheticalExternLib.
 Require Import ZArith.
-Require Import interface.
+Require Import interface_6.
 
-Definition X: Type := nat.
-
-Definition RealProvable (e: (nat-> option X) -> Prop) := forall st, e st.
-Definition join : (nat-> option X) -> (nat-> option X) -> (nat-> option X) -> Prop :=
+Definition RealProvable `{para} (e: (nat -> option X) -> Prop) := forall st, e st.
+Definition join `{para} : (nat -> option X) -> (nat -> option X) -> (nat -> option X) -> Prop :=
     fun x y z =>
       forall p: nat,
        (exists v, x p = Some v /\ y p = None /\ z p = Some v) \/
        (exists v, x p = None /\ y p = Some v /\ z p = Some v) \/
        (x p = None /\ y p = None /\ z p = None).
-Definition SepCon (e1 e2 : (nat-> option X) -> Prop) : (nat-> option X) -> Prop := fun st =>
+Definition SepCon `{para} (e1 e2 : (nat -> option X) -> Prop) : (nat -> option X) -> Prop := fun st =>
     exists st1 st2, join st1 st2 st /\ e1 st1 /\ e2 st2.
-Definition Emp : (nat-> option X) -> Prop :=
+Definition Emp `{para}: (nat -> option X) -> Prop :=
   fun st =>
     forall p, st p = None.
 
 Module NaiveLang <: LanguageSig.
-  Definition expr := (nat-> option X) -> Prop.
+  Definition expr `{para} := (nat -> option X) -> Prop.
   Section NaiveLang.
+  Context `{para}.
   Definition context := expr -> Prop.
   Definition impp (e1 e2 : expr) : expr := fun st => e1 st -> e2 st.
   Definition andp (e1 e2 : expr) : expr := fun st => e1 st /\ e2 st.
@@ -31,7 +31,7 @@ End NaiveLang.
 Module NaiveRule.
   Include DerivedNames (NaiveLang).
   Section NaiveRule.
-  (*Context `{para}.*)
+  Context `{para}.
 
   Lemma modus_ponens :
     forall x y : expr, provable (impp x y) -> provable x -> provable y.
@@ -63,8 +63,8 @@ Module NaiveRule.
 End NaiveRule.
 
 Module T := LogicTheorem NaiveLang NaiveRule.
-Module Solver := IPSolver NaiveLang.
+(*Module Solver := IPSolver NaiveLang.*)
 Import T.
-Import Solver.
+(*Import Solver.*)
 
 

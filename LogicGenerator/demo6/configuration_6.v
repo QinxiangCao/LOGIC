@@ -3,7 +3,7 @@ Local Open Scope string.
 
 Definition instance_para_open := true.
 Definition local_lib_file := "HypotheticalExternLib".
-Definition implementation_file := "implementation".
+Definition implementation_file := "implementation_6".
 Definition result_module := "T".
 Definition instance_para := "para".
 
