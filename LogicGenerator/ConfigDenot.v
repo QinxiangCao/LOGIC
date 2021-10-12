@@ -27,6 +27,7 @@ Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfCancel.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
+Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 
 Require Logic.LogicGenerator.ConfigLang.
 Require Import Logic.LogicGenerator.Utils. 
@@ -56,6 +57,7 @@ Definition connectives: list connective :=
   ; iter_andp
   ; iter_sepcon
   ; empty_context
+  ; join
   ].
 
 Definition judgements: list judgement :=
@@ -81,6 +83,7 @@ Definition how_connectives: list how_connective :=
   ; FROM_andp_TO_iter_andp
   ; FROM_sepcon_TO_iter_sepcon
   ; FROM_empty_set_TO_empty_context
+  ; FROM_join_TO_sepcon
   ].
 
 Definition how_judgements: list how_judgement :=
@@ -109,6 +112,7 @@ Definition connective_classes :=
   ; EmpLanguage
   ; IterAndLanguage
   ; IterSepconLanguage
+  ; JoinLanguage
   ].
 
 Definition judgement_classes :=
@@ -197,6 +201,7 @@ Definition rule_classes :=
   ; GEN_derivable1_FROM_provable
   ; GEN_logic_equiv_FROM_provable
   ; GEN_logic_equiv_FROM_derivable1
+  ; GEN_sepcon_FROM_join
   ].
 
 Definition classes :=
@@ -221,9 +226,14 @@ Definition refl_classes :=
   ; RC GEN_derivable1_FROM_provable
   ; RC GEN_logic_equiv_FROM_provable
   ; RC GEN_logic_equiv_FROM_derivable1
+  ; RC GEN_sepcon_FROM_join
   ].
 
 End D.
+
+(* Class JoinLanguage (L: Language): Type := {
+  join: prog_state -> prog_state -> prog_state -> Prop
+}. *)
 
 Definition Build_Language := Build_Language.
 Definition Build_MinimumLanguage := Build_MinimumLanguage.
@@ -421,10 +431,15 @@ Context {L: Language}
         {imppE: ImpLogicEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
+        
+        (* new *)
+        {M : Model}
+        {joinD : Join model}
         .
 
 Definition types: list Name :=
-  [ expr
+  [ model
+  ; expr
   ; context
   ].
 
@@ -444,6 +459,7 @@ Definition connectives: list Name :=
   ; iter_andp
   ; iter_sepcon
   ; empty_context
+  ; join
   ].
 
 Definition judgements: list Name :=
@@ -469,6 +485,7 @@ Definition how_connectives: list Name :=
   ; (iter_andp, fun xs => fold_left andp xs truep)
   ; (iter_sepcon, fun xs => fold_left sepcon xs emp)
   ; (empty_context, Empty_set expr)
+  ; (sepcon, fun x y => fun m => exists m1 m2, join m1 m2 m /\ x m1 /\ y m2)
   ].
 
 Definition how_judgements: list Name :=

@@ -22,6 +22,7 @@ match hc with
 | FROM_andp_TO_iter_andp => []
 | FROM_sepcon_TO_iter_sepcon => []
 | FROM_empty_set_TO_empty_context => [FROM_ensemble_expr_TO_context]
+| FROM_join_TO_sepcon => []
 end.
 
 (* infered how-type of how-judgement *)
@@ -62,6 +63,7 @@ match hc with
 | FROM_andp_TO_iter_andp => iter_andp
 | FROM_sepcon_TO_iter_sepcon => iter_sepcon
 | FROM_empty_set_TO_empty_context => empty_context
+| FROM_join_TO_sepcon => sepcon
 end.
 
 (* generated judgement *)
@@ -102,7 +104,8 @@ match c with
 | emp
 | multi_imp
 | iter_andp
-| iter_sepcon => [expr]
+| iter_sepcon 
+| join => [expr]
 | empty_context => [context]
 end.
 
@@ -131,6 +134,7 @@ match hc with
 | FROM_andp_TO_iter_andp => [andp; truep]
 | FROM_sepcon_TO_iter_sepcon => [sepcon; emp]
 | FROM_empty_set_TO_empty_context => []
+| FROM_join_TO_sepcon => [join]
 end.
 
 (* dependent judgements of how-judgement *)
@@ -170,6 +174,7 @@ match hc with
 | FROM_andp_TO_iter_andp => Some (GEN_iter_andp_FROM_fold_left_andp)
 | FROM_sepcon_TO_iter_sepcon => Some (GEN_iter_sepcon_FROM_fold_left_sepcon)
 | FROM_empty_set_TO_empty_context => None
+| FROM_join_TO_sepcon => Some (GEN_sepcon_FROM_join)
 end.
 
 (* Automatically generated rule-instances from judgement derivation *)

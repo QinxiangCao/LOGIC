@@ -19,7 +19,8 @@ Inductive connective :=
 | multi_imp
 | iter_andp
 | iter_sepcon
-| empty_context.
+| empty_context
+| join.
 
 Inductive judgement :=
 | provable
@@ -54,7 +55,8 @@ Inductive how_connective :=
 | FROM_impp_TO_multi_imp
 | FROM_andp_TO_iter_andp
 | FROM_sepcon_TO_iter_sepcon
-| FROM_empty_set_TO_empty_context.
+| FROM_empty_set_TO_empty_context
+| FROM_join_TO_sepcon.
 
 Definition primitive_connectives := map primitive_connective.
 Definition predicate_over_states := ___predicate_over_states false.
@@ -163,6 +165,7 @@ Inductive rule_class :=
 | GEN_derivable1_FROM_provable
 | GEN_logic_equiv_FROM_provable
 | GEN_logic_equiv_FROM_derivable1
+| GEN_sepcon_FROM_join
 .
 
 (** * What users need not to know **)
@@ -195,6 +198,7 @@ Inductive connective_class :=
 | EmpLanguage
 | IterAndLanguage
 | IterSepconLanguage
+| JoinLanguage
 .
 
 Inductive judgement_class :=
@@ -432,6 +436,7 @@ match c1, c2 with
 | iter_andp, iter_andp
 | iter_sepcon, iter_sepcon
 | empty_context, empty_context => true
+| join, join => true
 | _, _ => false
 end.
 
@@ -510,6 +515,7 @@ match cc1, cc2 with
 | EmpLanguage, EmpLanguage
 | IterAndLanguage, IterAndLanguage
 | IterSepconLanguage, IterSepconLanguage => true
+| JoinLanguage, JoinLanguage => true
 | _, _ => false
 end.
 
@@ -632,6 +638,7 @@ match rc1, rc2 with
 | GEN_derivable1_FROM_provable, GEN_derivable1_FROM_provable
 | GEN_logic_equiv_FROM_provable, GEN_logic_equiv_FROM_provable
 | GEN_logic_equiv_FROM_derivable1, GEN_logic_equiv_FROM_derivable1 => true
+| GEN_sepcon_FROM_join, GEN_sepcon_FROM_join => true
 | _, _ => false
 end.
 
@@ -679,3 +686,4 @@ End AllClass.
 Module AllClassList := ListFunOverDecType AllClass.
 
 Module NatList := ListFunOverDecType PeanoNat.Nat.
+
