@@ -31,6 +31,7 @@ Require Import Logic.SeparationLogic.ProofTheory.TheoryOfCancel.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.ProofTheory.Deduction.
+Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigDenot.
@@ -154,6 +155,9 @@ Context {L: Language}
         {imppE: ImpLogicEquiv L GammaE}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
+
+        {M : Model}
+        {joinD : Join model}
         .
         
 Import NameListNotations.

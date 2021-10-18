@@ -434,7 +434,7 @@ Context {L: Language}
         
         (* new *)
         {M : Model}
-        {joinD : Join model}
+        {J : Join model}
         .
 
 Definition types: list Name :=
@@ -615,6 +615,9 @@ Definition instances_build :=
          rule_instances_build) in
         exact instances_build).
 
+Print AndImp2Iff_Normal.
+Locate AndImp2Iff_Normal.
+
 Definition refl_instances :=
   [ (iffpDef, AndImp2Iff_Normal)
   ; (truepDef, FalseImp2True_Normal)
@@ -629,6 +632,7 @@ Definition refl_instances :=
   ; (GammaD1P, Provable2Derivable1_Normal)
   ; (GammaEP, Provable2Equiv_Normal)
   ; (GammaED1, Derivable12Equiv_Normal)
+  ; (J, )
   ].
 
 Definition instance_transitions :=
