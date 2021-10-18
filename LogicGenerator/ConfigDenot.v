@@ -618,6 +618,8 @@ Definition instances_build :=
 Print AndImp2Iff_Normal.
 Locate AndImp2Iff_Normal.
 
+Locate sepcon.
+
 Definition refl_instances :=
   [ (iffpDef, AndImp2Iff_Normal)
   ; (truepDef, FalseImp2True_Normal)

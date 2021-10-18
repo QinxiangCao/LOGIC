@@ -17,6 +17,7 @@ Require Import Logic.PropositionalLogic.ProofTheory.TheoryOfPropositionalConnect
 Require Import Logic.MetaLogicInj.Syntax.
 Require Import Logic.MetaLogicInj.ProofTheory.ProofRules.
 Require Import Logic.SeparationLogic.Syntax.
+Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 
 Local Open Scope logic_base.
 Local Open Scope syntax.
@@ -891,4 +892,3 @@ Proof.
 Qed.
 
 End WandRules.
-
