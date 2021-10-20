@@ -28,6 +28,7 @@ Require Import Logic.SeparationLogic.ProofTheory.TheoryOfCancel.
 Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
+Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.
 
 Require Logic.LogicGenerator.ConfigLang.
 Require Import Logic.LogicGenerator.Utils. 
@@ -112,7 +113,7 @@ Definition connective_classes :=
   ; EmpLanguage
   ; IterAndLanguage
   ; IterSepconLanguage
-  ; JoinLanguage
+  ; Join
   ].
 
 Definition judgement_classes :=
@@ -615,11 +616,6 @@ Definition instances_build :=
          rule_instances_build) in
         exact instances_build).
 
-Print AndImp2Iff_Normal.
-Locate AndImp2Iff_Normal.
-
-Locate sepcon.
-
 Definition refl_instances :=
   [ (iffpDef, AndImp2Iff_Normal)
   ; (truepDef, FalseImp2True_Normal)
@@ -634,7 +630,7 @@ Definition refl_instances :=
   ; (GammaD1P, Provable2Derivable1_Normal)
   ; (GammaEP, Provable2Equiv_Normal)
   ; (GammaED1, Derivable12Equiv_Normal)
-  ; (J, )
+  (* ; (J, ) *)
   ].
 
 Definition instance_transitions :=

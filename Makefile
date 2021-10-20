@@ -96,7 +96,7 @@ PropositionalLogic_DeepEmbedded_FILES = \
   PropositionalLanguage.v ProofTheories.v \
   KripkeSemantics.v TrivialSemantics.v \
   Soundness.v Complete_Kripke.v Complete_Classical_Trivial.v \
-  configuration_Mendelson.v interface_Mendelson.v implementation_Mendelson.v \
+  # configuration_Mendelson.v interface_Mendelson.v implementation_Mendelson.v \
   Deep.v Solver.v
 
 PropositionalLogic_ShallowEmbedded_FILES = \
@@ -196,10 +196,11 @@ SeparationLogic_DeepEmbedded_FILES = \
   Parameter.v \
   ParametricSeparationLogic.v SeparationLogicsInLiteratures.v \
   FlatSemantics.v ParametricCompleteness.v \
-  MinimumSeparationLogic_Config.v MinimumSeparationLogic_LibSupport.v MinimumSeparationLogic.v
+  # MinimumSeparationLogic_Config.v MinimumSeparationLogic_LibSupport.v MinimumSeparationLogic.v
 
 SeparationLogic_ShallowEmbedded_FILES = \
-  PredicateSeparationLogic.v MonoPredicateSeparationLogic.v
+  PredicateSeparationLogic.v MonoPredicateSeparationLogic.v \
+  Join2Sepcon.v
 
 SeparationLogic_FILES = \
   Syntax.v \

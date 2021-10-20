@@ -198,7 +198,7 @@ Inductive connective_class :=
 | EmpLanguage
 | IterAndLanguage
 | IterSepconLanguage
-| JoinLanguage
+| Join
 .
 
 Inductive judgement_class :=
@@ -515,7 +515,7 @@ match cc1, cc2 with
 | EmpLanguage, EmpLanguage
 | IterAndLanguage, IterAndLanguage
 | IterSepconLanguage, IterSepconLanguage => true
-| JoinLanguage, JoinLanguage => true
+| Join, Join => true
 | _, _ => false
 end.
 
