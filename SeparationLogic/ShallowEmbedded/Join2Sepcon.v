@@ -6,8 +6,6 @@ Require Import Logic.PropositionalLogic.Syntax.
 Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.SeparationLogic.Syntax.
-Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
-Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 
 Context {M : Model} {J : Join model}.

@@ -30,7 +30,7 @@ Inductive judgement :=
 | corable.
 
 Inductive type :=
-| prog_state
+| model
 | expr
 | context.
 
@@ -176,6 +176,7 @@ Inductive how_type :=
 | FROM_predicate_over_states_TO_expr
 | FROM_mpredicate_over_states_TO_expr
 | FROM_ensemble_expr_TO_context
+| FROM_model_TO_expr
 .
 
 Notation "'ht_restriction'" := (list how_type).
@@ -370,7 +371,7 @@ Definition eqb (t1 t2: type) :=
   match t1, t2 with
   | expr, expr => true
   | context, context => true
-  | prog_state, prog_state => true
+  | model, model => true
   | _, _ => false
   end.
 
@@ -395,6 +396,7 @@ Definition eqb (ht1 ht2: how_type) :=
   | FROM_predicate_over_states_TO_expr, FROM_predicate_over_states_TO_expr => true
   | FROM_mpredicate_over_states_TO_expr, FROM_mpredicate_over_states_TO_expr => true
   | FROM_ensemble_expr_TO_context, FROM_ensemble_expr_TO_context => true
+  | FROM_model_TO_expr, FROM_model_TO_expr => true
   | _, _ => false
   end.
 

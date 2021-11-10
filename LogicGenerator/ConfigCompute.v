@@ -22,7 +22,7 @@ match hc with
 | FROM_andp_TO_iter_andp => []
 | FROM_sepcon_TO_iter_sepcon => []
 | FROM_empty_set_TO_empty_context => [FROM_ensemble_expr_TO_context]
-| FROM_join_TO_sepcon => []
+| FROM_join_TO_sepcon => [FROM_model_TO_expr]
 end.
 
 (* infered how-type of how-judgement *)
@@ -86,6 +86,7 @@ match ht with
 | FROM_predicate_over_states_TO_expr => expr
 | FROM_mpredicate_over_states_TO_expr => expr
 | FROM_ensemble_expr_TO_context => context
+| FROM_model_TO_expr => expr
 end.
 
 (* depended types of connectives *)
@@ -104,8 +105,9 @@ match c with
 | emp
 | multi_imp
 | iter_andp
-| iter_sepcon 
-| join => [expr]
+| iter_sepcon => [expr]
+(* | sepcon *)
+| join => [expr; model]
 | empty_context => [context]
 end.
 
@@ -154,9 +156,10 @@ end.
 Definition DTOT (ht: how_type): list type :=
 match ht with
 | primitive_type t => []
-| FROM_predicate_over_states_TO_expr => [prog_state]
-| FROM_mpredicate_over_states_TO_expr => [prog_state]
+| FROM_predicate_over_states_TO_expr => [model]
+| FROM_mpredicate_over_states_TO_expr => [model]
 | FROM_ensemble_expr_TO_context => [expr]
+| FROM_model_TO_expr => [model]
 end.
 
 (* Automatically generated rule-instances from judgement derivation *)

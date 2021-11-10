@@ -300,11 +300,11 @@ LogicGenerator: \
 all: \
   $(FILES:%.v=%.vo)
 
-PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo PropositionalLogic/DeepEmbedded/Solver.vo
-	./logic_gen.sh PropositionalLogic/DeepEmbedded/configuration_Mendelson.v PropositionalLogic/DeepEmbedded/interface_Mendelson.v
+# PropositionalLogic/DeepEmbedded/interface_Mendelson.v: PropositionalLogic/DeepEmbedded/configuration_Mendelson.v LogicGenerator/ConfigCompute.vo PropositionalLogic/DeepEmbedded/Solver.vo
+# 	./logic_gen.sh PropositionalLogic/DeepEmbedded/configuration_Mendelson.v PropositionalLogic/DeepEmbedded/interface_Mendelson.v
 
-SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v: SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v LogicGenerator/ConfigCompute.vo PropositionalLogic/DeepEmbedded/Solver.vo
-	./logic_gen.sh SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v
+# SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v: SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v LogicGenerator/ConfigCompute.vo PropositionalLogic/DeepEmbedded/Solver.vo
+# 	./logic_gen.sh SeparationLogic/DeepEmbedded/MinimumSeparationLogic_Config.v SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v
 
 lgen_demo_1:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo/HypotheticalExternLib.v
@@ -366,37 +366,45 @@ lgen_demo_6:
 	@echo COQC LogicGenerator/demo6/test_6.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo6/test_6.v
 
-lgen_demo_7:
-	./logic_gen.sh LogicGenerator/demo7/configuration_7.v LogicGenerator/demo7/interface_7.v LogicGenerator/demo7/export_lib_7.v
-	@echo COQC LogicGenerator/demo7/interface_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/interface_7.v
-	@echo COQC LogicGenerator/demo7/implementation_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/implementation_7.v
-	@echo COQC LogicGenerator/demo7/export_lib_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/export_lib_7.v
-	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/demo7/SepApply_7.v
-	@sed -i 's/export_lib/export_lib_7/g' LogicGenerator/demo7/SepApply_7.v
-	@echo COQC LogicGenerator/demo7/SepApply_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepApply_7.v
-	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/demo7/SepCancel_7.v
-	@sed -i 's/export_lib/export_lib_7/g' LogicGenerator/demo7/SepCancel_7.v
-	@echo COQC LogicGenerator/demo7/SepCancel_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepCancel_7.v
-	@echo COQC LogicGenerator/demo7/test_7.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/test_7.v
+demo931:
+	@echo COQC LogicGenerator/demo931/Config.v
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo931/Config.v
+	./logic_gen.sh LogicGenerator/demo931/Config.v LogicGenerator/demo931/Interface.v
 
-lgen_demo_bedrock2:
-	./logic_gen.sh LogicGenerator/demo/configuration_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/interface.v ../bedrock2/bedrock2/src/exportLogic/export_lib.v
-	@echo COQC interface.v [in-bedrock2-folder]
-	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/interface.v
-	@echo COQC implementation.v [in-bedrock2-folder]
-	@cp LogicGenerator/demo/implementation_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/implementation.v
-	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/implementation.v
-	@echo COQC export_lib.v [in-bedrock2-folder]
-	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/export_lib.v
-	@cp ExportSolvers/SepApply/SepApply.v ../bedrock2/bedrock2/src/exportLogic/
-	@echo COQC SepApply.v [in-bedrock2-folder]
-	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
+# @echo COQC LogicGenerator/demo/Interface.v
+# @$(COQC) $(COQ_FLAG) LogicGenerator/demo/Interface.v
+
+# lgen_demo_7:
+# 	./logic_gen.sh LogicGenerator/demo7/configuration_7.v LogicGenerator/demo7/interface_7.v LogicGenerator/demo7/export_lib_7.v
+# 	@echo COQC LogicGenerator/demo7/interface_7.v
+# 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/interface_7.v
+# 	@echo COQC LogicGenerator/demo7/implementation_7.v
+# 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/implementation_7.v
+# 	@echo COQC LogicGenerator/demo7/export_lib_7.v
+# 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/export_lib_7.v
+# 	@cp ExportSolvers/SepApply/SepApply.v LogicGenerator/demo7/SepApply_7.v
+# 	@sed -i 's/export_lib/export_lib_7/g' LogicGenerator/demo7/SepApply_7.v
+# 	@echo COQC LogicGenerator/demo7/SepApply_7.v
+# 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepApply_7.v
+# 	@cp ExportSolvers/SepCancel/SepCancel.v LogicGenerator/demo7/SepCancel_7.v
+# 	@sed -i 's/export_lib/export_lib_7/g' LogicGenerator/demo7/SepCancel_7.v
+# 	@echo COQC LogicGenerator/demo7/SepCancel_7.v
+# 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/SepCancel_7.v
+# 	@echo COQC LogicGenerator/demo7/test_7.v
+# 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo7/test_7.v
+
+# lgen_demo_bedrock2:
+# 	./logic_gen.sh LogicGenerator/demo/configuration_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/interface.v ../bedrock2/bedrock2/src/exportLogic/export_lib.v
+# 	@echo COQC interface.v [in-bedrock2-folder]
+# 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/interface.v
+# 	@echo COQC implementation.v [in-bedrock2-folder]
+# 	@cp LogicGenerator/demo/implementation_bedrock2.v ../bedrock2/bedrock2/src/exportLogic/implementation.v
+# 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/implementation.v
+# 	@echo COQC export_lib.v [in-bedrock2-folder]
+# 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/export_lib.v
+# 	@cp ExportSolvers/SepApply/SepApply.v ../bedrock2/bedrock2/src/exportLogic/
+# 	@echo COQC SepApply.v [in-bedrock2-folder]
+# 	@$(COQC) $(COQ_FLAG) -R ../bedrock2/bedrock2/src/bedrock2 bedrock2 -R ../bedrock2/bedrock2/src/exportLogic exportLogic -R ../bedrock2/deps/coqutil/src/coqutil coqutil ../bedrock2/bedrock2/src/exportLogic/SepApply.v
 
 DF=PropositionalLogic/DeepEmbedded/interface_Mendelson.v SeparationLogic/DeepEmbedded/MinimumSeparationLogic_LibSupport.v
 

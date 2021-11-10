@@ -47,6 +47,8 @@ Definition instance_para_open := false.
 
 Import Config.
 
+(* Eval compute in (primitive_cs Config.how_connectives). *)
+
 Definition PARA_OPEN: bool :=
   ltac:(first [ let XXX := eval compute in instance_para_open in exact XXX
               | exact false]).

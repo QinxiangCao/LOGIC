@@ -37,8 +37,12 @@ Module D.
 Import ConfigLang.
 Import ListNotations.
 
+(* Locate type.
+Check model. *)
+
 Definition types: list type :=
-  [ expr
+  [ model  
+  ; expr
   ; context
   ].
 
@@ -71,6 +75,7 @@ Definition judgements: list judgement :=
 
 Definition how_types: list how_type :=
   [ FROM_ensemble_expr_TO_context
+  ; FROM_model_TO_expr
   ].
 
 Definition how_connectives: list how_connective :=
@@ -473,6 +478,7 @@ Definition judgements: list Name :=
 
 Definition how_types: list Name :=
   [ (context, expr -> Prop)
+  ; (expr, model -> Prop)
   ].
 
 Definition how_connectives: list Name :=
@@ -515,6 +521,7 @@ Definition connective_instances_build :=
   ; (wandL, Build_WandLanguage L wand)
   ; (empL, Build_EmpLanguage L emp)
   ; (iter_sepcon_L, Build_IterSepconLanguage L iter_sepcon)
+  ; (J, Join model)
   ].
 
 Definition judgement_instances_build :=
@@ -630,7 +637,7 @@ Definition refl_instances :=
   ; (GammaD1P, Provable2Derivable1_Normal)
   ; (GammaEP, Provable2Equiv_Normal)
   ; (GammaED1, Derivable12Equiv_Normal)
-  (* ; (J, ) *)
+  ; (J, Join2Sepcon_Normal)
   ].
 
 Definition instance_transitions :=
@@ -717,6 +724,9 @@ Definition type_dependency_via_ins :=
   noninstance_arg_lists
     (type_instances_build, map_snd type_instances_build).
 
+Compute (connective_instances_build).
+Compute (map_snd connective_instances_build).
+
 Definition connective_dependency_via_ins :=
   noninstance_arg_lists
     (connective_instances_build, map_snd connective_instances_build).
@@ -738,6 +748,9 @@ Definition D_type_dependency_via_ins :=
                  (map_fst type_dependency_via_ins),
    map_with_hint (types, D.types)
                  (map_snd type_dependency_via_ins)).
+
+Print connective_dependency_via_ins.
+(* The first entry should be: (J, Join model, join)*)
 
 Definition D_connective_dependency_via_ins :=
   (map_with_hint (connective_instances_build, D.connective_classes)
