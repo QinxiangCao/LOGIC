@@ -29,6 +29,7 @@ Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.
+Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Require Logic.LogicGenerator.ConfigLang.
 Require Import Logic.LogicGenerator.Utils. 
@@ -441,6 +442,7 @@ Context {L: Language}
         (* new *)
         {M : Model}
         {J : Join model}
+        {sepconFJ : SepconDefinition_Join (Pred_sepconL Base.model)}
         .
 
 Definition types: list Name :=
@@ -521,7 +523,7 @@ Definition connective_instances_build :=
   ; (wandL, Build_WandLanguage L wand)
   ; (empL, Build_EmpLanguage L emp)
   ; (iter_sepcon_L, Build_IterSepconLanguage L iter_sepcon)
-  ; (J, Join model)
+  ; (J, join)
   ].
 
 Definition judgement_instances_build :=
@@ -637,8 +639,11 @@ Definition refl_instances :=
   ; (GammaD1P, Provable2Derivable1_Normal)
   ; (GammaEP, Provable2Equiv_Normal)
   ; (GammaED1, Derivable12Equiv_Normal)
-  ; (J, Join2Sepcon_Normal)
+  ; (sepconFJ, Join2Sepcon_Normal)
   ].
+
+(* Check AndImp2Iff_Normal. (* : IffDefinition_And_Imp L *)
+Check Join2Sepcon_Normal. : SepconDefinition_Join *)
 
 Definition instance_transitions :=
   [ (iffpAX, IffFromDefToAX_And_Imp)
@@ -724,8 +729,8 @@ Definition type_dependency_via_ins :=
   noninstance_arg_lists
     (type_instances_build, map_snd type_instances_build).
 
-Compute (connective_instances_build).
-Compute (map_snd connective_instances_build).
+(* Compute (connective_instances_build).
+Compute (map_snd connective_instances_build). *)
 
 Definition connective_dependency_via_ins :=
   noninstance_arg_lists
@@ -749,7 +754,7 @@ Definition D_type_dependency_via_ins :=
    map_with_hint (types, D.types)
                  (map_snd type_dependency_via_ins)).
 
-Print connective_dependency_via_ins.
+(* Print connective_dependency_via_ins. *)
 (* The first entry should be: (J, Join model, join)*)
 
 Definition D_connective_dependency_via_ins :=

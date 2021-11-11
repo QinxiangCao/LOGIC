@@ -7,25 +7,24 @@ Require Import Logic.PropositionalLogic.ProofTheory.Intuitionistic.
 Require Import Logic.PropositionalLogic.ProofTheory.Classical.
 Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
+Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Context {M : Model} {J : Join model}.
 
-Definition L : Language := Pred_L model.
+(* Definition L : Language := Pred_L model. *)
 
 Class SepconDefinition_Join
-  (* {M : Model}
-  {J : Join model} *)
-  {SepconL : SepconLanguage L} : Prop := {
-    join2sepcon := forall x y, 
-    (@sepcon L SepconL) x y = fun m => exists m1 m2, J m1 m2 m /\ x m1 /\ y m2
+  (SepconL : SepconLanguage (Pred_L model)) : Prop := {
+    join2sepcon : forall x y, 
+    (@sepcon (Pred_L model) SepconL) x y = fun m => exists m1 m2, J m1 m2 m /\ x m1 /\ y m2
   }.
 
-Definition Join2Sepcon : SepconLanguage L :=
-  Build_SepconLanguage L (fun x y => fun m => exists m1 m2, J m1 m2 m /\ x m1 /\ y m2).
+Definition Join2Sepcon : SepconLanguage (Pred_L model) :=
+  Build_SepconLanguage (Pred_L model) (fun x y => fun m => exists m1 m2, J m1 m2 m /\ x m1 /\ y m2).
 
 Lemma Join2Sepcon_Normal :
   @SepconDefinition_Join Join2Sepcon.
-Proof. constructor. Qed.
+Proof. constructor. reflexivity. Qed.
 
 (* Check @SepconDefinition_Join. *)
 

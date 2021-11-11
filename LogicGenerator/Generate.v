@@ -32,6 +32,8 @@ Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
+Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.
+Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigDenot.
@@ -160,6 +162,7 @@ Context {L: Language}
 
         {M : Model}
         {joinD : Join model}
+        {sepconFJ : SepconDefinition_Join (Pred_sepconL Base.model)}
         .
         
 Import NameListNotations.
@@ -400,6 +403,10 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.SeparationLogic.ProofTheory.Corable.";
   idtac "Require Import Logic.SeparationLogic.ProofTheory.Deduction.";
   idtac "Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.";
+  idtac "Require Import Logic.SeparationLogic.Model.SeparationAlgebra.";
+  idtac "Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.";
+  idtac "Require Import Logic.GeneralLogic.ShallowEmbedded.PredicateAsLang.";
+  idtac "Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.";
 
   newline;
 

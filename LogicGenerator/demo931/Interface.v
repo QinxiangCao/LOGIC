@@ -28,6 +28,7 @@ End PrimitiveRuleSig.
 Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).
 Include Rules.
 Parameter Inline tree_pos : Type .
+  Axiom sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) .
   Axiom expr_deep : Set .
   Axiom impp_deep : (expr_deep -> expr_deep -> expr_deep) .
   Axiom sepcon_deep : (expr_deep -> expr_deep -> expr_deep) .
@@ -38,6 +39,7 @@ Parameter Inline tree_pos : Type .
   Axiom cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) .
   Axiom cancel_same : (tree_pos -> tree_pos -> Prop) .
   Axiom restore : (tree_pos -> tree_pos -> expr) .
+  Existing Instance sepcon_proper_impp .
 End LogicTheoremSig.
 
 Require Import Logic.GeneralLogic.Base.
@@ -69,16 +71,26 @@ Require Import Logic.SeparationLogic.ProofTheory.IterSepcon.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
+Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
+Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.
+Require Import Logic.GeneralLogic.ShallowEmbedded.PredicateAsLang.
+Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.
 Include Rules.
-  Instance L : Language := (Build_Language expr) .
+Print Pred_L.
+
+(* model -> Language *)
+
+  Instance L : Language := (Build_Language expr) . 
+  (* should be PredL model， or better (...: model -> Language) model *)
   Instance minL : (MinimumLanguage L) := (Build_MinimumLanguage L impp) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
-  Instance GammaD : (Derivable L) := (Build_Derivable L derivable) .
-  Instance wandAX : (WandAxiomatization L GammaP) := (Build_WandAxiomatization L minL sepconL wandL GammaP wand_sepcon_adjoint) .
-  Instance joinD : (Join model) := Join2Sepcon.Join2Sepcon_Normal .
+  Instance GammaP : (Provable L) := (Build_Provable L provable) .
+  Instance sepconAX : (SepconAxiomatization L GammaP) := (Build_SepconAxiomatization L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1 sepcon_mono) .
+  Instance sepconFJ : (SepconDefinition_Join (Pred_sepconL model)) := Join2Sepcon_Normal .
 Definition tree_pos : Type := tree_pos.
+  Definition sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) := sepcon_proper_impp .
   Definition expr_deep : Set := expr_deep .
   Definition impp_deep : (expr_deep -> expr_deep -> expr_deep) := impp_deep .
   Definition sepcon_deep : (expr_deep -> expr_deep -> expr_deep) := sepcon_deep .
@@ -89,6 +101,7 @@ Definition tree_pos : Type := tree_pos.
   Definition cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) := cancel_mark .
   Definition cancel_same : (tree_pos -> tree_pos -> Prop) := cancel_same .
   Definition restore : (tree_pos -> tree_pos -> expr) := restore .
+  Existing Instance sepcon_proper_impp .
 End LogicTheorem.
 
 (*Require Logic.PropositionalLogic.DeepEmbedded.Solver.
