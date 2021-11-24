@@ -304,7 +304,7 @@ Let inferred_hts :=
 Let feasible :=
   ht_restriction_feasible inferred_hts.
 
-Let ts :=
+Definition ts :=
   CTypeList.shrink (concat (map DTOC cs ++ map DTOJ js)).
 
 Let hts :=
@@ -487,6 +487,7 @@ Definition result: Output.output :=
     derived_primary_rules
     derived_derived_rules
     derived_rules_as_instance
+    
     .
 
 End ComputeHT.

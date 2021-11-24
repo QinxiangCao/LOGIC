@@ -3,6 +3,10 @@ Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigLang.
 
 Import ListNotations.
+(* how type *)
+
+(* Definition how_types := 
+  [ FROM_Model_TO_L ]. *)
 
 Definition how_connectives :=
   [ primitive_connective join;

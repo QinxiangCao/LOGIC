@@ -78,17 +78,14 @@ Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.
 Include Rules.
-Print Pred_L.
-
-(* model -> Language *)
-
-  Instance L : Language := (Build_Language expr) . 
-  (* should be PredL model， or better (...: model -> Language) model *)
+  Instance M : Model := Build_Model model.
+  Instance J : Join model := join.
+  Instance L : Language := Model_L.
   Instance minL : (MinimumLanguage L) := (Build_MinimumLanguage L impp) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
   Instance sepconAX : (SepconAxiomatization L GammaP) := (Build_SepconAxiomatization L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1 sepcon_mono) .
-  Instance sepconFJ : (SepconDefinition_Join (Pred_sepconL model)) := Join2Sepcon_Normal .
+  Instance sepconFJ : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
 Definition tree_pos : Type := tree_pos.
   Definition sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) := sepcon_proper_impp .
   Definition expr_deep : Set := expr_deep .

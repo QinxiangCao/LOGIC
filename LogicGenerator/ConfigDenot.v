@@ -38,6 +38,8 @@ Module D.
 Import ConfigLang.
 Import ListNotations.
 
+(* Locate Model.
+Locate Language. *)
 (* Locate type.
 Check model. *)
 
@@ -442,7 +444,7 @@ Context {L: Language}
         (* new *)
         {M : Model}
         {J : Join model}
-        {sepconFJ : SepconDefinition_Join (Pred_sepconL Base.model)}
+        {sepconFJ : SepconDefinition_Join Join2Sepcon}
         .
 
 Definition types: list Name :=

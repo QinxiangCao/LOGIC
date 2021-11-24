@@ -420,6 +420,7 @@ Ltac two_stage_print :=
   dolist (print AIns) aux_primitive_instances;
   dolist (print AIns) aux_refl_instances_for_derivation;
   dolist (print AIns) aux_derived_instances;
+  (* dolist *)
   idtac "Definition tree_pos : Type := tree_pos.";
   dolist (print Def) derived_rules;
   when instance_para_open:
