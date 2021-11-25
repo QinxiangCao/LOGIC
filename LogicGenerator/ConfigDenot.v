@@ -612,6 +612,7 @@ Definition rule_instances_build :=
   ; (GammaD1P, Build_Derivable1Provable L minL GammaP GammaD1 derivable1_provable)
   ; (GammaEP, Build_EquivProvable L minL GammaP GammaE logic_equiv_provable)
   ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
+  ; (sepconFJ, SepconDefinition_Join Join2Sepcon )
   ].
 
 Definition instances_build :=
