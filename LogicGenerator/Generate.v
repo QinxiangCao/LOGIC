@@ -163,6 +163,7 @@ Context {L: Language}
         {M : Model}
         {joinD : Join model}
         {sepconFJ : SepconDefinition_Join (Pred_sepconL Base.model)}
+        {J_SA : SeparationAlgebra model}
         .
         
 Import NameListNotations.

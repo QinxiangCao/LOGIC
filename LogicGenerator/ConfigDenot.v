@@ -105,6 +105,7 @@ Definition how_judgements: list how_judgement :=
 
 Definition type_classes :=
   [ Language
+  ; Model
   ].
 
 Definition connective_classes :=
@@ -211,6 +212,7 @@ Definition rule_classes :=
   ; GEN_logic_equiv_FROM_provable
   ; GEN_logic_equiv_FROM_derivable1
   ; GEN_sepcon_FROM_join
+  ; join_is_SA
   ].
 
 Definition classes :=
@@ -445,6 +447,7 @@ Context {L: Language}
         {M : Model}
         {J : Join model}
         {sepconFJ : SepconDefinition_Join Join2Sepcon}
+        {J_SA : @SeparationAlgebra model join}
         .
 
 Definition types: list Name :=
@@ -509,6 +512,7 @@ Definition how_judgements: list Name :=
 
 Definition type_instances_build :=
   [ (L, Build_Language expr)
+  ; (M, Build_Model model)
   ].
 
 Definition connective_instances_build :=
@@ -613,6 +617,7 @@ Definition rule_instances_build :=
   ; (GammaEP, Build_EquivProvable L minL GammaP GammaE logic_equiv_provable)
   ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
   ; (sepconFJ, SepconDefinition_Join Join2Sepcon )
+  ; (J_SA, Build_SeparationAlgebra model j join_comm join_assoc)
   ].
 
 Definition instances_build :=
@@ -984,7 +989,7 @@ Definition D_primary_rule_dependency_via_ins :=
 Definition primary_rules_dependency_via_ins :=
   instance_arg_lists
     (primary_rules, primary_rules).
-
+    
 Definition derived_rules_dependency_via_ins :=
   instance_arg_lists
     (derived_rules, derived_rules).
@@ -995,6 +1000,8 @@ Definition D_primary_rules_dependency_via_ins :=
                  (map_fst primary_rules_dependency_via_ins),
    map_with_hint (instances, D.classes)
                  (map_snd primary_rules_dependency_via_ins)).
+
+(* second entry - not fully computed *)
 
 Definition D_derived_rules_dependency_via_ins :=
   (map_with_hint (derived_rules, D_derived_rules)

@@ -5,9 +5,6 @@ Require Import Logic.LogicGenerator.ConfigLang.
 Import ListNotations.
 (* how type *)
 
-(* Definition how_types := 
-  [ FROM_Model_TO_L ]. *)
-
 Definition how_connectives :=
   [ primitive_connective join;
     primitive_connective impp;
@@ -21,7 +18,9 @@ Definition transparent_names :=
   [provable : parameter].
 
 Definition primitive_rule_classes :=
-  [ provability_OF_sepcon_rule].
+  [ join_is_SA
+    (* join sa *) (* unit element *)
+  ].
 
 (* Definition how_connectives :=
   [primitive_connective impp

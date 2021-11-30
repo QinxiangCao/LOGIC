@@ -166,6 +166,7 @@ Inductive rule_class :=
 | GEN_logic_equiv_FROM_provable
 | GEN_logic_equiv_FROM_derivable1
 | GEN_sepcon_FROM_join
+| join_is_SA
 .
 
 (** * What users need not to know **)
@@ -183,6 +184,7 @@ Notation "'ht_restriction'" := (list how_type).
 
 Inductive type_class :=
 | Language
+| Model
 .
 
 Inductive connective_class :=
@@ -485,6 +487,8 @@ Definition t := type_class.
 Definition eqb (tc1 tc2: type_class) :=
 match tc1, tc2 with
 | Language, Language => true
+| Model, Model => true
+| _, _ => false
 end.
 
 Lemma eqb_spec: forall x y, Bool.reflect (x = y) (eqb x y).
@@ -641,6 +645,7 @@ match rc1, rc2 with
 | GEN_logic_equiv_FROM_provable, GEN_logic_equiv_FROM_provable
 | GEN_logic_equiv_FROM_derivable1, GEN_logic_equiv_FROM_derivable1 => true
 | GEN_sepcon_FROM_join, GEN_sepcon_FROM_join => true
+| join_is_SA, join_is_SA => true
 | _, _ => false
 end.
 

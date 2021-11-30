@@ -20,15 +20,15 @@ End DerivedNames.
 
 Module Type PrimitiveRuleSig (Names: LanguageSig).
 Include DerivedNames (Names).
-  Axiom sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) .
-  Axiom sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) .
-  Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) .
+  Axiom model : Type .
+  Axiom join : (model -> model -> model -> Prop) .
+  Axiom join_comm : (forall m1 m2 m : model, join m1 m2 m -> join m2 m1 m) .
+  Axiom join_assoc : (forall mx my mz mxy mxyz : model, join mx my mxy -> join mxy mz mxyz -> exists myz : model, join my mz myz /\ join mx myz mxyz) .
 End PrimitiveRuleSig.
 
 Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).
 Include Rules.
 Parameter Inline tree_pos : Type .
-  Axiom sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) .
   Axiom expr_deep : Set .
   Axiom impp_deep : (expr_deep -> expr_deep -> expr_deep) .
   Axiom sepcon_deep : (expr_deep -> expr_deep -> expr_deep) .
@@ -39,7 +39,6 @@ Parameter Inline tree_pos : Type .
   Axiom cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) .
   Axiom cancel_same : (tree_pos -> tree_pos -> Prop) .
   Axiom restore : (tree_pos -> tree_pos -> expr) .
-  Existing Instance sepcon_proper_impp .
 End LogicTheoremSig.
 
 Require Import Logic.GeneralLogic.Base.
@@ -78,16 +77,14 @@ Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.
 Include Rules.
-  Instance M : Model := Build_Model model.
-  Instance J : Join model := join.
-  Instance L : Language := Model_L.
+  Instance M : Model := {| model := model |} .
+  Instance L : Language := (Build_Language expr) .
   Instance minL : (MinimumLanguage L) := (Build_MinimumLanguage L impp) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
-  Instance sepconAX : (SepconAxiomatization L GammaP) := (Build_SepconAxiomatization L minL sepconL GammaP sepcon_comm_impp sepcon_assoc1 sepcon_mono) .
+  Instance J_SA : (SeparationAlgebra model) := {| join_comm := join_comm; join_assoc := join_assoc |} .
   Instance sepconFJ : (SepconDefinition_Join (Pred_sepconL model)) := Join2Sepcon_Normal .
 Definition tree_pos : Type := tree_pos.
-  Definition sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) := sepcon_proper_impp .
   Definition expr_deep : Set := expr_deep .
   Definition impp_deep : (expr_deep -> expr_deep -> expr_deep) := impp_deep .
   Definition sepcon_deep : (expr_deep -> expr_deep -> expr_deep) := sepcon_deep .
@@ -98,8 +95,6 @@ Definition tree_pos : Type := tree_pos.
   Definition cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) := cancel_mark .
   Definition cancel_same : (tree_pos -> tree_pos -> Prop) := cancel_same .
   Definition restore : (tree_pos -> tree_pos -> expr) := restore .
-  Existing Instance sepcon_proper_impp .
-
 End LogicTheorem.
 
 (*Require Logic.PropositionalLogic.DeepEmbedded.Solver.
