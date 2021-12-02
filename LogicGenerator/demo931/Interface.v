@@ -20,8 +20,6 @@ End DerivedNames.
 
 Module Type PrimitiveRuleSig (Names: LanguageSig).
 Include DerivedNames (Names).
-  Axiom model : Type .
-  Axiom join : (model -> model -> model -> Prop) .
   Axiom join_comm : (forall m1 m2 m : model, join m1 m2 m -> join m2 m1 m) .
   Axiom join_assoc : (forall mx my mz mxy mxyz : model, join mx my mxy -> join mxy mz mxyz -> exists myz : model, join my mz myz /\ join mx myz mxyz) .
 End PrimitiveRuleSig.
@@ -77,12 +75,13 @@ Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.
 Include Rules.
-  Instance M : Model := {| model := model |} .
+  Instance M : Model := (Build_Model model) .
   Instance L : Language := (Build_Language expr) .
+  Instance J : (Join model) := join .
   Instance minL : (MinimumLanguage L) := (Build_MinimumLanguage L impp) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
-  Instance J_SA : (SeparationAlgebra model) := {| join_comm := join_comm; join_assoc := join_assoc |} .
+  Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
   Instance sepconFJ : (SepconDefinition_Join (Pred_sepconL model)) := Join2Sepcon_Normal .
 Definition tree_pos : Type := tree_pos.
   Definition expr_deep : Set := expr_deep .

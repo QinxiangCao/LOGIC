@@ -49,8 +49,6 @@ Definition instance_para_open := false.
 
 Import Config.
 
-(* Eval compute in (primitive_cs Config.how_connectives). *)
-
 Definition PARA_OPEN: bool :=
   ltac:(first [ let XXX := eval compute in instance_para_open in exact XXX
               | exact false]).
@@ -161,9 +159,9 @@ Context {L: Language}
         {coq_prop_Cor: CoqPropCorable L Cor}
 
         {M : Model}
-        {joinD : Join model}
+        {J : Join model}
         {sepconFJ : SepconDefinition_Join (Pred_sepconL Base.model)}
-        {J_SA : SeparationAlgebra model}
+        {J_SA : @SeparationAlgebra model J}
         .
         
 Import NameListNotations.

@@ -339,6 +339,8 @@ Definition Build_BasicLogicEquiv := Build_BasicLogicEquiv.
 Definition Build_ImpLogicEquiv := Build_ImpLogicEquiv.
 Definition Build_Corable_withAxiomatization := Build_Corable_withAxiomatization.
 Definition Build_CoqPropCorable := Build_CoqPropCorable.
+Definition Build_Model := Build_Model.
+Definition Build_SeparationAlgebra := Build_SeparationAlgebra.
 
 Module S.
 Import NameListNotations.
@@ -447,7 +449,7 @@ Context {L: Language}
         {M : Model}
         {J : Join model}
         {sepconFJ : SepconDefinition_Join Join2Sepcon}
-        {J_SA : @SeparationAlgebra model join}
+        {J_SA : @SeparationAlgebra model J}
         .
 
 Definition types: list Name :=
@@ -617,7 +619,7 @@ Definition rule_instances_build :=
   ; (GammaEP, Build_EquivProvable L minL GammaP GammaE logic_equiv_provable)
   ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
   ; (sepconFJ, SepconDefinition_Join Join2Sepcon )
-  ; (J_SA, Build_SeparationAlgebra model j join_comm join_assoc)
+  ; (J_SA, Build_SeparationAlgebra model J join_comm join_assoc)
   ].
 
 Definition instances_build :=
@@ -737,12 +739,10 @@ Definition type_dependency_via_ins :=
   noninstance_arg_lists
     (type_instances_build, map_snd type_instances_build).
 
-(* Compute (connective_instances_build).
-Compute (map_snd connective_instances_build). *)
-
 Definition connective_dependency_via_ins :=
-  noninstance_arg_lists
-    (connective_instances_build, map_snd connective_instances_build).
+  cons (BuildName (J, join, join))
+  (noninstance_arg_lists
+    (connective_instances_build, map_snd connective_instances_build)).
 
 Definition judgement_dependency_via_ins :=
   noninstance_arg_lists
