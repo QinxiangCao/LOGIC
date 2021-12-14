@@ -435,7 +435,7 @@ Let primary_rules :=
   filter
     (fun pr => existsb (fun rc => RuleClassList.test_element rc primitive_classes_r) (DIOpR pr))
     ConfigDenot.S.D_primary_rules.
-
+    
 Let derived_derived_rules :=
   filter
     (fun dr => AllClassList.test_sublist (DIOdR dr) all_classes)

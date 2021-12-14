@@ -925,6 +925,11 @@ Definition derived_rules :=
   ; sepcon_assoc_logic_equiv
   ; sepcon_emp_logic_equiv
 
+  (* new *)
+  ; sepcon_comm 
+  ; sepcon_assoc1 
+  ; sepcon_mono
+
 (*
   ; derivable1_sepcon_assoc2
   ; orp_sepcon_right
@@ -989,10 +994,16 @@ Definition D_primary_rule_dependency_via_ins :=
 Definition primary_rules_dependency_via_ins :=
   instance_arg_lists
     (primary_rules, primary_rules).
-    
+
 Definition derived_rules_dependency_via_ins :=
   instance_arg_lists
     (derived_rules, derived_rules).
+
+(* Definition dr := [sepcon_comm 
+; sepcon_assoc1 
+; sepcon_mono].
+
+Compute instance_arg_lists (dr, dr). *)
 
 (* TODO: delete it *)
 Definition D_primary_rules_dependency_via_ins :=
