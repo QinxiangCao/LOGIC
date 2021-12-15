@@ -9,6 +9,7 @@ Require Import Logic.SeparationLogic.Syntax.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 Require Import Logic.SeparationLogic.Semantics.WeakSemantics.
+Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
 
 Section J2SC.
 Context {M : Model} {J : Join model}.
@@ -30,6 +31,25 @@ Lemma Join2Sepcon_Normal :
 Proof. constructor. reflexivity. Qed.
 
 End J2SC.
+
+Section SepconAXFromJoin.
+
+Context {M : Model} {L : Language} {J : Join model} 
+        {minL : MinimumLanguage L} 
+        {sepconL : SepconLanguage L}
+        {GammaP : Provable L}
+        {J_SA : SeparationAlgebra model}
+        {sepconFJ : SepconDefinition_Join (Pred_sepconL model)}.
+
+Lemma SeparationAlgebra2SepconAxiomatization :
+  SepconAxiomatization L GammaP.
+Proof.
+Admitted.
+
+End SepconAXFromJoin.
+
+
+
 
 (* Module Former_j2sc.
 

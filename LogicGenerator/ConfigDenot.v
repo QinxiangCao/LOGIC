@@ -651,7 +651,7 @@ Definition refl_instances :=
   ; (GammaED1, Derivable12Equiv_Normal)
   ; (sepconFJ, Join2Sepcon_Normal)
   ].
-
+ 
 (* Check AndImp2Iff_Normal. (* : IffDefinition_And_Imp L *)
 Check Join2Sepcon_Normal. : SepconDefinition_Join *)
 
