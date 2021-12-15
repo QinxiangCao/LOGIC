@@ -708,6 +708,7 @@ Definition instance_transitions :=
   ; (bE, Axiomatization2Equiv_bE)
   ; (GammaED1, Axiomatization2Deduction_GammaED1)
   ; (imppE, Axiomatization2LogicEquiv_imppE)
+  ; (sepconAX, SeparationAlgebra2SepconAxiomatization)
   ].
 
 Definition type_instances: list Name :=

@@ -27,6 +27,10 @@ End PrimitiveRuleSig.
 Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).
 Include Rules.
 Parameter Inline tree_pos : Type .
+  Axiom sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) .
+  Axiom sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) .
+  Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) .
+  Axiom sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) .
   Axiom expr_deep : Set .
   Axiom impp_deep : (expr_deep -> expr_deep -> expr_deep) .
   Axiom sepcon_deep : (expr_deep -> expr_deep -> expr_deep) .
@@ -37,6 +41,9 @@ Parameter Inline tree_pos : Type .
   Axiom cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) .
   Axiom cancel_same : (tree_pos -> tree_pos -> Prop) .
   Axiom restore : (tree_pos -> tree_pos -> expr) .
+  Axiom sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) .
+  Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) .
+  Existing Instance sepcon_proper_impp .
 End LogicTheoremSig.
 
 Require Import Logic.GeneralLogic.Base.
@@ -83,7 +90,12 @@ Include Rules.
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
   Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
   Instance sepconFJ : (SepconDefinition_Join (Pred_sepconL model)) := Join2Sepcon_Normal .
+  Instance sepconAX : (SepconAxiomatization L GammaP) := SeparationAlgebra2SepconAxiomatization .
 Definition tree_pos : Type := tree_pos.
+  Definition sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) := sepcon_comm_impp .
+  Definition sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) := sepcon_assoc1 .
+  Definition sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) := sepcon_mono .
+  Definition sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) := sepcon_proper_impp .
   Definition expr_deep : Set := expr_deep .
   Definition impp_deep : (expr_deep -> expr_deep -> expr_deep) := impp_deep .
   Definition sepcon_deep : (expr_deep -> expr_deep -> expr_deep) := sepcon_deep .
@@ -94,6 +106,9 @@ Definition tree_pos : Type := tree_pos.
   Definition cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) := cancel_mark .
   Definition cancel_same : (tree_pos -> tree_pos -> Prop) := cancel_same .
   Definition restore : (tree_pos -> tree_pos -> expr) := restore .
+  Definition sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) := sepcon_assoc1 .
+  Definition sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) := sepcon_mono .
+  Existing Instance sepcon_proper_impp .
 End LogicTheorem.
 
 (*Require Logic.PropositionalLogic.DeepEmbedded.Solver.
