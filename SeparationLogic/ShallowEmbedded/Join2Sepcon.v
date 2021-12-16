@@ -39,7 +39,7 @@ Context {M : Model} {L : Language} {J : Join model}
         {sepconL : SepconLanguage L}
         {GammaP : Provable L}
         {J_SA : SeparationAlgebra model}
-        {sepconFJ : SepconDefinition_Join (Pred_sepconL model)}.
+        .
 
 Lemma SeparationAlgebra2SepconAxiomatization :
   SepconAxiomatization L GammaP.

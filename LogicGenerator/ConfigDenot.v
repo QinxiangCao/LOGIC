@@ -708,7 +708,7 @@ Definition instance_transitions :=
   ; (bE, Axiomatization2Equiv_bE)
   ; (GammaED1, Axiomatization2Deduction_GammaED1)
   ; (imppE, Axiomatization2LogicEquiv_imppE)
-  ; (sepconAX, SeparationAlgebra2SepconAxiomatization)
+  ; (sepconAX, SeparationAlgebra2SepconAxiomatization) 
   ].
 
 Definition type_instances: list Name :=
@@ -925,11 +925,6 @@ Definition derived_rules :=
   ; sepcon_comm_logic_equiv
   ; sepcon_assoc_logic_equiv
   ; sepcon_emp_logic_equiv
-
-  (* new *)
-  ; sepcon_comm 
-  ; sepcon_assoc1 
-  ; sepcon_mono
 
 (*
   ; derivable1_sepcon_assoc2
