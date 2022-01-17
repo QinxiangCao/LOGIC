@@ -10,6 +10,13 @@ Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 Require Import Logic.SeparationLogic.Semantics.WeakSemantics.
 Require Import Logic.SeparationLogic.ProofTheory.SeparationLogic.
+Require Import Logic.SeparationLogic.Sound.Sound_Flat. 
+Require Import Logic.MinimumLogic.Semantics.Kripke.
+Require Import Logic.SeparationLogic.Semantics.FlatSemantics.
+Require Import Logic.lib.Ensembles_ext.
+Require Import Logic.PropositionalLogic.ShallowEmbedded.PredicatePropositionalLogic.
+Require Import Logic.MinimumLogic.Semantics.SemanticEquiv.
+Require Import Logic.MinimumLogic.Semantics.Trivial.
 
 Section J2SC.
 Context {M : Model} {J : Join model}.
@@ -34,21 +41,43 @@ End J2SC.
 
 Section SepconAXFromJoin.
 
-Context {M : Model} {L : Language} {J : Join model} 
-        {minL : MinimumLanguage L} 
-        {sepconL : SepconLanguage L}
-        {GammaP : Provable L}
+Context {M : Model} {J : Join model} 
         {J_SA : SeparationAlgebra model}
         .
 
-Lemma SeparationAlgebra2SepconAxiomatization :
-  SepconAxiomatization L GammaP.
+Instance modelR : KripkeModel.KI.Relation (model) := fun x y => x = y.
+Instance SM : Semantics Model_L M := Build_Semantics Model_L M (fun x => x).
+Instance minL : MinimumLanguage Model_L := Build_MinimumLanguage Model_L impp.
+Instance sepconL : SepconLanguage Model_L := Model_sepconL.
+Instance GammaP : Provable Model_L := Build_Provable Model_L provable.
+Instance kminSM : @KripkeMinimumSemantics Model_L minL M (unit_kMD _) tt modelR SM.
 Proof.
-Admitted.
+  pose proof (@Trivial2Kripke Model_L minL M SM). apply H. constructor. reflexivity.
+Qed.
+Instance sepconSM : @SepconSemantics Model_L sepconL M (unit_kMD _) tt modelR J SM.
+Proof. hnf. intros. apply Same_set_refl. Qed.
+
+Lemma SeparationAlgebra2SepconAxiomatization :
+  SepconAxiomatization Model_L GammaP.
+Proof.
+  intros. constructor.
+  + intros x y.
+    exact (@sound_sepcon_comm Model_L minL sepconL M (unit_kMD _) tt modelR J J_SA SM kminSM sepconSM x y).
+  + intros x y z.
+    exact (@sound_sepcon_assoc1 Model_L minL sepconL M (unit_kMD _) tt modelR J J_SA SM kminSM sepconSM x y z).
+  + intros x1 x2 y1 y2.
+    exact (@sound_sepcon_mono Model_L minL sepconL M (unit_kMD _) tt modelR _ J SM kminSM sepconSM x1 x2 y1 y2).
+Qed. 
 
 End SepconAXFromJoin.
 
+(* Instance Pred_kminSM (A: Type): @KripkeMinimumSemantics (Pred_L A) (Pred_minL A) (Build_Model A) (unit_kMD _) tt eq (Pred_SM A) :=
+  @Trivial2Kripke _ _ _ _ (Pred_tminSM A). *)
 
+
+(* Class Semantics (L: Language) (MD: Model): Type := {
+  denotation: expr -> model -> Prop (* better to be (expr -> Ensemble model) if Ensemble is polymorphic *)
+}. *)
 
 
 (* Module Former_j2sc.

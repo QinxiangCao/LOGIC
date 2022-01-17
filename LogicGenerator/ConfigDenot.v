@@ -943,6 +943,15 @@ Definition derived_rules :=
 *)
   ].
 
+(* Check @sepcon_assoc_logic_equiv.
+Check @sepcon_comm_logic_equiv.
+
+(GammaD1 : Derivable1 L),
+       BasicDeduction L GammaD1 ->
+       SepconDeduction L GammaD1 ->
+       forall GammaE : LogicEquiv L,
+       EquivDerivable1 L GammaD1 GammaE *)
+
 Ltac filter_instance_rec l res :=
   match l with
   | nil => res

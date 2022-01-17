@@ -692,3 +692,13 @@ Definition Derivable12Provable_Normal {GammaD1: Derivable1 L}:
 
 End Transformation.
 
+(* Section MinAXFromModel.
+
+Context {M : Model} {L : Language} {minL : MinimumLanguage L}
+        {GammaP : Provable L} {GammaD1 : Derivable1 L}.
+
+Lemma Model2MinimumAxiomatization : 
+ MinimumAxiomatization L GammaP.
+Admitted.
+
+End MinAXFromModel. *)

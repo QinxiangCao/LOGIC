@@ -12,7 +12,8 @@ Definition how_connectives :=
 
 Definition how_judgements :=
   [ primitive_judgement provable;
-    FROM_provable_TO_logic_equiv
+    FROM_provable_TO_logic_equiv;
+    FROM_provable_TO_derivable1
   ].
 
 Definition transparent_names :=
