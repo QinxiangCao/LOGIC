@@ -213,6 +213,7 @@ Definition rule_classes :=
   ; GEN_logic_equiv_FROM_derivable1
   ; GEN_sepcon_FROM_join
   ; join_is_SA
+  ; provability_OF_sepcon_rule
   ].
 
 Definition classes :=
@@ -450,6 +451,10 @@ Context {L: Language}
         {J : Join model}
         {sepconFJ : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
+        {minL_modelL : MinimumLanguage Model_L}
+        {sepconL_modelL: SepconLanguage Model_L}
+        {GammaP_modelL : Provable Model_L}
+        {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
         .
 
 Definition types: list Name :=
@@ -620,6 +625,7 @@ Definition rule_instances_build :=
   ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
   ; (sepconFJ, SepconDefinition_Join Join2Sepcon )
   ; (J_SA, Build_SeparationAlgebra model J join_comm join_assoc)
+  ; (sepconAX_modelL, Build_SepconAxiomatization Model_L minL_modelL sepconL_modelL GammaP_modelL sepcon_comm_impp sepcon_assoc1 sepcon_mono)
   ].
 
 Definition instances_build :=
@@ -708,7 +714,7 @@ Definition instance_transitions :=
   ; (bE, Axiomatization2Equiv_bE)
   ; (GammaED1, Axiomatization2Deduction_GammaED1)
   ; (imppE, Axiomatization2LogicEquiv_imppE)
-  ; (sepconAX, SeparationAlgebra2SepconAxiomatization) 
+  ; (sepconAX_modelL, SeparationAlgebra2SepconAxiomatization) 
   ].
 
 Definition type_instances: list Name :=
@@ -736,6 +742,117 @@ Definition instances :=
          rule_instances) in
         exact instances).
 
+(* try write a subst *)
+
+Definition subst_table := 
+  [ (Model_L, L)
+  ; (minL_modelL, minL)
+  ; (sepconL_modelL, sepconL)
+  ; (GammaP_modelL, GammaP)
+  ; (sepconAX_modelL, sepconAX)
+  ].
+
+Ltac subst_name_tac1 x l :=
+  match l with 
+  | nil => constr:(x) 
+  | cons (BuildName (pair x ?b)) ?l' => constr:(b)
+  | cons (BuildName (pair _ ?b)) ?l' => subst_name_tac1 x l' 
+  end.
+
+Ltac subst_name_tac lx l :=
+  match lx with 
+  | @nil ?T => constr:(@nil T)
+  | cons ?x ?lx' => let aa := subst_name_tac1 x l in 
+                    let bb := subst_name_tac lx' l in constr:(cons aa bb)
+  end.
+
+Notation " 'subst_name' '(' lx ',' l ')' " :=
+  ltac: ( let lx' := eval hnf in lx in 
+          let l'  := eval hnf in l in 
+          let res := subst_name_tac lx' l' in
+          exact res )
+          (only parsing, at level 99).
+
+Ltac instance_trans_subst_tac x l :=
+  match type of x with 
+  | ?t0 ?x0 => let x0' := subst_name_tac1 x0 l in
+               let t0' := instance_trans_subst_tac t0 l in  
+               constr:(t0' x0')
+  | ?t0 => t0
+  end.
+
+
+Definition d := cons Model_L nil.
+Definition b : @list Language.
+  let x := (subst_name_tac1 Model_L (cons (BuildName (pair Model_L L)) nil)) in pose x.
+  let x := (subst_name_tac (cons Model_L nil) (cons (BuildName (pair Model_L L)) nil)) in pose x.
+  let x := (subst_name_tac1 Model_L [ (Model_L, L)
+  ; (minL_modelL, minL)
+  ; (sepconL_modelL, sepconL)
+  ; (GammaP_modelL, GammaP)
+  ; (sepconAX_modelL, sepconAX)
+  ]) in pose x.
+  let x := (subst_name_tac (cons Model_L nil) [ (Model_L, L)
+  ; (minL_modelL, minL)
+  ; (sepconL_modelL, sepconL)
+  ; (GammaP_modelL, GammaP)
+  ; (sepconAX_modelL, sepconAX)
+  ]) in pose x.
+
+  let x := eval hnf in d in pose x.
+  let x := eval hnf in subst_table in pose x.
+  pose (subst_name (d, subst_table)).
+
+  exact nil.
+Defined.
+
+
+
+(* Ltac build_name_tac1 a :=
+  match a with 
+  | (?x, ?y) => let x' := constr:(BuildName x) in
+                let y' := constr:(BuildName y) in 
+                exact (x', y')
+  end.
+
+Ltac build_name_tac l :=
+  match l with 
+  | nil => let res := constr:(@nil Name) in 
+           exact res
+  | cons ?x ?l' => let x' := build_name_tac1 x in 
+                   let l'' := build_name_tac l' in 
+                   let res := constr:(cons x' l'') in 
+                   exact res
+  end.
+
+Definition subst_table_name : @list (Name * Name).
+
+let x := build_name_tac1 (Model_L, L) in pose x.
+
+let x := build_name_tac [ (Model_L, L)
+; (minL_modelL, minL)
+; (sepconL_modelL, sepconL)
+; (GammaP_modelL, GammaP)
+; (sepconAX_modelL, sepconAX)
+] in exact x. *)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Definition type_dependency_via_ins :=
   noninstance_arg_lists
     (type_instances_build, map_snd type_instances_build).
@@ -757,14 +874,40 @@ Definition instance_dependency_via_transition :=
   instance_arg_lists
     (instance_transitions, map_snd instance_transitions).
 
+Ltac dependency_subst_tac1 x l :=
+  match x with 
+  | (?x1, ?x2, ?x3) =>  let x1' := subst_name_tac1 x1 l in
+                        let x3' := subst_name_tac1 x3 l in 
+                          constr:((x1', x2, x3'))
+  end.
+
+Ltac dependency_subst_tac lx l :=
+  match lx with 
+  | @nil ?T => constr:(@nil T)
+  | (BuildName ?x) :: ?lx' => 
+      let x' := dependency_subst_tac1 x l in 
+      let lx'' := dependency_subst_tac lx' l in 
+                  constr:(BuildName x' :: lx'')
+  end.
+
+Notation " 'dependency_subst' '(' lx ',' l ')' " :=
+  ltac: ( let x := eval hnf in lx in
+          let y := eval hnf in l in 
+          let z := dependency_subst_tac x y in 
+          exact z ) (only parsing, at level 99).
+
+Goal  False  .
+  let x := eval hnf in subst_table in
+    let y := dependency_subst_tac1 (sepconAX_modelL, SeparationAlgebra2SepconAxiomatization, M) x in
+      pose y.
+  pose (dependency_subst (instance_dependency_via_transition, subst_table)).
+Abort.
+
 Definition D_type_dependency_via_ins :=
   (map_with_hint (type_instances_build, D.type_classes)
                  (map_fst type_dependency_via_ins),
    map_with_hint (types, D.types)
                  (map_snd type_dependency_via_ins)).
-
-(* Print connective_dependency_via_ins. *)
-(* The first entry should be: (J, Join model, join)*)
 
 Definition D_connective_dependency_via_ins :=
   (map_with_hint (connective_instances_build, D.connective_classes)
@@ -1009,6 +1152,11 @@ Definition derived_rules_dependency_via_ins :=
 ; sepcon_mono].
 
 Compute instance_arg_lists (dr, dr). *)
+
+(* Compute ( primary_rule_dependency_via_ins).
+
+Compute map_with_hint (instances, D.classes)
+(map_snd primary_rules_dependency_via_ins). *)
 
 (* TODO: delete it *)
 Definition D_primary_rules_dependency_via_ins :=
