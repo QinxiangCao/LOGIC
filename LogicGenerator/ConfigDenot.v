@@ -806,7 +806,32 @@ Definition b : @list Language.
   exact nil.
 Defined.
 
+Ltac dependency_subst_tac1 x l :=
+  match x with 
+  | (?x1, ?x2, ?x3) =>  let x3' := subst_name_tac1 x3 l in 
+                        constr:((x1, x2, x3'))
+  end.
 
+Ltac dependency_subst_tac lx l :=
+  match lx with 
+  | @nil ?T => constr:(@nil T)
+  | (BuildName ?x) :: ?lx' => 
+      let x' := dependency_subst_tac1 x l in 
+      let lx'' := dependency_subst_tac lx' l in 
+                  constr:(BuildName x' :: lx'')
+  end.
+
+Notation " 'dependency_subst' '(' lx ',' l ')' " :=
+  ltac: ( let x := eval hnf in lx in
+          let y := eval hnf in l in 
+          let z := dependency_subst_tac x y in 
+          exact z ) (only parsing, at level 99).
+
+Goal  False  .
+  let x := eval hnf in subst_table in
+    let y := dependency_subst_tac1 (sepconAX_modelL, SeparationAlgebra2SepconAxiomatization, M) x in
+      pose y.
+Abort.
 
 (* Ltac build_name_tac1 a :=
   match a with 
@@ -836,23 +861,6 @@ let x := build_name_tac [ (Model_L, L)
 ; (sepconAX_modelL, sepconAX)
 ] in exact x. *)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Definition type_dependency_via_ins :=
   noninstance_arg_lists
     (type_instances_build, map_snd type_instances_build).
@@ -866,42 +874,21 @@ Definition judgement_dependency_via_ins :=
   noninstance_arg_lists
     (judgement_instances_build, map_snd judgement_instances_build).
 
-Definition primary_rule_dependency_via_ins :=
+(* Definition primary_rule_dependency_via_ins :=
   noninstance_arg_lists
     (rule_instances_build, map_snd rule_instances_build).
 
 Definition instance_dependency_via_transition :=
   instance_arg_lists
-    (instance_transitions, map_snd instance_transitions).
+    (instance_transitions, map_snd instance_transitions). *)
 
-Ltac dependency_subst_tac1 x l :=
-  match x with 
-  | (?x1, ?x2, ?x3) =>  let x1' := subst_name_tac1 x1 l in
-                        let x3' := subst_name_tac1 x3 l in 
-                          constr:((x1', x2, x3'))
-  end.
+Definition primary_rule_dependency_via_ins :=
+  dependency_subst (
+    (noninstance_arg_lists (rule_instances_build, map_snd rule_instances_build)), subst_table).
 
-Ltac dependency_subst_tac lx l :=
-  match lx with 
-  | @nil ?T => constr:(@nil T)
-  | (BuildName ?x) :: ?lx' => 
-      let x' := dependency_subst_tac1 x l in 
-      let lx'' := dependency_subst_tac lx' l in 
-                  constr:(BuildName x' :: lx'')
-  end.
-
-Notation " 'dependency_subst' '(' lx ',' l ')' " :=
-  ltac: ( let x := eval hnf in lx in
-          let y := eval hnf in l in 
-          let z := dependency_subst_tac x y in 
-          exact z ) (only parsing, at level 99).
-
-Goal  False  .
-  let x := eval hnf in subst_table in
-    let y := dependency_subst_tac1 (sepconAX_modelL, SeparationAlgebra2SepconAxiomatization, M) x in
-      pose y.
-  pose (dependency_subst (instance_dependency_via_transition, subst_table)).
-Abort.
+Definition instance_dependency_via_transition :=
+  dependency_subst (
+    (instance_arg_lists (instance_transitions, map_snd instance_transitions)), subst_table).
 
 Definition D_type_dependency_via_ins :=
   (map_with_hint (type_instances_build, D.type_classes)
@@ -926,6 +913,11 @@ Definition D_instance_transitions: list ConfigLang.how_instance :=
 
 Definition D_instance_transition_results :=
   map_with_hint (instances, D.classes) (map_fst instance_transitions).
+
+Goal True.
+  pose (map_fst instance_dependency_via_transition).
+  let x := eval hnf in instance_transitions in pose x.
+  reflexivity. Qed.
 
 Definition D_instance_dependency_via_transition :=
   (map_with_hint (instance_transitions, D_instance_transitions)
@@ -1136,12 +1128,36 @@ Definition D_primary_rule_dependency_via_ins :=
   (map_with_hint (rule_instances_build, D.rule_classes)
                  (map_fst primary_rule_dependency_via_ins),
    map_with_hint (primary_rules, D_primary_rules)
-                 (map_snd primary_rule_dependency_via_ins)).  
+                 (map_snd primary_rule_dependency_via_ins)). 
+                 
+Ltac pr_subst_tac1 x l :=
+  match x with 
+  | (?x1, ?x2) => let x2' := subst_name_tac1 x2 l in
+                            constr:((x1, x2'))
+  end.
+
+Ltac pr_subst_tac lx l :=
+  match lx with 
+  | @nil ?T => constr:(@nil T)
+  | (BuildName ?x) :: ?lx' =>   
+      let x' := pr_subst_tac1 x l in 
+      let lx'' := pr_subst_tac lx' l in 
+            constr:(BuildName x' :: lx'')
+  end.
+
+Notation " 'pr_subst' '(' lx ',' l ')' " :=
+  ltac:( let x := eval hnf in lx in 
+         let y := eval hnf in l in 
+         let z := pr_subst_tac x y in 
+         exact z) (only parsing, at level 99).
 
 (* TODO: delete it *)
-Definition primary_rules_dependency_via_ins :=
+(* Definition primary_rules_dependency_via_ins :=
   instance_arg_lists
-    (primary_rules, primary_rules).
+    (primary_rules, primary_rules). *)
+
+Definition primary_rules_dependency_via_ins :=
+  pr_subst ((instance_arg_lists (primary_rules, primary_rules)), subst_table).
 
 Definition derived_rules_dependency_via_ins :=
   instance_arg_lists
