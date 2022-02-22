@@ -36,9 +36,9 @@ Parameter Inline tree_pos : Type .
   Axiom derivable1_sepcon_comm : (forall x y : expr, derivable1 (sepcon x y) (sepcon y x)) .
   Axiom derivable1_sepcon_assoc1 : (forall x y z : expr, derivable1 (sepcon x (sepcon y z)) (sepcon (sepcon x y) z)) .
   Axiom derivable1_sepcon_mono : (forall x1 x2 y1 y2 : expr, derivable1 x1 x2 -> derivable1 y1 y2 -> derivable1 (sepcon x1 y1) (sepcon x2 y2)) .
-  Axiom sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) .
+  (* Axiom sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) .
   Axiom sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) .
-  Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) .
+  Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) . *)
   Axiom sepcon_proper_impp : (Morphisms.Proper (Morphisms.respectful (fun x y : expr => provable (impp x y)) (Morphisms.respectful (fun x y : expr => provable (impp x y)) (fun x y : expr => provable (impp x y)))) sepcon) .
   Axiom expr_deep : Set .
   Axiom impp_deep : (expr_deep -> expr_deep -> expr_deep) .
@@ -93,7 +93,8 @@ Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.
 Include Rules.
   Instance M : Model := (Build_Model model) .
-  Instance L : Language := (Build_Language expr) .
+  (* Instance L : Language := (Build_Language expr) . *)
+  Instance L : Language := Model_L.
   Instance J : (Join model) := join .
   Instance minL : (MinimumLanguage L) := (Build_MinimumLanguage L impp) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
@@ -105,9 +106,36 @@ Include Rules.
   Instance GammaEP : (EquivProvable L GammaP GammaE) := Provable2Equiv_Normal .
   Instance GammaD1P : (Derivable1Provable L GammaP GammaD1) := Provable2Derivable1_Normal .
   Instance GammaED1 : (EquivDerivable1 L GammaD1 GammaE) := Axiomatization2Deduction_GammaED1 .
-  Instance (Pred_sepconAX model) : (SepconAxiomatization (PredicateAsLang.Pred_L model) (PredicatePropositionalLogic.Pred_Gamma model)) := SeparationAlgebra2SepconAxiomatization .
-  Instance sepconD : (SepconDeduction L GammaD1) := SeparationLogic.Axiomatization2Deduction_sepconD .
+  (* Instance (Pred_sepconAX model) : (SepconAxiomatization (PredicateAsLang.Pred_L model) (PredicatePropositionalLogic.Pred_Gamma model)) := SeparationAlgebra2SepconAxiomatization . *)
+  
+  Check minL.
+  Check @Join2Sepcon.minL M.
+  Eval compute in  ((MinimumLanguage L) = (MinimumLanguage Model_L)).
+
+  Instance Pred_sepconAX_model : (@SepconAxiomatization L (@Join2Sepcon.minL M)
+  (sepconL) (@Join2Sepcon.GammaP M)) := SeparationAlgebra2SepconAxiomatization.
+  (* Instance sepconD : (SepconDeduction L GammaD1) := SeparationLogic.Axiomatization2Deduction_sepconD . *)
+  (* I don't know why it's here. *)
+
+  Locate Axiomatization2Deduction_sepconD.
+  Check @SeparationLogic.Axiomatization2Deduction_sepconD.
+  Check @SeparationAlgebra2SepconAxiomatization.
+  Check @SepconDeduction.
+
+  Check Axiomatization2Deduction_sepconD.
+  Check @Axiomatization2Deduction_sepconD.
+
+  Instance sepconD : (@SepconDeduction L sepconL GammaD1) := SeparationLogic.Axiomatization2Deduction_sepconD .
+
+  Instance sepconD : (SepconDeduction Model_L GammaD1) := SeparationLogic.Axiomatization2Deduction_sepconD .
+  
+  
+
+
 Definition tree_pos : Type := tree_pos.
+Check expr.
+Check sepcon_comm_impp.
+Locate sepcon_comm_impp.
   Definition sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) := sepcon_comm_impp .
   Definition sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) := sepcon_assoc1 .
   Definition sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) := sepcon_mono .
