@@ -7,7 +7,7 @@ Import ListNotations.
 
 Definition how_connectives :=
   [ primitive_connective join;
-    primitive_connective impp;
+    FROM_model_TO_impp;
     FROM_join_TO_sepcon].
 
 Definition how_judgements :=

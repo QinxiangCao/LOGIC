@@ -93,6 +93,7 @@ Definition how_connectives: list how_connective :=
   ; FROM_sepcon_TO_iter_sepcon
   ; FROM_empty_set_TO_empty_context
   ; FROM_join_TO_sepcon
+  ; FROM_model_TO_impp
   ].
 
 Definition how_judgements: list how_judgement :=
@@ -239,6 +240,7 @@ Definition refl_classes :=
   ; RC GEN_logic_equiv_FROM_provable
   ; RC GEN_logic_equiv_FROM_derivable1
   ; RC GEN_sepcon_FROM_join
+  ; RC GEN_impp_FROM_model
   ].
 
 End D.
@@ -507,6 +509,7 @@ Definition how_connectives: list Name :=
   ; (iter_sepcon, fun xs => fold_left sepcon xs emp)
   ; (empty_context, Empty_set expr)
   ; (sepcon, fun x y => fun m => exists m1 m2, join m1 m2 m /\ x m1 /\ y m2)
+  ; (impp, fun (x y : model -> Prop) (m : model) => (x m -> y m))
   ].
 
 Definition how_judgements: list Name :=
@@ -656,6 +659,7 @@ Definition refl_instances :=
   ; (GammaEP, Provable2Equiv_Normal)
   ; (GammaED1, Derivable12Equiv_Normal)
   ; (sepconFJ, Join2Sepcon_Normal)
+  ; () (*TODO*)
   ].
  
 (* Check AndImp2Iff_Normal. (* : IffDefinition_And_Imp L *)
@@ -914,10 +918,10 @@ Definition D_instance_transitions: list ConfigLang.how_instance :=
 Definition D_instance_transition_results :=
   map_with_hint (instances, D.classes) (map_fst instance_transitions).
 
-Goal True.
+(* Goal True.
   pose (map_fst instance_dependency_via_transition).
   let x := eval hnf in instance_transitions in pose x.
-  reflexivity. Qed.
+  reflexivity. Qed. *)
 
 Definition D_instance_dependency_via_transition :=
   (map_with_hint (instance_transitions, D_instance_transitions)

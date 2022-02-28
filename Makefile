@@ -371,10 +371,10 @@ demo931:
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo931/Config.v
 	./logic_gen.sh LogicGenerator/demo931/Config.v LogicGenerator/demo931/Interface.v
 
-demo932:
-	@echo COQC LogicGenerator/demo932/Config.v
-	@$(COQC) $(COQ_FLAG) LogicGenerator/demo932/Config.v
-	./logic_gen.sh LogicGenerator/demo932/Config.v LogicGenerator/demo932/Interface.v
+# demo932:
+# 	@echo COQC LogicGenerator/demo932/Config.v
+# 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo932/Config.v
+# 	./logic_gen.sh LogicGenerator/demo932/Config.v LogicGenerator/demo932/Interface.v
 
 
 # @echo COQC LogicGenerator/demo/Interface.v

@@ -56,7 +56,8 @@ Inductive how_connective :=
 | FROM_andp_TO_iter_andp
 | FROM_sepcon_TO_iter_sepcon
 | FROM_empty_set_TO_empty_context
-| FROM_join_TO_sepcon.
+| FROM_join_TO_sepcon
+| FROM_model_TO_impp .
 
 Definition primitive_connectives := map primitive_connective.
 Definition predicate_over_states := ___predicate_over_states false.
@@ -167,6 +168,7 @@ Inductive rule_class :=
 | GEN_logic_equiv_FROM_derivable1
 | GEN_sepcon_FROM_join
 | join_is_SA
+| GEN_impp_FROM_model
 .
 
 (** * What users need not to know **)
@@ -645,6 +647,7 @@ match rc1, rc2 with
 | GEN_logic_equiv_FROM_provable, GEN_logic_equiv_FROM_provable
 | GEN_logic_equiv_FROM_derivable1, GEN_logic_equiv_FROM_derivable1 => true
 | GEN_sepcon_FROM_join, GEN_sepcon_FROM_join => true
+| GEN_impp_FROM_model, GEN_impp_FROM_model => true
 | join_is_SA, join_is_SA => true
 | _, _ => false
 end.
