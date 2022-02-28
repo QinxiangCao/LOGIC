@@ -319,9 +319,14 @@ Ltac two_stage_print :=
   newline;
 
   idtac "Module Type LanguageSig.";
+  (* add some annotations *)
+  idtac "(* primitive_types *)";
   dolist (print (IPar transparent_types)) primitive_types;
+  idtac "(* derived types *)";
   dolist (print Der) derived_types;
+  idtac "(* primitive judgements *)";
   dolist (print (IPar transparent_judgements)) primitive_judgements;
+  idtac "(* primitive connectives *)";
   dolist (print (IPar transparent_connectives)) primitive_connectives;
   when instance_para_open: idtac "  End LanguageSig.";
   idtac "End LanguageSig.";
@@ -335,7 +340,9 @@ Ltac two_stage_print :=
     idtac "  Section DerivedNames.";
     context_expr_tac
   );
+  idtac "(* derived connectives *)";
   dolist (print Der) derived_connectives;
+  idtac "(* derived judgements *)";
   dolist (print Der) derived_judgements;
   when instance_para_open:
     idtac "  End DerivedNames.";
@@ -365,7 +372,9 @@ Ltac two_stage_print :=
     idtac "  Section LogicTheoremSig.";
     context_expr_tac
   );
+  idtac "(* derived rules *)";
   dolist (print Axm) derived_rules;
+  idtac "(* derived rules as instance *)";
   dolist (print DIns) derived_rules_as_instance;
   when instance_para_open:
     idtac "  End LogicTheoremSig.";
@@ -416,14 +425,19 @@ Ltac two_stage_print :=
     idtac "  Section LogicTheorem.";
     context_expr_tac
   );
+  idtac "(* aux primitive instances *)";
   dolist (print AIns) aux_primitive_instances;
+  idtac "(* aux refl instances for derivation *)";
   dolist (print AIns) aux_refl_instances_for_derivation;
+  idtac "(* aux derived instances *)";
   dolist (print AIns) aux_derived_instances;
   (* dolist *)
   idtac "Definition tree_pos : Type := tree_pos.";
+  idtac "(* derived rules *)";
   dolist (print Def) derived_rules;
   when instance_para_open:
     idtac "  End LogicTheorem.";
+  idtac "(* derived rules as instance *)";
   dolist (print DIns) derived_rules_as_instance;
   idtac "End LogicTheorem.";
 

@@ -6,16 +6,22 @@ Require Import Coq.Lists.List.
 Import ListNotations.
 
 Module Type LanguageSig.
+(* primitive_types *)
   Parameter model : Type .
+(* derived types *)
   Definition expr := (model -> Prop) .
+(* primitive judgements *)
   Parameter Inline provable : (expr -> Prop) .
+(* primitive connectives *)
   Parameter join : (model -> model -> model -> Prop) .
   Parameter impp : (expr -> expr -> expr) .
 End LanguageSig.
 
 Module DerivedNames (Names: LanguageSig).
 Include Names.
+(* derived connectives *)
   Definition sepcon := (fun (x y : model -> Prop) (m : model) => exists m1 m2 : model, join m1 m2 m /\ x m1 /\ y m2) .
+(* derived judgements *)
   Definition logic_equiv := (fun x y : expr => provable (impp x y) /\ provable (impp y x)) .
   Definition derivable1 := (fun x y : expr => provable (impp x y)) .
 End DerivedNames.
@@ -29,6 +35,7 @@ End PrimitiveRuleSig.
 Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names).
 Include Rules.
 Parameter Inline tree_pos : Type .
+(* derived rules *)
   Axiom sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) .
   Axiom sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) .
   Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) .
@@ -52,6 +59,7 @@ Parameter Inline tree_pos : Type .
   Axiom restore : (tree_pos -> tree_pos -> expr) .
   Axiom sepcon_proper_logic_equiv : (Morphisms.Proper (Morphisms.respectful logic_equiv (Morphisms.respectful logic_equiv logic_equiv)) sepcon) .
   Axiom sepcon_comm_logic_equiv : (forall x y : expr, logic_equiv (sepcon x y) (sepcon y x)) .
+(* derived rules as instance *)
   Existing Instance sepcon_proper_impp .
   Existing Instance sepcon_proper_logic_equiv .
 End LogicTheoremSig.
@@ -92,6 +100,7 @@ Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Module LogicTheorem (Names: LanguageSig) (Rules: PrimitiveRuleSig Names) <: LogicTheoremSig Names Rules.
 Include Rules.
+(* aux primitive instances *)
   Instance M : Model := (Build_Model model) .
   Instance L : Language := (Build_Language expr) .
   Instance J : (Join model) := join .
@@ -101,13 +110,16 @@ Include Rules.
   Instance GammaE : (LogicEquiv L) := (Build_LogicEquiv L logic_equiv) .
   Instance GammaD1 : (Derivable1 L) := (Build_Derivable1 L derivable1) .
   Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
+(* aux refl instances for derivation *)
   Instance sepconFJ : (SepconDefinition_Join (Pred_sepconL model)) := Join2Sepcon_Normal .
   Instance GammaEP : (EquivProvable L GammaP GammaE) := Provable2Equiv_Normal .
   Instance GammaD1P : (Derivable1Provable L GammaP GammaD1) := Provable2Derivable1_Normal .
+(* aux derived instances *)
   Instance GammaED1 : (EquivDerivable1 L GammaD1 GammaE) := Axiomatization2Deduction_GammaED1 .
   Instance (Pred_sepconAX model) : (SepconAxiomatization (PredicateAsLang.Pred_L model) (PredicatePropositionalLogic.Pred_Gamma model)) := SeparationAlgebra2SepconAxiomatization .
   Instance sepconD : (SepconDeduction L GammaD1) := SeparationLogic.Axiomatization2Deduction_sepconD .
 Definition tree_pos : Type := tree_pos.
+(* derived rules *)
   Definition sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) := sepcon_comm_impp .
   Definition sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) := sepcon_assoc1 .
   Definition sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) := sepcon_mono .
@@ -131,6 +143,7 @@ Definition tree_pos : Type := tree_pos.
   Definition restore : (tree_pos -> tree_pos -> expr) := restore .
   Definition sepcon_proper_logic_equiv : (Morphisms.Proper (Morphisms.respectful logic_equiv (Morphisms.respectful logic_equiv logic_equiv)) sepcon) := sepcon_proper_logic_equiv .
   Definition sepcon_comm_logic_equiv : (forall x y : expr, logic_equiv (sepcon x y) (sepcon y x)) := sepcon_comm_logic_equiv .
+(* derived rules as instance *)
   Existing Instance sepcon_proper_impp .
   Existing Instance sepcon_proper_logic_equiv .
 End LogicTheorem.
