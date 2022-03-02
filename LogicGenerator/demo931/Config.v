@@ -11,7 +11,7 @@ Definition how_connectives :=
     FROM_join_TO_sepcon].
 
 Definition how_judgements :=
-  [ primitive_judgement provable
+  [ FROM_model_TO_provable
   ].
 
 Definition transparent_names :=

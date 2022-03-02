@@ -74,7 +74,8 @@ Inductive how_judgement :=
 | FROM_provable_TO_derivable1
 | FROM_provable_TO_logic_equiv
 | FROM_derivable1_TO_logic_equiv(*
-| FROM_derivable1_TO_provable*).
+| FROM_derivable1_TO_provable*)
+| FROM_model_TO_provable.
 
 Definition USE_valid_FOR_provable := ___USE_valid_FOR_provable false.
 Definition USE_mono_valid_FOR_provable := ___USE_valid_FOR_provable true.
@@ -169,6 +170,7 @@ Inductive rule_class :=
 | GEN_sepcon_FROM_join
 | join_is_SA
 | GEN_impp_FROM_model
+| GEN_provable_FROM_model
 .
 
 (** * What users need not to know **)
@@ -648,6 +650,7 @@ match rc1, rc2 with
 | GEN_logic_equiv_FROM_derivable1, GEN_logic_equiv_FROM_derivable1 => true
 | GEN_sepcon_FROM_join, GEN_sepcon_FROM_join => true
 | GEN_impp_FROM_model, GEN_impp_FROM_model => true
+| GEN_provable_FROM_model, GEN_provable_FROM_model => true
 | join_is_SA, join_is_SA => true
 | _, _ => false
 end.

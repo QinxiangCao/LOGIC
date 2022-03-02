@@ -102,6 +102,7 @@ Definition how_judgements: list how_judgement :=
   ; FROM_provable_TO_derivable1
   ; FROM_provable_TO_logic_equiv
   ; FROM_derivable1_TO_logic_equiv
+  ; FROM_model_TO_provable
   ].
 
 Definition type_classes :=
@@ -241,6 +242,7 @@ Definition refl_classes :=
   ; RC GEN_logic_equiv_FROM_derivable1
   ; RC GEN_sepcon_FROM_join
   ; RC GEN_impp_FROM_model
+  ; RC GEN_provable_FROM_model
   ].
 
 End D.
@@ -457,6 +459,8 @@ Context {L: Language}
         {sepconL_modelL: SepconLanguage Model_L}
         {GammaP_modelL : Provable Model_L}
         {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
+        {imppDef_model : ImppDefinition_Model minL_modelL}
+        {provableDef_model: ProvableDefinition_Model GammaP_modelL}
         .
 
 Definition types: list Name :=
@@ -518,6 +522,7 @@ Definition how_judgements: list Name :=
   ; (derivable1, fun x y => provable (impp x y))
   ; (logic_equiv, fun x y => provable (impp x y) /\ provable (impp y x))
   ; (logic_equiv, fun x y => derivable1 x y /\ derivable1 y x)
+  ; (provable, fun x : (model -> Prop) => forall m, x m)
   ].
 
 Definition type_instances_build :=
@@ -659,7 +664,8 @@ Definition refl_instances :=
   ; (GammaEP, Provable2Equiv_Normal)
   ; (GammaED1, Derivable12Equiv_Normal)
   ; (sepconFJ, Join2Sepcon_Normal)
-  ; () (*TODO*)
+  ; (imppDef_model, Model2Impp_Normal) 
+  ; (provableDef_model, Model2Provable_Normal)    (*TODO*)
   ].
  
 (* Check AndImp2Iff_Normal. (* : IffDefinition_And_Imp L *)
@@ -786,7 +792,7 @@ Ltac instance_trans_subst_tac x l :=
   end.
 
 
-Definition d := cons Model_L nil.
+(* Definition d := cons Model_L nil.
 Definition b : @list Language.
   let x := (subst_name_tac1 Model_L (cons (BuildName (pair Model_L L)) nil)) in pose x.
   let x := (subst_name_tac (cons Model_L nil) (cons (BuildName (pair Model_L L)) nil)) in pose x.
@@ -808,7 +814,7 @@ Definition b : @list Language.
   pose (subst_name (d, subst_table)).
 
   exact nil.
-Defined.
+Defined. *)
 
 Ltac dependency_subst_tac1 x l :=
   match x with 

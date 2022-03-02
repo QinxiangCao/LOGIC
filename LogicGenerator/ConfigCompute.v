@@ -47,6 +47,7 @@ match hj with
 | FROM_provable_TO_derivable1 => []
 | FROM_provable_TO_logic_equiv => []
 | FROM_derivable1_TO_logic_equiv => []
+| FROM_model_TO_provable => [FROM_model_TO_expr]
 end.
 
 (* generated connective *)
@@ -79,6 +80,7 @@ match hj with
 | FROM_provable_TO_derivable1 => derivable1
 | FROM_provable_TO_logic_equiv => logic_equiv
 | FROM_derivable1_TO_logic_equiv => logic_equiv
+| FROM_model_TO_provable => provable
 end.
 
 (* generated type *)
@@ -153,6 +155,7 @@ match hj with
 | FROM_provable_TO_derivable1 => [provable]
 | FROM_provable_TO_logic_equiv => [provable]
 | FROM_derivable1_TO_logic_equiv => [derivable1]
+| FROM_model_TO_provable => []
 end.
 
 (* depended types of types *)
@@ -195,6 +198,7 @@ match hj with
 | FROM_provable_TO_derivable1 => Some GEN_derivable1_FROM_provable
 | FROM_provable_TO_logic_equiv => Some GEN_logic_equiv_FROM_provable
 | FROM_derivable1_TO_logic_equiv => Some GEN_logic_equiv_FROM_derivable1
+| FROM_model_TO_provable => Some GEN_provable_FROM_model
 end.
 
 Definition all_how_instances: list how_instance :=

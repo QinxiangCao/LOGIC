@@ -160,8 +160,14 @@ Context {L: Language}
 
         {M : Model}
         {J : Join model}
-        {sepconFJ : SepconDefinition_Join (Pred_sepconL Base.model)}
+        {sepconFJ : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
+        {minL_modelL : MinimumLanguage Model_L}
+        {sepconL_modelL: SepconLanguage Model_L}
+        {GammaP_modelL : Provable Model_L}
+        {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
+        {imppDef_model : ImppDefinition_Model minL_modelL}
+        {provableDef_model: ProvableDefinition_Model GammaP_modelL}
         .
         
 Import NameListNotations.

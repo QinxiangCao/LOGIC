@@ -39,6 +39,40 @@ Proof. constructor. reflexivity. Qed.
 
 End J2SC.
 
+Section M2IMP.
+Context {M : Model}.
+
+(* Definition Model_minL := Build_MinimumLanguage Model_L Semantics.impp. *)
+
+Definition Model2Impp : MinimumLanguage Model_L :=
+  Build_MinimumLanguage Model_L (fun x y => fun m => (x m -> y m)).
+
+Class ImppDefinition_Model (minL : MinimumLanguage Model_L) : Prop := {
+  model2impp : forall (x y : @expr Model_L), impp x y = (fun m  => (x m -> y m))
+}.
+
+Lemma Model2Impp_Normal :
+  ImppDefinition_Model Model2Impp.
+Proof. constructor. reflexivity. Qed.
+
+End M2IMP.
+
+Section M2P.
+Context {M : Model}.
+
+Definition Model2Provable : Provable Model_L :=
+  Build_Provable Model_L (fun (x : model -> Prop) => forall m, x m).
+
+Class ProvableDefinition_Model (GammaP : Provable Model_L) : Prop := {
+  model2provable : forall (x : @expr Model_L), provable x = (forall m, x m)
+}.
+
+Lemma Model2Provable_Normal :
+  ProvableDefinition_Model Model2Provable.
+Proof. constructor. reflexivity. Qed.
+
+End M2P.
+
 Section SepconAXFromJoin.
 
 Context {M : Model} {J : Join model} 
