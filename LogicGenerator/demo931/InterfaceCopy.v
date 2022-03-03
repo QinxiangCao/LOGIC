@@ -8,9 +8,7 @@ Import ListNotations.
 Module Type LanguageSig.
   Parameter model : Type .
   Definition expr := (model -> Prop) .
-  (* Parameter Inline provable : (expr -> Prop) . *)
   Parameter join : (model -> model -> model -> Prop) .
-  (* Parameter impp : (expr -> expr -> expr) . *)
 End LanguageSig.
 
 Module DerivedNames (Names: LanguageSig).
