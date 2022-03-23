@@ -215,7 +215,7 @@ Definition rule_classes :=
   ; GEN_logic_equiv_FROM_derivable1
   ; GEN_sepcon_FROM_join
   ; join_is_SA
-  ; provability_OF_sepcon_rule
+  (* ; provability_OF_sepcon_rule *)
   ].
 
 Definition classes :=
@@ -633,7 +633,7 @@ Definition rule_instances_build :=
   ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
   ; (sepconFJ, SepconDefinition_Join Join2Sepcon )
   ; (J_SA, Build_SeparationAlgebra model J join_comm join_assoc)
-  ; (sepconAX_modelL, Build_SepconAxiomatization Model_L minL_modelL sepconL_modelL GammaP_modelL sepcon_comm_impp sepcon_assoc1 sepcon_mono)
+  (* ; (sepconAX_modelL, Build_SepconAxiomatization Model_L minL_modelL sepconL_modelL GammaP_modelL sepcon_comm_impp sepcon_assoc1 sepcon_mono) *)
   ].
 
 Definition instances_build :=
@@ -724,7 +724,8 @@ Definition instance_transitions :=
   ; (bE, Axiomatization2Equiv_bE)
   ; (GammaED1, Axiomatization2Deduction_GammaED1)
   ; (imppE, Axiomatization2LogicEquiv_imppE)
-  ; (sepconAX_modelL, SeparationAlgebra2SepconAxiomatization) 
+  (* ; (sepconAX_modelL, SeparationAlgebra2SepconAxiomatization)  *)
+  ; (sepconAX, SeparationAlgebra2SepconAxiomatization)
   ].
 
 Definition type_instances: list Name :=
@@ -891,6 +892,66 @@ Definition judgement_dependency_via_ins :=
 Definition instance_dependency_via_transition :=
   instance_arg_lists
     (instance_transitions, map_snd instance_transitions). *)
+
+(* Definition ll1 := (noninstance_arg_lists (rule_instances_build, map_snd rule_instances_build)).
+
+Definition ll2 := dependency_subst (
+  (noninstance_arg_lists (rule_instances_build, map_snd rule_instances_build)), subst_table). *)
+
+  (* Ltac dependency_subst_tac1 x l :=
+    match x with 
+    | (?x1, ?x2, ?x3) =>  let x3' := subst_name_tac1 x3 l in 
+                          constr:((x1, x2, x3'))
+    end.
+  
+  Ltac dependency_subst_tac lx l :=
+    match lx with 
+    | @nil ?T => constr:(@nil T)
+    | (BuildName ?x) :: ?lx' => 
+        let x' := dependency_subst_tac1 x l in 
+        let lx'' := dependency_subst_tac lx' l in 
+                    constr:(BuildName x' :: lx'')
+    end. *)
+
+(* Ltac list_minus_tac l1 l2 :=
+  match l1 with 
+  | cons ?a ?l1' => match (eval compute in (In a l2)) with 
+    | True => let l' := list_minus_tac l1' l2 in constr:(cons a l')
+    | False => let l' := list_minus_tac l1' l2 in l' 
+  end 
+  | nil => constr:(nil)
+  end.
+
+Goal False.
+pose list_minus_tac ll1 ll2 as x. *)
+
+
+(* Fixpoint listminus {A : Type} (l1 l2 : list A) : (list A) :=
+  match l1 with 
+  | a :: l1' => match (In a l2) with 
+    | True => a :: (listminus l1' l2)
+    | False => (listminus l1' l2)
+  end
+  | nil => nil 
+  end. *)
+
+(* Compute listminus [1 ; 2]  [1].
+Compute In 2 (@cons nat 1 nil).
+Compute listminus [1;2] [1]. *)
+
+(* Ltac printbothlist l1 l2 :=
+  match l1 with 
+  | ?x :: ?l1' => match l2 with 
+    | ?y :: ?l2' => idtac x y; printbothlist l1' l2' 
+    | nil => idtac x "over"; printbothlist l1' nil 
+  end
+  | nil => match l2 with 
+    | ?y :: ?l2' => idtac "over" y; printbothlist nil l2'
+    | nil => idtac 
+  end end. *)
+
+
+
 
 Definition primary_rule_dependency_via_ins :=
   dependency_subst (
