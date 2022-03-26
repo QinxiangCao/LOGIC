@@ -19,6 +19,7 @@ then
 else
     dst=$2
     cp LogicGenerator/Generated.v ${dst}
+    python LogicGenerator/subst.py ${dst}
 fi
 if [ $# -eq 3 ]
 then

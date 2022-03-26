@@ -97,9 +97,9 @@ Include Rules.
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
   Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
 (* aux refl instances for derivation *)
-  Instance imppDef_model : (ImppDefinition_Model minL_modelL) := Model2Impp_Normal .
+  Instance imppDef_model : (ImppDefinition_Model minL) := Model2Impp_Normal .
   Instance sepconFJ : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
-  Instance provableDef_model : (ProvableDefinition_Model GammaP_modelL) := Model2Provable_Normal .
+  Instance provableDef_model : (ProvableDefinition_Model GammaP) := Model2Provable_Normal .
 (* aux derived instances *)
   Instance sepconAX : (SepconAxiomatization L GammaP) := SeparationAlgebra2SepconAxiomatization .
 Definition tree_pos : Type := tree_pos.
