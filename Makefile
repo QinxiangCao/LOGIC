@@ -370,6 +370,8 @@ demo931:
 	@echo COQC LogicGenerator/demo931/Config.v
 	@$(COQC) $(COQ_FLAG) LogicGenerator/demo931/Config.v
 	./logic_gen.sh LogicGenerator/demo931/Config.v LogicGenerator/demo931/Interface.v
+	@echo COQC LogicGenerator/demo931/Interface.v 
+	@$(COQC) $(COQ_FLAG) LogicGenerator/demo931/Interface.v
   # cd ./LogicGenerator/demo931 
   # python subst.py
 
