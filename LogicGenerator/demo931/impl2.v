@@ -5,15 +5,27 @@ Require Import Coq.Sets.Ensembles.
 Require Import Coq.Lists.List.
 Require Import Logic.SeparationLogic.Model.OSAGenerators.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
+Require Import ZArith.
+Require Import QArith.
+Require Import Lqa.
 Import ListNotations.
+
+Definition Q_Join := fun q1 q2 q => 
+  0 <= q1 /\ 0 <= q2 /\ 0 <= q /\ q1 <= 1 /\ q2 <= 1 /\ q <= 1 /\ Qeq q (q1 + q2).
+Definition Q_SA : @SeparationAlgebra Q Q_Join.
+Proof.
+  constructor; intros; unfold join, Q_Join in *;
+  [| exists (mxyz - mx)]; repeat (split; try tauto; lra).
+Qed.
 
 Definition var : Type := nat.
 Definition val : Type := Z.
 Definition addr : Type := nat.
 Definition store : Type := var -> val.
-Definition heap : Type := addr -> (option val).
+Definition heap : Type := addr -> option (Q * val).
 Definition store_Join := @equiv_Join store.
-Definition heap_Join := @fun_Join addr (option val) (@option_Join val trivial_Join).
+Definition QV_Join := @prod_Join Q val Q_Join equiv_Join.
+Definition heap_Join := @fun_Join addr (option (Q * val)) (@option_Join (Q*val) QV_Join).
 
 Module NaiveLang.
   Definition model : Type := store * heap.
@@ -27,7 +39,9 @@ Module NaiveRule.
 Include DerivedNames (NaiveLang).
 
 Definition store_SA := @equiv_SA store.
-Definition heap_SA := @fun_SA addr (option val) _ (@option_SA val _ trivial_SA).
+
+Definition QV_SA := @prod_SA Q val Q_Join _ Q_SA (@equiv_SA val).
+Definition heap_SA := @fun_SA addr (option (Q * val)) (@option_Join (Q*val) QV_Join) (@option_SA (Q * val) QV_Join QV_SA).
 Definition join_SA := @prod_SA store heap store_Join heap_Join store_SA heap_SA.
 
 Lemma join_comm : (forall m1 m2 m : model, join m1 m2 m -> join m2 m1 m) .
@@ -46,3 +60,14 @@ Module T := LogicTheorem NaiveLang NaiveRule.
 (* Module Solver := IPSolver NaiveLang. *)
 Import T.
 (* Import Solver. *)
+
+
+
+
+
+
+
+
+
+
+
