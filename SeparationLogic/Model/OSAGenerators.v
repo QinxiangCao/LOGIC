@@ -548,11 +548,6 @@ End exponentialSA.
 
 Section sumSA.
 
-  Inductive sum_worlds {worlds1 worlds2}: Type:
-    Type:=
-  | lw (w:worlds1): sum_worlds
-  | rw (w:worlds2): sum_worlds.
-
   Inductive sum_join {A B: Type} {J1: Join A} {J2: Join B}:
     (A + B) ->
     (A + B) ->
