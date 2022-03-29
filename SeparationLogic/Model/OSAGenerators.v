@@ -554,20 +554,20 @@ Section sumSA.
   | rw (w:worlds2): sum_worlds.
 
   Inductive sum_join {A B: Type} {J1: Join A} {J2: Join B}:
-    @sum_worlds A B ->
-    @sum_worlds A B ->
-    @sum_worlds A B-> Prop :=
+    (A + B) ->
+    (A + B) ->
+    (A + B) -> Prop :=
   | left_join a b c:
       join a b c ->
-      sum_join (lw a) (lw b) (lw c)
+      sum_join (inl a) (inl b) (inl c)
   | right_join a b c:
       join a b c ->
-      sum_join (rw a) (rw b) (rw c).
+      sum_join (inr a) (inr b) (inr c).
 
-  Definition sum_Join (A B: Type) {Join_A: Join A} {Join_B: Join B}: Join (@sum_worlds A B) :=
+  Definition sum_Join (A B: Type) {Join_A: Join A} {Join_B: Join B}: Join (A + B) :=
     (@sum_join A B Join_A Join_B).
 
-  Definition sum_SA (A B: Type) {Join_A: Join A} {Join_B: Join B} {SA_A: SeparationAlgebra A} {SA_B: SeparationAlgebra B}: @SeparationAlgebra (@sum_worlds A B) (sum_Join A B).
+  Definition sum_SA (A B: Type) {Join_A: Join A} {Join_B: Join B} {SA_A: SeparationAlgebra A} {SA_B: SeparationAlgebra B}: @SeparationAlgebra (A + B) (sum_Join A B).
   Proof.
     constructor.
     - intros; inversion H;
@@ -576,8 +576,8 @@ Section sumSA.
       inversion H; subst;
       inversion H0;
       destruct (join_assoc _ _ _ _ _ H1 H3) as [myz [HH1 HH2]].
-      + exists (lw myz); split; constructor; auto.
-      + exists (rw myz); split; constructor; auto.
+      + exists (inl myz); split; constructor; auto.
+      + exists (inr myz); split; constructor; auto.
   Qed.
 
 End sumSA.

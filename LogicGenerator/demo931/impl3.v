@@ -28,20 +28,51 @@ Definition memlock : Type := Q * option Datatypes.unit * ASD.
 Definition heap : Type := addr -> option (memval + memlock).
 
 Definition store_Join := @equiv_Join store.
-Definition memval_Join := @prod_Join Q Z Q_Join equiv_Join.
-Check @option_Join.
+Definition memval_Join := @prod_Join Q Z Q_Join (@equiv_Join Z).
 Definition bool_Join := @option_Join Datatypes.unit (@trivial_Join Datatypes.unit).
 Definition QB_Join := @prod_Join Q (option Datatypes.unit) Q_Join bool_Join.
 Definition memlock_Join := @prod_Join _ _ QB_Join (@equiv_Join ASD).
-Check @sum_Join.
 Definition mem_Join := @sum_Join memval memlock memval_Join memlock_Join.
-
-
-Definition heap_Join := @fun_Join addr (option (Q * val)) (@option_Join (Q*val) QV_Join).
+Definition heap_Join := @fun_Join addr (option (memval + memlock)) (@option_Join (memval + memlock) mem_Join).
 
 
 Module NaiveLang.
   Definition model : Type := store * heap.
-  Definition join := @prod_Join store 
+  Definition join := @prod_Join store heap store_Join heap_Join.
+  Definition expr := (model -> Prop).
+End NaiveLang.
+
+Require Import Interface.
+
+Module NaiveRule.
+Include DerivedNames (NaiveLang).
+
+Definition store_SA := @equiv_SA store.
+Definition memval_SA := @prod_SA Q Z Q_Join (@equiv_Join Z) Q_SA (@equiv_SA Z).
+Definition bool_SA := @option_SA Datatypes.unit _ (@trivial_SA _).
+Definition QB_SA := @prod_SA Q (option Datatypes.unit) Q_Join (bool_Join) Q_SA bool_SA.
+Definition memlock_SA := @prod_SA _ _ QB_Join (@equiv_Join ASD) QB_SA (@equiv_SA ASD).
+Definition mem_SA := @sum_SA memval memlock memval_Join memlock_Join memval_SA memlock_SA.
+Definition heap_SA := @fun_SA addr (option (memval + memlock)) (@option_Join (memval + memlock) mem_Join) (@option_SA (memval + memlock) mem_Join mem_SA).
+Definition join_SA := @prod_SA store heap store_Join heap_Join store_SA heap_SA.
+
+Lemma join_comm : (forall m1 m2 m : model, join m1 m2 m -> join m2 m1 m) .
+Proof.
+  pose proof join_SA. induction H. apply join_comm.
+Qed.
+
+Lemma join_assoc : (forall mx my mz mxy mxyz : model, join mx my mxy -> join mxy mz mxyz -> exists myz : model, join my mz myz /\ join mx myz mxyz) .
+Proof.
+  pose proof join_SA. induction H. tauto.
+Qed.
+
+End NaiveRule.
+
+Module T := LogicTheorem NaiveLang NaiveRule.
+(* Module Solver := IPSolver NaiveLang. *)
+Import T.
+(* Import Solver. *)
+
+
 
 
