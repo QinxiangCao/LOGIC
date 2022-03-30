@@ -72,7 +72,3 @@ Module T := LogicTheorem NaiveLang NaiveRule.
 (* Module Solver := IPSolver NaiveLang. *)
 Import T.
 (* Import Solver. *)
-
-
-
-
