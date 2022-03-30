@@ -4,6 +4,7 @@
 *.glob
 *.v.d
 *.aux
+*.lock
 .lia.cache
 .depend
 CONFIGURE

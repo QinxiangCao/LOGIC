@@ -1,4 +1,5 @@
 #!/bin/sh
+lockfile LogicGenerator/logic_gen.lock
 if [ $# -eq 0 ]
 then
     src=LogicGenerator/Config.v
@@ -26,3 +27,4 @@ then
     dst=$3
     cp LogicGenerator/Generated2.v ${dst}
 fi
+rm -f LogicGenerator/logic_gen.lock
