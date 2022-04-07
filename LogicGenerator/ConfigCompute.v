@@ -24,6 +24,9 @@ match hc with
 | FROM_empty_set_TO_empty_context => [FROM_ensemble_expr_TO_context]
 | FROM_join_TO_sepcon => [FROM_model_TO_expr]
 | FROM_model_TO_impp => [FROM_model_TO_expr]
+| FROM_model_TO_andp => [FROM_model_TO_expr]
+| FROM_model_TO_orp => [FROM_model_TO_expr]
+| FROM_model_TO_coq_prop => [FROM_model_TO_expr]
 end.
 
 (* infered how-type of how-judgement *)
@@ -67,6 +70,9 @@ match hc with
 | FROM_empty_set_TO_empty_context => empty_context
 | FROM_join_TO_sepcon => sepcon
 | FROM_model_TO_impp => impp
+| FROM_model_TO_andp => andp
+| FROM_model_TO_orp => orp
+| FROM_model_TO_coq_prop => coq_prop
 end.
 
 (* generated judgement *)
@@ -142,6 +148,9 @@ match hc with
 | FROM_empty_set_TO_empty_context => []
 | FROM_join_TO_sepcon => [join]
 | FROM_model_TO_impp => []
+| FROM_model_TO_andp => []
+| FROM_model_TO_orp => []
+| FROM_model_TO_coq_prop => []
 end.
 
 (* dependent judgements of how-judgement *)
@@ -185,6 +194,9 @@ match hc with
 | FROM_empty_set_TO_empty_context => None
 | FROM_join_TO_sepcon => Some (GEN_sepcon_FROM_join)
 | FROM_model_TO_impp => Some (GEN_impp_FROM_model)
+| FROM_model_TO_andp => Some (GEN_andp_FROM_model)
+| FROM_model_TO_orp => Some (GEN_orp_FROM_model)
+| FROM_model_TO_coq_prop => Some (GEN_coq_prop_FROM_model)
 end.
 
 (* Automatically generated rule-instances from judgement derivation *)

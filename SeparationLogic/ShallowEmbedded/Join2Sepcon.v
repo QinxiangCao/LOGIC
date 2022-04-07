@@ -17,6 +17,7 @@ Require Import Logic.lib.Ensembles_ext.
 Require Import Logic.PropositionalLogic.ShallowEmbedded.PredicatePropositionalLogic.
 Require Import Logic.MinimumLogic.Semantics.SemanticEquiv.
 Require Import Logic.MinimumLogic.Semantics.Trivial.
+Require Import Logic.MetaLogicInj.Syntax.
 
 Section J2SC.
 Context {M : Model} {J : Join model}.
@@ -56,6 +57,62 @@ Lemma Model2Impp_Normal :
 Proof. constructor. reflexivity. Qed.
 
 End M2IMP.
+
+Section M2AND.
+Context {M : Model}.
+
+Definition Model2Andp : AndLanguage Model_L :=
+  Build_AndLanguage Model_L (fun x y => fun m => (x m /\ y m)).
+
+Class AndpDefinition_Model (andpL : AndLanguage Model_L) : Prop := {
+  model2andp : forall (x y : @expr Model_L), andp x y = (fun m => (x m /\ y m))
+}.
+
+Lemma Model2Andp_Normal :
+  AndpDefinition_Model Model2Andp.
+Proof. constructor. reflexivity. Qed.
+
+End M2AND.
+
+Section M2OR.
+Context {M : Model}.
+
+Definition Model2Orp : OrLanguage Model_L :=
+  Build_OrLanguage Model_L (fun x y => fun m => (x m \/ y m)).
+
+Class OrpDefinition_Model (orpL : OrLanguage Model_L) : Prop := {
+  model2orp : forall (x y : @expr Model_L), orp x y = (fun m => x m \/ y m)
+}.
+
+Lemma Model2Orp_Normal: OrpDefinition_Model Model2Orp.
+Proof. constructor. reflexivity. Qed.
+
+End M2OR.
+
+(* Section M2COQPROP.
+Context {M : Model}.
+
+Instance L : Language := Build_Language (model -> Prop).
+
+Definition Model2CoqProp : CoqPropLanguage Model_L :=
+  Build_CoqPropLanguage Model_L (fun P x => P).
+
+Class CoqPropDefinition_Model (coq_prop_L : CoqPropLanguage Model_L) : Prop := {
+  model2coqprop : forall (P : Prop), coq_prop P = (fun m => )
+}. *)
+
+
+(* Section M2EMP.
+Context {M : Model}.
+
+Definition Model2Emp : EmpLanguage Model_L := 
+  Build_EmpLanguage Model_L (fun m => True).
+
+Class EmpDefinition_Model (empL : EmpLanguage Model_L) : Prop := {
+  model2emp : emp = (fun _ : model => True)
+}.
+
+End M2EMP. *)
 
 Section M2P.
 Context {M : Model}.
@@ -104,6 +161,7 @@ Proof.
 Qed. 
 
 End SepconAXFromJoin.
+
 
 (* Instance Pred_kminSM (A: Type): @KripkeMinimumSemantics (Pred_L A) (Pred_minL A) (Build_Model A) (unit_kMD _) tt eq (Pred_SM A) :=
   @Trivial2Kripke _ _ _ _ (Pred_tminSM A). *)

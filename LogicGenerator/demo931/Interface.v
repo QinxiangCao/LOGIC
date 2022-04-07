@@ -19,6 +19,9 @@ Module DerivedNames (Names: LanguageSig).
 Include Names.
 (* derived connectives *)
   Definition impp := (fun (x y : model -> Prop) (m : model) => x m -> y m) .
+  Definition andp := (fun (x y : model -> Prop) (m : model) => x m /\ y m) .
+  Definition orp := (fun (x y : model -> Prop) (m : model) => x m \/ y m) .
+  Definition coq_prop := (fun (P : Prop) (_ : model) => P) .
   Definition sepcon := (fun (x y : model -> Prop) (m : model) => exists m1 m2 : model, join m1 m2 m /\ x m1 /\ y m2) .
 (* derived judgements *)
   Definition provable := (fun x : model -> Prop => forall m : model, x m) .
@@ -83,6 +86,7 @@ Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.
+Require Import Logic.SeparationLogic.ShallowEmbedded.Model2CoqPropEmp.
 Require Import Logic.GeneralLogic.ShallowEmbedded.PredicateAsLang.
 Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
@@ -93,11 +97,17 @@ Include Rules.
   Instance L : Language := (Build_Language expr) .
   Instance J : (Join model) := join .
   Instance minL : (MinimumLanguage L) := (Build_MinimumLanguage L impp) .
+  Instance andpL : (AndLanguage L) := (Build_AndLanguage L andp) .
+  Instance orpL : (OrLanguage L) := (Build_OrLanguage L orp) .
+  Instance coq_prop_L : (CoqPropLanguage L) := (Build_CoqPropLanguage L coq_prop) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
   Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
 (* aux refl instances for derivation *)
   Instance imppDef_model : (ImppDefinition_Model minL) := Model2Impp_Normal .
+  Instance andpDef_model : (AndpDefinition_Model andpL) := Model2Andp_Normal .
+  Instance orpDef_model : (OrpDefinition_Model orpL) := Model2Orp_Normal .
+  Instance coqpropDef_model : (CoqPropDefinition_Model coq_prop_L) := Model2CoqProp_Normal .
   Instance sepconFJ : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
   Instance provableDef_model : (ProvableDefinition_Model GammaP) := Model2Provable_Normal .
 (* aux derived instances *)

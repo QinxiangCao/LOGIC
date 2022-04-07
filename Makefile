@@ -200,7 +200,8 @@ SeparationLogic_DeepEmbedded_FILES = \
 
 SeparationLogic_ShallowEmbedded_FILES = \
   PredicateSeparationLogic.v MonoPredicateSeparationLogic.v \
-  Join2Sepcon.v
+  Join2Sepcon.v \
+  Model2CoqPropEmp.v
 
 SeparationLogic_FILES = \
   Syntax.v \

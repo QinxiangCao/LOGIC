@@ -6,9 +6,15 @@ Import ListNotations.
 (* how type *)
 
 Definition how_connectives :=
-  [ primitive_connective join;
-    FROM_model_TO_impp;
-    FROM_join_TO_sepcon].
+  [ primitive_connective join
+  ; FROM_model_TO_impp
+  ; FROM_model_TO_andp
+  ; FROM_model_TO_orp
+  ; FROM_model_TO_coq_prop
+  ; FROM_join_TO_sepcon
+  ].
+
+(* temporarily use garbage collected emp*)
 
 Definition how_judgements :=
   [ FROM_model_TO_provable

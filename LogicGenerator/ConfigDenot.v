@@ -29,6 +29,7 @@ Require Import Logic.SeparationLogic.ProofTheory.TheoryOfSeparationAxioms.
 Require Import Logic.SeparationLogic.ProofTheory.Corable.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.
+Require Import Logic.SeparationLogic.ShallowEmbedded.Model2CoqPropEmp.
 Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
 
 Require Logic.LogicGenerator.ConfigLang.
@@ -94,6 +95,9 @@ Definition how_connectives: list how_connective :=
   ; FROM_empty_set_TO_empty_context
   ; FROM_join_TO_sepcon
   ; FROM_model_TO_impp
+  ; FROM_model_TO_andp
+  ; FROM_model_TO_orp
+  ; FROM_model_TO_coq_prop
   ].
 
 Definition how_judgements: list how_judgement :=
@@ -243,6 +247,9 @@ Definition refl_classes :=
   ; RC GEN_sepcon_FROM_join
   ; RC GEN_impp_FROM_model
   ; RC GEN_provable_FROM_model
+  ; RC GEN_andp_FROM_model
+  ; RC GEN_orp_FROM_model
+  ; RC GEN_coq_prop_FROM_model
   ].
 
 End D.
@@ -456,11 +463,17 @@ Context {L: Language}
         {sepconFJ : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
         {minL_modelL : MinimumLanguage Model_L}
+        {andpL_modelL : AndLanguage Model_L}
+        {orpL_modelL: OrLanguage Model_L}
+        {coq_prop_modelL : CoqPropLanguage Model_L}
         {sepconL_modelL: SepconLanguage Model_L}
         {GammaP_modelL : Provable Model_L}
         {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
         {imppDef_model : ImppDefinition_Model minL_modelL}
         {provableDef_model: ProvableDefinition_Model GammaP_modelL}
+        {andpDef_model : AndpDefinition_Model andpL_modelL}
+        {orpDef_model : OrpDefinition_Model orpL_modelL}
+        {coqpropDef_model : CoqPropDefinition_Model coq_prop_modelL}
         .
 
 Definition types: list Name :=
@@ -514,6 +527,9 @@ Definition how_connectives: list Name :=
   ; (empty_context, Empty_set expr)
   ; (sepcon, fun x y => fun m => exists m1 m2, join m1 m2 m /\ x m1 /\ y m2)
   ; (impp, fun (x y : model -> Prop) (m : model) => (x m -> y m))
+  ; (andp, fun (x y : model -> Prop) (m : model) => (x m /\ y m))
+  ; (orp, fun (x y : model -> Prop) (m : model) => (x m \/ y m))
+  ; (coq_prop, fun (P : Prop) (m : model) => P)
   ].
 
 Definition how_judgements: list Name :=
@@ -666,6 +682,9 @@ Definition refl_instances :=
   ; (sepconFJ, Join2Sepcon_Normal)
   ; (imppDef_model, Model2Impp_Normal) 
   ; (provableDef_model, Model2Provable_Normal)    (*TODO*)
+  ; (andpDef_model, Model2Andp_Normal)
+  ; (orpDef_model, Model2Orp_Normal)
+  ; (coqpropDef_model, Model2CoqProp_Normal)
   ].
  
 (* Check AndImp2Iff_Normal. (* : IffDefinition_And_Imp L *)

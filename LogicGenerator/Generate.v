@@ -34,6 +34,7 @@ Require Import Logic.SeparationLogic.ProofTheory.Deduction.
 Require Import Logic.SeparationLogic.Model.SeparationAlgebra.
 Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.
 Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.
+Require Import Logic.SeparationLogic.ShallowEmbedded.Model2CoqPropEmp.
 
 Require Import Logic.LogicGenerator.Utils.
 Require Import Logic.LogicGenerator.ConfigDenot.
@@ -163,11 +164,17 @@ Context {L: Language}
         {sepconFJ : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
         {minL_modelL : MinimumLanguage Model_L}
+        {andpL_modelL : AndLanguage Model_L}
+        {orpL_modelL: OrLanguage Model_L}
+        {coq_prop_modelL : CoqPropLanguage Model_L}
         {sepconL_modelL: SepconLanguage Model_L}
         {GammaP_modelL : Provable Model_L}
         {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
         {imppDef_model : ImppDefinition_Model minL_modelL}
         {provableDef_model: ProvableDefinition_Model GammaP_modelL}
+        {andpDef_model : AndpDefinition_Model andpL_modelL}
+        {orpDef_model : OrpDefinition_Model orpL_modelL}
+        {coqpropDef_model : CoqPropDefinition_Model coq_prop_modelL}
         .
         
 Import NameListNotations.
@@ -419,6 +426,7 @@ Ltac two_stage_print :=
   idtac "Require Import Logic.GeneralLogic.ProofTheory.BasicLogicEquiv.";
   idtac "Require Import Logic.SeparationLogic.Model.SeparationAlgebra.";
   idtac "Require Import Logic.SeparationLogic.ShallowEmbedded.Join2Sepcon.";
+  idtac "Require Import Logic.SeparationLogic.ShallowEmbedded.Model2CoqPropEmp.";
   idtac "Require Import Logic.GeneralLogic.ShallowEmbedded.PredicateAsLang.";
   idtac "Require Import Logic.SeparationLogic.ShallowEmbedded.PredicateSeparationLogic.";
 

@@ -57,7 +57,11 @@ Inductive how_connective :=
 | FROM_sepcon_TO_iter_sepcon
 | FROM_empty_set_TO_empty_context
 | FROM_join_TO_sepcon
-| FROM_model_TO_impp .
+| FROM_model_TO_impp 
+| FROM_model_TO_andp
+| FROM_model_TO_orp
+| FROM_model_TO_coq_prop
+.
 
 Definition primitive_connectives := map primitive_connective.
 Definition predicate_over_states := ___predicate_over_states false.
@@ -171,6 +175,9 @@ Inductive rule_class :=
 | join_is_SA
 | GEN_impp_FROM_model
 | GEN_provable_FROM_model
+| GEN_andp_FROM_model
+| GEN_orp_FROM_model
+| GEN_coq_prop_FROM_model
 .
 
 (** * What users need not to know **)
@@ -652,6 +659,9 @@ match rc1, rc2 with
 | GEN_impp_FROM_model, GEN_impp_FROM_model => true
 | GEN_provable_FROM_model, GEN_provable_FROM_model => true
 | join_is_SA, join_is_SA => true
+| GEN_andp_FROM_model, GEN_andp_FROM_model => true
+| GEN_orp_FROM_model, GEN_orp_FROM_model => true
+| GEN_coq_prop_FROM_model, GEN_coq_prop_FROM_model => true 
 | _, _ => false
 end.
 
