@@ -13,3 +13,5 @@ Class SeparationAlgebra (worlds: Type) {SA: Join worlds}: Type :=
 
 Definition unit_element {worlds: Type} {J: Join worlds}: worlds -> Prop :=
   fun e => forall n n', join e n n' -> n = n'.
+
+Class Unit (worlds : Type) : Type := is_unit: worlds -> Prop.

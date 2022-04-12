@@ -67,6 +67,7 @@ Definition connectives: list connective :=
   ; iter_sepcon
   ; empty_context
   ; join
+  ; is_unit
   ].
 
 Definition judgements: list judgement :=
@@ -98,6 +99,7 @@ Definition how_connectives: list how_connective :=
   ; FROM_model_TO_andp
   ; FROM_model_TO_orp
   ; FROM_model_TO_coq_prop
+  ; FROM_unit_TO_emp
   ].
 
 Definition how_judgements: list how_judgement :=
@@ -129,6 +131,7 @@ Definition connective_classes :=
   ; IterAndLanguage
   ; IterSepconLanguage
   ; Join
+  ; Unit
   ].
 
 Definition judgement_classes :=
@@ -219,6 +222,7 @@ Definition rule_classes :=
   ; GEN_logic_equiv_FROM_derivable1
   ; GEN_sepcon_FROM_join
   ; join_is_SA
+  ; GEN_emp_FROM_unit
   (* ; provability_OF_sepcon_rule *)
   ].
 
@@ -250,6 +254,7 @@ Definition refl_classes :=
   ; RC GEN_andp_FROM_model
   ; RC GEN_orp_FROM_model
   ; RC GEN_coq_prop_FROM_model
+  ; RC GEN_emp_FROM_unit
   ].
 
 End D.
@@ -460,6 +465,7 @@ Context {L: Language}
         (* new *)
         {M : Model}
         {J : Join model}
+        {U : Unit model}
         {sepconFJ : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
         {minL_modelL : MinimumLanguage Model_L}
@@ -469,11 +475,13 @@ Context {L: Language}
         {sepconL_modelL: SepconLanguage Model_L}
         {GammaP_modelL : Provable Model_L}
         {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
+        {empL_modelL : EmpLanguage Model_L}
         {imppDef_model : ImppDefinition_Model minL_modelL}
         {provableDef_model: ProvableDefinition_Model GammaP_modelL}
         {andpDef_model : AndpDefinition_Model andpL_modelL}
         {orpDef_model : OrpDefinition_Model orpL_modelL}
         {coqpropDef_model : CoqPropDefinition_Model coq_prop_modelL}
+        {empDef_unit : EmpDefinition_Unit Unit2Emp}
         .
 
 Definition types: list Name :=
@@ -499,6 +507,7 @@ Definition connectives: list Name :=
   ; iter_sepcon
   ; empty_context
   ; join
+  ; is_unit
   ].
 
 Definition judgements: list Name :=
@@ -530,6 +539,7 @@ Definition how_connectives: list Name :=
   ; (andp, fun (x y : model -> Prop) (m : model) => (x m /\ y m))
   ; (orp, fun (x y : model -> Prop) (m : model) => (x m \/ y m))
   ; (coq_prop, fun (P : Prop) (m : model) => P)
+  ; (emp, fun (m : model) => is_unit m)
   ].
 
 Definition how_judgements: list Name :=
@@ -561,6 +571,7 @@ Definition connective_instances_build :=
   ; (empL, Build_EmpLanguage L emp)
   ; (iter_sepcon_L, Build_IterSepconLanguage L iter_sepcon)
   ; (J, join)
+  ; (U, is_unit)
   ].
 
 Definition judgement_instances_build :=
@@ -649,6 +660,7 @@ Definition rule_instances_build :=
   ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
   ; (sepconFJ, SepconDefinition_Join Join2Sepcon )
   ; (J_SA, Build_SeparationAlgebra model J join_comm join_assoc)
+  ; (empDef_unit, Unit2Emp_Normal)
   (* ; (sepconAX_modelL, Build_SepconAxiomatization Model_L minL_modelL sepconL_modelL GammaP_modelL sepcon_comm_impp sepcon_assoc1 sepcon_mono) *)
   ].
 
@@ -685,6 +697,7 @@ Definition refl_instances :=
   ; (andpDef_model, Model2Andp_Normal)
   ; (orpDef_model, Model2Orp_Normal)
   ; (coqpropDef_model, Model2CoqProp_Normal)
+  ; (empDef_unit, Unit2Emp_Normal)
   ].
  
 (* Check AndImp2Iff_Normal. (* : IffDefinition_And_Imp L *)
@@ -896,9 +909,10 @@ Definition type_dependency_via_ins :=
     (type_instances_build, map_snd type_instances_build).
 
 Definition connective_dependency_via_ins :=
-  cons (BuildName (J, join, join))
+  cons (BuildName (U, is_unit, is_unit))
+  (cons (BuildName (J, join, join))
   (noninstance_arg_lists
-    (connective_instances_build, map_snd connective_instances_build)).
+    (connective_instances_build, map_snd connective_instances_build))).
 
 Definition judgement_dependency_via_ins :=
   noninstance_arg_lists

@@ -20,7 +20,8 @@ Inductive connective :=
 | iter_andp
 | iter_sepcon
 | empty_context
-| join.
+| join
+| is_unit.
 
 Inductive judgement :=
 | provable
@@ -61,6 +62,7 @@ Inductive how_connective :=
 | FROM_model_TO_andp
 | FROM_model_TO_orp
 | FROM_model_TO_coq_prop
+| FROM_unit_TO_emp
 .
 
 Definition primitive_connectives := map primitive_connective.
@@ -178,6 +180,7 @@ Inductive rule_class :=
 | GEN_andp_FROM_model
 | GEN_orp_FROM_model
 | GEN_coq_prop_FROM_model
+| GEN_emp_FROM_unit
 .
 
 (** * What users need not to know **)
@@ -213,6 +216,7 @@ Inductive connective_class :=
 | IterAndLanguage
 | IterSepconLanguage
 | Join
+| Unit
 .
 
 Inductive judgement_class :=
@@ -452,6 +456,7 @@ match c1, c2 with
 | iter_sepcon, iter_sepcon
 | empty_context, empty_context => true
 | join, join => true
+| is_unit, is_unit => true
 | _, _ => false
 end.
 
@@ -533,6 +538,7 @@ match cc1, cc2 with
 | IterAndLanguage, IterAndLanguage
 | IterSepconLanguage, IterSepconLanguage => true
 | Join, Join => true
+| Unit, Unit => true 
 | _, _ => false
 end.
 
@@ -662,6 +668,7 @@ match rc1, rc2 with
 | GEN_andp_FROM_model, GEN_andp_FROM_model => true
 | GEN_orp_FROM_model, GEN_orp_FROM_model => true
 | GEN_coq_prop_FROM_model, GEN_coq_prop_FROM_model => true 
+| GEN_emp_FROM_unit, GEN_emp_FROM_unit => true
 | _, _ => false
 end.
 
@@ -709,4 +716,5 @@ End AllClass.
 Module AllClassList := ListFunOverDecType AllClass.
 
 Module NatList := ListFunOverDecType PeanoNat.Nat.
+
 

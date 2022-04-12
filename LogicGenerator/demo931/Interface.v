@@ -13,6 +13,7 @@ Module Type LanguageSig.
 (* primitive judgements *)
 (* primitive connectives *)
   Parameter join : (model -> model -> model -> Prop) .
+  Parameter is_unit : (model -> Prop) .
 End LanguageSig.
 
 Module DerivedNames (Names: LanguageSig).
@@ -23,6 +24,7 @@ Include Names.
   Definition orp := (fun (x y : model -> Prop) (m : model) => x m \/ y m) .
   Definition coq_prop := (fun (P : Prop) (_ : model) => P) .
   Definition sepcon := (fun (x y : model -> Prop) (m : model) => exists m1 m2 : model, join m1 m2 m /\ x m1 /\ y m2) .
+  Definition emp := (fun m : model => is_unit m) .
 (* derived judgements *)
   Definition provable := (fun x : model -> Prop => forall m : model, x m) .
 End DerivedNames.
@@ -49,6 +51,7 @@ Parameter Inline tree_pos : Type .
   Axiom var_pos : (expr -> option positive -> tree_pos) .
   Axiom sepcon_pos : (tree_pos -> tree_pos -> tree_pos) .
   Axiom cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) .
+  Axiom cancel_different : (tree_pos -> tree_pos -> expr) .
   Axiom cancel_same : (tree_pos -> tree_pos -> Prop) .
   Axiom restore : (tree_pos -> tree_pos -> expr) .
 (* derived rules as instance *)
@@ -96,11 +99,13 @@ Include Rules.
   Instance M : Model := (Build_Model model) .
   Instance L : Language := (Build_Language expr) .
   Instance J : (Join model) := join .
+  Instance U : (Unit model) := is_unit .
   Instance minL : (MinimumLanguage L) := (Build_MinimumLanguage L impp) .
   Instance andpL : (AndLanguage L) := (Build_AndLanguage L andp) .
   Instance orpL : (OrLanguage L) := (Build_OrLanguage L orp) .
   Instance coq_prop_L : (CoqPropLanguage L) := (Build_CoqPropLanguage L coq_prop) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
+  Instance empL : (EmpLanguage L) := (Build_EmpLanguage L emp) .
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
   Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
 (* aux refl instances for derivation *)
@@ -109,6 +114,7 @@ Include Rules.
   Instance orpDef_model : (OrpDefinition_Model orpL) := Model2Orp_Normal .
   Instance coqpropDef_model : (CoqPropDefinition_Model coq_prop_L) := Model2CoqProp_Normal .
   Instance sepconFJ : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
+  Instance empDef_unit : (EmpDefinition_Unit Unit2Emp) := Unit2Emp_Normal .
   Instance provableDef_model : (ProvableDefinition_Model GammaP) := Model2Provable_Normal .
 (* aux derived instances *)
   Instance sepconAX : (SepconAxiomatization L GammaP) := SeparationAlgebra2SepconAxiomatization .
@@ -126,6 +132,7 @@ Definition tree_pos : Type := tree_pos.
   Definition var_pos : (expr -> option positive -> tree_pos) := var_pos .
   Definition sepcon_pos : (tree_pos -> tree_pos -> tree_pos) := sepcon_pos .
   Definition cancel_mark : (expr_deep -> expr_deep -> tree_pos -> tree_pos -> tree_pos * tree_pos) := cancel_mark .
+  Definition cancel_different : (tree_pos -> tree_pos -> expr) := cancel_different .
   Definition cancel_same : (tree_pos -> tree_pos -> Prop) := cancel_same .
   Definition restore : (tree_pos -> tree_pos -> expr) := restore .
 (* derived rules as instance *)

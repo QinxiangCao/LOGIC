@@ -7,11 +7,13 @@ Import ListNotations.
 
 Definition how_connectives :=
   [ primitive_connective join
+  ; primitive_connective is_unit
   ; FROM_model_TO_impp
   ; FROM_model_TO_andp
   ; FROM_model_TO_orp
   ; FROM_model_TO_coq_prop
   ; FROM_join_TO_sepcon
+  ; FROM_unit_TO_emp
   ].
 
 (* temporarily use garbage collected emp*)

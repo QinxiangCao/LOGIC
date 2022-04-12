@@ -161,6 +161,7 @@ Context {L: Language}
 
         {M : Model}
         {J : Join model}
+        {U : Unit model}
         {sepconFJ : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
         {minL_modelL : MinimumLanguage Model_L}
@@ -170,11 +171,13 @@ Context {L: Language}
         {sepconL_modelL: SepconLanguage Model_L}
         {GammaP_modelL : Provable Model_L}
         {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
+        {empL_modelL : EmpLanguage Model_L}
         {imppDef_model : ImppDefinition_Model minL_modelL}
         {provableDef_model: ProvableDefinition_Model GammaP_modelL}
         {andpDef_model : AndpDefinition_Model andpL_modelL}
         {orpDef_model : OrpDefinition_Model orpL_modelL}
         {coqpropDef_model : CoqPropDefinition_Model coq_prop_modelL}
+        {empDef_unit : EmpDefinition_Unit Unit2Emp}
         .
         
 Import NameListNotations.
