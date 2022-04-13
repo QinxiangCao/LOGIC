@@ -113,7 +113,7 @@ Include Rules.
   Instance andpDef_model : (AndpDefinition_Model andpL) := Model2Andp_Normal .
   Instance orpDef_model : (OrpDefinition_Model orpL) := Model2Orp_Normal .
   Instance coqpropDef_model : (CoqPropDefinition_Model coq_prop_L) := Model2CoqProp_Normal .
-  Instance sepconFJ : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
+  Instance sepconDef_join : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
   Instance empDef_unit : (EmpDefinition_Unit Unit2Emp) := Unit2Emp_Normal .
   Instance provableDef_model : (ProvableDefinition_Model GammaP) := Model2Provable_Normal .
 (* aux derived instances *)

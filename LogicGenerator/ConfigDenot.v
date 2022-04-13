@@ -466,7 +466,7 @@ Context {L: Language}
         {M : Model}
         {J : Join model}
         {U : Unit model}
-        {sepconFJ : SepconDefinition_Join Join2Sepcon}
+        {sepconDef_join : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
         {minL_modelL : MinimumLanguage Model_L}
         {andpL_modelL : AndLanguage Model_L}
@@ -658,7 +658,7 @@ Definition rule_instances_build :=
   ; (GammaD1P, Build_Derivable1Provable L minL GammaP GammaD1 derivable1_provable)
   ; (GammaEP, Build_EquivProvable L minL GammaP GammaE logic_equiv_provable)
   ; (GammaED1, Build_EquivDerivable1 L GammaD1 GammaE logic_equiv_derivable1)
-  ; (sepconFJ, SepconDefinition_Join Join2Sepcon )
+  ; (sepconDef_join, SepconDefinition_Join Join2Sepcon )
   ; (J_SA, Build_SeparationAlgebra model J join_comm join_assoc)
   ; (empDef_unit, Unit2Emp_Normal)
   (* ; (sepconAX_modelL, Build_SepconAxiomatization Model_L minL_modelL sepconL_modelL GammaP_modelL sepcon_comm_impp sepcon_assoc1 sepcon_mono) *)
@@ -691,7 +691,7 @@ Definition refl_instances :=
   ; (GammaD1P, Provable2Derivable1_Normal)
   ; (GammaEP, Provable2Equiv_Normal)
   ; (GammaED1, Derivable12Equiv_Normal)
-  ; (sepconFJ, Join2Sepcon_Normal)
+  ; (sepconDef_join, Join2Sepcon_Normal)
   ; (imppDef_model, Model2Impp_Normal) 
   ; (provableDef_model, Model2Provable_Normal)    (*TODO*)
   ; (andpDef_model, Model2Andp_Normal)

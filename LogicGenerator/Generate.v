@@ -162,7 +162,7 @@ Context {L: Language}
         {M : Model}
         {J : Join model}
         {U : Unit model}
-        {sepconFJ : SepconDefinition_Join Join2Sepcon}
+        {sepconDef_join : SepconDefinition_Join Join2Sepcon}
         {J_SA : @SeparationAlgebra model J}
         {minL_modelL : MinimumLanguage Model_L}
         {andpL_modelL : AndLanguage Model_L}
