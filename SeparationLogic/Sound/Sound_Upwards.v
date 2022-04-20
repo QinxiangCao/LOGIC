@@ -195,6 +195,8 @@ Proof.
     - eapply sat_mono; eauto.
     - rewrite sat_emp; eauto. 
 Qed.
+(* will weak emp work *)
+(* what is unital sa' *)
 
 End Sound_Upwards.
 

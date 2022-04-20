@@ -49,6 +49,7 @@ Class EmpSemantics
       {J: Join (Kworlds M)}
       (SM: Semantics L MD): Type :=
   denote_emp: Same_set _ (Kdenotation M emp) StrongSemantics.emp.
+  (* should it be changed to weak emp? *)
 
 Lemma sat_sepcon
       {L: Language}

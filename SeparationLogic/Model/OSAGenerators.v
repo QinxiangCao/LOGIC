@@ -45,7 +45,14 @@ Section trivialSA.
   (*Trivial is NOT necessarily unital*)
 
   (*Trivial is NOT necessarily residual*)
-  
+
+  Definition trivial_Unit : Unit worlds := (fun _ => False).
+
+  Definition trivial_UJR : @UnitJoinRelation worlds trivial_Unit trivial_Join.
+  Proof. 
+    constructor; intros; hnf; tauto.
+  Qed.
+
 End trivialSA.
 
 Section unitSA.
@@ -98,6 +105,13 @@ Section unitSA.
     apply <- (@incr_unital_iff_residual unit eq (eq_preorder unit) unit_Join); auto.
     + apply unit_residual.
     + apply unit_incrSA.
+  Qed.
+
+  Definition unit_Unit : Unit unit := (fun _ => False).
+
+  Definition unit_UJR : @UnitJoinRelation unit unit_Unit unit_Join.
+  Proof. 
+    constructor; intros; hnf; tauto.
   Qed.
 
 End unitSA.
@@ -164,6 +178,13 @@ Section equivSA.
   (*Identity is NOT necessarily unital*)
 
   (*Identity is NOT necessarily residual*)
+
+  Definition equiv_Unit : Unit worlds := (fun _ => False).
+
+  Definition equiv_UJR : @UnitJoinRelation worlds trivial_Unit trivial_Join.
+  Proof.
+    constructor; intros; hnf; tauto.
+  Qed.
   
 End equivSA.
 
@@ -404,6 +425,15 @@ Section optionSA.
       apply option_disj_incr_None.
   Qed.
 
+  Definition option_Unit : Unit (option worlds) := (fun m => m = None).
+
+  Definition option_UJR {J : Join worlds} : @UnitJoinRelation (option worlds) option_Unit  (@option_Join J).
+  Proof.
+    constructor; intros; hnf in *; subst.
+    + destruct n; constructor.
+    + inversion H0; tauto.
+  Qed.
+
 End optionSA.
 
 Section exponentialSA.
@@ -544,6 +574,21 @@ Section exponentialSA.
       apply H.
   Qed.
 
+  Definition fun_Unit (A B : Type) {U_B : Unit B} : Unit (A -> B) := (fun v => forall x, is_unit (v x)).
+
+  Definition fun_UJR (A B : Type) {U_B : Unit B} {J_B : Join B} {UJR_B : @UnitJoinRelation B U_B J_B} : @UnitJoinRelation (A -> B) (fun_Unit A B) (fun_Join A B).
+  Proof.
+    constructor; intros; hnf; subst; intros.
+    + apply unit_join. apply H.
+    + assert (forall x, n x = m x).
+      { intros. eapply unit_spec; [apply H | apply H0]. }
+      eapply FunctionalExtensionality.functional_extensionality_dep.
+      apply H1.
+    (* Unshelve. exact UJR_B. exact UJR_B. *)
+  Qed.
+
+  (* do not know why there are goals shelved here *)
+
 End exponentialSA.
 
 Section sumSA.
@@ -573,6 +618,13 @@ Section sumSA.
       destruct (join_assoc _ _ _ _ _ H1 H3) as [myz [HH1 HH2]].
       + exists (inl myz); split; constructor; auto.
       + exists (inr myz); split; constructor; auto.
+  Qed.
+
+  Definition sum_Unit (A B : Type) : Unit (A + B) := (fun _ => False).
+
+  Definition sum_UJR (A B : Type) {J_A : Join A} {J_B : Join B} : @UnitJoinRelation (A + B) (sum_Unit A B) (sum_Join A B).
+  Proof.
+    constructor; intros; hnf in *; tauto.
   Qed.
 
 End sumSA.
@@ -719,6 +771,21 @@ Section productSA.
         apply Hb2 in H1.
         split; auto.
   Qed.
+
+Definition prod_Unit (A B : Type) {U_A : Unit A} {U_B : Unit B} : Unit (A * B) :=
+  (fun m => is_unit (fst m) /\ is_unit (snd m)).
+
+Definition prod_UJR (A B : Type) {U_A : Unit A} {U_B : Unit B} {J_A : Join A} {J_B : Join B} {USR_A : @UnitJoinRelation A U_A J_A} {USR_B : @UnitJoinRelation B U_B J_B} : @UnitJoinRelation (A * B) (prod_Unit A B) (prod_Join A B).
+Proof.
+  constructor; intros; destruct u as [x y]; hnf; simpl in *.
+  + destruct H; split; eapply unit_join; [apply H | apply H0].
+  + destruct n as [n1 n2]. destruct m as [m1 m2]. simpl in *.
+    destruct H as [u1 u2]. destruct H0 as [j1 j2].
+    assert (n1 = m1). {eapply unit_spec; [apply u1 | apply j1]. }
+    assert (n2 = m2). {eapply unit_spec; [apply u2 | apply j2]. }
+    subst. tauto.
+  (* Unshelve. exact USR_A. exact USR_B. exact USR_A. exact USR_B. *)
+Qed.
 
 End productSA.
 
