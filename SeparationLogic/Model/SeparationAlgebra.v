@@ -17,6 +17,6 @@ Definition unit_element {worlds: Type} {J: Join worlds}: worlds -> Prop :=
 Class Unit (worlds : Type) : Type := is_unit: worlds -> Prop.
 
 Class UnitJoinRelation (worlds : Type) {U : Unit worlds} {J : Join worlds} := {
-  unit_join: forall n u : worlds, is_unit u -> join n u n;
+  unit_join: forall n : worlds, exists u : worlds, is_unit u /\ join n u n;
   unit_spec: forall n m u : worlds, is_unit u -> join n u m -> n = m
 }.

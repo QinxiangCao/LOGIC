@@ -46,12 +46,12 @@ Section trivialSA.
 
   (*Trivial is NOT necessarily residual*)
 
-  Definition trivial_Unit : Unit worlds := (fun _ => False).
+  (* Definition trivial_Unit : Unit worlds := (fun _ => False).
 
   Definition trivial_UJR : @UnitJoinRelation worlds trivial_Unit trivial_Join.
   Proof. 
     constructor; intros; hnf; tauto.
-  Qed.
+  Qed. *)
 
 End trivialSA.
 
@@ -105,13 +105,6 @@ Section unitSA.
     apply <- (@incr_unital_iff_residual unit eq (eq_preorder unit) unit_Join); auto.
     + apply unit_residual.
     + apply unit_incrSA.
-  Qed.
-
-  Definition unit_Unit : Unit unit := (fun _ => False).
-
-  Definition unit_UJR : @UnitJoinRelation unit unit_Unit unit_Join.
-  Proof. 
-    constructor; intros; hnf; tauto.
   Qed.
 
 End unitSA.
@@ -179,11 +172,13 @@ Section equivSA.
 
   (*Identity is NOT necessarily residual*)
 
-  Definition equiv_Unit : Unit worlds := (fun _ => False).
+  Definition equiv_Unit : Unit worlds := (fun _ => True).
 
-  Definition equiv_UJR : @UnitJoinRelation worlds trivial_Unit trivial_Join.
+  Definition equiv_UJR : @UnitJoinRelation worlds equiv_Unit equiv_Join.
   Proof.
-    constructor; intros; hnf; tauto.
+    constructor; intros.
+    + exists n; split; try constructor; tauto.
+    + hnf in H0; destruct H0; subst; tauto.
   Qed.
   
 End equivSA.
@@ -427,12 +422,20 @@ Section optionSA.
 
   Definition option_Unit : Unit (option worlds) := (fun m => m = None).
 
-  Definition option_UJR {J : Join worlds} : @UnitJoinRelation (option worlds) option_Unit  (@option_Join J).
+  Definition option_UJR {J : Join worlds} : @UnitJoinRelation (option worlds) option_Unit (@option_Join J).
+  Proof.
+    constructor; intros.
+    + exists None; split; hnf; try tauto.
+      destruct n; try constructor.
+    + inversion H0; subst; try tauto; inversion H.
+  Qed.
+
+  (* Definition option_UJR {J : Join worlds} : @UnitJoinRelation (option worlds) option_Unit  (@option_Join J).
   Proof.
     constructor; intros; hnf in *; subst.
     + destruct n; constructor.
     + inversion H0; tauto.
-  Qed.
+  Qed. *)
 
 End optionSA.
 
@@ -578,6 +581,27 @@ Section exponentialSA.
 
   Definition fun_UJR (A B : Type) {U_B : Unit B} {J_B : Join B} {UJR_B : @UnitJoinRelation B U_B J_B} : @UnitJoinRelation (A -> B) (fun_Unit A B) (fun_Join A B).
   Proof.
+    constructor; intros.
+    + pose proof unit_join. 
+      pose proof choice as C.
+      pose (fun n u => is_unit u /\ join n u n) as R.
+      assert (HR : forall n : B, exists u : B, R n u).
+      { intros. specialize (H n0). destruct H as [u0 ?].
+        exists u0. unfold R. tauto. }
+      specialize (C B B R HR).
+      destruct C as [f HC].
+      pose (fun x => f (n x)) as u. exists u.
+      unfold R in *; split.
+      - hnf. intros a. unfold u. specialize (HC (n a)). tauto.
+      - hnf. intros a. unfold u. specialize (HC (n a)). tauto.
+    + assert (forall x, n x = m x).
+      { intros. eapply unit_spec; [apply H | apply H0]. }
+      eapply FunctionalExtensionality.functional_extensionality_dep.
+      apply H1.
+  Qed.
+
+  (* Definition fun_UJR (A B : Type) {U_B : Unit B} {J_B : Join B} {UJR_B : @UnitJoinRelation B U_B J_B} : @UnitJoinRelation (A -> B) (fun_Unit A B) (fun_Join A B).
+  Proof.
     constructor; intros; hnf; subst; intros.
     + apply unit_join. apply H.
     + assert (forall x, n x = m x).
@@ -585,9 +609,8 @@ Section exponentialSA.
       eapply FunctionalExtensionality.functional_extensionality_dep.
       apply H1.
     (* Unshelve. exact UJR_B. exact UJR_B. *)
-  Qed.
+  Qed. *)
 
-  (* do not know why there are goals shelved here *)
 
 End exponentialSA.
 
@@ -620,12 +643,12 @@ Section sumSA.
       + exists (inr myz); split; constructor; auto.
   Qed.
 
-  Definition sum_Unit (A B : Type) : Unit (A + B) := (fun _ => False).
+  (* Definition sum_Unit (A B : Type) : Unit (A + B) := (fun _ => False).
 
   Definition sum_UJR (A B : Type) {J_A : Join A} {J_B : Join B} : @UnitJoinRelation (A + B) (sum_Unit A B) (sum_Join A B).
   Proof.
     constructor; intros; hnf in *; tauto.
-  Qed.
+  Qed. *)
 
 End sumSA.
 
@@ -772,10 +795,28 @@ Section productSA.
         split; auto.
   Qed.
 
-Definition prod_Unit (A B : Type) {U_A : Unit A} {U_B : Unit B} : Unit (A * B) :=
+  Definition prod_Unit (A B : Type) {U_A : Unit A} {U_B : Unit B} : Unit (A * B) :=
   (fun m => is_unit (fst m) /\ is_unit (snd m)).
 
-Definition prod_UJR (A B : Type) {U_A : Unit A} {U_B : Unit B} {J_A : Join A} {J_B : Join B} {USR_A : @UnitJoinRelation A U_A J_A} {USR_B : @UnitJoinRelation B U_B J_B} : @UnitJoinRelation (A * B) (prod_Unit A B) (prod_Join A B).
+  Definition prod_UJR (A B : Type) {U_A : Unit A} {U_B : Unit B} {J_A : Join A} {J_B : Join B} {USR_A : @UnitJoinRelation A U_A J_A} {USR_B : @UnitJoinRelation B U_B J_B} : @UnitJoinRelation (A * B) (prod_Unit A B) (prod_Join A B).
+  Proof.
+    constructor; intros.
+    + destruct n as [na nb].
+      assert (exists ua, is_unit ua /\ join na ua na).
+      { apply unit_join. }
+      assert (exists ub, is_unit ub /\ join nb ub nb).
+      { apply unit_join. }
+      destruct H as [ua [Ha1 Ha2]]. destruct H0 as [ub [Hb1 Hb2]].
+      exists (ua, ub); split; constructor; simpl; try tauto.
+    + destruct u as [ua ub].
+      destruct n as [na nb]. destruct m as [ma mb]. 
+      destruct H; destruct H0; simpl in *.
+      assert (na = ma). {eapply unit_spec; [apply H | tauto]. }
+      assert (nb = mb). {eapply unit_spec; [apply H1 | tauto]. }
+      subst. tauto.
+  Qed.
+
+(* Definition prod_UJR (A B : Type) {U_A : Unit A} {U_B : Unit B} {J_A : Join A} {J_B : Join B} {USR_A : @UnitJoinRelation A U_A J_A} {USR_B : @UnitJoinRelation B U_B J_B} : @UnitJoinRelation (A * B) (prod_Unit A B) (prod_Join A B).
 Proof.
   constructor; intros; destruct u as [x y]; hnf; simpl in *.
   + destruct H; split; eapply unit_join; [apply H | apply H0].
@@ -785,7 +826,7 @@ Proof.
     assert (n2 = m2). {eapply unit_spec; [apply u2 | apply j2]. }
     subst. tauto.
   (* Unshelve. exact USR_A. exact USR_B. exact USR_A. exact USR_B. *)
-Qed.
+Qed. *)
 
 End productSA.
 
