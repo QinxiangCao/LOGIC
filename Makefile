@@ -205,8 +205,8 @@ SeparationLogic_ShallowEmbedded_FILES = \
 
 SeparationLogic_FILES = \
   Syntax.v \
-  $(SeparationLogic_ProofTheory_FILES:%.v=ProofTheory/%.v) \
   $(SeparationLogic_Model_FILES:%.v=Model/%.v) \
+  $(SeparationLogic_ProofTheory_FILES:%.v=ProofTheory/%.v) \
   $(SeparationLogic_Semantics_FILES:%.v=Semantics/%.v) \
   $(SeparationLogic_Sound_FILES:%.v=Sound/%.v) \
   $(SeparationLogic_Complete_FILES:%.v=Complete/%.v) \

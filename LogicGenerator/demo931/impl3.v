@@ -34,11 +34,13 @@ Definition QB_Join := @prod_Join Q (option Datatypes.unit) Q_Join bool_Join.
 Definition memlock_Join := @prod_Join _ _ QB_Join (@equiv_Join ASD).
 Definition mem_Join := @sum_Join memval memlock memval_Join memlock_Join.
 Definition heap_Join := @fun_Join addr (option (memval + memlock)) (@option_Join (memval + memlock) mem_Join).
-
+Definition store_Unit := @equiv_Unit store. 
+Definition heap_Unit := @fun_Unit addr (option (memval + memlock)) (@option_Unit (memval + memlock)).
 
 Module NaiveLang.
   Definition model : Type := store * heap.
   Definition join := @prod_Join store heap store_Join heap_Join.
+  Definition is_unit := @prod_Unit store heap store_Unit heap_Unit.
   Definition expr := (model -> Prop).
 End NaiveLang.
 
@@ -55,6 +57,10 @@ Definition memlock_SA := @prod_SA _ _ QB_Join (@equiv_Join ASD) QB_SA (@equiv_SA
 Definition mem_SA := @sum_SA memval memlock memval_Join memlock_Join memval_SA memlock_SA.
 Definition heap_SA := @fun_SA addr (option (memval + memlock)) (@option_Join (memval + memlock) mem_Join) (@option_SA (memval + memlock) mem_Join mem_SA).
 Definition join_SA := @prod_SA store heap store_Join heap_Join store_SA heap_SA.
+
+Definition store_UJR := @equiv_UJR store.
+Definition heap_UJR := @fun_UJR addr (option (memval + memlock)) _ _ (@option_UJR (memval + memlock) mem_Join).
+Definition state_UJR := @prod_UJR store heap store_Unit heap_Unit store_Join heap_Join store_UJR heap_UJR.
 
 Lemma join_comm : (forall m1 m2 m : model, join m1 m2 m -> join m2 m1 m) .
 Proof.

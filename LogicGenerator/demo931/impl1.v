@@ -14,10 +14,13 @@ Definition store : Type := var -> val.
 Definition heap : Type := addr -> (option val).
 Definition store_Join := @equiv_Join store.
 Definition heap_Join := @fun_Join addr (option val) (@option_Join val trivial_Join).
+Definition store_Unit := @equiv_Unit store. 
+Definition heap_Unit := @fun_Unit addr (option val) (@option_Unit val).
 
 Module NaiveLang.
   Definition model : Type := store * heap.
   Definition join := @prod_Join store heap store_Join heap_Join.
+  Definition is_unit := @prod_Unit store heap store_Unit heap_Unit.
   Definition expr := (model -> Prop).
 End NaiveLang.
 
@@ -29,6 +32,10 @@ Include DerivedNames (NaiveLang).
 Definition store_SA := @equiv_SA store.
 Definition heap_SA := @fun_SA addr (option val) _ (@option_SA val _ trivial_SA).
 Definition join_SA := @prod_SA store heap store_Join heap_Join store_SA heap_SA.
+
+Definition store_UJR := @equiv_UJR store.
+Definition heap_UJR := @fun_UJR addr (option val) _ _ (@option_UJR val trivial_Join).
+Definition state_UJR := @prod_UJR store heap store_Unit heap_Unit store_Join heap_Join store_UJR heap_UJR.
 
 Lemma join_comm : (forall m1 m2 m : model, join m1 m2 m -> join m2 m1 m) .
 Proof.
