@@ -159,6 +159,7 @@ Context {L: Language}
         {CorAX: Corable_withAxiomatization L GammaP Cor}
         {coq_prop_Cor: CoqPropCorable L Cor}
 
+        (* new *)
         {M : Model}
         {J : Join model}
         {U : Unit model}
@@ -170,6 +171,7 @@ Context {L: Language}
         {coq_prop_modelL : CoqPropLanguage Model_L}
         {sepconL_modelL: SepconLanguage Model_L}
         {GammaP_modelL : Provable Model_L}
+        {truepL_modelL : TrueLanguage Model_L}
         {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
         {empL_modelL : EmpLanguage Model_L}
         {imppDef_model : ImppDefinition_Model minL_modelL}
@@ -177,6 +179,7 @@ Context {L: Language}
         {andpDef_model : AndpDefinition_Model andpL_modelL}
         {orpDef_model : OrpDefinition_Model orpL_modelL}
         {coqpropDef_model : CoqPropDefinition_Model coq_prop_modelL}
+        {truepDef_model : TrueDefinition_Model truepL_modelL}
         {empDef_unit : EmpDefinition_Unit Unit2Emp}
         .
         

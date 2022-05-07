@@ -28,6 +28,7 @@ match hc with
 | FROM_model_TO_orp => [FROM_model_TO_expr]
 | FROM_model_TO_coq_prop => [FROM_model_TO_expr]
 | FROM_unit_TO_emp => [FROM_model_TO_expr]
+| FROM_model_TO_truep => [FROM_model_TO_expr]
 end.
 
 (* infered how-type of how-judgement *)
@@ -75,6 +76,7 @@ match hc with
 | FROM_model_TO_orp => orp
 | FROM_model_TO_coq_prop => coq_prop
 | FROM_unit_TO_emp => emp
+| FROM_model_TO_truep => truep
 end.
 
 (* generated judgement *)
@@ -155,6 +157,7 @@ match hc with
 | FROM_model_TO_orp => []
 | FROM_model_TO_coq_prop => []
 | FROM_unit_TO_emp => [is_unit]
+| FROM_model_TO_truep => []
 end.
 
 (* dependent judgements of how-judgement *)
@@ -202,6 +205,7 @@ match hc with
 | FROM_model_TO_orp => Some (GEN_orp_FROM_model)
 | FROM_model_TO_coq_prop => Some (GEN_coq_prop_FROM_model)
 | FROM_unit_TO_emp => Some (GEN_emp_FROM_unit)
+| FROM_model_TO_truep => Some(GEN_truep_FROM_model)
 end.
 
 (* Automatically generated rule-instances from judgement derivation *)

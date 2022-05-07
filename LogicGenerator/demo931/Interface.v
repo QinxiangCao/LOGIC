@@ -23,10 +23,13 @@ Include Names.
   Definition andp := (fun (x y : model -> Prop) (m : model) => x m /\ y m) .
   Definition orp := (fun (x y : model -> Prop) (m : model) => x m \/ y m) .
   Definition coq_prop := (fun (P : Prop) (_ : model) => P) .
+  Definition truep := (fun _ : model => True) .
   Definition sepcon := (fun (x y : model -> Prop) (m : model) => exists m1 m2 : model, join m1 m2 m /\ x m1 /\ y m2) .
   Definition emp := (fun m : model => is_unit m) .
+  Definition iter_andp := (fun xs : list expr => fold_left andp xs truep) .
 (* derived judgements *)
   Definition provable := (fun x : model -> Prop => forall m : model, x m) .
+  Definition derivable1 := (fun x y : expr => provable (impp x y)) .
 End DerivedNames.
 
 Module Type PrimitiveRuleSig (Names: LanguageSig).
@@ -39,6 +42,9 @@ Module Type LogicTheoremSig (Names: LanguageSig) (Rules: PrimitiveRuleSig Names)
 Include Rules.
 Parameter Inline tree_pos : Type .
 (* derived rules *)
+  Axiom derivable1_sepcon_comm : (forall x y : expr, derivable1 (sepcon x y) (sepcon y x)) .
+  Axiom derivable1_sepcon_assoc1 : (forall x y z : expr, derivable1 (sepcon x (sepcon y z)) (sepcon (sepcon x y) z)) .
+  Axiom derivable1_sepcon_mono : (forall x1 x2 y1 y2 : expr, derivable1 x1 x2 -> derivable1 y1 y2 -> derivable1 (sepcon x1 y1) (sepcon x2 y2)) .
   Axiom sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) .
   Axiom sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) .
   Axiom sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) .
@@ -104,22 +110,32 @@ Include Rules.
   Instance andpL : (AndLanguage L) := (Build_AndLanguage L andp) .
   Instance orpL : (OrLanguage L) := (Build_OrLanguage L orp) .
   Instance coq_prop_L : (CoqPropLanguage L) := (Build_CoqPropLanguage L coq_prop) .
+  Instance truepL : (TrueLanguage L) := (Build_TrueLanguage L truep) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
   Instance empL : (EmpLanguage L) := (Build_EmpLanguage L emp) .
+  Instance iter_andp_L : (IterAndLanguage L) := (Build_IterAndLanguage L iter_andp) .
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
+  Instance GammaD1 : (Derivable1 L) := (Build_Derivable1 L derivable1) .
   Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
 (* aux refl instances for derivation *)
   Instance imppDef_model : (ImppDefinition_Model minL) := Model2Impp_Normal .
   Instance andpDef_model : (AndpDefinition_Model andpL) := Model2Andp_Normal .
   Instance orpDef_model : (OrpDefinition_Model orpL) := Model2Orp_Normal .
   Instance coqpropDef_model : (CoqPropDefinition_Model coq_prop_L) := Model2CoqProp_Normal .
+  Instance truepDef_model : (TrueDefinition_Model truepL) := Model2Truep_Normal .
   Instance sepconDef_join : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
   Instance empDef_unit : (EmpDefinition_Unit Unit2Emp) := Unit2Emp_Normal .
+  Instance iter_andp_DL : (IterAndDefinition_left L) := FoldLeftAnd2IterAnd_Normal .
   Instance provableDef_model : (ProvableDefinition_Model GammaP) := Model2Provable_Normal .
+  Instance GammaD1P : (Derivable1Provable L GammaP GammaD1) := Provable2Derivable1_Normal .
 (* aux derived instances *)
   Instance sepconAX : (SepconAxiomatization L GammaP) := SeparationAlgebra2SepconAxiomatization .
+  Instance sepconD : (SepconDeduction L GammaD1) := SeparationLogic.Axiomatization2Deduction_sepconD .
 Definition tree_pos : Type := tree_pos.
 (* derived rules *)
+  Definition derivable1_sepcon_comm : (forall x y : expr, derivable1 (sepcon x y) (sepcon y x)) := derivable1_sepcon_comm .
+  Definition derivable1_sepcon_assoc1 : (forall x y z : expr, derivable1 (sepcon x (sepcon y z)) (sepcon (sepcon x y) z)) := derivable1_sepcon_assoc1 .
+  Definition derivable1_sepcon_mono : (forall x1 x2 y1 y2 : expr, derivable1 x1 x2 -> derivable1 y1 y2 -> derivable1 (sepcon x1 y1) (sepcon x2 y2)) := derivable1_sepcon_mono .
   Definition sepcon_comm_impp : (forall x y : expr, provable (impp (sepcon x y) (sepcon y x))) := sepcon_comm_impp .
   Definition sepcon_assoc1 : (forall x y z : expr, provable (impp (sepcon x (sepcon y z)) (sepcon (sepcon x y) z))) := sepcon_assoc1 .
   Definition sepcon_mono : (forall x1 x2 y1 y2 : expr, provable (impp x1 x2) -> provable (impp y1 y2) -> provable (impp (sepcon x1 y1) (sepcon x2 y2))) := sepcon_mono .

@@ -4,7 +4,7 @@ filedir = sys.argv[1]
 with open(filedir, "r") as f:
     fdata = f.read()
 
-subst = [["minL_modelL", "minL"], ["GammaP_modelL", "GammaP"], ["andpL_modelL", "andpL"], ["orpL_modelL","orpL"], ["coq_prop_modelL", "coq_prop_L"], ["empL_modelL", "empL"]]
+subst = [["minL_modelL", "minL"], ["GammaP_modelL", "GammaP"], ["andpL_modelL", "andpL"], ["orpL_modelL","orpL"], ["coq_prop_modelL", "coq_prop_L"], ["empL_modelL", "empL"], ["truepL_modelL", "truepL"]]
 for substpair in subst:
     oldstr = substpair[0]
     newstr = substpair[1]

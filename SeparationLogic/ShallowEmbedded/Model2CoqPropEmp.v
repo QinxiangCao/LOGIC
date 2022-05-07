@@ -37,6 +37,23 @@ Proof. constructor. reflexivity. Qed.
 
 End M2COQPROP.
 
+Section M2TRUE.
+Context {M : Model}.
+
+Instance model_L : Language := Build_Language (model -> Prop).
+
+Definition Model2Truep : TrueLanguage model_L :=
+  Build_TrueLanguage model_L (fun (m : model) => True).
+
+Class TrueDefinition_Model (truepL : TrueLanguage model_L) : Prop := {
+  model2truep : forall (m : model), truep m = True
+}.
+
+Lemma Model2Truep_Normal : TrueDefinition_Model Model2Truep.
+Proof. constructor. reflexivity. Qed.
+
+End M2TRUE.
+
 Section U2EMP.
 
 Context {M : Model} {U : Unit model}.

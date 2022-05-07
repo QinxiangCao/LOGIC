@@ -63,6 +63,7 @@ Inductive how_connective :=
 | FROM_model_TO_orp
 | FROM_model_TO_coq_prop
 | FROM_unit_TO_emp
+| FROM_model_TO_truep
 .
 
 Definition primitive_connectives := map primitive_connective.
@@ -181,6 +182,7 @@ Inductive rule_class :=
 | GEN_orp_FROM_model
 | GEN_coq_prop_FROM_model
 | GEN_emp_FROM_unit
+| GEN_truep_FROM_model
 .
 
 (** * What users need not to know **)
@@ -669,6 +671,7 @@ match rc1, rc2 with
 | GEN_orp_FROM_model, GEN_orp_FROM_model => true
 | GEN_coq_prop_FROM_model, GEN_coq_prop_FROM_model => true 
 | GEN_emp_FROM_unit, GEN_emp_FROM_unit => true
+| GEN_truep_FROM_model, GEN_truep_FROM_model => true
 | _, _ => false
 end.
 

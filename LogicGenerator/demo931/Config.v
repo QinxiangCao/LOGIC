@@ -12,14 +12,17 @@ Definition how_connectives :=
   ; FROM_model_TO_andp
   ; FROM_model_TO_orp
   ; FROM_model_TO_coq_prop
+  ; FROM_model_TO_truep
   ; FROM_join_TO_sepcon
   ; FROM_unit_TO_emp
+  ; FROM_andp_TO_iter_andp
   ].
 
 (* temporarily use garbage collected emp*)
 
 Definition how_judgements :=
   [ FROM_model_TO_provable
+  ; FROM_provable_TO_derivable1
   ].
 
 Definition transparent_names :=

@@ -100,6 +100,7 @@ Definition how_connectives: list how_connective :=
   ; FROM_model_TO_orp
   ; FROM_model_TO_coq_prop
   ; FROM_unit_TO_emp
+  ; FROM_model_TO_truep
   ].
 
 Definition how_judgements: list how_judgement :=
@@ -255,6 +256,7 @@ Definition refl_classes :=
   ; RC GEN_orp_FROM_model
   ; RC GEN_coq_prop_FROM_model
   ; RC GEN_emp_FROM_unit
+  ; RC GEN_truep_FROM_model
   ].
 
 End D.
@@ -474,6 +476,7 @@ Context {L: Language}
         {coq_prop_modelL : CoqPropLanguage Model_L}
         {sepconL_modelL: SepconLanguage Model_L}
         {GammaP_modelL : Provable Model_L}
+        {truepL_modelL : TrueLanguage Model_L}
         {sepconAX_modelL : SepconAxiomatization Model_L GammaP_modelL}
         {empL_modelL : EmpLanguage Model_L}
         {imppDef_model : ImppDefinition_Model minL_modelL}
@@ -481,6 +484,7 @@ Context {L: Language}
         {andpDef_model : AndpDefinition_Model andpL_modelL}
         {orpDef_model : OrpDefinition_Model orpL_modelL}
         {coqpropDef_model : CoqPropDefinition_Model coq_prop_modelL}
+        {truepDef_model : TrueDefinition_Model truepL_modelL}
         {empDef_unit : EmpDefinition_Unit Unit2Emp}
         .
 
@@ -540,6 +544,7 @@ Definition how_connectives: list Name :=
   ; (orp, fun (x y : model -> Prop) (m : model) => (x m \/ y m))
   ; (coq_prop, fun (P : Prop) (m : model) => P)
   ; (emp, fun (m : model) => is_unit m)
+  ; (truep, fun (m : model) => True)
   ].
 
 Definition how_judgements: list Name :=
@@ -698,6 +703,7 @@ Definition refl_instances :=
   ; (orpDef_model, Model2Orp_Normal)
   ; (coqpropDef_model, Model2CoqProp_Normal)
   ; (empDef_unit, Unit2Emp_Normal)
+  ; (truepDef_model, Model2Truep_Normal)
   ].
  
 (* Check AndImp2Iff_Normal. (* : IffDefinition_And_Imp L *)
