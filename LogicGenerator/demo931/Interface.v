@@ -23,10 +23,8 @@ Include Names.
   Definition andp := (fun (x y : model -> Prop) (m : model) => x m /\ y m) .
   Definition orp := (fun (x y : model -> Prop) (m : model) => x m \/ y m) .
   Definition coq_prop := (fun (P : Prop) (_ : model) => P) .
-  Definition truep := (fun _ : model => True) .
   Definition sepcon := (fun (x y : model -> Prop) (m : model) => exists m1 m2 : model, join m1 m2 m /\ x m1 /\ y m2) .
   Definition emp := (fun m : model => is_unit m) .
-  Definition iter_andp := (fun xs : list expr => fold_left andp xs truep) .
 (* derived judgements *)
   Definition provable := (fun x : model -> Prop => forall m : model, x m) .
   Definition derivable1 := (fun x y : expr => provable (impp x y)) .
@@ -110,10 +108,8 @@ Include Rules.
   Instance andpL : (AndLanguage L) := (Build_AndLanguage L andp) .
   Instance orpL : (OrLanguage L) := (Build_OrLanguage L orp) .
   Instance coq_prop_L : (CoqPropLanguage L) := (Build_CoqPropLanguage L coq_prop) .
-  Instance truepL : (TrueLanguage L) := (Build_TrueLanguage L truep) .
   Instance sepconL : (SepconLanguage L) := (Build_SepconLanguage L sepcon) .
   Instance empL : (EmpLanguage L) := (Build_EmpLanguage L emp) .
-  Instance iter_andp_L : (IterAndLanguage L) := (Build_IterAndLanguage L iter_andp) .
   Instance GammaP : (Provable L) := (Build_Provable L provable) .
   Instance GammaD1 : (Derivable1 L) := (Build_Derivable1 L derivable1) .
   Instance J_SA : (SeparationAlgebra model) := (Build_SeparationAlgebra model J join_comm join_assoc) .
@@ -122,10 +118,8 @@ Include Rules.
   Instance andpDef_model : (AndpDefinition_Model andpL) := Model2Andp_Normal .
   Instance orpDef_model : (OrpDefinition_Model orpL) := Model2Orp_Normal .
   Instance coqpropDef_model : (CoqPropDefinition_Model coq_prop_L) := Model2CoqProp_Normal .
-  Instance truepDef_model : (TrueDefinition_Model truepL) := Model2Truep_Normal .
   Instance sepconDef_join : (SepconDefinition_Join Join2Sepcon) := Join2Sepcon_Normal .
   Instance empDef_unit : (EmpDefinition_Unit Unit2Emp) := Unit2Emp_Normal .
-  Instance iter_andp_DL : (IterAndDefinition_left L) := FoldLeftAnd2IterAnd_Normal .
   Instance provableDef_model : (ProvableDefinition_Model GammaP) := Model2Provable_Normal .
   Instance GammaD1P : (Derivable1Provable L GammaP GammaD1) := Provable2Derivable1_Normal .
 (* aux derived instances *)
